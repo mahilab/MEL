@@ -17,8 +17,6 @@ typedef std::vector<float>        float_vec;
 typedef std::vector<double>       double_vec;
 typedef std::vector<char>         char_vec;
 
-
-
 /* macro for find array length */
 #define ARRAY_LENGTH(array) (sizeof(array)/sizeof((array)[0]))
 
