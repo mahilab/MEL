@@ -20,6 +20,9 @@ void OpenWrist::bind_daq(Daq *daq) {
 }
 
 void OpenWrist::enable() {
+	double_vec initial_voltages = { 0, 0, 0 };
+	daq_->write_analog(initial_voltages);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	char_vec enable_voltpaq = { 1, 1, 1 }; // this needs to be generalized
 	daq_->write_digital(enable_voltpaq);
 }
@@ -60,6 +63,13 @@ void OpenWrist::command_joint_torques() {
 }
 
 void OpenWrist::calibrate(int &stop) {
+
+	/* initialize Q8 USB */
+	if (!daq_->init()) {
+		std::cout << "Terminating controller" << std::endl;
+		return;
+	}
+
 	/* zero current position */
 	zero_joint_positions();
 	/* enable OpenWrist */
@@ -68,6 +78,12 @@ void OpenWrist::calibrate(int &stop) {
 	daq_->start_watchdog(0.1);
 	/* start joint 1 calibration loop */
 	std::cout << "Calibrating Joint 1 ... ";
+
+	std::vector<double> stored_positions;
+
+	double joint_1_hard_stop_position = 1.19696;
+
+
 	while (stop == 0) {
 		/* reload watchdog */
 		daq_->reload_watchdog();
@@ -77,11 +93,36 @@ void OpenWrist::calibrate(int &stop) {
 		joint_torques_[0] = compute_pd_control_joint_torque_single(joint_positions_[0], joint_velocities_[0], 0, 0, 50, 1);
 		joint_torques_[2] = compute_pd_control_joint_torque_single(joint_positions_[2], joint_velocities_[2], 0, 0, 40, 0.25);
 		/* apply small torque to joint 1 */
-		joint_torques_[1] = 0.15;
+		joint_torques_[1] = 0.2;
 		/* command joint torques */
 		command_joint_torques();
-		std::cout << joint_positions_[1] << std::endl;
+
+		stored_positions.push_back(joint_positions_[1]);
+
+		bool moving = true;
+		if (stored_positions.size() > 500) {
+			moving = false;
+			for (int i = stored_positions.size()-500; i < stored_positions.size(); i++) {
+				moving = stored_positions[i] != stored_positions[i - 1];
+				if (moving)
+					break;
+			}
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+		if (!moving)
+			break;
 	}
+
+	double go_to_position = joint_positions_[1] - joint_1_hard_stop_position;
+
+	std::cout << "The hardstop was reached" << std::endl;
+
+	std::cout << "Go to: " << go_to_position << std::endl;
+
+
+
 	if (stop == 1)
 		std::cout << "Ctrl-C pressed. Calibration terminated." << std::endl;
 	else
@@ -90,6 +131,8 @@ void OpenWrist::calibrate(int &stop) {
 	daq_->stop_watchdog();
 	/* disable OpenWrist */
 	disable();
+	daq_->terminate();
+
 }
 
 /* PUBLIC STATIC FUNCTIONS */

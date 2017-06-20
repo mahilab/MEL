@@ -5,6 +5,8 @@
 #include "hil.h"
 #include "quanser_messages.h"
 #include "Daq.h"
+#include <thread>
+#include <chrono>
 
 class Q8Usb : public Daq {
 
