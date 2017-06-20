@@ -8,7 +8,7 @@
 
 #define TEST 1
 
-#define TEST2 4
+#define TEST2 5
 
 typedef unsigned int              uint;
 typedef std::vector<int>          int_vec;
@@ -22,3 +22,4 @@ typedef std::vector<char>         char_vec;
 
 /* a better version of ARRAY_LENGTH */
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+
