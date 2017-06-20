@@ -1,0 +1,280 @@
+#include "Q8Usb.h"
+
+const char      Q8Usb::board_type_[] = "q8_usb";
+const char      Q8Usb::board_identifier_[] = "0";
+const double    Q8Usb::ai_min_voltage_ = -10;
+const double    Q8Usb::ai_max_voltage_ = +10;
+const double    Q8Usb::ao_min_voltage_ = -10;
+const double    Q8Usb::ao_max_voltage_ = +10;
+const t_double  Q8Usb::ao_initial_voltage_ = 0;
+const t_double  Q8Usb::ao_final_voltage_ = 0;
+const t_double  Q8Usb::ao_exp_voltage_ = 0;
+const t_boolean Q8Usb::do_initial_state_ = 0;
+const t_boolean Q8Usb::do_final_state_ = 0;
+const t_digital_state
+Q8Usb::do_exp_state_ = DIGITAL_STATE_LOW;
+const t_uint32  Q8Usb::vel_channel_offset_ = 14000;
+const t_int32   Q8Usb::enc_initial_count_ = 0;
+const t_encoder_quadrature_mode
+Q8Usb::enc_mode_ = ENCODER_QUADRATURE_4X;
+
+Q8Usb::Q8Usb(uint_vec ai_channels,
+	uint_vec ao_channels,
+	uint_vec di_channels,
+	uint_vec do_channels,
+	uint_vec enc_channels,
+	char * options)
+{
+
+	/* set up analog input channels */
+	ai_channels_ = ai_channels;
+	ai_min_voltages_ = double_vec(ai_channels_.size(), ai_min_voltage_);
+	ai_max_voltages_ = double_vec(ai_channels_.size(), ai_max_voltage_);
+
+	/* set up analog output channels */
+	ao_channels_ = ao_channels;
+	ao_min_voltages_ = double_vec(ao_channels_.size(), ao_min_voltage_);
+	ao_max_voltages_ = double_vec(ao_channels_.size(), ao_max_voltage_);
+	ao_initial_voltages_ = double_vec(ao_channels_.size(), ao_initial_voltage_);
+	ao_final_voltages_ = double_vec(ao_channels_.size(), ao_final_voltage_);
+	ao_exp_voltages_ = double_vec(ao_channels_.size(), ao_exp_voltage_);
+
+	/* set up digital input channels */
+	di_channels_ = di_channels;
+
+	/* set up digital output channels */
+	do_channels_ = do_channels;
+	do_initial_states_ = char_vec(do_channels_.size(), do_initial_state_);
+	do_final_states_ = char_vec(do_channels_.size(), do_final_state_);
+	do_exp_states_ = std::vector<t_digital_state>(do_channels_.size(), do_exp_state_);
+
+	/* set up encoder channels */
+	enc_channels_ = enc_channels;
+	vel_channels_ = uint_vec(enc_channels.size(), vel_channel_offset_);
+	for (int i = 0; i < enc_channels.size(); i++)
+		vel_channels_[i] += enc_channels[i];
+	enc_modes_ = std::vector<t_encoder_quadrature_mode>(enc_channels.size(), enc_mode_);
+	enc_initial_counts_ = int_vec(enc_channels.size(), 0);
+
+	/* initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!)  */
+	ai_voltages_ = double_vec(ai_channels_.size(), 0.0);
+	ao_voltages_ = double_vec(ao_channels_.size(), 0.0);
+	di_states_ = char_vec(di_channels_.size(), 0);
+	do_states_ = char_vec(do_channels_.size(), 0);
+	enc_counts_ = int_vec(enc_channels_.size(), 0);
+	enc_counts_per_sec_ = double_vec(enc_channels_.size(), 0.0);
+
+	/* set up options */
+	strcpy(options_, options);
+}
+
+void Q8Usb::print_error(t_error result) {
+	TCHAR message[512];
+	msg_get_error_message(NULL, result, message, sizeof(message));
+	_tprintf(_T("%s (error %d)\n"), message, -result);
+}
+
+int Q8Usb::init() {
+	if (!initialized_) {
+		t_error result;
+		// Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)
+		std::cout << "Opening Q8 USB ... ";
+		for (int attempt = 0; attempt < 10; attempt++) {
+			result = hil_open("q8_usb", "0", &q8_usb_);
+			if (result == 0) {
+				double temp[3];
+				result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);
+				if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
+					// std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
+					std::cout << "Done" << std::endl;
+					break;
+				}
+				else {
+					// std::cout << "Attempt " << attempt + 1 << ": Encoder Reading Errors" << std::endl;
+					result = 1;
+					hil_close(q8_usb_);
+				}
+			}
+			else {
+				// std::cout << "Attempt " << attempt + 1 << ": Failed to Open" << std::endl;
+			}
+		}
+
+		// If all attempts were unsuccessful, display message and terminate the application.
+		if (result != 0) {
+			std::cout << "Failed" << std::endl;
+			return 0;
+		}
+
+		// Configure Q8 USB (Functions called in same order as Simulink compiled code)
+		std::cout << "Configuring Q8 USB ... ";
+		result = hil_set_card_specific_options(q8_usb_, options_, strlen(options_));
+		if (result < 0)
+			print_error(result);
+
+		// Stop and Clear Watchdog
+		result = hil_watchdog_stop(q8_usb_);
+		if (result < 0)
+			print_error(result);
+		result = hil_watchdog_clear(q8_usb_);
+		if (result < 0)
+			print_error(result);
+		result = hil_set_analog_input_ranges(q8_usb_, &ai_channels_[0], ai_channels_.size(), &ai_min_voltages_[0], &ai_max_voltages_[0]);
+		if (result < 0)
+			print_error(result);
+		result = hil_set_analog_output_ranges(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_min_voltages_[0], &ao_max_voltages_[0]);
+		if (result < 0)
+			print_error(result);
+		result = hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_initial_voltages_[0]);
+		if (result != 0)
+			print_error(result);
+		result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_exp_voltages_[0]);
+		if (result < 0)
+			print_error(result);
+
+		// hil_set_digital_directions
+		result = hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_initial_states_[0]);
+		if (result != 0)
+			print_error(result);
+		// Set Digital Expiration States
+		result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_[0], do_channels_.size(), &do_exp_states_[0]);
+		if (result < 0)
+			print_error(result);
+
+		// Set Encoder Quadrature Mode
+		result = hil_set_encoder_quadrature_mode(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_modes_[0]);
+		if (result < 0)
+			print_error(result);
+
+		// TO BE IMPLEMENTED IN FUTURE (IN THIS ORDER):
+
+		// hil_set_pwm_mode
+		// hil_set_pwm_frequency
+		// hil_set_pwm_duty_cycle
+		// hil_set_pwm_configuration
+		// hil_set_pwm_deadband
+		// hil_write_pwm
+		// hil_watchdog_set_pwm_expiration_state
+
+		initialized_ = true;
+		std::cout << "Done" << std::endl;
+		return 1;
+	}
+}
+
+void Q8Usb::zero_encoder_counts() {
+	if (initialized_) {
+		std::cout << "Zeroing Encoder Counts ... ";
+		t_error result = hil_set_encoder_counts(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_initial_counts_[0]);
+		if (result != 0)
+			print_error(result);
+		std::cout << "Done" << std::endl;
+	}
+}
+
+int Q8Usb::terminate() {
+	if (initialized_) {
+		t_error result;
+
+		// Stop all tasks and monitors (possibly unnecessary)
+		hil_task_stop_all(q8_usb_);
+		hil_monitor_stop_all(q8_usb_);
+
+		// Set Final Output Values
+		hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_final_voltages_[0]);
+		hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_final_states_[0]);
+
+		// Delete all tasks and monitors (possibly unnecessary)
+		hil_task_delete_all(q8_usb_);
+		hil_monitor_delete_all(q8_usb_);
+
+		// Stop and Clear Watchdog
+		hil_watchdog_stop(q8_usb_);
+		hil_watchdog_clear(q8_usb_);
+
+		// Close Q8 USB
+		std::cout << "Closing Q8 USB ... ";
+		result = hil_close(q8_usb_);
+		if (result != 0) {
+			std::cout << "Failed" << std::endl;
+			print_error(result);
+			return 0;
+		}
+		initialized_ = false;
+		std::cout << "Done" << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
+void Q8Usb::read_analog() {
+	if (initialized_) {
+		t_error result = hil_read_analog(q8_usb_, &ai_channels_[0], ai_channels_.size(), &ai_voltages_[0]);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::write_analog(double_vec ao_voltages) {
+	if (initialized_) {
+		ao_voltages_ = ao_voltages;
+		t_error result = hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_voltages_[0]);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::read_digital() {
+	if (initialized_) {
+		t_error result = hil_read_digital(q8_usb_, &di_channels_[0], di_channels_.size(), &di_states_[0]);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::write_digital(char_vec do_states) {
+	if (initialized_) {
+		do_states_ = do_states;
+		t_error result = hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_states_[0]);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::read_encoder() {
+	if (initialized_) {
+		t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_counts_[0]);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::read_encoder_velocity() {
+	if (initialized_) {
+		t_error result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), &enc_counts_per_sec_[0]);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::reload_watchdog() {
+	if (initialized_) {
+		t_error result = hil_watchdog_reload(q8_usb_);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::start_watchdog(double watchdog_timeout) {
+	if (initialized_) {
+		t_error result = hil_watchdog_start(q8_usb_, watchdog_timeout);
+		if (result < 0)
+			print_error(result);
+	}
+}
+
+void Q8Usb::stop_watchdog() {
+	hil_watchdog_stop(q8_usb_);
+	hil_watchdog_clear(q8_usb_);
+}
+

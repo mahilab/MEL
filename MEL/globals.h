@@ -1,14 +1,9 @@
 #pragma once
-
 #include <vector>
 
 #define PI      3.14159265358979E+00 /* constant pi to double precision */
 #define DEG2RAD 1.74532925199433E-02 /* constant to multiply by to convert degrees to radians */
 #define RAD2DEG 5.72957795130824E+01 /* constant to multiply by to convert radians to degrees */
-
-#define TEST 1
-
-#define TEST2 5
 
 typedef unsigned int              uint;
 typedef std::vector<int>          int_vec;
