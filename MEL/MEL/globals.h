@@ -8,6 +8,8 @@
 
 #define TEST 1
 
+#define TEST2 4
+
 typedef unsigned int              uint;
 typedef std::vector<int>          int_vec;
 typedef std::vector<unsigned int> uint_vec;
