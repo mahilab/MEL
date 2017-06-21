@@ -11,10 +11,11 @@ class Daq {
 public:
 
     /* constructor */
-    Daq(std::string name);
+    Daq(std::string name, std::string id);
 
-    /* name */
-    std::string name_; 
+    /* type and identifier */
+    std::string type_; 
+    std::string id_;
 
 	/* state variables */
 	double_vec ai_voltages_;          /* vector for which analog inputs should be read in to*/
