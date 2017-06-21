@@ -1,7 +1,6 @@
 #include "Q8Usb.h"
 
 const char      Q8Usb::board_type_[] = "q8_usb";
-const char      Q8Usb::board_identifier_[] = "0";
 const double    Q8Usb::ai_min_voltage_ = -10;
 const double    Q8Usb::ai_max_voltage_ = +10;
 const double    Q8Usb::ao_min_voltage_ = -10;
@@ -26,8 +25,7 @@ Q8Usb::Q8Usb(std::string name,
 	uint_vec enc_channels,
 	char * options) :
     Daq(name)
-{
-    
+{    
 	/* set up analog input channels */
 	ai_channels_ = ai_channels;
 	ai_min_voltages_ = double_vec(ai_channels_.size(), ai_min_voltage_);
@@ -103,7 +101,7 @@ int Q8Usb::init() {
 		// Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)
 		std::cout << "Opening Q8 USB ... ";
 		for (int attempt = 0; attempt < 10; attempt++) {
-			result = hil_open("q8_usb", board_identifier_, &q8_usb_);
+			result = hil_open("q8_usb", name_.c_str(), &q8_usb_);
 			if (result == 0) {
 				double temp[3];
 				result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);
@@ -303,7 +301,7 @@ void Q8Usb::stop_watchdog() {
 
 void Q8Usb::log_data(double timestamp) {
     /* TODO: this should probably open and close the data_log_ each time */
-    /*
+    
     data_log_ << timestamp << "\t"
         << ai_voltages_[0] << "\t"
         << ai_voltages_[1] << "\t"
@@ -311,37 +309,16 @@ void Q8Usb::log_data(double timestamp) {
         << ao_voltages_[0] << "\t"
         << ao_voltages_[1] << "\t"
         << ao_voltages_[2] << "\t"
-        << di_states_[0] << "\t"
-        << di_states_[1] << "\t"
-        << di_states_[2] << "\t"
-        << do_states_[0] << "\t"
-        << do_states_[1] << "\t"
-        << do_states_[2] << "\t"
+        << (int)di_states_[0] << "\t"
+        << (int)di_states_[1] << "\t"
+        << (int)di_states_[2] << "\t"
+        << (int)do_states_[0] << "\t"
+        << (int)do_states_[1] << "\t"
+        << (int)do_states_[2] << "\t"
         << enc_counts_[0] << "\t"
         << enc_counts_[1] << "\t"
         << enc_counts_[2] << "\t"
         << enc_counts_per_sec_[0] << "\t"
         << enc_counts_per_sec_[1] << "\t"
         << enc_counts_per_sec_[2] << std::endl;
-        */
-    std::cout << di_states_[0] << std::endl;
-    data_log_ << timestamp << "\t"
-        << ai_voltages_[0] << "\t"
-        << ai_voltages_[1] << "\t"
-        << ai_voltages_[2] << "\t"
-        << ao_voltages_[0] << "\t"
-        << ao_voltages_[1] << "\t"
-        << ao_voltages_[2] << "\t"
-        << di_states_[0] << "\t"
-        << "di1" << "\t"
-        << "di2" << "\t"
-        << "do0" << "\t"
-        << "do1" << "\t"
-        << "do2" << "\t"
-        << "enc0" << "\t"
-        << "enc1" << "\t"
-        << "enc2" << "\t"
-        << "vel0" << "\t"
-        << "vel1" << "\t"
-        << "vel2" << std::endl;
 }

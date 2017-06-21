@@ -19,8 +19,8 @@ public:
 	/* state variables */
 	double_vec ai_voltages_;          /* vector for which analog inputs should be read in to*/
 	double_vec ao_voltages_;          /* vector for which analog outputs should be read out from*/
-	char_vec   di_states_;            /* vector for which digital inputs should be read in to*/
-	char_vec   do_states_;            /* vector for which digital outputs should be read out from*/
+    char_vec   di_states_;            /* vector for which digital inputs should be read in to*/
+    char_vec   do_states_;            /* vector for which digital outputs should be read out from*/
 	int_vec    enc_counts_;           /* vector for which encoder counts should be read in to*/
 	double_vec enc_counts_per_sec_;   /* vector for which encoder counts per second should be read in to*/
 
@@ -39,8 +39,8 @@ public:
 	uint_vec   di_channels_;          /* vector of digital input channels being used */
 
 	uint_vec   do_channels_;          /* vector of digital output channels being used */
-	char_vec   do_initial_states_;    /* vector of states digital outputs will go to when the program starts */
-	char_vec   do_final_states_;      /* vector of states digital outputs will go to when the program finishes */
+    char_vec   do_initial_states_;    /* vector of states digital outputs will go to when the program starts */
+    char_vec   do_final_states_;      /* vector of states digital outputs will go to when the program finishes */
 
 	uint_vec   enc_channels_;         /* vector of encoder channels being used */
 	uint_vec   vel_channels_;         /* vector of encoder velocity channels being used */
