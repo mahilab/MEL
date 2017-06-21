@@ -1,6 +1,7 @@
 #include <iostream>
 #include <csignal>
 #include "Q8Usb.h"
+#include "util.h"
 
 /* Ctrl-C handler */
 static bool  stop = false;                          /* flag used to stop the controller */

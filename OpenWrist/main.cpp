@@ -20,7 +20,7 @@
 #include "OpenWrist.h"
 #include "OpenWristShare.h"
 #include <vector>
-#include "mel_globals.h"
+#include "util.h"
 
 static bool        stop = false;                          /* flag used to stop the controller */
 static const int   frequency = 1000;                  /* controller loop rate (Hz) */

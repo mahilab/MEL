@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Daq.h"
 #include <vector>
-#include "mel_globals.h"
+#include "util.h"
 #include <thread>
 #include <chrono>
 
