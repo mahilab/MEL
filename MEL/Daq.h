@@ -86,7 +86,7 @@ public:
     virtual double_vec get_encoder_counts_per_sec() {}
 
 
-
+	int test_b;
 
 
 protected:     
