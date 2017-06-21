@@ -17,14 +17,14 @@ const t_int32   Q8Usb::enc_initial_count_ = 0;
 const t_encoder_quadrature_mode
 Q8Usb::enc_mode_ = ENCODER_QUADRATURE_4X;
 
-Q8Usb::Q8Usb(std::string name,
+Q8Usb::Q8Usb(std::string id,
     uint_vec ai_channels,
 	uint_vec ao_channels,
 	uint_vec di_channels,
 	uint_vec do_channels,
 	uint_vec enc_channels,
 	char * options) :
-    Daq(name)
+    Daq("q8_usb", id)
 {    
 	/* set up analog input channels */
 	ai_channels_ = ai_channels;
@@ -101,7 +101,7 @@ int Q8Usb::init() {
 		// Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)
 		std::cout << "Opening Q8 USB ... ";
 		for (int attempt = 0; attempt < 10; attempt++) {
-			result = hil_open("q8_usb", "0", &q8_usb_);
+			result = hil_open(type_.c_str(), id_.c_str(), &q8_usb_);
 			if (result == 0) {
 				double temp[3];
 				result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);

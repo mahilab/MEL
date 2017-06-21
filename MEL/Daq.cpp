@@ -1,8 +1,9 @@
 #include "Daq.h"
 
-Daq::Daq(std::string name) :
-    name_(name),
-    log_filename_("daq_logs\\" + name + "_" + get_current_data_time() + ".dat")
+Daq::Daq(std::string type, std::string id) :
+    type_(type),
+    id_(id),
+    log_filename_("daq_logs\\" + type + "_" + id + "_" + get_current_data_time() + ".dat")
 {
     std::string daq_log_dir_ = "daq_logs";
     boost::filesystem::path dir(daq_log_dir_.c_str());
