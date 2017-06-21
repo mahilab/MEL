@@ -85,7 +85,7 @@ public:
     virtual int get_encoder_channel(int channel_number) {}
     virtual double_vec get_encoder_counts_per_sec() {}
 
-
+	evan sucks dick
 
 
 protected:     
