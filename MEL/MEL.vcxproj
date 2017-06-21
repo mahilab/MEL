@@ -184,14 +184,10 @@
   <ItemGroup>
     <ClInclude Include="Daq.h" />
     <ClInclude Include="mel_globals.h" />
-    <ClInclude Include="OpenWrist.h" />
-    <ClInclude Include="OpenWristShare.h" />
     <ClInclude Include="Q8Usb.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenWristShare.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
-    <ClCompile Include="OpenWrist.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
