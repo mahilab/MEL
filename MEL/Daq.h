@@ -1,9 +1,20 @@
 #pragma once
+#include <cstdio>
+#include <iostream>
+#include <fstream>
+#include <string>
 #include "util.h"
+#include <boost/filesystem.hpp>
 
 class Daq {
 
 public:
+
+    /* constructor */
+    Daq(std::string name);
+
+    /* name */
+    std::string name_; 
 
 	/* state variables */
 	double_vec ai_voltages_;          /* vector for which analog inputs should be read in to*/
@@ -49,13 +60,17 @@ public:
 	virtual void read_encoder_velocity() = 0;
 	virtual void zero_encoder_counts() = 0;
 
+    virtual void log_data(double timestamp) = 0;
+
 	/* virtual functions that may or may not be implemented by all derived DAQs */
 	virtual void reload_watchdog() {}
 	virtual void start_watchdog(double watchdog_timeout) {}
 	virtual void stop_watchdog() {}
 
-protected:
+protected:     
 
 	bool initialized_ = false;
+    std::string log_filename_;
+    std::ofstream data_log_;
 
 };

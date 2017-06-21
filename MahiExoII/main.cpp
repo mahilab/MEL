@@ -18,13 +18,14 @@ int main(int argc, char * argv[]) {
 	signal(SIGBREAK, signal_handler);
 
 	/* instatiate Q8 USB */
+    std::string name = "q8_usb_0";
 	uint_vec  ai_channels = { 0, 1, 2, 3 };
 	uint_vec  ao_channels = { 0, 1, 2, 3 };
 	uint_vec  di_channels = { 0, 1, 2, 3 };
 	uint_vec  do_channels = { 0, 1, 2, 3 };
 	uint_vec enc_channels = { 0, 1, 2, 3 };
 	char options[] = "update_rate=fast;decimation=1";
-	Daq *q8 = new Q8Usb(ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+	Daq *q8 = new Q8Usb(name, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 	
 	/* initialize Q8 USB */
 	if (!q8->init()) {

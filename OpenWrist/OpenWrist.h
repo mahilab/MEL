@@ -69,7 +69,4 @@ private:
 	static const double_vec kd_;              /* derivative control gains */
 	static const double_vec current_limits_;  /* hard current limits (max. cont. motor current) [A] */
 	static const double_vec kin_friction_;    /* joint kinetic friction parameters [N-m] */
-
-
-
 };

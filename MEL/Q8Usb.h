@@ -13,7 +13,8 @@ class Q8Usb : public Daq {
 public:
 
 	/* constructor */
-	Q8Usb(uint_vec ai_channels,
+    Q8Usb(std::string name,
+        uint_vec ai_channels,
 		uint_vec ao_channels,
 		uint_vec di_channels,
 		uint_vec do_channels,
@@ -33,6 +34,7 @@ public:
 	void reload_watchdog();
 	void start_watchdog(double watchdog_timeout);
 	void stop_watchdog();
+    void log_data(double timestamp);
 
 private:
 

@@ -24,7 +24,6 @@
 
 static bool        stop = false;                          /* flag used to stop the controller */
 static const int   frequency = 1000;                  /* controller loop rate (Hz) */
-static const char  data_log_file[] = "data_log.dat";  /* filename of data logging file */
 
 namespace po = boost::program_options;
 
@@ -57,13 +56,14 @@ int main(int argc, char * argv[]) {
 	}
 
 	/* instatiate Q8 USB */
+    std::string name = "q8_usb_0";
 	uint_vec  ai_channels = { 0, 1, 2 };
 	uint_vec  ao_channels = { 0, 1, 2 };
 	uint_vec  di_channels = { 0, 1, 2 };
 	uint_vec  do_channels = { 0, 1, 2 };
 	uint_vec enc_channels = { 0, 1, 2 };
 	char options[] = "ch0_mode=2;ch0_kff=0;ch0_a0=-1.382;ch0_a1=8.03;ch0_a2=0;ch0_b0=-1;ch0_b1=0;ch0_post=1000;ch1_mode=2;ch1_kff=0;ch1_a0=-1.382;ch1_a1=8.03;ch1_a2=0;ch1_b0=-1;ch1_b1=0;ch1_post=1000;ch2_mode=2;ch2_kff=0;ch2_a0=1.912;ch2_a1=18.43;ch2_a2=0;ch2_b0=-1;ch2_b1=0;ch2_post=1000;update_rate=fast;ext_int_polarity=0;convert_polarity=1;watchdog_polarity=0;ext_int_watchdog=0;use_convert=0;pwm_immediate=0;decimation=1";
-	Daq *q8 = new Q8Usb(ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+	Daq *q8 = new Q8Usb(name, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
 	/* instantiate and initialize OpenWrist */
 	OpenWrist ow;
@@ -91,12 +91,6 @@ int main(int argc, char * argv[]) {
 
 	/* create OpenWristShare */
 	OpenWristShare ow_share(&ow);
-
-	/* open data logging file */
-	std::ofstream data_log;
-	data_log.open(data_log_file, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;
-	data_log << "Time" << "\t" << "Period" << "\t" << "Position" << "\t" << "Velocity" << "\t"
-		<< "Joint Torque" << "\t" << "Motor Torque" << "\t" << "Motor Current" << "\t" << "Voltage Output" << "\t" << "Current Sense" << std::endl;
 
 	/* declare controller variables */
 	double_vec gravity_torques = { 0, 0, 0 };
@@ -149,10 +143,8 @@ int main(int argc, char * argv[]) {
 		
 
 		/* END CONTROLLER SPECIFIC CODE */
-		/* log desired data */
-		int joint_log = 2;
-		data_log << (float)sample_number / frequency << "\t" << (double)time_elapsed_loop.count() / 1000000000.0 << "\t" << ow.joint_positions_[joint_log] << "\t" << ow.joint_velocities_[joint_log]
-			<< "\t" << ow.joint_torques_[joint_log] << "\t" << ow.motor_torques_[joint_log] << "\t" << ow.motor_currents_[joint_log] << "\t" << q8->ao_voltages_[joint_log] << "\t" << q8->ai_voltages_[joint_log] << std::endl;
+		/* log data */
+        q8->log_data(controller_time);
 		/* update state values over OpenWristShare */
 		ow_share.update_state(controller_time);
 		/* increment sample number */
@@ -175,7 +167,6 @@ int main(int argc, char * argv[]) {
 	/* end control and clean up */
 	ow.disable();
 	q8->terminate();
-	data_log.close();
 
 	return 0;
 }
