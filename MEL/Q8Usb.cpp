@@ -261,23 +261,21 @@ void Q8Usb::read_encoder_velocity() {
 }
 
 void Q8Usb::read_all() {
-    if (initialized_) {
-    t_error result = hil_read(q8_usb,
+    //if (initialized_) {
+    //t_error result = hil_read(q8_usb,
 
 }
 
-void Q8Usb::write_analog(double_vec ao_voltages) {
+void Q8Usb::write_analog() {
 	if (initialized_) {
-		ao_voltages_ = ao_voltages;
 		t_error result = hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_voltages_[0]);
 		if (result < 0)
 			print_error(result);
 	}
 }
 
-void Q8Usb::write_digital(char_vec do_states) {
+void Q8Usb::write_digital() {
 	if (initialized_) {
-		do_states_ = do_states;
 		t_error result = hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_states_[0]);
 		if (result < 0)
 			print_error(result);

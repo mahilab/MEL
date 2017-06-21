@@ -33,8 +33,8 @@ public:
     void read_encoder_velocity();
     void read_all();
 
-	void write_digital(char_vec do_voltages);
-    void write_analog(double_vec ao_voltages);
+	void write_digital();
+    void write_analog();
 
 	void reload_watchdog();
 	void start_watchdog(double watchdog_timeout);

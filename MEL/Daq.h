@@ -24,8 +24,8 @@ public:
     char_vec   do_states_;            /* vector for which digital outputs should be read out from*/
 	int_vec    enc_counts_;           /* vector for which encoder counts should be read in to*/
 	double_vec enc_counts_per_sec_;   /* vector for which encoder counts per second should be read in to*/
-
-									  /* I/O channel information */
+	
+    /* I/O channel information */
 	uint_vec   ai_channels_;          /* vector of analog input channels being used */
 	double_vec ai_min_voltages_;      /* vector of minimum input voltages allowed by the board */
 	double_vec ai_max_voltages_;      /* vector of maximum input voltages allowed by the board */
@@ -47,27 +47,46 @@ public:
 	uint_vec   vel_channels_;         /* vector of encoder velocity channels being used */
 	int_vec    enc_initial_counts_;   /* vector of initial encoder counts to be used when zero_encoder_counts() is called */
 
-									  /* pure virtual functions that must be implemented by all derived DAQs */
+	/* pure virtual functions that must be implemented by all derived DAQs */
 	virtual int init() = 0;
 	virtual int terminate() = 0;
 
-	virtual void read_analog() = 0;
-    virtual void read_digital() = 0;
-    virtual void read_encoder() = 0;
-    virtual void read_encoder_velocity() = 0;
-    virtual void read_all() = 0;
+    /* virtual functions that may or may not be implemented by all derived DAQs */
+    virtual void read_analog() {}
+    virtual void read_digital() {}
+    virtual void read_encoder() {}
+    virtual void read_encoder_velocity() {}
+    virtual void read_all() {}
 
-	virtual void write_analog(double_vec ao_voltages) = 0;
-	virtual void write_digital(char_vec do_voltages) = 0;
+	virtual void write_analog() {}
+	virtual void write_digital() {}
+    virtual void write_all() {}
 
-	virtual void zero_encoder_counts() = 0;
+	virtual void zero_encoder_counts() {}
 
-    virtual void log_data(double timestamp) = 0;
+    virtual void log_data(double timestamp) {}
 
-	/* virtual functions that may or may not be implemented by all derived DAQs */
 	virtual void reload_watchdog() {}
 	virtual void start_watchdog(double watchdog_timeout) {}
 	virtual void stop_watchdog() {}
+
+    /* getters and setters of state variables */
+    virtual double_vec get_analog_voltages() {}
+    virtual double get_analog_voltage(int channel_number) {}
+    virtual void set_analog_voltages(double_vec new_voltages) {}
+    virtual void set_analog_voltage(int channel_number, double new_voltage) {}
+
+    virtual char_vec get_digital_states() {}
+    virtual char get_digital_state(int channel_number) {}
+    virtual void set_digital_states(char_vec new_states) {}
+    virtual void set_digital_state(int channel_numner, char new_state) {}
+
+    virtual int_vec get_encoder_counts() {}
+    virtual int get_encoder_channel(int channel_number) {}
+    virtual double_vec get_encoder_counts_per_sec() {}
+
+
+
 
 protected:     
 
