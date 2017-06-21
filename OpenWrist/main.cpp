@@ -22,14 +22,15 @@
 #include <vector>
 #include "mel_globals.h"
 
-static int         stop = 0;                          /* flag used to stop the controller */
+static bool        stop = false;                          /* flag used to stop the controller */
 static const int   frequency = 1000;                  /* controller loop rate (Hz) */
 static const char  data_log_file[] = "data_log.dat";  /* filename of data logging file */
 
 namespace po = boost::program_options;
 
+/* Ctrl-C handler */
 static void signal_handler(int signum) {
-	stop = 1;
+	stop = true;
 }
 
 int main(int argc, char * argv[]) {

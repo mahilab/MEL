@@ -62,7 +62,7 @@ void OpenWrist::command_joint_torques() {
 	daq_->write_analog(daq_->ao_voltages_);
 }
 
-void OpenWrist::calibrate(int &stop) {
+void OpenWrist::calibrate(bool &stop) {
 
 	/* initialize Q8 USB */
 	if (!daq_->init()) {
@@ -84,7 +84,7 @@ void OpenWrist::calibrate(int &stop) {
 	double joint_1_hard_stop_position = 1.19696;
 
 
-	while (stop == 0) {
+	while (!stop) {
 		/* reload watchdog */
 		daq_->reload_watchdog();
 		/* read joint positions and velocities */

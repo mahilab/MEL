@@ -30,7 +30,7 @@ public:
 	void read_joint_velocities();
 	void read_all();
 	void command_joint_torques();
-	void calibrate(int &stop);
+	void calibrate(bool &stop);
 	void zero_joint_positions();
 
 	/* PUBLIC STATIC FUNCTIONS */
