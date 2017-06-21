@@ -101,7 +101,7 @@ int Q8Usb::init() {
 		// Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)
 		std::cout << "Opening Q8 USB ... ";
 		for (int attempt = 0; attempt < 10; attempt++) {
-			result = hil_open("q8_usb", name_.c_str(), &q8_usb_);
+			result = hil_open("q8_usb", "0", &q8_usb_);
 			if (result == 0) {
 				double temp[3];
 				result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);
