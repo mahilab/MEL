@@ -236,6 +236,36 @@ void Q8Usb::read_analog() {
 	}
 }
 
+void Q8Usb::read_digital() {
+    if (initialized_) {
+        t_error result = hil_read_digital(q8_usb_, &di_channels_[0], di_channels_.size(), &di_states_[0]);
+        if (result < 0)
+            print_error(result);
+    }
+}
+
+void Q8Usb::read_encoder() {
+    if (initialized_) {
+        t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_counts_[0]);
+        if (result < 0)
+            print_error(result);
+    }
+}
+
+void Q8Usb::read_encoder_velocity() {
+    if (initialized_) {
+        t_error result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), &enc_counts_per_sec_[0]);
+        if (result < 0)
+            print_error(result);
+    }
+}
+
+void Q8Usb::read_all() {
+    if (initialized_) {
+    t_error result = hil_read(q8_usb,
+
+}
+
 void Q8Usb::write_analog(double_vec ao_voltages) {
 	if (initialized_) {
 		ao_voltages_ = ao_voltages;
@@ -245,34 +275,10 @@ void Q8Usb::write_analog(double_vec ao_voltages) {
 	}
 }
 
-void Q8Usb::read_digital() {
-	if (initialized_) {
-		t_error result = hil_read_digital(q8_usb_, &di_channels_[0], di_channels_.size(), &di_states_[0]);
-		if (result < 0)
-			print_error(result);
-	}
-}
-
 void Q8Usb::write_digital(char_vec do_states) {
 	if (initialized_) {
 		do_states_ = do_states;
 		t_error result = hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_states_[0]);
-		if (result < 0)
-			print_error(result);
-	}
-}
-
-void Q8Usb::read_encoder() {
-	if (initialized_) {
-		t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_counts_[0]);
-		if (result < 0)
-			print_error(result);
-	}
-}
-
-void Q8Usb::read_encoder_velocity() {
-	if (initialized_) {
-		t_error result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), &enc_counts_per_sec_[0]);
 		if (result < 0)
 			print_error(result);
 	}

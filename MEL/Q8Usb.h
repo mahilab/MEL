@@ -24,16 +24,22 @@ public:
 	/* inhereted virtual functions from Daq class to be implemented */
 	int init();
 	int terminate();
+
 	void zero_encoder_counts();
+
 	void read_analog();
-	void write_analog(double_vec ao_voltages);
 	void read_digital();
+    void read_encoder();
+    void read_encoder_velocity();
+    void read_all();
+
 	void write_digital(char_vec do_voltages);
-	void read_encoder();
-	void read_encoder_velocity();
+    void write_analog(double_vec ao_voltages);
+
 	void reload_watchdog();
 	void start_watchdog(double watchdog_timeout);
 	void stop_watchdog();
+
     void log_data(double timestamp);
 
 private:

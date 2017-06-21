@@ -52,13 +52,14 @@ public:
 	virtual int terminate() = 0;
 
 	virtual void read_analog() = 0;
-	virtual void write_analog(double_vec ao_voltages) = 0;
+    virtual void read_digital() = 0;
+    virtual void read_encoder() = 0;
+    virtual void read_encoder_velocity() = 0;
+    virtual void read_all() = 0;
 
-	virtual void read_digital() = 0;
+	virtual void write_analog(double_vec ao_voltages) = 0;
 	virtual void write_digital(char_vec do_voltages) = 0;
 
-	virtual void read_encoder() = 0;
-	virtual void read_encoder_velocity() = 0;
 	virtual void zero_encoder_counts() = 0;
 
     virtual void log_data(double timestamp) = 0;
