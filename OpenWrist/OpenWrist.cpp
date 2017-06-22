@@ -19,22 +19,22 @@ void OpenWrist::bind_daq(Daq *daq) {
 	daq_ = daq;
 }
 
-void OpenWrist::enable() {
-	double_vec initial_voltages = { 0, 0, 0 };
-	daq_->write_analog(initial_voltages);
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	char_vec enable_voltpaq = { 1, 1, 1 }; // this needs to be generalized
-	daq_->write_digital(enable_voltpaq);
+void OpenWrist::enable_high() {
+	daq_->set_analog_voltages(double_vec(3,0));
+    daq_->set_digital_states(char_vec(3,1));
+    daq_->write_analog();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	daq_->write_digital();
 }
 
-void OpenWrist::disable() {
-	char_vec disable_voltpaq = { 0, 0, 0 }; // this needs to be generalized
-	daq_->write_digital(disable_voltpaq);
+void OpenWrist::disable_low() {
+    daq_->set_digital_states(char_vec(3, 0));
+	daq_->write_digital();
 }
 
 void OpenWrist::read_joint_positions() {
 	daq_->read_encoder();
-	encoder_to_joint_positions(daq_->enc_counts_, joint_positions_);
+	encoder_to_joint_positions(daq_->get_encoders_counts(), joint_positions_);
 }
 
 void OpenWrist::read_joint_velocities() {
@@ -73,7 +73,7 @@ void OpenWrist::calibrate(bool &stop) {
 	/* zero current position */
 	zero_joint_positions();
 	/* enable OpenWrist */
-	enable();
+	enable_high();
 	/* start DAQ watchdog */
 	daq_->start_watchdog(0.1);
 	/* start joint 1 calibration loop */
@@ -130,7 +130,7 @@ void OpenWrist::calibrate(bool &stop) {
 	/* stop and clear watchdog */
 	daq_->stop_watchdog();
 	/* disable OpenWrist */
-	disable();
+	disable_low();
 	daq_->terminate();
 
 }

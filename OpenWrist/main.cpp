@@ -104,7 +104,7 @@ int main(int argc, char * argv[]) {
 	std::cout << "Executing control. Press Ctrl+C to terminate the controller." << std::endl;
 
 	// enable OpenWrist
-	ow.enable();
+	ow.enable_high();
 
 	/* start watchdog */
 	q8->start_watchdog(0.1);
@@ -165,7 +165,7 @@ int main(int argc, char * argv[]) {
 	std::cout << "Ctrl-C pressed. Terminating control." << std::endl;
 
 	/* end control and clean up */
-	ow.disable();
+	ow.disable_low();
 	q8->terminate();
 
 	return 0;

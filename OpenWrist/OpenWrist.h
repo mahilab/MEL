@@ -23,8 +23,8 @@ public:
 
 	/* PUBLIC FUNCTIONS */
 
-	void enable();
-	void disable();
+	void enable_high();
+	void disable_low();
 	void bind_daq(Daq *daq);
 	void read_joint_positions();
 	void read_joint_velocities();

@@ -50,30 +50,28 @@ private:
 
 	char       options_[1024];   /* board specific options which include current controller gains */
 
-								 /* private static members */
-	static const char      board_type_[];            /* type of Quarc supported board being used = "q8_usb" */
-	static const char      board_identifier_[];      /* the instance of the board being used */
+	/* private static members */
+	static const char    board_type_[];            /* type of Quarc supported board being used = "q8_usb" */
+	static const char    board_identifier_[];      /* the instance of the board being used */
 
-	static const double    ai_min_voltage_;
-	static const double    ai_max_voltage_;
+	static const double  ai_min_voltage_;
+	static const double  ai_max_voltage_;
 
-	static const double    ao_min_voltage_;
-	static const double    ao_max_voltage_;
-	static const t_double  ao_initial_voltage_;
-	static const t_double  ao_final_voltage_;
-	static const t_double  ao_exp_voltage_;
+	static const double  ao_min_voltage_;
+	static const double  ao_max_voltage_;
+	static const double  ao_initial_voltage_;
+	static const double  ao_final_voltage_;
+	static const double  ao_exp_voltage_;
 
-	static const t_boolean do_initial_state_;
-	static const t_boolean do_final_state_;
-	static const t_digital_state
-		do_exp_state_;
+	static const char    do_initial_state_;
+	static const char    do_final_state_;
+	static const t_digital_state do_exp_state_;
 
-	static const t_uint32  vel_channel_offset_;
-	static const t_int32   enc_initial_count_;
-	static const t_encoder_quadrature_mode
-		enc_mode_;
+	static const uint    vel_channel_offset_;
+	static const int     enc_initial_count_;
+	static const t_encoder_quadrature_mode enc_mode_;
 
 	/* private functions */
-	static void print_error(t_error result);
+	static void print_quarc_error(t_error result);
 };
 
