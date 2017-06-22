@@ -185,7 +185,9 @@
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="Amplifer.h" />
     <ClInclude Include="Daq.h" />
-    <ClInclude Include="Exoskeleton.h" />
+    <ClInclude Include="Encoder.h" />
+    <ClInclude Include="RevoluteJoint.h" />
+    <ClInclude Include="Robot.h" />
     <ClInclude Include="Sensor.h" />
     <ClInclude Include="Joint.h" />
     <ClInclude Include="util.h" />
@@ -193,7 +195,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Daq.cpp" />
+    <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
+    <ClCompile Include="RevoluteJoint.cpp" />
+    <ClCompile Include="Joint.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
