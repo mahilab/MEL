@@ -1,6 +1,5 @@
 #include "Q8Usb.h"
 
-const char   Q8Usb::board_type_[] = "q8_usb";
 const double Q8Usb::ai_min_voltage_ = -10;
 const double Q8Usb::ai_max_voltage_ = +10;
 const double Q8Usb::ao_min_voltage_ = -10;
@@ -11,7 +10,6 @@ const double Q8Usb::ao_exp_voltage_ = 0;
 const char   Q8Usb::do_initial_state_ = 0;
 const char   Q8Usb::do_final_state_ = 0;
 const t_digital_state Q8Usb::do_exp_state_ = DIGITAL_STATE_TRISTATE;
-const uint  Q8Usb::vel_channel_offset_ = 14000;
 const int   Q8Usb::enc_initial_count_ = 0;
 const t_encoder_quadrature_mode Q8Usb::enc_mode_ = ENCODER_QUADRATURE_4X;
 
@@ -22,7 +20,13 @@ Q8Usb::Q8Usb(std::string id,
 	uint_vec do_channels,
 	uint_vec enc_channels,
 	char * options) :
-    Daq("q8_usb", id, ai_channels, ao_channels, di_channels, do_channels, enc_channels)
+    Daq("q8_usb", id, 
+        ai_channels, 
+        ao_channels, 
+        di_channels, 
+        do_channels, 
+        enc_channels,
+        get_q8_velocity_channels(enc_channels))
 {    
 	/* set up analog input channels */
 	ai_min_voltages_ = double_vec(ai_channels_.size(), ai_min_voltage_);
@@ -41,19 +45,8 @@ Q8Usb::Q8Usb(std::string id,
 	do_exp_states_ = std::vector<t_digital_state>(do_channels_.size(), do_exp_state_);
 
 	/* set up encoder channels */
-	vel_channels_ = uint_vec(enc_channels.size(), vel_channel_offset_);
-	for (int i = 0; i < enc_channels.size(); i++)
-		vel_channels_[i] += enc_channels[i];
 	enc_modes_ = std::vector<t_encoder_quadrature_mode>(enc_channels.size(), enc_mode_);
 	enc_initial_counts_ = int_vec(enc_channels.size(), 0);
-
-	/* initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!)  */
-	ai_voltages_ = double_vec(ai_channels_.size(), 0.0);
-	ao_voltages_ = double_vec(ao_channels_.size(), 0.0);
-	di_states_ = char_vec(di_channels_.size(), 0);
-	do_states_ = char_vec(do_channels_.size(), 0);
-	enc_counts_ = int_vec(enc_channels_.size(), 0);
-	enc_counts_per_sec_ = double_vec(enc_channels_.size(), 0.0);
 
 	/* set up options */
 	strcpy(options_, options);
@@ -78,12 +71,6 @@ Q8Usb::Q8Usb(std::string id,
         << "vel0" << "\t"
         << "vel1" << "\t"
         << "vel2" << std::endl;
-}
-
-void Q8Usb::print_quarc_error(t_error result) {
-	TCHAR message[512];
-	msg_get_error_message(NULL, result, message, sizeof(message));
-	_tprintf(_T("%s (error %d)\n"), message, -result);
 }
 
 int Q8Usb::init() {
@@ -326,4 +313,16 @@ void Q8Usb::log_data(double timestamp) {
         << enc_counts_per_sec_[0] << "\t"
         << enc_counts_per_sec_[1] << "\t"
         << enc_counts_per_sec_[2] << std::endl;
+}
+
+void Q8Usb::print_quarc_error(t_error result) {
+    TCHAR message[512];
+    msg_get_error_message(NULL, result, message, sizeof(message));
+    _tprintf(_T("%s (error %d)\n"), message, -result);
+}
+
+uint_vec Q8Usb::get_q8_velocity_channels(uint_vec enc_channels) {
+    uint_vec vel_channels = enc_channels;
+    std::transform(vel_channels.begin(), vel_channels.end(), vel_channels.begin(), bind2nd(std::plus<uint>(), 14000));
+    return vel_channels;
 }

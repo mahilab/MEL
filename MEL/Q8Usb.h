@@ -51,9 +51,6 @@ private:
 	char       options_[1024];   /* board specific options which include current controller gains */
 
 	/* private static members */
-	static const char    board_type_[];            /* type of Quarc supported board being used = "q8_usb" */
-	static const char    board_identifier_[];      /* the instance of the board being used */
-
 	static const double  ai_min_voltage_;
 	static const double  ai_max_voltage_;
 
@@ -67,11 +64,11 @@ private:
 	static const char    do_final_state_;
 	static const t_digital_state do_exp_state_;
 
-	static const uint    vel_channel_offset_;
 	static const int     enc_initial_count_;
 	static const t_encoder_quadrature_mode enc_mode_;
 
 	/* private functions */
 	static void print_quarc_error(t_error result);
+    static uint_vec get_q8_velocity_channels(uint_vec enc_channels);
 };
 
