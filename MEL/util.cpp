@@ -13,4 +13,12 @@ void print_uint_vec(uint_vec vector) {
     for (auto it = vector.begin(); it != vector.end(); ++it) {
         std::cout << *it << " ";
     }
+    std::cout << std::endl;
+}
+
+void print_double_vec(double_vec vector) {
+    for (auto it = vector.begin(); it != vector.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
 }

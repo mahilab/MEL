@@ -23,6 +23,8 @@ public:
     std::string type_;   /* string representing the board type e.g. "q8_usb" */
     std::string id_;     /* string representing the board ID numner e.g. "0" */
 
+    void log_data(double timestamp);
+
 	// pure virtual functions that must be implemented by all derived DAQs
 	virtual int init() = 0;
 	virtual int terminate() = 0;
@@ -39,8 +41,6 @@ public:
     virtual void write_all() {}
 
 	virtual void zero_encoder_counts() {}
-
-    virtual void log_data(double timestamp) {}
 
 	virtual void reload_watchdog() {}
 	virtual void start_watchdog(double watchdog_timeout) {}
@@ -61,9 +61,8 @@ public:
     int_vec get_encoder_counts();
     int get_encoder_count(int channel_number);
     double_vec get_encoder_velocities();
-    double get_encoder_velocity(int channel_number);
+    virtual double get_encoder_velocity(int channel_number);
 
-protected:     
 
 	bool active_ = false;
     std::string log_filename_;
@@ -99,7 +98,6 @@ protected:
     uint_vec   vel_channels_;         // vector of encoder velocity channels being used
     int_vec    enc_initial_counts_;   // vector of initial encoder counts to be used when zero_encoder_counts() is called
 
-private:
 
     // HELPLER FUNCTIONS
     uint channel_number_to_index(const uint_vec& channels, const uint channel_number);

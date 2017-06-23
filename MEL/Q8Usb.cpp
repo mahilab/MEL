@@ -9,7 +9,7 @@ const double Q8Usb::ao_final_voltage_ = 0;
 const double Q8Usb::ao_exp_voltage_ = 0;
 const char   Q8Usb::do_initial_state_ = 0;
 const char   Q8Usb::do_final_state_ = 0;
-const t_digital_state Q8Usb::do_exp_state_ = DIGITAL_STATE_TRISTATE;
+const t_digital_state Q8Usb::do_exp_state_ = DIGITAL_STATE_LOW;
 const int   Q8Usb::enc_initial_count_ = 0;
 const t_encoder_quadrature_mode Q8Usb::enc_mode_ = ENCODER_QUADRATURE_4X;
 
@@ -50,27 +50,6 @@ Q8Usb::Q8Usb(std::string id,
 
 	/* set up options */
 	strcpy(options_, options);
-
-    /* TODO: Make this a function of num channels passed in */
-    data_log_ << "Time" << "\t"
-        << "ai0" << "\t"
-        << "ai1" << "\t"
-        << "ai2" << "\t"
-        << "ao0" << "\t"
-        << "ao1" << "\t"
-        << "ao2" << "\t"
-        << "di0" << "\t"
-        << "di1" << "\t"
-        << "di2" << "\t"
-        << "do0" << "\t"
-        << "do1" << "\t"
-        << "do2" << "\t"
-        << "enc0" << "\t"
-        << "enc1" << "\t"
-        << "enc2" << "\t"
-        << "vel0" << "\t"
-        << "vel1" << "\t"
-        << "vel2" << std::endl;
 }
 
 int Q8Usb::init() {
@@ -270,6 +249,22 @@ void Q8Usb::write_digital() {
 	}
 }
 
+void Q8Usb::write_all() {
+    if (active_) {
+        t_error result = hil_write(q8_usb_,
+            &ao_channels_[0], ao_channels_.size(),
+            NULL, 0,
+            &do_channels_[0], do_channels_.size(),
+            NULL, 0,
+            &ao_voltages_[0],
+            NULL,
+            &do_states_[0],
+            NULL);
+        if (result < 0)
+            print_quarc_error(result);
+    }
+}
+
 void Q8Usb::reload_watchdog() {
 	if (active_) {
 		t_error result = hil_watchdog_reload(q8_usb_);
@@ -289,30 +284,6 @@ void Q8Usb::start_watchdog(double watchdog_timeout) {
 void Q8Usb::stop_watchdog() {
 	hil_watchdog_stop(q8_usb_);
 	hil_watchdog_clear(q8_usb_);
-}
-
-void Q8Usb::log_data(double timestamp) {
-    /* TODO: this should probably open and close the data_log_ each time */
-    
-    data_log_ << timestamp << "\t"
-        << ai_voltages_[0] << "\t"
-        << ai_voltages_[1] << "\t"
-        << ai_voltages_[2] << "\t"
-        << ao_voltages_[0] << "\t"
-        << ao_voltages_[1] << "\t"
-        << ao_voltages_[2] << "\t"
-        << (int)di_states_[0] << "\t"
-        << (int)di_states_[1] << "\t"
-        << (int)di_states_[2] << "\t"
-        << (int)do_states_[0] << "\t"
-        << (int)do_states_[1] << "\t"
-        << (int)do_states_[2] << "\t"
-        << enc_counts_[0] << "\t"
-        << enc_counts_[1] << "\t"
-        << enc_counts_[2] << "\t"
-        << enc_counts_per_sec_[0] << "\t"
-        << enc_counts_per_sec_[1] << "\t"
-        << enc_counts_per_sec_[2] << std::endl;
 }
 
 void Q8Usb::print_quarc_error(t_error result) {

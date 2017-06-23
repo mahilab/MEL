@@ -35,12 +35,16 @@ public:
 
 	void write_digital();
     void write_analog();
+    void write_all();
 
 	void reload_watchdog();
 	void start_watchdog(double watchdog_timeout);
 	void stop_watchdog();
 
-    void log_data(double timestamp);
+    double get_encoder_velocity(int channel_number) {
+        channel_number += 14000;
+        return Daq::get_encoder_velocity(channel_number);
+    }
 
 private:
 
