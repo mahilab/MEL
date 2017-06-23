@@ -5,7 +5,12 @@ class RevoluteJoint : public Joint {
 
 public:
 
-	RevoluteJoint();
-	~RevoluteJoint();
+	// constructor
+    RevoluteJoint(Encoder* encoder, Actuator* actuator)
+        : Joint(encoder, actuator) {}
+    
+    double encoder_counts_to_joint_positions(double counts);
+    double joint_torque_to_actuator_torque(double joint_torque)
+
 };
 
