@@ -81,8 +81,8 @@ int main(int argc, char * argv[]) {
 
         q8_0->read_all();
 
-        print_int_vec(q8_0->get_encoder_counts());
-        //std::cout << exo.joints_[0].get_position() << std::endl;
+        //print_int_vec(q8_0->get_encoder_counts());
+        std::cout << (180.0/PI)*exo.joint0_.get_position() << std::endl;
 
         q8_0->write_digital();
 

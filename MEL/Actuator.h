@@ -6,17 +6,18 @@ class Actuator {
 public:
 
     // parameters
-    const double transmission_;
-    const double kt_;
-    const double amp_gain_;
-    const double current_limit_;
-    const uint ao_channel_;
-    const uint do_channel_;
+    const double transmission_{};
+    const double kt_{};
+    const double amp_gain_{};
+    const double current_limit_{};
+    const uint ao_channel_{};
+    const uint do_channel_{};
 
     // relatives
     Daq* daq_;
 
-    // constructor
+    // constructors
+    Actuator() {}
     Actuator(double transmission, double kt, double amp_gain, double current_limit, Daq* daq, uint ao_channel, uint do_channel)
         : transmission_(transmission),
         kt_(kt),
