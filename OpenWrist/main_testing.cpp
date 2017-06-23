@@ -70,7 +70,7 @@ int main(int argc, char * argv[]) {
 
     /* initialize Q8 USB */
     if (!var_map.count("disable_q8")) {
-        if (!q8->init()) {
+        if (!q8->activate()) {
             std::cout << "Terminating controller" << std::endl;
             return -1;
         }
@@ -140,7 +140,7 @@ int main(int argc, char * argv[]) {
     std::cout << "Ctrl-C pressed. Terminating control." << std::endl;
 
     /* end control and clean up */
-    q8->terminate();
+    q8->deactivate();
 
     return 0;
 }

@@ -1,7 +1,7 @@
 #include "Robot.h"
 
-Robot::Robot(Daq* daq, uint num_joints) :
-    daq_(daq),
+
+Robot::Robot(uint num_joints) :
     num_joints_(num_joints),
     joint_positions_(double_vec(num_joints, 0.0))
 {

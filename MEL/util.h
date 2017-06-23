@@ -28,4 +28,5 @@ typedef std::valarray<double>       double_array;
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 const std::string get_current_date_time();
 void print_uint_vec(uint_vec vector);
+void print_int_vec(int_vec vector);
 void print_double_vec(double_vec vector);

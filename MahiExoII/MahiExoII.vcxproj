@@ -149,10 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MahiExoII.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MahiExoII.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
