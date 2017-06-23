@@ -2,6 +2,7 @@
 #include <csignal>
 #include "Q8Usb.h"
 #include "util.h"
+#include "MahiExoII.h"
 
 static bool        stop = false;                          /* flag used to stop the controller */
 static const int   frequency = 1000;                  /* controller loop rate (Hz) */
@@ -40,6 +41,13 @@ int main(int argc, char * argv[]) {
     Daq *q8_1 = new Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
     */
 
+    // instantiate MahiExoII
+    
+    MahiExoII exo = MahiExoII(q8_0,0,q8_0,1,
+                              q8_0,0,q8_0,1,
+                              q8_0,0,q8_0,1);
+                              
+
     // initialize Q8 USB
     if (!q8_0->activate()) {
         std::cout << "Terminating controller" << std::endl;
@@ -69,15 +77,17 @@ int main(int argc, char * argv[]) {
         q8_0->reload_watchdog();
 
         // START CONTROLLER SPECIFIC CODE 
+
+
         q8_0->read_all();
+
         print_int_vec(q8_0->get_encoder_counts());
+        //std::cout << exo.joints_[0].get_position() << std::endl;
 
         q8_0->write_digital();
 
+
         // END CONTROLLER SPECIFIC CODE
-        
-        
-        
         
         // log data 
         q8_0->log_data(controller_time);

@@ -7,14 +7,14 @@ Robot::Robot(uint num_joints) :
 {
     
 }
-
+/*
 double_vec Robot::get_joint_positions() {
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
         joint_positions_[it - joints_.begin()] = it->get_position();
     }
     return joint_positions_;
 }
-
+*/
 void Robot::set_joint_torques(double_vec joint_torques) {
 
 }

@@ -12,7 +12,9 @@ public:
     Actuator* actuator_;
 
     // constructor
-    Joint(Encoder* encoder, Actuator* actuator);
+    //Joint() {}
+    //Joint(double d);
+    //Joint(Encoder* encoder, Actuator* actuator);
     
     // state variables
     double position_;
@@ -27,8 +29,8 @@ public:
     void set_actuator_torque(double joint_torque);
 
     // pure virtual functions 
-    virtual double encoder_to_joint_space(double counts) = 0;
-    virtual double joint_torque_to_actuator_torque(double joint_torque) = 0;
+    //virtual double encoder_to_joint_space(double counts) = 0;
+    //virtual double joint_torque_to_actuator_torque(double joint_torque) = 0;
     
     
 };

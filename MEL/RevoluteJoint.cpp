@@ -1,6 +1,12 @@
 #include "RevoluteJoint.h"
+/*
+RevoluteJoint::RevoluteJoint(Encoder* encoder, Actuator* actuator) :
+    Joint(encoder, actuator)
+{
+}
+*/
 
-double RevoluteJoint::encoder_counts_to_joint_space(double counts) {
+double RevoluteJoint::encoder_to_joint_space(double counts) {
     return 2.0 * PI * encoder_->transmission_ / (encoder_->counts_per_revolution_ * encoder_->quadrature_factor_) * encoder_->count_;
 }
 

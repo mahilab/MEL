@@ -2,6 +2,7 @@
 #include <vector>
 #include "util.h"
 #include "Joint.h"
+#include "RevoluteJoint.h"
 
 // FORWARD DECLARATION(S)
 class Daq;
@@ -17,10 +18,10 @@ public:
     const uint num_joints_;
     double_vec joint_positions_;
 
-    std::vector<Joint> joints_;
+    //std::vector<Joint> joints_;
     
 
-    virtual double_vec get_joint_positions();
+    //virtual double_vec get_joint_positions();
     void set_joint_torques(double_vec new_joint_torques);
 
 };
