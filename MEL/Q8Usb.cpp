@@ -1,18 +1,5 @@
 #include "Q8Usb.h"
 
-const double Q8Usb::ai_min_voltage_ = -10;
-const double Q8Usb::ai_max_voltage_ = +10;
-const double Q8Usb::ao_min_voltage_ = -10;
-const double Q8Usb::ao_max_voltage_ = +10;
-const double Q8Usb::ao_initial_voltage_ = 0;
-const double Q8Usb::ao_final_voltage_ = 0;
-const double Q8Usb::ao_exp_voltage_ = 0;
-const char   Q8Usb::do_initial_state_ = 0;
-const char   Q8Usb::do_final_state_ = 0;
-const t_digital_state Q8Usb::do_exp_state_ = DIGITAL_STATE_LOW;
-const int   Q8Usb::enc_initial_count_ = 0;
-const t_encoder_quadrature_mode Q8Usb::enc_mode_ = ENCODER_QUADRATURE_4X;
-
 Q8Usb::Q8Usb(std::string id,
     uint_vec ai_channels,
 	uint_vec ao_channels,
@@ -52,7 +39,7 @@ Q8Usb::Q8Usb(std::string id,
 	strcpy(options_, options);
 }
 
-int Q8Usb::init() {
+int Q8Usb::activate() {
 	if (!active_) {
 		t_error result;
 		// Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)
@@ -150,7 +137,7 @@ void Q8Usb::zero_encoder_counts() {
 	}
 }
 
-int Q8Usb::terminate() {
+int Q8Usb::deactivate() {
 	if (active_) {
 		t_error result;
 

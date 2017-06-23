@@ -10,18 +10,20 @@ public:
     const double kt_;
     const double amp_gain_;
     const double current_limit_;
-    const int daq_channel_;
+    const uint ao_channel_;
+    const uint do_channel_;
 
     // relatives
     Daq* daq_;
 
     // constructor
-    Actuator(double transmission, double kt, double amp_gain, double current_limit, int daq_channel, Daq* daq)
+    Actuator(double transmission, double kt, double amp_gain, double current_limit, Daq* daq, uint ao_channel, uint do_channel)
         : transmission_(transmission),
         kt_(kt),
         amp_gain_(amp_gain),
         current_limit_(current_limit),
-        daq_channel_(daq_channel),
+        ao_channel_(ao_channel),
+        do_channel_(do_channel),
         daq_(daq) {}
     
     // state variables
@@ -34,4 +36,6 @@ public:
     void set_current(double current);
     void set_command(double voltage);
     
+    void enable();
+    void disable();
 };

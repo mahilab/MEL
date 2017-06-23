@@ -7,28 +7,24 @@ public:
 
     // parameters
     const double transmission_;
-    const int counts_per_revolution_;
-    const int quadrature_factor_;
-    const int daq_channel_;
+    const uint counts_per_revolution_;
+    const uint quadrature_factor_;
+    const uint daq_channel_;
     
     // relatives
     Daq* daq_;
     
     // constructor
-    Encoder(double transmission, int counts_per_revolution, int quadrature_factor, int daq_channel, Daq* daq)
-        : transmission_(transmission),
-        counts_per_revolution_(counts_per_revolution),
-        quadrature_factor_(quadrature_factor),
-        daq_channel_(daq_channel),
-        daq_(daq) {}
+    Encoder(double transmission, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel);
+
     
     // state variables
-    double counts_;
-    double velocity_;
+    double count_;
+    double count_rate_;
     
     // getters and setters of state variables
-    double get_counts();
-    double get_velocity();
+    double get_count();
+    double get_count_rate();
     
 };
 

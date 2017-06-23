@@ -11,5 +11,5 @@ void Actuator::set_current(double current) {
 }
 
 void Actuator::set_command(double voltage) {
-    daq_->set_analog_voltage(daq_channel_, voltage);
+    daq_->set_analog_voltage(ao_channel_, voltage);
 }

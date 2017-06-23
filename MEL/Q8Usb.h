@@ -22,8 +22,8 @@ public:
 		char * options);
 
 	/* inhereted virtual functions from Daq class to be implemented */
-	int init();
-	int terminate();
+	int activate();
+	int deactivate();
 
 	void zero_encoder_counts();
 
@@ -43,7 +43,7 @@ public:
 
     double get_encoder_velocity(int channel_number) {
         channel_number += 14000;
-        return Daq::get_encoder_velocity(channel_number);
+        return Daq::get_encoder_count_rate(channel_number);
     }
 
 private:
@@ -54,25 +54,48 @@ private:
 
 	char       options_[1024];   /* board specific options which include current controller gains */
 
-	/* private static members */
-	static const double  ai_min_voltage_;
-	static const double  ai_max_voltage_;
+	// Q8 USB SETTINGS (WITH DEFAULTS INITIALIZED)
 
-	static const double  ao_min_voltage_;
-	static const double  ao_max_voltage_;
-	static const double  ao_initial_voltage_;
-	static const double  ao_final_voltage_;
-	static const double  ao_exp_voltage_;
+    double  ai_min_voltage_     = -10;
+    double  ai_max_voltage_     = +10;
+    double  ao_min_voltage_     = -10;
+    double  ao_max_voltage_     = +10;
+    double  ao_initial_voltage_ = 0;
+    double  ao_final_voltage_   = 0;
+    double  ao_exp_voltage_     = 0;
+    char    do_initial_state_   = 0;
+    char    do_final_state_     = 0;
+    t_digital_state do_exp_state_ = DIGITAL_STATE_LOW;
+    int     enc_initial_count_  = 0;
+	t_encoder_quadrature_mode enc_mode_ = ENCODER_QUADRATURE_4X;
 
-	static const char    do_initial_state_;
-	static const char    do_final_state_;
-	static const t_digital_state do_exp_state_;
+	// HELPTER FUNCTIONS 
 
-	static const int     enc_initial_count_;
-	static const t_encoder_quadrature_mode enc_mode_;
-
-	/* private functions */
 	static void print_quarc_error(t_error result);
     static uint_vec get_q8_velocity_channels(uint_vec enc_channels);
+
+    // Q8 USB BOARD SPECIFIC OPTIONS (W.I.P.)
+
+    enum class Q8EncoderDirction { Default, Normal, Reversed };
+    std::vector<Q8EncoderDirction> encoder_directions_;
+
+    enum class Q8EncoderFilterMode { Default, Unfiltered, Filtered };
+    std::vector<Q8EncoderFilterMode> encoder_filter_modes_;
+
+    enum class Q8EncoderDetectionMode { Default, Low, High };
+    std::vector<Q8EncoderDetectionMode> encoder_A_modes_;
+    std::vector<Q8EncoderDetectionMode> encoder_B_modes_;
+    std::vector<Q8EncoderDetectionMode> encoder_Z_modes_;
+
+    enum class Q8EncoderReloadMode { Default, Manual, OnPulse };
+    std::vector<Q8EncoderReloadMode> encoder_reload_modes_;
+
+    enum class Q8UpdateRate { Default, Normal_1kHz, Fast_8kHz };
+    Q8UpdateRate update_rate_;
+
+    enum class Q8AnalogOutputMode { Default, VoltageMode, CurrentMode0, CurrentMode1, CurrentMode2, ControlMode0, ControlMode1, ControlMode2 };
+    std::vector<Q8AnalogOutputMode> ao_modes_;
+
+    
 };
 
