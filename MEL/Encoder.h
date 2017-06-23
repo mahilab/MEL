@@ -1,5 +1,6 @@
 #pragma once
-#include "Robot.h"
+#include "util.h"
+#include "Daq.h"
 
 class Encoder {
 
