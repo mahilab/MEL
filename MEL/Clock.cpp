@@ -4,13 +4,11 @@ namespace mel {
 
     Clock::Clock(uint frequency) :
         frequency_(frequency),
-        step_time_(std::chrono::nanoseconds(1000000000 / frequency))
-    {
+        tick_time_(std::chrono::nanoseconds(1000000000 / frequency))
+    {}
 
-    }
-
-    uint Clock::get_step() {
-        return step_count_;
+    uint Clock::get_tick() {
+        return tick_count_;
     }
 
     double Clock::get_time() {
@@ -18,11 +16,11 @@ namespace mel {
     }
 
     void Clock::start() {
-        step_count_ = 0;
+        tick_count_ = 0;
         start_ = std::chrono::high_resolution_clock::now();
-        start_loop_ = start_;
+        start_tick_ = start_;
         now_ = start_;
-        elapsed_loop_ = std::chrono::nanoseconds(0);
+        elapsed_tick_ = std::chrono::nanoseconds(0);
         elapsed_actual_ = std::chrono::nanoseconds(0);
         elapsed_ideal_ = std::chrono::nanoseconds(0);
     }
@@ -30,23 +28,23 @@ namespace mel {
     void Clock::wait() {
         
         // increment sample number
-        step_count_ += 1;
+        tick_count_ += 1;
 
         // update time variables
         now_ = std::chrono::high_resolution_clock::now();
-        elapsed_loop_ = now_ - start_loop_;
+        elapsed_tick_ = now_ - start_tick_;
         elapsed_actual_ = now_ - start_;
 
-        // spinlock / busy wait the control loop until the loop rate has been reached
-        while (elapsed_loop_ < step_time_) {
+        // spinlock / busy wait until the next tick has been reached
+        while (elapsed_tick_ < tick_time_) {
             now_ = std::chrono::high_resolution_clock::now();
-            elapsed_loop_ = now_ - start_loop_;
+            elapsed_tick_ = now_ - start_tick_;
             elapsed_actual_ = now_ - start_;
+            elapsed_ideal_ = tick_count_ * tick_time_;
         }
 
-        // update time variables
-        start_loop_ = std::chrono::high_resolution_clock::now();
-        elapsed_ideal_ = step_count_ * step_time_;
+        // start the next tick
+        start_tick_ = std::chrono::high_resolution_clock::now();      
 
     }
 

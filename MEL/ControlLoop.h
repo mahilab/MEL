@@ -13,13 +13,13 @@ namespace mel {
 
         // CONSTRUCTOR / DESTRUCTOR
 
-        ControlLoop(Clock* clock);
+        ControlLoop(Clock& clock);
 
         void queue_controller(Controller* controller);
 
         void execute();
 
-        Clock* clock_;
+        Clock& clock_;
 
     private:
 

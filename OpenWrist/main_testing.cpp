@@ -8,7 +8,7 @@ class MyController : public mel::Controller {
         std::cout << "Starting MyController" << std::endl;
     }
     void step() override {
-        std::cout << clock_->get_time() << std::endl;
+        std::cout << get_time() << std::endl;
     }
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
@@ -24,25 +24,22 @@ class MyController : public mel::Controller {
 int main(int argc, char * argv[]) {
 
     // create controller and control loop and clock
-    mel::Controller* my_controller1 = new MyController();
-    mel::Controller* my_controller2 = new MyController();
+    mel::Controller* my_controller = new MyController();
     mel::Clock clock(10);
-    mel::ControlLoop loop(&clock);
+    mel::ControlLoop loop(clock);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
     getchar();
 
     // queue controllrs
-    loop.queue_controller(my_controller1);
-    loop.queue_controller(my_controller2);
-
+    loop.queue_controller(my_controller);
 
     // execute the controller
     loop.execute();
 
     // delete controller
-    delete my_controller1;
+    delete my_controller;
 
     return 0;
 }
