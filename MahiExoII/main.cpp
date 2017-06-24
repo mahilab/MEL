@@ -12,6 +12,8 @@ static void signal_handler(int signum) {
     stop = true;
 }
 
+
+
 int main(int argc, char * argv[]) {
 
     std::cout << "Have fun, Troy! - Craig" << std::endl;
@@ -43,9 +45,7 @@ int main(int argc, char * argv[]) {
 
     // instantiate MahiExoII
     
-    mel::MahiExoII exo = mel::MahiExoII(q8_0,0,q8_0,1,
-                              q8_0,0,q8_0,1,
-                              q8_0,0,q8_0,1);
+    mel::MahiExoII exo = mel::MahiExoII(q8_0, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
                               
 
     // initialize Q8 USB
@@ -82,7 +82,7 @@ int main(int argc, char * argv[]) {
         q8_0->read_all();
 
         //print_int_vec(q8_0->get_encoder_counts());
-        std::cout << (180.0/ PI)*exo.joint0_.get_position() << std::endl;
+        std::cout << exo.joints_[2]->get_position() << std::endl;
 
         q8_0->write_digital();
 
@@ -111,6 +111,7 @@ int main(int argc, char * argv[]) {
 
     // end control and clean up 
     q8_0->deactivate();
+
 
     return 0;
 }

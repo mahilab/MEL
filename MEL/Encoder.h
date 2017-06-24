@@ -9,7 +9,7 @@ namespace mel {
     public:
 
         // parameters
-        const double transmission_{};
+        const double radius_{};
         const uint counts_per_revolution_{};
         const uint quadrature_factor_{};
         const uint daq_channel_{};
@@ -19,7 +19,7 @@ namespace mel {
 
         // constructor
         Encoder() {}
-        Encoder(double transmission, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel);
+        Encoder(double radius, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel);
 
 
         // state variables

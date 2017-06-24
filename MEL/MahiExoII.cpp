@@ -2,23 +2,38 @@
 
 namespace mel {
 
-    MahiExoII::MahiExoII(Daq* e0_daq, uint e0_chan, Daq* e1_daq, uint e1_chan, Daq* ao0_daq, uint ao0_chan, Daq* ao1_daq, uint ao1_chan, Daq* do0_daq, uint do0_chan, Daq* do1_daq, uint do1_chan) : 
-        e0_daq_(e0_daq), e0_chan_(e0_chan),
-        e1_daq_(e1_daq), e1_chan_(e1_chan),
-        ao0_daq_(ao0_daq), ao0_chan_(ao0_chan),
-        ao1_daq_(ao1_daq), ao1_chan_(ao1_chan),
-        do0_daq_(do0_daq), do0_chan_(do0_chan),
-        do1_daq_(do1_daq), do1_chan_(do1_chan),
-        Robot(2),
-        encoder0_(Encoder(0.42/4.5, 2048, 4, e0_daq_, e0_chan_)),
-        encoder1_(Encoder(0.17/2.5, 2048, 4, e1_daq_, e1_chan_)),
-        actuator0_(Actuator(0.42/4.5, 0.127, 6.0, 1.8, ao0_daq_, ao0_chan_, do0_chan_)),
-        actuator1_(Actuator(0.17/2.5, 0.0603, 3.17, 1.8, ao1_daq_, ao1_chan_, do1_chan_)),
-        joint0_(RevoluteJoint(&encoder0_, &actuator0_)),
-        joint1_(RevoluteJoint(&encoder1_, &actuator1_))
+    MahiExoII::MahiExoII(Daq* daq, uint_vec ai_channels, uint_vec ao_channels, uint_vec di_channels, uint_vec do_channels, uint_vec enc_channels) :
+        Robot(5)
     {
-        //joints_[0] = RevoluteJoint(&encoder0_, &actuator0_);
-        //joints_[1] = RevoluteJoint(&encoder1_, &actuator1_);
+        
+        encoders_.push_back(new Encoder(INCH2METER*0.42, 2048, 4, daq, enc_channels[0]));
+        encoders_.push_back(new Encoder(INCH2METER*0.17, 2048, 4, daq, enc_channels[1]));
+        encoders_.push_back(new Encoder(INCH2METER*0.23, 2048, 4, daq, enc_channels[2]));
+
+        actuators_.push_back(new Actuator(INCH2METER*0.42, 0.127, 6.0, 1.8, daq, ao_channels[0], do_channels[0]));
+        actuators_.push_back(new Actuator(INCH2METER*0.17, 0.0603, 3.17, 1.8, daq, ao_channels[1], do_channels[1]));
+        actuators_.push_back(new Actuator(INCH2METER*0.23, 0.175, 0.626, 0.184, daq, ao_channels[2], do_channels[2]));
+
+        joints_.push_back(new RevoluteJoint(INCH2METER*4.5, encoders_[0], actuators_[0]));
+        joints_.push_back(new RevoluteJoint(INCH2METER*2.5, encoders_[1], actuators_[1]));
+        joints_.push_back(new PrismaticJoint(encoders_[2], actuators_[2]));
+
+    }
+
+    MahiExoII::~MahiExoII() {
+
+        for (Encoder* encoder : encoders_) {
+            delete encoder;
+        }
+
+        for (Actuator* actuator : actuators_) {
+            delete actuator;
+        }
+
+        for (Joint* joint : joints_) {
+            delete joint;
+        }
+
     }
 
     /*
