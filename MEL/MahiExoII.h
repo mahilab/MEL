@@ -25,12 +25,14 @@ public:
     Daq* ao1_daq_;
     Daq* do0_daq_;
     Daq* do1_daq_;
-    Encoder* encoder0_;
-    Encoder* encoder1_;
-    Actuator* actuator0_;
-    Actuator* actuator1_;
-    Joint joint0_;
-    Joint joint1_;
+    RevoluteJoint joint0_;
+    RevoluteJoint joint1_;
+    //std::vector<Joint> joints_;
+    Encoder encoder0_;
+    Encoder encoder1_;
+    Actuator actuator0_;
+    Actuator actuator1_;
+    
     
     
     //double_vec get_joint_positions();

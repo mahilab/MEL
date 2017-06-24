@@ -7,15 +7,16 @@ class Encoder {
 public:
 
     // parameters
-    const double transmission_;
-    const uint counts_per_revolution_;
-    const uint quadrature_factor_;
-    const uint daq_channel_;
+    const double transmission_{};
+    const uint counts_per_revolution_{};
+    const uint quadrature_factor_{};
+    const uint daq_channel_{};
     
     // relatives
     Daq* daq_;
     
     // constructor
+    Encoder() {}
     Encoder(double transmission, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel);
 
     
