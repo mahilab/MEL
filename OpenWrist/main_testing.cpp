@@ -4,12 +4,11 @@
 #include "util.h"
 
 class MyController : public mel::Controller {
-    int count = 0;
     void start() override {
         std::cout << "Starting MyController" << std::endl;
     }
     void step() override {
-        std::cout << count++ << std::endl;
+        std::cout << clock_->get_time() << std::endl;
     }
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;

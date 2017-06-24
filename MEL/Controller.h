@@ -6,10 +6,12 @@ namespace mel {
 
     class Controller {
 
-    public:
+    protected:
+
+        friend class ControlLoop;
 
         std::string name_ = "Rename Me"; // the controller name
-        //Clock* clock_;
+        Clock* clock_;
 
         // PURE VIRTUAL FUNCTIONS TO BE OVERRIDEN BY DERIVED CONTROLLERS
 

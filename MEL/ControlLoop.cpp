@@ -15,7 +15,7 @@ namespace mel {
 
     void ControlLoop::queue_controller(Controller* controller) {
         // connect the controller Clock to the control loop Clock
-        //controller->clock_ = &clock_;
+        controller->clock_ = clock_;
         // add the controller to the queue
         controllers_.push_back(controller);
     }
