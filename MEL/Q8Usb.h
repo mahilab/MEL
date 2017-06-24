@@ -22,26 +22,26 @@ public:
 		char * options);
 
 	/* inhereted virtual functions from Daq class to be implemented */
-	int activate();
-	int deactivate();
+	int activate() override;
+    int deactivate() override;
 
-	void zero_encoder_counts();
+	void zero_encoder_counts() override;
 
-	void read_analog();
-	void read_digital();
-    void read_encoder();
-    void read_encoder_velocity();
-    void read_all();
+	void read_analog() override;
+	void read_digital() override;
+    void read_encoder_counts() override;
+    void read_encoder_count_rates() override;
+    void read_all() override;
 
-	void write_digital();
-    void write_analog();
-    void write_all();
+	void write_digital() override;
+    void write_analog() override;
+    void write_all() override;
 
-	void reload_watchdog();
-	void start_watchdog(double watchdog_timeout);
-	void stop_watchdog();
+	void reload_watchdog() override;
+	void start_watchdog(double watchdog_timeout) override;
+	void stop_watchdog() override;
 
-    double get_encoder_velocity(int channel_number) {
+    double get_encoder_count_rate(int channel_number) override {
         channel_number += 14000;
         return Daq::get_encoder_count_rate(channel_number);
     }
@@ -73,6 +73,9 @@ private:
 
 	static void print_quarc_error(t_error result);
     static uint_vec get_q8_velocity_channels(uint_vec enc_channels);
+
+
+public:
 
     // Q8 USB BOARD SPECIFIC OPTIONS (W.I.P.)
 

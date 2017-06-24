@@ -1,72 +1,76 @@
 #include "ControlLoop.h"
 
-bool ControlLoop::stop_  = false;
-bool ControlLoop::pause_ = false;
+namespace mel {
 
-ControlLoop::ControlLoop(uint frequency) :
-    frequency_(frequency),
-    step_time_(std::chrono::nanoseconds(1000000000 / frequency))
-{
-    // register signal SIGINT and SIGBREAK with ctrl_c_handler */
-    signal(SIGINT, ctrl_c_handler);
-    signal(SIGBREAK, ctrl_c_handler);
-}
+    bool ControlLoop::stop_ = false;
+    bool ControlLoop::pause_ = false;
 
-void ControlLoop::execute(Controller* controller) {
+    ControlLoop::ControlLoop(uint frequency) :
+        frequency_(frequency),
+        step_time_(std::chrono::nanoseconds(1000000000 / frequency))
+    {
+        // register signal SIGINT and SIGBREAK with ctrl_c_handler */
+        signal(SIGINT, ctrl_c_handler);
+        signal(SIGBREAK, ctrl_c_handler);
+    }
 
-    // call the Controller start function 
-    controller->start();
+    void ControlLoop::execute(Controller* controller) {
 
-    // update time variables
-    step_count_ = 0;
-    start_ = std::chrono::high_resolution_clock::now();
-    elapsed_loop_ = std::chrono::nanoseconds(0);
-    elapsed_actual_ = std::chrono::nanoseconds(0);
-
-    // start the control loop
-    while (!stop_) {
-
-        // handle pausing/resuming
-        if (GetAsyncKeyState(VK_UP)) {
-            controller->pause();
-            while (GetAsyncKeyState(VK_UP)) {}
-            controller->resume();
-        }
+        // call the Controller start function 
+        controller->start();
 
         // update time variables
-        start_loop_ = std::chrono::high_resolution_clock::now();
-        elapsed_ideal_ = step_count_ * step_time_;
+        step_count_ = 0;
+        start_ = std::chrono::high_resolution_clock::now();
+        elapsed_loop_ = std::chrono::nanoseconds(0);
+        elapsed_actual_ = std::chrono::nanoseconds(0);
 
-        // call the Controller step function
-        controller->step();
+        // start the control loop
+        while (!stop_) {
 
-        // increment sample number
-        step_count_ += 1;
+            // handle pausing/resuming
+            if (GetAsyncKeyState(VK_UP)) {
+                controller->pause();
+                while (GetAsyncKeyState(VK_UP)) {}
+                controller->resume();
+            }
 
-        // update time variables
-        now_ = std::chrono::high_resolution_clock::now();
-        elapsed_loop_ = now_ - start_loop_;
-        elapsed_actual_ = now_ - start_;
+            // update time variables
+            start_loop_ = std::chrono::high_resolution_clock::now();
+            elapsed_ideal_ = step_count_ * step_time_;
 
-        // spinlock / busy wait the control loop until the loop rate has been reached
-        while (elapsed_loop_ < step_time_) {
+            // call the Controller step function
+            controller->step();
+
+            // increment sample number
+            step_count_ += 1;
+
+            // update time variables
             now_ = std::chrono::high_resolution_clock::now();
             elapsed_loop_ = now_ - start_loop_;
             elapsed_actual_ = now_ - start_;
+
+            // spinlock / busy wait the control loop until the loop rate has been reached
+            while (elapsed_loop_ < step_time_) {
+                now_ = std::chrono::high_resolution_clock::now();
+                elapsed_loop_ = now_ - start_loop_;
+                elapsed_actual_ = now_ - start_;
+            }
         }
+
+        // call the Controller stop function
+        controller->stop();
+
+        // reset stop_
+        stop_ = false;
     }
 
-    // call the Controller stop function
-    controller->stop();
+    void ControlLoop::ctrl_c_handler(int signum) {
+        stop_ = true;
+    }
 
-    // reset stop_
-    stop_ = false;
-}
+    void ControlLoop::ctrl_break_handler(int signum) {
+        pause_ = !pause_;
+    }
 
-void ControlLoop::ctrl_c_handler(int signum) {
-    stop_ = true;
-}
-
-void ControlLoop::ctrl_break_handler(int signum) {
-    pause_ = !pause_;
 }

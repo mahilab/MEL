@@ -50,21 +50,21 @@ public:
 	virtual void start_watchdog(double watchdog_timeout) {}
 	virtual void stop_watchdog() {}
 
-    // FUNCTIONS FOR GETTING/SETTING DAQ STATES
+    // FUNCTIONS FOR GETTING/SETTING DAQ STATES (DEFAULT BEHAVIOR MAY BE OVERRIDDEN)
 
-    double_vec get_analog_voltages();
-    double get_analog_voltage(int channel_number);
-    void set_analog_voltages(double_vec new_voltages);
-    void set_analog_voltage(int channel_number, double new_voltage);
+    virtual double_vec get_analog_voltages();
+    virtual double get_analog_voltage(int channel_number);
+    virtual void set_analog_voltages(double_vec new_voltages);
+    virtual void set_analog_voltage(int channel_number, double new_voltage);
 
-    char_vec get_digital_states();
-    char get_digital_state(int channel_number);
-    void set_digital_states(char_vec new_states);
-    void set_digital_state(int channel_number, char new_state);
+    virtual char_vec get_digital_states();
+    virtual char get_digital_state(int channel_number);
+    virtual void set_digital_states(char_vec new_states);
+    virtual void set_digital_state(int channel_number, char new_state);
 
-    int_vec get_encoder_counts();
-    int get_encoder_count(int channel_number);
-    double_vec get_encoder_count_rates();
+    virtual int_vec get_encoder_counts();
+    virtual int get_encoder_count(int channel_number);
+    virtual double_vec get_encoder_count_rates();
     virtual double get_encoder_count_rate(int channel_number);
 
     // DAQ DATA LOGGING

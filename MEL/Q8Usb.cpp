@@ -188,7 +188,7 @@ void Q8Usb::read_digital() {
     }
 }
 
-void Q8Usb::read_encoder() {
+void Q8Usb::read_encoder_counts() {
     if (active_) {
         t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_counts_[0]);
         if (result < 0)
@@ -196,7 +196,7 @@ void Q8Usb::read_encoder() {
     }
 }
 
-void Q8Usb::read_encoder_velocity() {
+void Q8Usb::read_encoder_count_rates() {
     if (active_) {
         t_error result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), &enc_counts_per_sec_[0]);
         if (result < 0)

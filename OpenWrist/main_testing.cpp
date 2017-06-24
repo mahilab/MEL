@@ -3,21 +3,21 @@
 #include "ControlLoop.h"
 #include "util.h"
 
-class MyController : public Controller {
+class MyController : public mel::Controller {
     int count = 0;
-    void start() {
+    void start() override {
         std::cout << "Starting MyController" << std::endl;
     }
-    void step() {
+    void step() override {
         std::cout << count++ << std::endl;
     }
-    void stop() {
+    void stop() override {
         std::cout << "Stopping MyController" << std::endl;
     }
-    void pause() {
+    void pause() override {
         std::cout << "Pausing MyController" << std::endl;
     }
-    void resume() {
+    void resume() override {
         std::cout << "Resuming MyController" << std::endl;
     }
 };
@@ -25,9 +25,9 @@ class MyController : public Controller {
 int main(int argc, char * argv[]) {
 
     // create controller and control loop
-    Controller* my_controller = new MyController();
+    mel::Controller* my_controller = new MyController();
     uint frequency = 1;
-    ControlLoop loop(frequency);
+    mel::ControlLoop loop(frequency);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
