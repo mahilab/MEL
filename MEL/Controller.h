@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <Windows.h>
 
 class Controller {
 
@@ -9,8 +10,12 @@ public:
 
     virtual void start()  = 0;  // override this function with code that should be called when the control loop starts
     virtual void step()   = 0;  // override this function with code that should be called with each iteration of the control loop
-    //virtual void pause()  = 0;  // override this function with code that should be called if the control loop is paused
     virtual void stop()   = 0;  // override this function with code that should be called when the control loop stops
+
+    // OPTIONAL VIRTUAL FUNCTIONS (NOT WORKING)
+
+    virtual void pause()  {};   // override this function with code that should be called if the control loop is paused
+    virtual void resume() {};   // override this function with code that should be called if the control loop is resumed from a pause
 
     std::string name_ = "rename_me"; // the controller name
 

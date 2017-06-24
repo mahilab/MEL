@@ -9,11 +9,16 @@ class MyController : public Controller {
         std::cout << "Starting MyController" << std::endl;
     }
     void step() {
-        count += 1;
-        std::cout << count << std::endl;
+        std::cout << count++ << std::endl;
     }
     void stop() {
         std::cout << "Stopping MyController" << std::endl;
+    }
+    void pause() {
+        std::cout << "Pausing MyController" << std::endl;
+    }
+    void resume() {
+        std::cout << "Resuming MyController" << std::endl;
     }
 };
 

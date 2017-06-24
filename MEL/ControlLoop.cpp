@@ -1,6 +1,7 @@
 #include "ControlLoop.h"
 
-bool ControlLoop::stop_ = false;
+bool ControlLoop::stop_  = false;
+bool ControlLoop::pause_ = false;
 
 ControlLoop::ControlLoop(uint frequency) :
     frequency_(frequency),
@@ -24,6 +25,13 @@ void ControlLoop::execute(Controller* controller) {
 
     // start the control loop
     while (!stop_) {
+
+        // handle pausing/resuming
+        if (GetAsyncKeyState(VK_UP)) {
+            controller->pause();
+            while (GetAsyncKeyState(VK_UP)) {}
+            controller->resume();
+        }
 
         // update time variables
         start_loop_ = std::chrono::high_resolution_clock::now();
@@ -57,4 +65,8 @@ void ControlLoop::execute(Controller* controller) {
 
 void ControlLoop::ctrl_c_handler(int signum) {
     stop_ = true;
+}
+
+void ControlLoop::ctrl_break_handler(int signum) {
+    pause_ = !pause_;
 }

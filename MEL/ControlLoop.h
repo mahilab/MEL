@@ -32,7 +32,10 @@ private:
 
     // SIGNAL HANDLING
 
-    static bool stop_;                         // static boolean that will stop all ControlLoops when set to true
-    static void ctrl_c_handler(int signum);    // signal handler that will set stop_ to true when CTRL+C is pressed at the terminal window
+    static bool stop_;   // static boolean that will stop all ControlLoops when set to true
+    static bool pause_;  // static boolean that will pause all ControlLoops when set to true
+
+    static void ctrl_c_handler(int signum);      // signal handler that will set stop_ to true when CTRL+C is pressed at the terminal window
+    static void ctrl_break_handler(int signum);  // signal handler that will set pause_ to true when CTRL+BREAK is pressed at the terminal window
 
 };
