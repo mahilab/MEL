@@ -26,7 +26,7 @@ int main(int argc, char * argv[]) {
 
     // create controller and control loop
     mel::Controller* my_controller = new MyController();
-    uint frequency = 1;
+    mel::uint frequency = 1;
     mel::ControlLoop loop(frequency);
 
     // request users permission to execute the controller

@@ -1,23 +1,26 @@
 #pragma once
 #include "Robot.h"
 
-class OpenWrist : public Robot {
+namespace mel {
 
-    // constructor
+    class OpenWrist : public Robot {
 
-
-    // parameters
-
+        // constructor
 
 
-    // relatives
+        // parameters
 
 
 
-
-    // state variables
-
-    
+        // relatives
 
 
-};
+
+
+        // state variables
+
+
+
+
+    };
+}
