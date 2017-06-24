@@ -185,6 +185,7 @@
     <ClInclude Include="Actuator.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="ControlLoop.h" />
     <ClInclude Include="Daq.h">
@@ -214,6 +215,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ControlLoop.cpp" />
     <ClCompile Include="Daq.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

@@ -5,61 +5,45 @@ namespace mel {
     bool ControlLoop::stop_ = false;
     bool ControlLoop::pause_ = false;
 
-    ControlLoop::ControlLoop(uint frequency) :
-        frequency_(frequency),
-        step_time_(std::chrono::nanoseconds(1000000000 / frequency))
+    ControlLoop::ControlLoop(Clock* clock) :
+        clock_(clock)
     {
         // register signal SIGINT and SIGBREAK with ctrl_c_handler */
         signal(SIGINT, ctrl_c_handler);
         signal(SIGBREAK, ctrl_c_handler);
     }
 
-    void ControlLoop::execute(Controller* controller) {
+    void ControlLoop::queue_controller(Controller* controller) {
+        // connect the controller Clock to the control loop Clock
+        //controller->clock_ = &clock_;
+        // add the controller to the queue
+        controllers_.push_back(controller);
+    }
 
-        // call the Controller start function 
-        controller->start();
+    void ControlLoop::execute() {
 
-        // update time variables
-        step_count_ = 0;
-        start_ = std::chrono::high_resolution_clock::now();
-        elapsed_loop_ = std::chrono::nanoseconds(0);
-        elapsed_actual_ = std::chrono::nanoseconds(0);
+        // start the Clock
+        clock_->start();
+
+        // start the Controller(s)
+        for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
+            (*it)->start();
+
 
         // start the control loop
         while (!stop_) {
 
-            // handle pausing/resuming
-            if (GetAsyncKeyState(VK_UP)) {
-                controller->pause();
-                while (GetAsyncKeyState(VK_UP)) {}
-                controller->resume();
-            }
+            // step the Controller(s)
+            for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
+                (*it)->step();
 
-            // update time variables
-            start_loop_ = std::chrono::high_resolution_clock::now();
-            elapsed_ideal_ = step_count_ * step_time_;
-
-            // call the Controller step function
-            controller->step();
-
-            // increment sample number
-            step_count_ += 1;
-
-            // update time variables
-            now_ = std::chrono::high_resolution_clock::now();
-            elapsed_loop_ = now_ - start_loop_;
-            elapsed_actual_ = now_ - start_;
-
-            // spinlock / busy wait the control loop until the loop rate has been reached
-            while (elapsed_loop_ < step_time_) {
-                now_ = std::chrono::high_resolution_clock::now();
-                elapsed_loop_ = now_ - start_loop_;
-                elapsed_actual_ = now_ - start_;
-            }
+            // wait for the next clock tick
+            clock_->wait();
         }
 
-        // call the Controller stop function
-        controller->stop();
+        // stop the Controller(s)
+        for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
+            (*it)->stop();
 
         // reset stop_
         stop_ = false;

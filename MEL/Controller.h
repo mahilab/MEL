@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <Windows.h>
+#include "Clock.h"
 
 namespace mel {
 
@@ -8,8 +8,8 @@ namespace mel {
 
     public:
 
-        std::string name_ = "rename_me"; // the controller name
-        
+        std::string name_ = "Rename Me"; // the controller name
+        //Clock* clock_;
 
         // PURE VIRTUAL FUNCTIONS TO BE OVERRIDEN BY DERIVED CONTROLLERS
 
@@ -21,7 +21,6 @@ namespace mel {
 
         virtual void pause() {};   // override this function with code that should be called if the control loop is paused
         virtual void resume() {};   // override this function with code that should be called if the control loop is resumed from a pause
-
 
     };
 

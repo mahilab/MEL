@@ -1,8 +1,9 @@
 #pragma once
 #include <chrono>
 #include <csignal>
-#include "util.h"
 #include "Controller.h"
+#include "Clock.h"
+#include "util.h"
 
 namespace mel {
 
@@ -12,27 +13,19 @@ namespace mel {
 
         // CONSTRUCTOR / DESTRUCTOR
 
-        ControlLoop(uint frequency);
+        ControlLoop(Clock* clock);
 
-        void execute(Controller* controller);
+        void queue_controller(Controller* controller);
+
+        void execute();
+
+        Clock* clock_;
 
     private:
 
-        // TIME KEEPING VARIABLES
-
-        const uint frequency_;     // the control loop sampling rate in Hz (e.g. 1000 Hz)
-        uint step_count_;          // the number or steps that have occured since that control loop was started 
-
-        std::chrono::high_resolution_clock::time_point start_;      // time taken at the start of the control loop
-        std::chrono::high_resolution_clock::time_point start_loop_; // time taken at the top of each new loop iteration
-        std::chrono::high_resolution_clock::time_point now_;        // time taken a specific points
-
-        std::chrono::nanoseconds step_time_;       // the control loop fixed step time or fundamental sample time in nanoseconds (e.g. 0.001 seconds)
-        std::chrono::nanoseconds elapsed_loop_;    // the amout of time that has elapsed during a single loop iteration                  
-        std::chrono::nanoseconds elapsed_actual_;  // the actual amount of time that has elapsed since the control loop started
-        std::chrono::nanoseconds elapsed_ideal_;   // the ideal ammount of time that has elapsed since the control loop started
-
         // SIGNAL HANDLING
+
+        std::vector<Controller*> controllers_;
 
         static bool stop_;   // static boolean that will stop all ControlLoops when set to true
         static bool pause_;  // static boolean that will pause all ControlLoops when set to true
