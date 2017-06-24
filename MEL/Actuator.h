@@ -8,7 +8,7 @@ namespace mel {
     public:
 
         // parameters
-        const double transmission_{};
+        const double radius_{};
         const double kt_{};
         const double amp_gain_{};
         const double current_limit_{};
@@ -20,8 +20,8 @@ namespace mel {
 
         // constructors
         Actuator() {}
-        Actuator(double transmission, double kt, double amp_gain, double current_limit, Daq* daq, uint ao_channel, uint do_channel)
-            : transmission_(transmission),
+        Actuator(double radius, double kt, double amp_gain, double current_limit, Daq* daq, uint ao_channel, uint do_channel)
+            : radius_(radius),
             kt_(kt),
             amp_gain_(amp_gain),
             current_limit_(current_limit),

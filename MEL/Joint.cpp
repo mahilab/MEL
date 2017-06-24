@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    Joint::Joint(Encoder* encoder, Actuator* actuator) :
+    Joint::Joint(Encoder* encoder, Actuator* actuator) : 
         encoder_(encoder), actuator_(actuator)
     {
 

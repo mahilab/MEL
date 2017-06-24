@@ -2,8 +2,8 @@
 
 namespace mel {
 
-    Encoder::Encoder(double transmission, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel) :
-        transmission_(transmission),
+    Encoder::Encoder(double radius, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel) :
+        radius_(radius),
         counts_per_revolution_(counts_per_revolution),
         quadrature_factor_(quadrature_factor),
         daq_channel_(daq_channel),

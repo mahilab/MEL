@@ -193,6 +193,7 @@
     <ClInclude Include="Encoder.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="PrismaticJoint.h" />
     <ClInclude Include="MahiExoII.h" />
     <ClInclude Include="OpenWrist.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -240,6 +241,7 @@
     <ClCompile Include="Actuator.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="PrismaticJoint.cpp" />
     <ClCompile Include="util.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
