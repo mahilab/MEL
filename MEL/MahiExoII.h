@@ -17,7 +17,8 @@ namespace mel {
     
 
         // references
-        std::vector<Daq*> daqs_;
+        Daq* daq_;
+        //std::vector<Daq*> daqs_;
         std::vector<Joint*> joints_;
         std::vector<Encoder*> encoders_;
         std::vector<Actuator*> actuators_;

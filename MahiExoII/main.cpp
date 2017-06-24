@@ -3,23 +3,54 @@
 #include "Q8Usb.h"
 #include "util.h"
 #include "MahiExoII.h"
-
-static bool        stop = false;                          /* flag used to stop the controller */
-static const int   frequency = 1000;                  /* controller loop rate (Hz) */
-
-/* Ctrl-C handler */
-static void signal_handler(int signum) {
-    stop = true;
-}
+#include "Controller.h"
+#include "ControlLoop.h"
 
 
+class MyController : public mel::Controller {
+
+public:
+
+    MyController(mel::MahiExoII* exo) :
+        exo_(exo)
+    {
+
+    }
+
+    mel::MahiExoII* exo_;
+
+    
+    void start() override {
+        std::cout << "Starting MyController" << std::endl;
+
+        // initialize Q8 USB
+        exo_->daq_->activate();
+        exo_->daq_->start_watchdog(0.1);
+    }
+    void step() override {
+        
+        exo_->daq_->reload_watchdog();
+        exo_->daq_->read_all();
+
+        std::cout << exo_->joints_[4]->get_position() << std::endl;
+
+    }
+    void stop() override {
+        std::cout << "Stopping MyController" << std::endl;
+
+        exo_->daq_->deactivate();
+    }
+    void pause() override {
+        std::cout << "Pausing MyController" << std::endl;
+    }
+    void resume() override {
+        std::cout << "Resuming MyController" << std::endl;
+    }
+};
 
 int main(int argc, char * argv[]) {
 
-    std::cout << "Have fun, Troy! - Craig" << std::endl;
-    // register signal SIGINT and SIGBREAK with signal handler
-    signal(SIGINT, signal_handler);
-    signal(SIGBREAK, signal_handler);
+
 
     // instantiate Q8 USB for encoders, actuator controls, and EMG
     std::string id = "0";
@@ -48,70 +79,25 @@ int main(int argc, char * argv[]) {
     mel::MahiExoII exo = mel::MahiExoII(q8_0, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
                               
 
-    // initialize Q8 USB
-    if (!q8_0->activate()) {
-        std::cout << "Terminating controller" << std::endl;
-        return -1;
-    }
+    
 
-    // start watchdog
-    q8_0->start_watchdog(0.1);
+    // create controller and control loop and clock
+    mel::Controller* my_controller = new MyController(&exo);
+    mel::Clock clock(1000);
+    mel::ControlLoop loop(&clock);
 
-    // start time keeping variables
-    std::chrono::high_resolution_clock::time_point time_start = std::chrono::high_resolution_clock::now();
-    std::chrono::high_resolution_clock::time_point time_start_loop = time_start;
-    std::chrono::high_resolution_clock::time_point time_now = time_start;
-    std::chrono::nanoseconds time_elapsed_loop(0);
-    std::chrono::nanoseconds time_elapsed_total(0);
-    std::chrono::nanoseconds time_per_sample(1000000000 / frequency);
-    std::chrono::nanoseconds time_per_sample_offset(200);
-    double controller_time = 0;
+    // queue controllrs
+    loop.queue_controller(my_controller);
 
-    // start the control loop
-    int sample_number = 0;
-    while (stop == 0) {
-        time_start_loop = std::chrono::high_resolution_clock::now();
-        controller_time = (double)sample_number / frequency;
+    // request users permission to execute the controller
+    std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
+    getchar();
 
-        // reloead watchdog
-        q8_0->reload_watchdog();
+    // execute the controller
+    loop.execute();
 
-        // START CONTROLLER SPECIFIC CODE 
-
-
-        q8_0->read_all();
-
-        //print_int_vec(q8_0->get_encoder_counts());
-        std::cout << exo.joints_[2]->get_position() << std::endl;
-
-        q8_0->write_digital();
-
-
-        // END CONTROLLER SPECIFIC CODE
-        
-        // log data 
-        q8_0->log_data(controller_time);
-        // increment sample number 
-        sample_number += 1;
-        // spinlock / busy wait the control loop until the loop rate has been reached 
-        time_now = std::chrono::high_resolution_clock::now();
-        time_elapsed_loop = time_now - time_start_loop;
-        time_elapsed_total = time_now - time_start;
-        //std::cout << time_elapsed_loop.count() / 1000000.0 << std::endl;
-        while (time_elapsed_loop < time_per_sample - time_per_sample_offset) {
-            time_now = std::chrono::high_resolution_clock::now();
-            time_elapsed_loop = time_now - time_start_loop;
-            time_elapsed_total = time_now - time_start;
-        }
-        time_now = std::chrono::high_resolution_clock::now();
-        time_elapsed_loop = time_now - time_start_loop;
-    }
-
-    std::cout << "Ctrl-C pressed. Terminating control." << std::endl;
-
-    // end control and clean up 
-    q8_0->deactivate();
-
+    // delete controller
+    delete my_controller;
 
     return 0;
 }
