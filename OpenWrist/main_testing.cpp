@@ -3,6 +3,7 @@
 #include "ControlLoop.h"
 #include "util.h"
 
+// Controller implementation minimum working example
 class MyController : public mel::Controller {
     void start() override {
         std::cout << "Starting MyController" << std::endl;
@@ -23,20 +24,21 @@ class MyController : public mel::Controller {
 
 int main(int argc, char * argv[]) {
 
-    // create controller and control loop and clock
+
+    // create an
     mel::Controller* my_controller = new MyController();
-    mel::Clock clock(10);
-    mel::ControlLoop loop(clock);
+    mel::Clock my_clock(1);
+    mel::ControlLoop my_loop(my_clock);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
     getchar();
 
     // queue controllrs
-    loop.queue_controller(my_controller);
+    my_loop.queue_controller(my_controller);
 
     // execute the controller
-    loop.execute();
+    my_loop.execute();
 
     // delete controller
     delete my_controller;

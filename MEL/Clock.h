@@ -13,14 +13,13 @@ namespace mel {
         uint get_tick();
         double get_time();        
 
-    private:
-
-        friend class ControlLoop;
 
         void start();
         void wait();
         void pause();
         void resume();
+
+    private:
 
         const uint frequency_;     // the control loop sampling rate in Hz (e.g. 1000 Hz)
         uint tick_count_;          // the number or steps that have occured since that control loop was started 
