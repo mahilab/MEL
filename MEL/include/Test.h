@@ -1,8 +1,0 @@
-//
-// Created by Evan on 6/25/2017.
-//
-
-#ifndef MAHIEXOSKELETONLIB_TEST_H
-#define MAHIEXOSKELETONLIB_TEST_H
-
-#endif //MAHIEXOSKELETONLIB_TEST_H
