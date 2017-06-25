@@ -24,7 +24,7 @@ file(GLOB SRC_FILES "src/*.cpp")
 file(GLOB LIB_FILES "include/*.h")
 
 # create .lib
-add_library( MEL ${SRC_FILES} ${LIB_FILES} )
+add_library( MEL ${SRC_FILES} ${LIB_FILES} include/Test.h)
 
 # link libraries to .lib
 target_link_libraries( MEL ${Boost_LIBRARIES} hil quanser_communications quanser_runtime quanser_common bufferoverflowU "legacy_stdio_definitions.lib")
