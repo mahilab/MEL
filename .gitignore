@@ -28,6 +28,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 build/
+cmake-build-release/
 
 # Visual Studio 2015 cache/options directory
 .vs/
