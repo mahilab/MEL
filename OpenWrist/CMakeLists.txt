@@ -14,7 +14,8 @@ link_directories(${Boost_LIBRARY_DIR})
 include_directories(C:/dev/quarc/include)
 link_directories(C:/dev/quarc/lib/win64)
 
-file(GLOB SRC_FILES "src/*.cpp")
+# file(GLOB SRC_FILES "src/*.cpp")
+set(SRC_FILES src/main_testing.cpp)
 
 add_executable( OpenWrist ${SRC_FILES} )
 target_link_libraries( OpenWrist LINK_PUBLIC MEL ${Boost_LIBRARIES} "legacy_stdio_definitions.lib")
