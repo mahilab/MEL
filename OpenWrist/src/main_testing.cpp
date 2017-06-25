@@ -23,8 +23,7 @@ class MyController : public mel::Controller {
 };
 
 int main(int argc, char * argv[]) {
-
-
+    
     // create an
     mel::Controller* my_controller = new MyController();
     mel::Clock my_clock(1);
