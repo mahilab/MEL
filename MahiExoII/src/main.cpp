@@ -84,7 +84,7 @@ int main(int argc, char * argv[]) {
     // create controller and control loop and clock
     mel::Controller* my_controller = new MyController(&exo);
     mel::Clock clock(1000);
-    mel::ControlLoop loop(&clock);
+    mel::ControlLoop loop(clock);
 
     // queue controllrs
     loop.queue_controller(my_controller);

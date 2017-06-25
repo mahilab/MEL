@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(OpenWrist)
+project(MahiExoII)
 
 # set standard to C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -20,10 +20,10 @@ include_directories(C:/dev/quarc/include)
 link_directories(C:/dev/quarc/lib/win64)
 
 # define source files
-set(SRC_FILES src/main_testing.cpp)
+set(SRC_FILES src/main.cpp)
 
 # create .exe
-add_executable( OpenWrist ${SRC_FILES} )
+add_executable( MahiExoII ${SRC_FILES} )
 
 # link libraries to .exe
-target_link_libraries( OpenWrist LINK_PUBLIC MEL ${Boost_LIBRARIES} "legacy_stdio_definitions.lib")
+target_link_libraries( MahiExoII LINK_PUBLIC MEL ${Boost_LIBRARIES} "legacy_stdio_definitions.lib")
