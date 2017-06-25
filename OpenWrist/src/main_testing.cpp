@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Controller.h"
 #include "ControlLoop.h"
-#include "util.h"
 
 // Controller implementation minimum working example
 class MyController : public mel::Controller {
@@ -33,7 +32,7 @@ int main(int argc, char * argv[]) {
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
     getchar();
 
-    // queue controllrs
+    // queue controllers
     my_loop.queue_controller(my_controller);
 
     // execute the controller
