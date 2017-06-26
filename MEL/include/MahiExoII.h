@@ -14,7 +14,6 @@ namespace mel {
         ~MahiExoII();
 
         // parameters
-    
 
         // references
         Daq* daq_;
