@@ -19,11 +19,18 @@ link_directories(${Boost_LIBRARY_DIR})
 include_directories(C:/dev/quarc/include)
 link_directories(C:/dev/quarc/lib/win64)
 
+# include eigen
+include_directories(C:/dev/eigen)
+#set(Eigen3_DIR C:/dev/eigen/eigen)
+#find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
+
 # define source files
-set(SRC_FILES src/main.cpp)
+set(SRC_FILES src/main_testing.cpp)
 
 # create .exe
 add_executable( MahiExoII ${SRC_FILES} )
 
 # link libraries to .exe
 target_link_libraries( MahiExoII LINK_PUBLIC MEL ${Boost_LIBRARIES} "legacy_stdio_definitions.lib")
+#target_link_libraries (example Eigen3::Eigen)

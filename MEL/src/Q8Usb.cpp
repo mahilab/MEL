@@ -52,18 +52,19 @@ namespace mel {
                     double temp[3];
                     result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);
                     if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
-                        // std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
+                        std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
                         std::cout << "Done" << std::endl;
                         break;
                     }
                     else {
-                        // std::cout << "Attempt " << attempt + 1 << ": Encoder Reading Errors" << std::endl;
+                        std::cout << "Attempt " << attempt + 1 << ": Encoder Reading Errors" << std::endl;
                         result = 1;
                         hil_close(q8_usb_);
                     }
                 }
                 else {
-                    // std::cout << "Attempt " << attempt + 1 << ": Failed to Open" << std::endl;
+                    std::cout << "Attempt " << attempt + 1 << ": Failed to Open" << std::endl;
+                    print_quarc_error(result);
                 }
             }
 

@@ -6,9 +6,9 @@
 #include "Controller.h"
 #include "ControlLoop.h"
 #include <boost/program_options.hpp>
+#include <Eigen/src/Core/>
 
 namespace po = boost::program_options;
-
 
 class MyController : public mel::Controller {
 
@@ -17,12 +17,12 @@ public:
     MyController(mel::MahiExoII* exo) :
         exo_(exo)
     {
-    
+
     }
 
     mel::MahiExoII* exo_;
 
-    
+
     void start() override {
         std::cout << "Starting MyController" << std::endl;
 
@@ -30,7 +30,7 @@ public:
         exo_->daq_->activate();
         exo_->daq_->start_watchdog(0.1);
 
-        
+
     }
 
     void step() override {
@@ -39,8 +39,8 @@ public:
         exo_->daq_->read_all();
 
         exo_->get_joint_positions();
+        //std::cout << exo_->joints_[5]->position_ << std::endl;
         mel::print_double_vec(exo_->psi_);
-
 
     }
 
@@ -70,12 +70,12 @@ int main(int argc, char * argv[]) {
     po::store(po::parse_command_line(argc, argv, desc), var_map);
     po::notify(var_map);
 
-    
+
     if (var_map.count("help")) {
         std::cout << desc << "\n";
         return -1;
     }
-    
+
 
     // instantiate Q8 USB for encoders, actuator controls, and EMG
     std::string id = "0";
@@ -85,24 +85,12 @@ int main(int argc, char * argv[]) {
     mel::uint_vec  do_channels = { 0, 1, 2, 3, 4 };
     mel::uint_vec enc_channels = { 0, 1, 2, 3, 4 };
     char options[] = "update_rate=fast;decimation=1";
-    mel::Daq *q8_0 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+    mel::Daq *q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
-    /*
-    // instantiate Q8 USB for ATI and Futek force/torque sensors
-    std::string id = "1";
-    uint_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    uint_vec  ao_channels = {};
-    uint_vec  di_channels = {};
-    uint_vec  do_channels = {};
-    uint_vec enc_channels = {};
-    char options[] = "update_rate=fast;decimation=1";
-    Daq *q8_1 = new Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
-    */
 
     // instantiate MahiExoII
-    
-    mel::MahiExoII exo = mel::MahiExoII(q8_0, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
-                              
+    mel::MahiExoII exo = mel::MahiExoII(q8, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+
 
     /* manual zero joint positions */
     if (var_map.count("zero")) {
@@ -110,7 +98,6 @@ int main(int argc, char * argv[]) {
         exo.daq_->zero_encoder_counts();
     }
     
-
     // create controller and control loop and clock
     mel::Controller* my_controller = new MyController(&exo);
     mel::Clock clock(1000);
@@ -128,6 +115,7 @@ int main(int argc, char * argv[]) {
 
     // delete controller
     delete my_controller;
+
 
     return 0;
 }

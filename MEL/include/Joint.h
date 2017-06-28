@@ -14,20 +14,22 @@ namespace mel {
         Actuator* actuator_;
 
         // constructor
-        Joint() {}
+        Joint();
         Joint(Encoder* encoder, Actuator* actuator);
 
         // state variables
         double position_;
         double velocity_;
+
+
         double torque_;
 
         // getters of state variables
         double get_position();
         double get_velocity();
-
-        // setters of other objects' state variables
-        void set_actuator_torque(double joint_torque);
+        void set_torque(double joint_torque);
+        void update_position();
+        
 
         // pure virtual functions 
         virtual double encoder_to_joint_space(double counts) = 0;

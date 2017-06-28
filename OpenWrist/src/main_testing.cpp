@@ -25,7 +25,7 @@ int main(int argc, char * argv[]) {
     
     // create an
     mel::Controller* my_controller = new MyController();
-    mel::Clock my_clock(1);
+    mel::Clock my_clock(100);
     mel::ControlLoop my_loop(my_clock);
 
     // request users permission to execute the controller

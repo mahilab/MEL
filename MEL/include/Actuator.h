@@ -32,12 +32,11 @@ namespace mel {
         // state variables
         double torque_;
         double current_;
-        double command_;
+        bool is_enable_;
 
         // setters of state variables
-        void set_torque(double torque);
+        void set_torque(double actuator_torque);
         void set_current(double current);
-        void set_command(double voltage);
 
         void enable();
         void disable();
