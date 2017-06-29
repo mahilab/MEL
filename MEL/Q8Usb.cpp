@@ -35,7 +35,6 @@ namespace mel {
 
         /* set up encoder channels */
         enc_modes_ = std::vector<t_encoder_quadrature_mode>(enc_channels.size(), enc_mode_);
-        enc_initial_counts_ = int_vec(enc_channels.size(), 0);
 
         /* set up options */
         strcpy(options_, options);
@@ -137,14 +136,27 @@ namespace mel {
     }
 
     void Q8Usb::zero_encoder_counts() {
-        if (active_) {
+        if (active_ && num_enc_channels_ > 0) {
             std::cout << "Zeroing Encoder Counts ... ";
-            t_error result = hil_set_encoder_counts(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_initial_counts_[0]);
+            int_vec enc_zero_counts(num_enc_channels_, 0);
+            t_error result = hil_set_encoder_counts(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_zero_counts[0]);
             if (result != 0)
                 print_quarc_error(result);
             std::cout << "Done" << std::endl;
         }
     }
+
+    void Q8Usb::offset_encoder_counts(int_vec offset_counts) {
+        if (active_ && num_enc_channels_ > 0) {
+            std::cout << "Offsetting Encoder Counts ... ";
+            offset_counts.resize(num_enc_channels_, 0);
+            t_error result = hil_set_encoder_counts(q8_usb_, &enc_channels_[0], enc_channels_.size(), &offset_counts[0]);
+            if (result != 0)
+                print_quarc_error(result);
+            std::cout << "Done" << std::endl;
+        }
+    }
+
 
     int Q8Usb::deactivate() {
         if (active_) {

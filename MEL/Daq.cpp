@@ -60,9 +60,9 @@ namespace mel {
         for (auto it = do_channels_.begin(); it != do_channels_.end(); ++it)
             data_log_ << "DO" + std::to_string(*it) << "\t";
         for (auto it = enc_channels_.begin(); it != enc_channels_.end(); ++it)
-            data_log_ << "COUNT" + std::to_string(*it) << "\t";
+            data_log_ << "ENC_COUNT" + std::to_string(*it) << "\t";
         for (auto it = vel_channels_.begin(); it != vel_channels_.end(); ++it)
-            data_log_ << "RATE" + std::to_string(*it) << "\t";
+            data_log_ << "ENC_RATE" + std::to_string(*it) << "\t";
         data_log_ << std::endl;
 
     }
@@ -116,6 +116,7 @@ namespace mel {
     double Daq::get_encoder_rate(int channel_number) {
         return enc_rates[channel_number_to_index(vel_channels_, channel_number)];
     }
+
 
     void Daq::log_data(double timestamp) {
 

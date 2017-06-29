@@ -45,6 +45,7 @@ namespace mel {
         virtual void write_all() {}
 
         virtual void zero_encoder_counts() {}
+        virtual void offset_encoder_counts(int_vec offset_counts) {}
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING A WATCHDOG TIMER
 
@@ -119,8 +120,6 @@ namespace mel {
 
         char_vec   do_initial_states_;    // vector of states digital outputs will go to when the program starts 
         char_vec   do_final_states_;      // vector of states digital outputs will go to when the program finishes 
-
-        int_vec    enc_initial_counts_;   // vector of initial encoder counts to be used when zero_encoder_counts() is called
 
         // HELPLER FUNCTIONS
 

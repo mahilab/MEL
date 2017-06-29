@@ -28,6 +28,7 @@ namespace mel {
         int deactivate() override;
 
         void zero_encoder_counts() override;
+        void offset_encoder_counts(int_vec offset_counts) override;
 
         void read_analog() override;
         void read_digital() override;
@@ -68,7 +69,6 @@ namespace mel {
         char    do_initial_state_ = 0;
         char    do_final_state_ = 0;
         t_digital_state do_exp_state_ = DIGITAL_STATE_LOW;
-        int     enc_initial_count_ = 0;
         t_encoder_quadrature_mode enc_mode_ = ENCODER_QUADRATURE_4X;
 
         // HELPTER FUNCTIONS 
