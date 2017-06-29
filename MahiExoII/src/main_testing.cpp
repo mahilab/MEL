@@ -28,8 +28,8 @@ public:
         // initialize Q8 USB
         exo_->daq_->activate();
         exo_->daq_->start_watchdog(0.1);
-        exo_->daq_->set_digital_state(0,0);
-        exo_->daq_->write_all();
+        //exo_->daq_->set_digital_states({ 0, 0, 1, 0, 1 });
+        //exo_->daq_->write_all();
 
     }
 
@@ -37,9 +37,10 @@ public:
 
         exo_->daq_->reload_watchdog();
         exo_->daq_->read_all();
+        
 
-        exo_->get_joint_positions();
-        std::cout << exo_->psi_[11] << std::endl;
+        //exo_->get_joint_positions();
+        //std::cout << exo_->psi_[11] << std::endl;
         //mel::print_double_vec(exo_->psi_);
 
     }
