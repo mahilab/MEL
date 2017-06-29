@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include <valarray>
 #include <stdio.h>
 #include <time.h>
 #include <iostream>
@@ -27,9 +26,6 @@ namespace mel {
     typedef std::vector<double>       double_vec;
     typedef std::vector<char>         char_vec;
 
-    typedef std::valarray<int>          int_array;
-    typedef std::valarray<unsigned int> uint_array;
-    typedef std::valarray<double>       double_array;
 
     // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
     const std::string get_current_date_time();

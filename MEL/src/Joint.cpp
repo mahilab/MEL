@@ -24,7 +24,9 @@ namespace mel {
 
 
     double Joint::get_position() {
-        position_ = encoder_to_joint_space(encoder_->get_count());
+        if (encoder_ != nullptr) {
+            position_ = encoder_to_joint_space(encoder_->get_count());
+        }
         return position_;
     }
 

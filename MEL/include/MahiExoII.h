@@ -36,7 +36,7 @@ namespace mel {
 
         //void set_joint_torques(double joint_torques);
         double_vec get_joint_positions();
-        void forward_kinematics(double_vec qs);
+        void forward_kinematics(double_vec qs, uint max_it, double tol);
         double_vec psi_func(double_vec qp, double_vec qs, double R, double r, double a56, double alpha5, double alpha13);
         double_vec psi_d_qp_func(double_vec qp, double r, double alpha5, double alpha13);
 

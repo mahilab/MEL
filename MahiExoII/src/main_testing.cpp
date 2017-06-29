@@ -6,7 +6,6 @@
 #include "Controller.h"
 #include "ControlLoop.h"
 #include <boost/program_options.hpp>
-#include <Eigen/src/Core/>
 
 namespace po = boost::program_options;
 
@@ -29,7 +28,8 @@ public:
         // initialize Q8 USB
         exo_->daq_->activate();
         exo_->daq_->start_watchdog(0.1);
-
+        exo_->daq_->set_digital_state(0,0);
+        exo_->daq_->write_all();
 
     }
 
@@ -39,8 +39,8 @@ public:
         exo_->daq_->read_all();
 
         exo_->get_joint_positions();
-        //std::cout << exo_->joints_[5]->position_ << std::endl;
-        mel::print_double_vec(exo_->psi_);
+        std::cout << exo_->psi_[11] << std::endl;
+        //mel::print_double_vec(exo_->psi_);
 
     }
 
