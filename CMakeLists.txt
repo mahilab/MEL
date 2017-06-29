@@ -5,3 +5,5 @@ project(MAHIEXOSKELETONLIB)
 add_subdirectory (MEL)
 add_subdirectory (MahiExoII)
 add_subdirectory (OpenWrist)
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")

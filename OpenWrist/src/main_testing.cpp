@@ -24,9 +24,12 @@ class MyController : public mel::Controller {
 int main(int argc, char * argv[]) {
     
     // create an
-    mel::Controller* my_controller = new MyController();
+    mel::Controller* my_controller = new MyController()
     mel::Clock my_clock(100);
     mel::ControlLoop my_loop(my_clock);
+
+    std::vector<double> evan(2,1);
+    evan[0] = 1;
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
