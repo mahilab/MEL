@@ -18,6 +18,37 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Actuator.cpp" />
+    <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="ControlLoop.cpp" />
+    <ClCompile Include="Daq.cpp" />
+    <ClCompile Include="Encoder.cpp" />
+    <ClCompile Include="Joint.cpp" />
+    <ClCompile Include="MahiExoII.cpp" />
+    <ClCompile Include="OpenWrist.cpp" />
+    <ClCompile Include="PrismaticJoint.cpp" />
+    <ClCompile Include="Q8Usb.cpp" />
+    <ClCompile Include="RevoluteJoint.cpp" />
+    <ClCompile Include="Robot.cpp" />
+    <ClCompile Include="util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Actuator.h" />
+    <ClInclude Include="Clock.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="ControlLoop.h" />
+    <ClInclude Include="Daq.h" />
+    <ClInclude Include="Encoder.h" />
+    <ClInclude Include="Joint.h" />
+    <ClInclude Include="MahiExoII.h" />
+    <ClInclude Include="OpenWrist.h" />
+    <ClInclude Include="PrismaticJoint.h" />
+    <ClInclude Include="Q8Usb.h" />
+    <ClInclude Include="RevoluteJoint.h" />
+    <ClInclude Include="Robot.h" />
+    <ClInclude Include="util.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{071E0DE1-8C63-468C-A3A7-4B7BBC5AB350}</ProjectGuid>

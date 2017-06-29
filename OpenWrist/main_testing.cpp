@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Controller.h"
 #include "ControlLoop.h"
+#include "Clock.h"
 
 // Controller implementation minimum working example
 class MyController : public mel::Controller {
@@ -24,7 +25,7 @@ class MyController : public mel::Controller {
 int main(int argc, char * argv[]) {
     
     // create an
-    mel::Controller* my_controller = new MyController()
+    mel::Controller* my_controller = new MyController();
     mel::Clock my_clock(100);
     mel::ControlLoop my_loop(my_clock);
 
