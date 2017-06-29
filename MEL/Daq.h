@@ -52,7 +52,7 @@ namespace mel {
         virtual void start_watchdog(double watchdog_timeout) {}
         virtual void stop_watchdog() {}
 
-        // FUNCTIONS FOR GETTING/SETTING DAQ STATES (DEFAULT BEHAVIOR MAY BE OVERRIDDEN)
+        // FUNCTIONS FOR GETTING/SETTING DAQ STATES (DEFAULT BEHAVIOR MAY BE OVERRIDDEN IF DESIRED)
 
         virtual double_vec get_analog_voltages();
         virtual double get_analog_voltage(int channel_number);
@@ -66,14 +66,16 @@ namespace mel {
 
         virtual int_vec get_encoder_counts();
         virtual int get_encoder_count(int channel_number);
-        virtual double_vec get_encoder_count_rates();
-        virtual double get_encoder_count_rate(int channel_number);
+        virtual double_vec get_encoder_rates();
+        virtual double get_encoder_rate(int channel_number);
 
         // DAQ DATA LOGGING
 
         std::string   data_log_filename_; // filename of the data log
         std::ofstream data_log_;          // stream for logging to the data log file
         void log_data(double timestamp);  // function to log all state information to data log file
+
+    protected:
 
         // STATE VARIABLES
 
@@ -84,7 +86,7 @@ namespace mel {
         char_vec   di_states_;            // vector for which digital inputs should be read in to
         char_vec   do_states_;            // vector for which digital outputs should be read out from
         int_vec    enc_counts_;           // vector for which encoder counts should be read in to
-        double_vec enc_counts_per_sec_;   // vector for which encoder counts per second should be read in to
+        double_vec enc_rates;             // vector for which encoder counts per second should be read in to
 
         // CHANNEL NUMBERS BEING USED
 
@@ -94,6 +96,15 @@ namespace mel {
         uint_vec   do_channels_;          // vector of digital output channels being used 
         uint_vec   enc_channels_;         // vector of encoder channels being used
         uint_vec   vel_channels_;         // vector of encoder velocity channels being used
+
+        // NUMBER OF CHANNELS DEFINED
+
+        uint   num_ai_channels_;          // vector of analog input channels being used 
+        uint   num_ao_channels_;          // vector of analog output channels being used 
+        uint   num_di_channels_;          // vector of digital input channels being used 
+        uint   num_do_channels_;          // vector of digital output channels being used 
+        uint   num_enc_channels_;         // vector of encoder channels being used
+        uint   num_vel_channels_;         // vector of encoder velocity channels being used
 
         // DAQ SETTINGS (TO BE IMPLEMENTED IN DERIVED DAQ CLASSES)
 
@@ -113,8 +124,8 @@ namespace mel {
 
         // HELPLER FUNCTIONS
 
-        uint channel_number_to_index(const uint_vec& channels, const uint channel_number);
-        void sort_and_reduce_channels(uint_vec& channels);
-
+        uint channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
+        void sort_and_reduce_channels(uint_vec& channels);                                  // turns input such as {3, 1, 1, 2} to {1, 2, 3}       
+        
     };
 }

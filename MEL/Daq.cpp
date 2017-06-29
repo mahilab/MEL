@@ -15,7 +15,7 @@ namespace mel {
         ai_channels_(ai_channels),
         ao_channels_(ao_channels),
         di_channels_(di_channels),
-        do_channels_(di_channels),
+        do_channels_(do_channels),
         enc_channels_(enc_channels),
         vel_channels_(vel_channels)
     {
@@ -27,15 +27,23 @@ namespace mel {
         sort_and_reduce_channels(enc_channels_);
         sort_and_reduce_channels(vel_channels_);
 
-        // initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!) 
-        ai_voltages_ = double_vec(ai_channels_.size(), 0.0);
-        ao_voltages_ = double_vec(ao_channels_.size(), 0.0);
-        di_states_ = char_vec(di_channels_.size(), 0);
-        do_states_ = char_vec(do_channels_.size(), 0);
-        enc_counts_ = int_vec(enc_channels_.size(), 0);
-        enc_counts_per_sec_ = double_vec(enc_channels_.size(), 0.0);
+        // get number of unique channels being use
+        num_ai_channels_  = ai_channels_.size();
+        num_ao_channels_  = ao_channels_.size();
+        num_di_channels_  = di_channels_.size();
+        num_do_channels_  = do_channels_.size();
+        num_enc_channels_ = enc_channels_.size();
+        num_vel_channels_ = vel_channels_.size();
 
-        //create data log specifically for this DAQ
+        // initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!) 
+        ai_voltages_ = double_vec(num_ai_channels_, 0.0);
+        ao_voltages_ = double_vec(num_ao_channels_, 0.0);
+        di_states_ = char_vec(num_di_channels_, 0);
+        do_states_ = char_vec(num_do_channels_, 0);
+        enc_counts_ = int_vec(num_enc_channels_, 0);
+        enc_rates = double_vec(num_vel_channels_, 0.0);
+
+        // create data log specifically for this DAQ
         std::string daq_log_dir_ = "daq_logs";
         boost::filesystem::path dir(daq_log_dir_.c_str());
         boost::filesystem::create_directory(dir);
@@ -52,9 +60,9 @@ namespace mel {
         for (auto it = do_channels_.begin(); it != do_channels_.end(); ++it)
             data_log_ << "DO" + std::to_string(*it) << "\t";
         for (auto it = enc_channels_.begin(); it != enc_channels_.end(); ++it)
-            data_log_ << "ENC" + std::to_string(*it) << "\t";
+            data_log_ << "COUNT" + std::to_string(*it) << "\t";
         for (auto it = vel_channels_.begin(); it != vel_channels_.end(); ++it)
-            data_log_ << "VEL" + std::to_string(*it) << "\t";
+            data_log_ << "RATE" + std::to_string(*it) << "\t";
         data_log_ << std::endl;
 
     }
@@ -68,6 +76,7 @@ namespace mel {
     }
 
     void Daq::set_analog_voltages(double_vec new_voltages) {
+        new_voltages.resize(num_ao_channels_, 0.0); // ensures same size; pads with zeros if too short
         ao_voltages_ = new_voltages;
     }
 
@@ -84,6 +93,7 @@ namespace mel {
     }
 
     void Daq::set_digital_states(char_vec new_states) {
+        new_states.resize(num_do_channels_, 0); // ensures same size; pads with zeros if too short
         do_states_ = new_states;
     }
 
@@ -99,12 +109,12 @@ namespace mel {
         return enc_counts_[channel_number_to_index(enc_channels_, channel_number)];
     }
 
-    double_vec Daq::get_encoder_count_rates() {
-        return enc_counts_per_sec_;
+    double_vec Daq::get_encoder_rates() {
+        return enc_rates;
     }
 
-    double Daq::get_encoder_count_rate(int channel_number) {
-        return enc_counts_per_sec_[channel_number_to_index(vel_channels_, channel_number)];
+    double Daq::get_encoder_rate(int channel_number) {
+        return enc_rates[channel_number_to_index(vel_channels_, channel_number)];
     }
 
     void Daq::log_data(double timestamp) {
@@ -121,7 +131,7 @@ namespace mel {
             data_log_ << (int)*it << "\t";
         for (auto it = enc_counts_.begin(); it != enc_counts_.end(); ++it)
             data_log_ << *it << "\t";
-        for (auto it = enc_counts_per_sec_.begin(); it != enc_counts_per_sec_.end(); ++it)
+        for (auto it = enc_rates.begin(); it != enc_rates.end(); ++it)
             data_log_ << *it << "\t";
         data_log_ << std::endl;
 

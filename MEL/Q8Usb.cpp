@@ -49,7 +49,7 @@ namespace mel {
             for (int attempt = 0; attempt < 10; attempt++) {
                 result = hil_open("q8_usb", id_.c_str(), &q8_usb_);
                 if (result == 0) {
-                    double temp[3];
+                    double temp[3]; // TODO: FIX THIS CRAP
                     result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);
                     if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
                         std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
@@ -74,45 +74,52 @@ namespace mel {
                 return 0;
             }
 
+            active_ = true;
+
             // Configure Q8 USB (Functions called in same order as Simulink compiled code)
             std::cout << "Configuring Q8 USB ... ";
-            result = hil_set_card_specific_options(q8_usb_, options_, strlen(options_));
+            result = hil_set_card_specific_options(q8_usb_, options_, strlen(options_)); // TODO: make this optional or configured in another way
             if (result < 0)
                 print_quarc_error(result);
 
             // Stop and Clear Watchdog
-            result = hil_watchdog_stop(q8_usb_);
-            if (result < 0)
-                print_quarc_error(result);
-            result = hil_watchdog_clear(q8_usb_);
-            if (result < 0)
-                print_quarc_error(result);
-            result = hil_set_analog_input_ranges(q8_usb_, &ai_channels_[0], ai_channels_.size(), &ai_min_voltages_[0], &ai_max_voltages_[0]);
-            if (result < 0)
-                print_quarc_error(result);
-            result = hil_set_analog_output_ranges(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_min_voltages_[0], &ao_max_voltages_[0]);
-            if (result < 0)
-                print_quarc_error(result);
-            result = hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_initial_voltages_[0]);
-            if (result != 0)
-                print_quarc_error(result);
-            result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_exp_voltages_[0]);
-            if (result < 0)
-                print_quarc_error(result);
+            stop_watchdog();
 
-            // hil_set_digital_directions
-            result = hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_initial_states_[0]);
-            if (result != 0)
-                print_quarc_error(result);
-            // Set Digital Expiration States
-            result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_[0], do_channels_.size(), &do_exp_states_[0]);
-            if (result < 0)
-                print_quarc_error(result);
+            // set analog I/O ranges
+            if (num_ai_channels_ > 0) {
+                result = hil_set_analog_input_ranges(q8_usb_, &ai_channels_[0], num_ai_channels_, &ai_min_voltages_[0], &ai_max_voltages_[0]);
+                if (result < 0)
+                    print_quarc_error(result);
+            }
+            if (num_ao_channels_ > 0) {
+                result = hil_set_analog_output_ranges(q8_usb_, &ao_channels_[0], num_ao_channels_, &ao_min_voltages_[0], &ao_max_voltages_[0]);
+                if (result < 0)
+                    print_quarc_error(result);
+            }
 
-            // Set Encoder Quadrature Mode
-            result = hil_set_encoder_quadrature_mode(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_modes_[0]);
-            if (result < 0)
-                print_quarc_error(result);
+            // set analog/digital output expiration states
+            if (num_ao_channels_ > 0) {
+                result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_[0], num_ao_channels_, &ao_exp_voltages_[0]);
+                if (result < 0)
+                    print_quarc_error(result);
+            }
+            if (num_do_channels_ > 0) {
+                result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_[0], num_do_channels_, &do_exp_states_[0]);
+                if (result < 0)
+                    print_quarc_error(result);
+            }
+
+            // set encoder quadrature modes
+            if (num_enc_channels_ > 0) {
+                result = hil_set_encoder_quadrature_mode(q8_usb_, &enc_channels_[0], num_enc_channels_, &enc_modes_[0]);
+                if (result < 0)
+                    print_quarc_error(result);
+            }
+
+            // set and write initial voltages and states
+            ao_voltages_ = ao_initial_voltages_;
+            do_states_ = do_initial_states_;
+            write_all();
 
             // TO BE IMPLEMENTED IN FUTURE (IN THIS ORDER):
 
@@ -124,7 +131,6 @@ namespace mel {
             // hil_write_pwm
             // hil_watchdog_set_pwm_expiration_state
 
-            active_ = true;
             std::cout << "Done" << std::endl;
             return 1;
         }
@@ -148,17 +154,17 @@ namespace mel {
             hil_task_stop_all(q8_usb_);
             hil_monitor_stop_all(q8_usb_);
 
-            // Set Final Output Values
-            hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_final_voltages_[0]);
-            hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_final_states_[0]);
+            // set and write final voltages and states
+            ao_voltages_ = ao_final_voltages_;
+            do_states_ = do_final_states_;
+            write_all();            
 
             // Delete all tasks and monitors (possibly unnecessary)
             hil_task_delete_all(q8_usb_);
             hil_monitor_delete_all(q8_usb_);
 
             // Stop and Clear Watchdog
-            hil_watchdog_stop(q8_usb_);
-            hil_watchdog_clear(q8_usb_);
+            stop_watchdog();
 
             // Close Q8 USB
             std::cout << "Closing Q8 USB ... ";
@@ -176,90 +182,117 @@ namespace mel {
     }
 
     void Q8Usb::read_analog() {
-        if (active_) {
-            t_error result = hil_read_analog(q8_usb_, &ai_channels_[0], ai_channels_.size(), &ai_voltages_[0]);
+        if (active_ && num_ai_channels_ > 0) {
+            t_error result = hil_read_analog(q8_usb_, &ai_channels_[0], num_ai_channels_, &ai_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no analog input channels were passed to the constructor." << std::endl;
         }
     }
 
     void Q8Usb::read_digital() {
-        if (active_) {
-            t_error result = hil_read_digital(q8_usb_, &di_channels_[0], di_channels_.size(), &di_states_[0]);
+        if (active_ && num_di_channels_ > 0) {
+            t_error result = hil_read_digital(q8_usb_, &di_channels_[0], num_di_channels_, &di_states_[0]);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no digital input channels were passed to the constructor." << std::endl;
         }
     }
 
     void Q8Usb::read_encoder_counts() {
-        if (active_) {
-            t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_counts_[0]);
+        if (active_ && num_enc_channels_ > 0) {
+            t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], num_enc_channels_, &enc_counts_[0]);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no encoder channels were passed to the constructor." << std::endl;
         }
     }
 
     void Q8Usb::read_encoder_count_rates() {
-        if (active_) {
-            t_error result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), &enc_counts_per_sec_[0]);
+        if (active_ && num_vel_channels_ > 0) {
+            t_error result = hil_read_other(q8_usb_, &vel_channels_[0], num_vel_channels_, &enc_rates[0]);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Either Q8 USB " << id_ << "has not been activated, or no encoder channels were passed to the constructor." << std::endl;
         }
     }
 
     void Q8Usb::read_all() {
         if (active_) {
             t_error result = hil_read(q8_usb_,
-                &ai_channels_[0], ai_channels_.size(),
-                &enc_channels_[0], enc_channels_.size(),
-                &di_channels_[0], di_channels_.size(),
-                &vel_channels_[0], enc_channels_.size(),
-                &ai_voltages_[0],
-                &enc_counts_[0],
-                &di_states_[0],
-                &enc_counts_per_sec_[0]);
+                num_ai_channels_ > 0 ? &ai_channels_[0] : NULL, num_ai_channels_,
+                num_enc_channels_ > 0 ? &enc_channels_[0] : NULL, num_enc_channels_,
+                num_di_channels_ > 0 ? &di_channels_[0] : NULL, num_di_channels_,
+                num_vel_channels_ > 0 ? &vel_channels_[0] : NULL, num_vel_channels_,
+                num_ai_channels_ > 0 ? &ai_voltages_[0] : NULL,
+                num_enc_channels_ > 0 ? &enc_counts_[0] : NULL,
+                num_di_channels_ > 0 ? &di_states_[0] : NULL,
+                num_vel_channels_ > 0 ? &enc_rates[0] : NULL);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
         }
     }
 
     void Q8Usb::write_analog() {
-        if (active_) {
-            t_error result = hil_write_analog(q8_usb_, &ao_channels_[0], ao_channels_.size(), &ao_voltages_[0]);
+        if (active_ && num_ao_channels_ > 0) {
+            t_error result = hil_write_analog(q8_usb_, &ao_channels_[0], num_ao_channels_, &ao_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no analog output channels were passed to the constructor." << std::endl;
         }
     }
 
     void Q8Usb::write_digital() {
-        if (active_) {
-            t_error result = hil_write_digital(q8_usb_, &do_channels_[0], do_channels_.size(), &do_states_[0]);
+        if (active_ && num_do_channels_ > 0) {
+            t_error result = hil_write_digital(q8_usb_, &do_channels_[0], num_do_channels_, &do_states_[0]);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Either Q8 USB " << id_ << "has not been activated, or no digital output channels were passed to the constructor." << std::endl;
         }
     }
 
     void Q8Usb::write_all() {
         if (active_) {
             t_error result = hil_write(q8_usb_,
-                &ao_channels_[0], ao_channels_.size(),
+                num_ao_channels_ > 0 ? &ao_channels_[0] : NULL, num_ao_channels_,
                 NULL, 0,
-                &do_channels_[0], do_channels_.size(),
+                num_do_channels_ > 0 ? &do_channels_[0] : NULL, num_do_channels_,
                 NULL, 0,
-                &ao_voltages_[0],
+                num_ao_channels_ > 0 ? &ao_voltages_[0] : NULL,
                 NULL,
-                &do_states_[0],
+                num_do_channels_ > 0 ? &do_states_[0] : NULL,
                 NULL);
             if (result < 0)
                 print_quarc_error(result);
         }
+        else {
+            std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
+        }
     }
 
-    void Q8Usb::reload_watchdog() {
+    void Q8Usb::reload_watchdog() { // TO DO: CHECK STATUS OF WATCHDOG
         if (active_) {
             t_error result = hil_watchdog_reload(q8_usb_);
             if (result < 0)
                 print_quarc_error(result);
+        }
+        else {
+            std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
         }
     }
 
@@ -269,11 +302,18 @@ namespace mel {
             if (result < 0)
                 print_quarc_error(result);
         }
+        else {
+            std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
+        }
     }
 
     void Q8Usb::stop_watchdog() {
-        hil_watchdog_stop(q8_usb_);
-        hil_watchdog_clear(q8_usb_);
+        t_error result = hil_watchdog_stop(q8_usb_);
+        if (result < 0)
+            print_quarc_error(result);
+        result = hil_watchdog_clear(q8_usb_);
+        if (result < 0)
+            print_quarc_error(result);
     }
 
     void Q8Usb::print_quarc_error(t_error result) {

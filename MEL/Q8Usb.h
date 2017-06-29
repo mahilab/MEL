@@ -43,9 +43,9 @@ namespace mel {
         void start_watchdog(double watchdog_timeout) override;
         void stop_watchdog() override;
 
-        double get_encoder_count_rate(int channel_number) override {
+        double get_encoder_rate(int channel_number) override {
             channel_number += 14000;
-            return Daq::get_encoder_count_rate(channel_number);
+            return Daq::get_encoder_rate(channel_number);
         }
 
     private:

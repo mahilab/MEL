@@ -19,7 +19,7 @@ namespace mel {
     }
 
     double Encoder::get_count_rate() {
-        count_rate_ = daq_->get_encoder_count_rate(daq_channel_);
+        count_rate_ = daq_->get_encoder_rate(daq_channel_);
         return count_rate_;
     }
 }
