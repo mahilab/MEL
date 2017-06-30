@@ -1,5 +1,7 @@
 #pragma once
 #include "Robot.h"
+#include <Eigen\Core>
+#include <Eigen\LU>
 
 namespace mel {
 
@@ -28,17 +30,19 @@ namespace mel {
         std::vector<Actuator*> actuators_;
 
         // state variables
-        double_vec psi_;
-        double_vec qp_;
-        double_vec qs_;
-        double_vec psi_d_qp_;
         double_vec joint_positions_;
+        Eigen::VectorXd qp_;
+        Eigen::VectorXd qp_prev_;
+        Eigen::VectorXd qs_;
+        Eigen::VectorXd psi_;
+        Eigen::MatrixXd psi_d_qp_;
+        Eigen::VectorXd sol_; // testing variable
 
         //void set_joint_torques(double joint_torques);
         double_vec get_joint_positions();
-        void forward_kinematics(double_vec qs, uint max_it, double tol);
-        double_vec psi_func(double_vec qp, double_vec qs, double R, double r, double a56, double alpha5, double alpha13);
-        double_vec psi_d_qp_func(double_vec qp, double r, double alpha5, double alpha13);
+        void forward_kinematics(Eigen::VectorXd qs, uint max_it, double tol);
+        void psi_func(Eigen::VectorXd qp, Eigen::VectorXd qs, double R, double r, double a56, double alpha5, double alpha13);
+        void psi_d_qp_func(Eigen::VectorXd qp, double r, double alpha5, double alpha13);
 
     };
 }

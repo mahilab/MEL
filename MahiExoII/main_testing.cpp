@@ -30,7 +30,7 @@ public:
         exo_->daq_->start_watchdog(0.1);
         //exo_->daq_->set_digital_states({ 0, 0, 1, 0, 1 });
         //exo_->daq_->write_all();
-
+        
     }
 
     void step() override {
@@ -38,11 +38,12 @@ public:
         exo_->daq_->reload_watchdog();
         exo_->daq_->read_all();
         
-
-        //exo_->get_joint_positions();
+        exo_->get_joint_positions();
         //std::cout << exo_->psi_[11] << std::endl;
         //mel::print_double_vec(exo_->psi_);
 
+        std::cout << mel::RAD2DEG * exo_->qp_[7] << std::endl;
+        
     }
 
     void stop() override {
@@ -96,7 +97,7 @@ int main(int argc, char * argv[]) {
     /* manual zero joint positions */
     if (var_map.count("zero")) {
         exo.daq_->activate();
-        exo.daq_->zero_encoder_counts();
+        exo.daq_->offset_encoder_counts({ 0, 0, 29125, 29125, 29125 });
     }
     
     // create controller and control loop and clock

@@ -6,9 +6,10 @@ namespace mel {
     MahiExoII::MahiExoII(Daq* daq, uint_vec ai_channels, uint_vec ao_channels, uint_vec di_channels, uint_vec do_channels, uint_vec enc_channels) :
         Robot(5),
         daq_(daq),
-        qp_({0.25*PI, 0.25*PI, 0.25*PI, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305}),
-        qs_({0.1305, 0.1305, 0.1305}),
-        psi_({ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 })
+        qp_(Eigen::VectorXd::Zero(12)),
+        qs_(Eigen::VectorXd::Zero(3)),
+        psi_(Eigen::VectorXd::Zero(12)),
+        psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
     {
 
         encoders_.push_back(new Encoder(INCH2METER*0.42, 2048, 4, daq, enc_channels[0]));
@@ -39,6 +40,9 @@ namespace mel {
         joints_.push_back(new RevoluteJoint()); // wrist platform roll gamma
 
         joint_positions_ = double_vec(joints_.size(), 0.0);
+
+        qp_ << -PI / 4, -PI / 4, -PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
+                
     }
 
     MahiExoII::~MahiExoII() {
@@ -66,7 +70,7 @@ namespace mel {
         }
         
         // update qs_ (q star) with the three prismatic link positions
-        qs_ = { joints_[2]->position_, joints_[3]->position_, joints_[4]->position_ };
+        qs_ << joints_[2]->position_, joints_[3]->position_, joints_[4]->position_;
 
         // run forward kinematics solver to update qp_ (q prime), which contains all 12 RPS positions
         forward_kinematics(qs_, 10, 0.00000000001);
@@ -89,7 +93,7 @@ namespace mel {
         return joint_positions_;
     }
 
-    void MahiExoII::forward_kinematics(double_vec qs, uint max_it, double tol) {
+    void MahiExoII::forward_kinematics(Eigen::VectorXd qs, uint max_it, double tol) {
         
         // declare and initialize variables for keeping track of error
         double err = 2*tol;
@@ -102,9 +106,10 @@ namespace mel {
         // exit loop once the error is below the input tolerance
         uint it = 0;
         while (it < max_it && err > tol) {
-            psi_ = psi_func(qp_, qs_, R_, r_, a56_, alpha5_, alpha13_); // actually psi bar, which evaluates 9 constraints and three desired values
-            psi_d_qp_ = psi_d_qp_func(qp_, r_, alpha5_, alpha13_); // derivative of psi w.r.t. qp, giving a 12x12 matrix
-            qp_ = qp_; // update with qp-inv(psi_d_qp)*psi_ when eigen is available
+            psi_func(qp_, qs_, R_, r_, a56_, alpha5_, alpha13_); // actually psi bar, which evaluates 9 constraints and three desired values
+            psi_d_qp_func(qp_, r_, alpha5_, alpha13_); // derivative of psi w.r.t. qp, giving a 12x12 matrix
+            sol_ = psi_d_qp_.fullPivLu().solve(psi_);
+            qp_ -= sol_;
 
             // update the error (don't know why it's like this, but it seems to work)
             err = 0;
@@ -132,37 +137,35 @@ namespace mel {
             }
             err = c*sqrt(err);
 
+            //std::cout << err << std::endl;
+
+
             // while iterator
             it++;
         }
 
         
-        
-
-        
-        
-
-
+        //std::cout << qp_.transpose() << std::endl;
 
     }
 
-    double_vec MahiExoII::psi_func(double_vec qp, double_vec qs, double R, double r, double a56, double alpha5, double alpha13) {
-        return { qp[3] * sin(qp[0]) - qp[9] - r*cos(alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*sin(alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
-                 R*cos(alpha5) - qp[10] - a56*sin(alpha5) - qp[3] * cos(alpha5)*cos(qp[0]) - r*cos(alpha13)*cos(qp[7])*cos(qp[8]) + r*cos(qp[7])*sin(alpha13)*sin(qp[8]),
-                 a56*cos(alpha5) - qp[11] + R*sin(alpha5) - qp[3] * sin(alpha5)*cos(qp[0]) - r*cos(alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
-                 qp[4] * sin(qp[1]) - qp[9] - r*cos(alpha13 - (2 * PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*sin(alpha13 - (2 * PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
-                 R*cos(alpha5 - (2 * PI) / 3) - qp[10] - a56*sin(alpha5 - (2 * PI) / 3) - qp[4] * cos(alpha5 - (2 * PI) / 3)*cos(qp[1]) - r*cos(qp[7])*cos(qp[8])*cos(alpha13 - (2 * PI) / 3) + r*cos(qp[7])*sin(qp[8])*sin(alpha13 - (2 * PI) / 3),
-                 a56*cos(alpha5 - (2 * PI) / 3) - qp[11] + R*sin(alpha5 - (2 * PI) / 3) - qp[4] * cos(qp[1])*sin(alpha5 - (2 * PI) / 3) - r*cos(alpha13 - (2 * PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13 - (2 * PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
-                 qp[5] * sin(qp[2]) - qp[9] - r*cos((2 * PI) / 3 + alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*sin((2 * PI) / 3 + alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
-                 R*cos((2 * PI) / 3 + alpha5) - qp[10] - a56*sin((2 * PI) / 3 + alpha5) - qp[5] * cos((2 * PI) / 3 + alpha5)*cos(qp[2]) - r*cos(qp[7])*cos(qp[8])*cos((2 * PI) / 3 + alpha13) + r*cos(qp[7])*sin(qp[8])*sin((2 * PI) / 3 + alpha13),
-                 a56*cos((2 * PI) / 3 + alpha5) - qp[11] + R*sin((2 * PI) / 3 + alpha5) - qp[5] * cos(qp[2])*sin((2 * PI) / 3 + alpha5) - r*cos((2 * PI) / 3 + alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin((2 * PI) / 3 + alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
-                 qp[3]-qs[0],
-                 qp[4]-qs[1],
-                 qp[5]-qs[2] };
+    void MahiExoII::psi_func(Eigen::VectorXd qp, Eigen::VectorXd qs, double R, double r, double a56, double alpha5, double alpha13) {
+        psi_ << qp[3] * sin(qp[0]) - qp[9] - r*cos(alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*sin(alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
+            R*cos(alpha5) - qp[10] - a56*sin(alpha5) - qp[3] * cos(alpha5)*cos(qp[0]) - r*cos(alpha13)*cos(qp[7])*cos(qp[8]) + r*cos(qp[7])*sin(alpha13)*sin(qp[8]),
+            a56*cos(alpha5) - qp[11] + R*sin(alpha5) - qp[3] * sin(alpha5)*cos(qp[0]) - r*cos(alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
+            qp[4] * sin(qp[1]) - qp[9] - r*cos(alpha13 - (2 * PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*sin(alpha13 - (2 * PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
+            R*cos(alpha5 - (2 * PI) / 3) - qp[10] - a56*sin(alpha5 - (2 * PI) / 3) - qp[4] * cos(alpha5 - (2 * PI) / 3)*cos(qp[1]) - r*cos(qp[7])*cos(qp[8])*cos(alpha13 - (2 * PI) / 3) + r*cos(qp[7])*sin(qp[8])*sin(alpha13 - (2 * PI) / 3),
+            a56*cos(alpha5 - (2 * PI) / 3) - qp[11] + R*sin(alpha5 - (2 * PI) / 3) - qp[4] * cos(qp[1])*sin(alpha5 - (2 * PI) / 3) - r*cos(alpha13 - (2 * PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13 - (2 * PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
+            qp[5] * sin(qp[2]) - qp[9] - r*cos((2 * PI) / 3 + alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*sin((2 * PI) / 3 + alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
+            R*cos((2 * PI) / 3 + alpha5) - qp[10] - a56*sin((2 * PI) / 3 + alpha5) - qp[5] * cos((2 * PI) / 3 + alpha5)*cos(qp[2]) - r*cos(qp[7])*cos(qp[8])*cos((2 * PI) / 3 + alpha13) + r*cos(qp[7])*sin(qp[8])*sin((2 * PI) / 3 + alpha13),
+            a56*cos((2 * PI) / 3 + alpha5) - qp[11] + R*sin((2 * PI) / 3 + alpha5) - qp[5] * cos(qp[2])*sin((2 * PI) / 3 + alpha5) - r*cos((2 * PI) / 3 + alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin((2 * PI) / 3 + alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
+            qp[3] - qs[0],
+            qp[4] - qs[1],
+            qp[5] - qs[2];
     }
     
-    double_vec MahiExoII::psi_d_qp_func(double_vec qp, double r, double alpha5, double alpha13) {
-        return { qp[3] * cos(qp[0]), 0, 0, sin(qp[0]), 0, 0, -r*cos(alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r*cos(qp[6])*cos(alpha13)*cos(qp[7])*cos(qp[8]) - r*cos(qp[6])*cos(qp[7])*sin(alpha13)*sin(qp[8]), r*sin(alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*cos(alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
+    void MahiExoII::psi_d_qp_func(Eigen::VectorXd qp, double r, double alpha5, double alpha13) {
+        psi_d_qp_ << qp[3] * cos(qp[0]), 0, 0, sin(qp[0]), 0, 0, -r*cos(alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r*cos(qp[6])*cos(alpha13)*cos(qp[7])*cos(qp[8]) - r*cos(qp[6])*cos(qp[7])*sin(alpha13)*sin(qp[8]), r*sin(alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*cos(alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
                  qp[3] * cos(alpha5)*sin(qp[0]), 0, 0, -cos(alpha5)*cos(qp[0]), 0, 0, 0, r*cos(alpha13)*cos(qp[8])*sin(qp[7]) - r*sin(alpha13)*sin(qp[7])*sin(qp[8]), r*cos(alpha13)*cos(qp[7])*sin(qp[8]) + r*cos(qp[7])*cos(qp[8])*sin(alpha13), 0, -1, 0,
                  qp[3] * sin(alpha5)*sin(qp[0]), 0, 0, -sin(alpha5)*cos(qp[0]), 0, 0, r*cos(alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r*sin(alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r*cos(qp[7])*sin(qp[6])*sin(alpha13)*sin(qp[8]) - r*cos(alpha13)*cos(qp[7])*cos(qp[8])*sin(qp[6]), r*sin(alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*cos(alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1,
                  0, qp[4] * cos(qp[1]), 0, 0, sin(qp[1]), 0, -r*cos(alpha13 - (2 * PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*sin(alpha13 - (2 * PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r*cos(qp[6])*cos(qp[7])*cos(qp[8])*cos(alpha13 - (2 * PI) / 3) - r*cos(qp[6])*cos(qp[7])*sin(qp[8])*sin(alpha13 - (2 * PI) / 3), r*sin(alpha13 - (2 * PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r*cos(alpha13 - (2 * PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
@@ -173,7 +176,7 @@ namespace mel {
                  0, 0, qp[5] * sin((2 * PI) / 3 + alpha5)*sin(qp[2]), 0, 0, -cos(qp[2])*sin((2 * PI) / 3 + alpha5), r*cos((2 * PI) / 3 + alpha13)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r*sin((2 * PI) / 3 + alpha13)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r*cos(qp[7])*sin(qp[6])*sin(qp[8])*sin((2 * PI) / 3 + alpha13) - r*cos(qp[7])*cos(qp[8])*cos((2 * PI) / 3 + alpha13)*sin(qp[6]), r*sin((2 * PI) / 3 + alpha13)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r*cos((2 * PI) / 3 + alpha13)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1,
                  0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                  0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-                 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
+                 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0;
     }
 
     /*
