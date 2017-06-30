@@ -104,5 +104,11 @@
     <ClInclude Include="EmgElectrode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Exo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnatomicalJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

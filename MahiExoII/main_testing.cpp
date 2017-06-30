@@ -2,10 +2,11 @@
 #include <csignal>
 #include "Q8Usb.h"
 #include "util.h"
-#include "MahiExoII.h"
+#include "Robot.h"
 #include "Controller.h"
 #include "ControlLoop.h"
 #include <boost/program_options.hpp>
+#include "Exo.h"
 
 namespace po = boost::program_options;
 
@@ -13,43 +14,49 @@ class MyController : public mel::Controller {
 
 public:
 
-    MyController(mel::MahiExoII* exo) :
-        exo_(exo)
-    {
-
-    }
-
-    mel::MahiExoII* exo_;
-
+    std::vector<mel::Daq*> daqs_;
+    mel::Robot* robot_;
 
     void start() override {
         std::cout << "Starting MyController" << std::endl;
 
+        // instantiate Q8 USB for encoders, actuator controls, and EMG
+        std::string id = "0";
+        mel::uint_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        mel::uint_vec  ao_channels = { 0, 1, 2, 3, 4 };
+        mel::uint_vec  di_channels = {};
+        mel::uint_vec  do_channels = { 0, 1, 2, 3, 4 };
+        mel::uint_vec enc_channels = { 0, 1, 2, 3, 4 };
+        char options[] = "update_rate=fast;decimation=1";
+        daqs_ = { new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options) };
+        
+
+        // instantiate generic robot
+        
+        robot_ = new mel::Robot();
+
+
         // initialize Q8 USB
-        exo_->daq_->activate();
-        exo_->daq_->start_watchdog(0.1);
-        //exo_->daq_->set_digital_states({ 0, 0, 1, 0, 1 });
-        //exo_->daq_->write_all();
+        robot_->daqs_[0]->activate();
+        robot_->daqs_[0]->start_watchdog(0.1);        
         
     }
 
     void step() override {
 
-        exo_->daq_->reload_watchdog();
-        exo_->daq_->read_all();
+        robot_->daqs_[0]->reload_watchdog();
+        robot_->daqs_[0]->read_all();
         
-        exo_->get_joint_positions();
-        //std::cout << exo_->psi_[11] << std::endl;
-        //mel::print_double_vec(exo_->psi_);
-
-        std::cout << mel::RAD2DEG * exo_->qp_[7] << std::endl;
-        
+        //robot_->get_joint_positions;
+        //robot_->get_joint_velocities;
+        //robot_->set_joint_torques;
+        robot_->daqs_[0]->write_all();
     }
 
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
 
-        exo_->daq_->deactivate();
+        robot_->daqs_[0]->deactivate();
     }
     void pause() override {
         std::cout << "Pausing MyController" << std::endl;
@@ -79,30 +86,17 @@ int main(int argc, char * argv[]) {
     }
 
 
-    // instantiate Q8 USB for encoders, actuator controls, and EMG
-    std::string id = "0";
-    mel::uint_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    mel::uint_vec  ao_channels = { 0, 1, 2, 3, 4 };
-    mel::uint_vec  di_channels = {};
-    mel::uint_vec  do_channels = { 0, 1, 2, 3, 4 };
-    mel::uint_vec enc_channels = { 0, 1, 2, 3, 4 };
-    char options[] = "update_rate=fast;decimation=1";
-    mel::Daq *q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
-
-
-    // instantiate MahiExoII
-    mel::MahiExoII exo = mel::MahiExoII(q8, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
-
-
-    /* manual zero joint positions */
+    /*
+    // manual zero joint positions
     if (var_map.count("zero")) {
-        exo.daq_->activate();
-        exo.daq_->offset_encoder_counts({ 0, 0, 29125, 29125, 29125 });
+        robot.daqs_[0]->activate();
+        robot.daqs_[0]->offset_encoder_counts({ 0, 0, 29125, 29125, 29125 });
     }
+    */
     
     // create controller and control loop and clock
-    mel::Controller* my_controller = new MyController(&exo);
-    mel::Clock clock(1000);
+    mel::Controller* my_controller = new MyController();
+    mel::Clock clock(1000,true);
     mel::ControlLoop loop(clock);
 
     // queue controllrs
@@ -117,7 +111,6 @@ int main(int argc, char * argv[]) {
 
     // delete controller
     delete my_controller;
-
-
+  
     return 0;
 }
