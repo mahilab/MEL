@@ -17,5 +17,4 @@ namespace mel {
         joints_.push_back(RevoluteJoint(4.500, &encoders_[1], &actuators_[1]));
         joints_.push_back(RevoluteJoint(3.000, &encoders_[2], &actuators_[2]));    
     }   
-
 }
