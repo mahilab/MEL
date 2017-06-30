@@ -35,12 +35,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actuator.h" />
+    <ClInclude Include="AnatomicalJoint.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="ControlLoop.h" />
     <ClInclude Include="Daq.h" />
     <ClInclude Include="EmgElectrode.h" />
     <ClInclude Include="Encoder.h" />
+    <ClInclude Include="Exo.h" />
     <ClInclude Include="Joint.h" />
     <ClInclude Include="MahiExoII.h" />
     <ClInclude Include="OpenWrist.h" />

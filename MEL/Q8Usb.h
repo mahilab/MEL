@@ -69,13 +69,13 @@ namespace mel {
         char    do_initial_state_ = 0;
         char    do_final_state_ = 0;
         t_digital_state do_exp_state_ = DIGITAL_STATE_LOW;
+
         t_encoder_quadrature_mode enc_mode_ = ENCODER_QUADRATURE_4X;
 
         // HELPTER FUNCTIONS 
 
         static void print_quarc_error(t_error result);
         static uint_vec get_q8_velocity_channels(uint_vec enc_channels);
-
 
     public:
 

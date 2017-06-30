@@ -1,6 +1,5 @@
 #pragma once
 #include "Robot.h"
-#include <Eigen\Core>
 #include <Eigen\LU>
 
 namespace mel {

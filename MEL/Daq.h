@@ -23,6 +23,8 @@ namespace mel {
             uint_vec encoder_channels,
             uint_vec encrate_channels);
 
+
+
         const std::string type_;       // string representing the DAQ type e.g. "q8_usb"
         const std::string id_;         // string representing the DAQ ID number e.g. "0"
 
@@ -122,6 +124,8 @@ namespace mel {
         char_vec   do_initial_states_;    // vector of states digital outputs will go to when the program starts 
         char_vec   do_final_states_;      // vector of states digital outputs will go to when the program finishes 
 
+        uint_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
+
         // HELPLER FUNCTIONS
 
         uint channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
@@ -165,7 +169,9 @@ namespace mel {
         struct EncoderChannel : Channel {
             EncoderChannel() : Channel() {}
             EncoderChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
+            int quadrature_factor_;
             int get_count() { return daq_->get_encoder_count(channel_); }
+
         };
 
         struct EncRateChannel : Channel {
