@@ -1,11 +1,13 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include "util.h"
 #include "Joint.h"
 #include "RevoluteJoint.h"
 #include "PrismaticJoint.h"
 #include "Actuator.h"
 #include "Encoder.h"
+
 
 namespace mel {
 
