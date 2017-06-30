@@ -11,7 +11,7 @@ namespace mel {
         uint_vec vel_channels) :
         type_(type),
         id_(id),
-        data_log_filename_("daq_logs\\" + type + "_" + id + "_" + get_current_date_time() + ".dat"),
+        data_log_filename_(log_dir_ + "\\" + type + "_" + id + "_" + get_current_date_time() + ".txt"),
         ai_channels_(ai_channels),
         ao_channels_(ao_channels),
         di_channels_(di_channels),
@@ -44,8 +44,7 @@ namespace mel {
         enc_rates = double_vec(num_vel_channels_, 0.0);
 
         // create data log specifically for this DAQ
-        std::string daq_log_dir_ = "daq_logs";
-        boost::filesystem::path dir(daq_log_dir_.c_str());
+        boost::filesystem::path dir(log_dir_.c_str());
         boost::filesystem::create_directory(dir);
         data_log_.open(data_log_filename_, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;
 
