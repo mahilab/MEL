@@ -134,35 +134,42 @@ namespace mel {
         struct Channel { 
             Daq* daq_; 
             uint channel_; 
+            Channel() : daq_(NULL), channel_(-1) {};
             Channel(Daq* daq, uint channel) : daq_(daq), channel_(channel) {} 
         };
 
         struct AiChannel : Channel { 
+            AiChannel() : Channel() {}
             AiChannel(Daq* daq, uint channel) : Channel(daq, channel) {} 
             double get_voltage() { return daq_->get_analog_voltage(channel_); }
         };
 
         struct AoChannel : Channel {
+            AoChannel() : Channel() {}
             AoChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
             void set_voltage(double new_voltage) { daq_->set_analog_voltage(channel_, new_voltage ); }
         };
 
         struct DiChannel : Channel {
+            DiChannel() : Channel() {}
             DiChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
             char get_state() { return daq_->get_digital_state(channel_); }
         };
 
         struct DoChannel : Channel {
+            DoChannel() : Channel() {}
             DoChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
             void set_state(double new_state) { daq_->set_digital_state(channel_, new_state); }
         };
 
         struct EncoderChannel : Channel {
+            EncoderChannel() : Channel() {}
             EncoderChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
             int get_count() { return daq_->get_encoder_count(channel_); }
         };
 
         struct EncRateChannel : Channel {
+            EncRateChannel() : Channel() {}
             EncRateChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
             double get_rate() { return daq_->get_encoder_rate(channel_); }
         };

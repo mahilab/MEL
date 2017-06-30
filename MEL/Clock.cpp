@@ -13,8 +13,8 @@ namespace mel {
             boost::filesystem::path dir(log_dir_.c_str());
             boost::filesystem::create_directory(dir);
             data_log_.open(data_log_filename_, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;
-            data_log_ << "Tick" << "\t" << "Elapsed Time (Ideal) [s]" << "\t" << "Elapsed Time (Actual) [s]" << "\t" 
-                << "Execution Time [s]" << "\t" << "Wait Time [s]" << "\t" << "Tick Time [s]" << std::endl;
+            data_log_ << "Tick #" << "\t" << "Elapsed (Ideal) [s]" << "\t" << "Elapsed (Actual) [s]" << "\t" 
+                << "Execution [s]" << "\t" << "Wait [s]" << "\t" << "Tick [s]" << std::endl;
         }
     }
 

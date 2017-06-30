@@ -22,13 +22,12 @@ namespace mel {
 
     void ControlLoop::execute() {
 
-        // start the Clock
-        clock_.start();
-
         // start the Controller(s)
         for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
             (*it)->start();
 
+        // start the Clock
+        clock_.start();
 
         // start the control loop
         while (!stop_) {

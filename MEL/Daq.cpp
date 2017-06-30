@@ -137,7 +137,7 @@ namespace mel {
             return result - channels.begin();
         }
         else {
-            std::cout << "ERROR: Attempted to access an invalid channel number!" << std::endl;
+            std::cout << "FATAL ERROR: Attempted to access invalid channel number " << channel_number << "." << std::endl;
         }
     }
 

@@ -19,6 +19,7 @@ namespace mel {
 
         void start();
         void wait();
+        void stop();
         void pause();
         void resume();
 
