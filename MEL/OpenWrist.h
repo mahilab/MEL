@@ -8,7 +8,6 @@ namespace mel {
     public:
 
         OpenWrist();
-        OpenWrist(Daq::FullChannelSet joint_0, Daq::FullChannelSet joint_1, Daq::FullChannelSet joint_2);
 
         Daq* daq_;
 

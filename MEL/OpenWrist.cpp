@@ -16,13 +16,6 @@ namespace mel {
         joints_.push_back(RevoluteJoint(4.375, &encoders_[0], &actuators_[0]));
         joints_.push_back(RevoluteJoint(4.500, &encoders_[1], &actuators_[1]));
         joints_.push_back(RevoluteJoint(3.000, &encoders_[2], &actuators_[2]));    
-    }
-    
-    OpenWrist::OpenWrist(Daq::FullChannelSet joint_0, Daq::FullChannelSet joint_1, Daq::FullChannelSet joint_2) : 
-        OpenWrist()
-    {
-       // encoders_.push_back(Encoder(0.234, 500, 4, joint_0.ai_channel_.daq_, joint_0.ai_channel_.channel_));
-
-    }
+    }   
 
 }

@@ -20,11 +20,11 @@ namespace mel {
             uint_vec ao_channels,
             uint_vec di_channels,
             uint_vec do_channels,
-            uint_vec enc_channels,
-            uint_vec vel_channels);
+            uint_vec encoder_channels,
+            uint_vec encrate_channels);
 
-        std::string type_;       // string representing the DAQ type e.g. "q8_usb"
-        std::string id_;         // string representing the DAQ ID number e.g. "0"
+        const std::string type_;       // string representing the DAQ type e.g. "q8_usb"
+        const std::string id_;         // string representing the DAQ ID number e.g. "0"
 
         // PURE VIRTUAL FUNCTIONS FOR ACTIVATING AND DEACTIVATING DAQ (REQ'D BY ALL DERIVED CLASSES)
 
@@ -72,12 +72,12 @@ namespace mel {
 
         // DAQ DATA LOGGING
 
-        std::string   log_dir_ = "daq_logs"; // folder where data logs will be stored
-        std::string   data_log_filename_;    // filename of the data log
+        const std::string   log_dir_ = "daq_logs"; // folder where data logs will be stored
+        const std::string   data_log_filename_;    // filename of the data log
         std::ofstream data_log_;             // stream for logging to the data log file
         void log_data(double timestamp);     // function to log all state information to data log file
 
-    protected:
+    
 
         // STATE VARIABLES
 
@@ -92,21 +92,21 @@ namespace mel {
 
         // CHANNEL NUMBERS BEING USED
 
-        uint_vec   ai_channels_;          // vector of analog input channels being used 
-        uint_vec   ao_channels_;          // vector of analog output channels being used 
-        uint_vec   di_channels_;          // vector of digital input channels being used 
-        uint_vec   do_channels_;          // vector of digital output channels being used 
-        uint_vec   encoder_channels_;     // vector of encoder channels being used
-        uint_vec   encrate_channels;      // vector of encoder velocity channels being used
+        const uint_vec   ai_channels_nums_;          // vector of analog input channels numbers being used 
+        const uint_vec   ao_channels_nums_;          // vector of analog output channels numbers being used 
+        const uint_vec   di_channels_nums_;          // vector of digital input channels numbers being used 
+        const uint_vec   do_channels_nums_;          // vector of digital output channels numbers being used 
+        const uint_vec   encoder_channels_nums_;     // vector of encoder channels being numbers used
+        const uint_vec   encrate_channels_nums_;     // vector of encoder velocity channels numbers being used
 
         // NUMBER OF CHANNELS DEFINED
 
-        uint   num_ai_channels_;          // vector of analog input channels being used 
-        uint   num_ao_channels_;          // vector of analog output channels being used 
-        uint   num_di_channels_;          // vector of digital input channels being used 
-        uint   num_do_channels_;          // vector of digital output channels being used 
-        uint   num_enc_channels_;         // vector of encoder channels being used
-        uint   num_vel_channels_;         // vector of encoder velocity channels being used
+        const uint   num_ai_channels_;          // vector of analog input channels being used 
+        const uint   num_ao_channels_;          // vector of analog output channels being used 
+        const uint   num_di_channels_;          // vector of digital input channels being used 
+        const uint   num_do_channels_;          // vector of digital output channels being used 
+        const uint   num_enc_channels_;         // vector of encoder channels being used
+        const uint   num_vel_channels_;         // vector of encoder velocity channels being used
 
         // DAQ SETTINGS (TO BE IMPLEMENTED IN DERIVED DAQ CLASSES)
 
@@ -125,7 +125,7 @@ namespace mel {
         // HELPLER FUNCTIONS
 
         uint channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
-        void sort_and_reduce_channels(uint_vec& channels);                                  // turns input such as {3, 1, 1, 2} to {1, 2, 3}      
+        uint_vec sort_and_reduce_channels(uint_vec channels);                               // turns input such as {3, 1, 1, 2} to {1, 2, 3}      
 
     public:
 
@@ -167,32 +167,6 @@ namespace mel {
             double get_rate() { return daq_->get_encoder_rate(channel_); }
         };
 
-
-        struct AoDoChannelSet {
-            Daq* daq_;
-            uint ao_channel_;
-            uint do_channel_;
-            AoDoChannelSet(Daq* daq, uint ao_channel, uint do_channel) : daq_(daq), ao_channel_(ao_channel), do_channel_(do_channel) {};
-        };
-
-        struct FullChannelSet {
-            Daq* daq_;
-            uint ai_channel_;
-            uint ao_channel_;
-            uint di_channel_;
-            uint do_channel_;
-            uint encoder_channel_;
-            uint encrate_channel_;
-            FullChannelSet(Daq* daq, uint ai_channel, uint ao_channel,
-                           uint di_channel, uint do_channel,
-                           uint encoder_channel, uint encrate_channel) :
-                daq_(daq), 
-                ai_channel_(ai_channel), ao_channel_(ao_channel),
-                di_channel_(di_channel), do_channel_(do_channel),
-                encoder_channel_(encoder_channel), encrate_channel_(encrate_channel)
-            {};
-        };
-
         // FUNCTIONS FOR GETTING CHANNEL STRUCTS AND SETS
 
         virtual AiChannel ai_channel(uint channel_number) { return AiChannel(this, channel_number); }
@@ -201,13 +175,6 @@ namespace mel {
         virtual DoChannel do_channel(uint channel_number) { return DoChannel(this, channel_number); }
         virtual EncoderChannel encoder_channel(uint channel_number) { return EncoderChannel(this, channel_number); }
         virtual EncRateChannel encrate_channel(uint channel_number) { return EncRateChannel(this, channel_number); }
-
-        virtual AoDoChannelSet ao_do_channel_set(uint ao_channel, uint do_channel) {
-            return AoDoChannelSet(this, ao_channel, do_channel);
-        }
-        virtual FullChannelSet full_channel_set(uint ai_channel, uint ao_channel, uint di_channel, uint do_channel, uint encoder_channel, uint encrate_channel) {
-            return FullChannelSet(this, ai_channel, ao_channel, di_channel, do_channel, encoder_channel, encrate_channel);
-        }
         
     };
 }
