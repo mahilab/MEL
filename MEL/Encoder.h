@@ -19,8 +19,8 @@ namespace mel {
 
         // constructor
         Encoder() {}
-        Encoder(double radius, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel);
-
+        Encoder(double radius, uint counts_per_revolution, uint quadrature_factor, Daq* daq, uint daq_channel);
+        //Encoder(double radius, uint counts_per_revolution, uint quadrature_factor, Daq::EncoderChannel encoder_channel);
 
         // state variables
         double count_;

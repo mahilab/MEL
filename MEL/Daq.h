@@ -95,8 +95,8 @@ namespace mel {
         uint_vec   ao_channels_;          // vector of analog output channels being used 
         uint_vec   di_channels_;          // vector of digital input channels being used 
         uint_vec   do_channels_;          // vector of digital output channels being used 
-        uint_vec   enc_channels_;         // vector of encoder channels being used
-        uint_vec   vel_channels_;         // vector of encoder velocity channels being used
+        uint_vec   encoder_channels_;     // vector of encoder channels being used
+        uint_vec   encrate_channels;      // vector of encoder velocity channels being used
 
         // NUMBER OF CHANNELS DEFINED
 
@@ -124,7 +124,89 @@ namespace mel {
         // HELPLER FUNCTIONS
 
         uint channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
-        void sort_and_reduce_channels(uint_vec& channels);                                  // turns input such as {3, 1, 1, 2} to {1, 2, 3}       
+        void sort_and_reduce_channels(uint_vec& channels);                                  // turns input such as {3, 1, 1, 2} to {1, 2, 3}      
+
+    public:
+
+        // CHANNEL STRUCTS AND SETS
+
+        struct Channel { 
+            Daq* daq_; 
+            uint channel_; 
+            Channel(Daq* daq, uint channel) : daq_(daq), channel_(channel) {} 
+        };
+
+        struct AiChannel : Channel { 
+            AiChannel(Daq* daq, uint channel) : Channel(daq, channel) {} 
+            double get_voltage() { return daq_->get_analog_voltage(channel_); }
+        };
+
+        struct AoChannel : Channel {
+            AoChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
+            void set_voltage(double new_voltage) { daq_->set_analog_voltage(channel_, new_voltage ); }
+        };
+
+        struct DiChannel : Channel {
+            DiChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
+            char get_state() { return daq_->get_digital_state(channel_); }
+        };
+
+        struct DoChannel : Channel {
+            DoChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
+            void set_state(double new_state) { daq_->set_digital_state(channel_, new_state); }
+        };
+
+        struct EncoderChannel : Channel {
+            EncoderChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
+            int get_count() { return daq_->get_encoder_count(channel_); }
+        };
+
+        struct EncRateChannel : Channel {
+            EncRateChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
+            double get_rate() { return daq_->get_encoder_rate(channel_); }
+        };
+
+
+        struct AoDoChannelSet {
+            Daq* daq_;
+            uint ao_channel_;
+            uint do_channel_;
+            AoDoChannelSet(Daq* daq, uint ao_channel, uint do_channel) : daq_(daq), ao_channel_(ao_channel), do_channel_(do_channel) {};
+        };
+
+        struct FullChannelSet {
+            Daq* daq_;
+            uint ai_channel_;
+            uint ao_channel_;
+            uint di_channel_;
+            uint do_channel_;
+            uint encoder_channel_;
+            uint encrate_channel_;
+            FullChannelSet(Daq* daq, uint ai_channel, uint ao_channel,
+                           uint di_channel, uint do_channel,
+                           uint encoder_channel, uint encrate_channel) :
+                daq_(daq), 
+                ai_channel_(ai_channel), ao_channel_(ao_channel),
+                di_channel_(di_channel), do_channel_(do_channel),
+                encoder_channel_(encoder_channel), encrate_channel_(encrate_channel)
+            {};
+        };
+
+        // FUNCTIONS FOR GETTING CHANNEL STRUCTS AND SETS
+
+        virtual AiChannel ai_channel(uint channel_number) { return AiChannel(this, channel_number); }
+        virtual AoChannel ao_channel(uint channel_number) { return AoChannel(this, channel_number); }
+        virtual DiChannel di_channel(uint channel_number) { return DiChannel(this, channel_number); }
+        virtual DoChannel do_channel(uint channel_number) { return DoChannel(this, channel_number); }
+        virtual EncoderChannel encoder_channel(uint channel_number) { return EncoderChannel(this, channel_number); }
+        virtual EncRateChannel encrate_channel(uint channel_number) { return EncRateChannel(this, channel_number); }
+
+        virtual AoDoChannelSet ao_do_channel_set(uint ao_channel, uint do_channel) {
+            return AoDoChannelSet(this, ao_channel, do_channel);
+        }
+        virtual FullChannelSet full_channel_set(uint ai_channel, uint ao_channel, uint di_channel, uint do_channel, uint encoder_channel, uint encrate_channel) {
+            return FullChannelSet(this, ai_channel, ao_channel, di_channel, do_channel, encoder_channel, encrate_channel);
+        }
         
     };
 }

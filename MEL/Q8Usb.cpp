@@ -49,7 +49,7 @@ namespace mel {
                 result = hil_open("q8_usb", id_.c_str(), &q8_usb_);
                 if (result == 0) {
                     double temp[3]; // TODO: FIX THIS CRAP
-                    result = hil_read_other(q8_usb_, &vel_channels_[0], enc_channels_.size(), temp);
+                    result = hil_read_other(q8_usb_, &encrate_channels[0], encoder_channels_.size(), temp);
                     if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
                         std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
                         std::cout << "Done" << std::endl;
@@ -110,7 +110,7 @@ namespace mel {
 
             // set encoder quadrature modes
             if (num_enc_channels_ > 0) {
-                result = hil_set_encoder_quadrature_mode(q8_usb_, &enc_channels_[0], num_enc_channels_, &enc_modes_[0]);
+                result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channels_[0], num_enc_channels_, &enc_modes_[0]);
                 if (result < 0)
                     print_quarc_error(result);
             }
@@ -139,7 +139,7 @@ namespace mel {
         if (active_ && num_enc_channels_ > 0) {
             std::cout << "Zeroing Encoder Counts ... ";
             int_vec enc_zero_counts(num_enc_channels_, 0);
-            t_error result = hil_set_encoder_counts(q8_usb_, &enc_channels_[0], enc_channels_.size(), &enc_zero_counts[0]);
+            t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_[0], encoder_channels_.size(), &enc_zero_counts[0]);
             if (result != 0)
                 print_quarc_error(result);
             std::cout << "Done" << std::endl;
@@ -150,7 +150,7 @@ namespace mel {
         if (active_ && num_enc_channels_ > 0) {
             std::cout << "Offsetting Encoder Counts ... ";
             offset_counts.resize(num_enc_channels_, 0);
-            t_error result = hil_set_encoder_counts(q8_usb_, &enc_channels_[0], enc_channels_.size(), &offset_counts[0]);
+            t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_[0], encoder_channels_.size(), &offset_counts[0]);
             if (result != 0)
                 print_quarc_error(result);
             std::cout << "Done" << std::endl;
@@ -217,7 +217,7 @@ namespace mel {
 
     void Q8Usb::read_encoder_counts() {
         if (active_ && num_enc_channels_ > 0) {
-            t_error result = hil_read_encoder(q8_usb_, &enc_channels_[0], num_enc_channels_, &enc_counts_[0]);
+            t_error result = hil_read_encoder(q8_usb_, &encoder_channels_[0], num_enc_channels_, &enc_counts_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -228,7 +228,7 @@ namespace mel {
 
     void Q8Usb::read_encoder_count_rates() {
         if (active_ && num_vel_channels_ > 0) {
-            t_error result = hil_read_other(q8_usb_, &vel_channels_[0], num_vel_channels_, &enc_rates[0]);
+            t_error result = hil_read_other(q8_usb_, &encrate_channels[0], num_vel_channels_, &enc_rates[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -241,9 +241,9 @@ namespace mel {
         if (active_) {
             t_error result = hil_read(q8_usb_,
                 num_ai_channels_ > 0 ? &ai_channels_[0] : NULL, num_ai_channels_,
-                num_enc_channels_ > 0 ? &enc_channels_[0] : NULL, num_enc_channels_,
+                num_enc_channels_ > 0 ? &encoder_channels_[0] : NULL, num_enc_channels_,
                 num_di_channels_ > 0 ? &di_channels_[0] : NULL, num_di_channels_,
-                num_vel_channels_ > 0 ? &vel_channels_[0] : NULL, num_vel_channels_,
+                num_vel_channels_ > 0 ? &encrate_channels[0] : NULL, num_vel_channels_,
                 num_ai_channels_ > 0 ? &ai_voltages_[0] : NULL,
                 num_enc_channels_ > 0 ? &enc_counts_[0] : NULL,
                 num_di_channels_ > 0 ? &di_states_[0] : NULL,

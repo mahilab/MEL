@@ -16,24 +16,24 @@ namespace mel {
         ao_channels_(ao_channels),
         di_channels_(di_channels),
         do_channels_(do_channels),
-        enc_channels_(enc_channels),
-        vel_channels_(vel_channels)
+        encoder_channels_(enc_channels),
+        encrate_channels(vel_channels)
     {
         // sort channel numbers from smallest to largest and delete duplicates
         sort_and_reduce_channels(ai_channels_);
         sort_and_reduce_channels(ao_channels_);
         sort_and_reduce_channels(di_channels_);
         sort_and_reduce_channels(di_channels_);
-        sort_and_reduce_channels(enc_channels_);
-        sort_and_reduce_channels(vel_channels_);
+        sort_and_reduce_channels(encoder_channels_);
+        sort_and_reduce_channels(encrate_channels);
 
         // get number of unique channels being use
         num_ai_channels_  = ai_channels_.size();
         num_ao_channels_  = ao_channels_.size();
         num_di_channels_  = di_channels_.size();
         num_do_channels_  = do_channels_.size();
-        num_enc_channels_ = enc_channels_.size();
-        num_vel_channels_ = vel_channels_.size();
+        num_enc_channels_ = encoder_channels_.size();
+        num_vel_channels_ = encrate_channels.size();
 
         // initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!) 
         ai_voltages_ = double_vec(num_ai_channels_, 0.0);
@@ -59,9 +59,9 @@ namespace mel {
             data_log_ << "DI" + std::to_string(*it) << "\t";
         for (auto it = do_channels_.begin(); it != do_channels_.end(); ++it)
             data_log_ << "DO" + std::to_string(*it) << "\t";
-        for (auto it = enc_channels_.begin(); it != enc_channels_.end(); ++it)
+        for (auto it = encoder_channels_.begin(); it != encoder_channels_.end(); ++it)
             data_log_ << "ENC_COUNT" + std::to_string(*it) << "\t";
-        for (auto it = vel_channels_.begin(); it != vel_channels_.end(); ++it)
+        for (auto it = encrate_channels.begin(); it != encrate_channels.end(); ++it)
             data_log_ << "ENC_RATE" + std::to_string(*it) << "\t";
         data_log_ << std::endl;
 
@@ -106,7 +106,7 @@ namespace mel {
     }
 
     int Daq::get_encoder_count(int channel_number) {
-        return enc_counts_[channel_number_to_index(enc_channels_, channel_number)];
+        return enc_counts_[channel_number_to_index(encoder_channels_, channel_number)];
     }
 
     double_vec Daq::get_encoder_rates() {
@@ -114,7 +114,7 @@ namespace mel {
     }
 
     double Daq::get_encoder_rate(int channel_number) {
-        return enc_rates[channel_number_to_index(vel_channels_, channel_number)];
+        return enc_rates[channel_number_to_index(encrate_channels, channel_number)];
     }
 
 
@@ -154,4 +154,5 @@ namespace mel {
         std::sort(channels.begin(), channels.end());
         channels.erase(std::unique(channels.begin(), channels.end()), channels.end());
     }
+
 }

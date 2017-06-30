@@ -5,21 +5,16 @@ namespace mel {
 
     class OpenWrist : public Robot {
 
-        // constructor
+    public:
 
+        OpenWrist();
+        OpenWrist(Daq::FullChannelSet joint_0, Daq::FullChannelSet joint_1, Daq::FullChannelSet joint_2);
 
-        // parameters
+        Daq* daq_;
 
-
-
-        // relatives
-
-
-
-
-        // state variables
-
-
+        std::vector<Encoder> encoders_;
+        std::vector<Actuator> actuators_;
+        std::vector<RevoluteJoint> joints_;
 
 
     };

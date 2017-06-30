@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    Encoder::Encoder(double radius, int counts_per_revolution, int quadrature_factor, Daq* daq, int daq_channel) :
+    Encoder::Encoder(double radius, uint counts_per_revolution, uint quadrature_factor, Daq* daq, uint daq_channel) :
         radius_(radius),
         counts_per_revolution_(counts_per_revolution),
         quadrature_factor_(quadrature_factor),
@@ -11,6 +11,9 @@ namespace mel {
     {
 
     }
+
+   // Encoder::Encoder(double radius, uint counts_per_revolution, uint quadrature_factor, Daq::EncoderChannel encoder_channel) :
+   //     Encoder(radius, counts_per_revolution, quadrature_factor, encoder_channel.daq_, encoder_channel.channel_) {}
 
 
     double Encoder::get_count() {

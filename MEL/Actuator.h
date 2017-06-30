@@ -20,14 +20,8 @@ namespace mel {
 
         // constructors
         Actuator() {}
-        Actuator(double radius, double kt, double amp_gain, double current_limit, Daq* daq, uint ao_channel, uint do_channel)
-            : radius_(radius),
-            kt_(kt),
-            amp_gain_(amp_gain),
-            current_limit_(current_limit),
-            ao_channel_(ao_channel),
-            do_channel_(do_channel),
-            daq_(daq) {}
+        Actuator(double radius, double kt, double amp_gain, double current_limit, Daq* daq, uint ao_channel, uint do_channel);
+        //Actuator(double radius, double kt, double amp_gain, double current_limit, Daq::AoDoChannelSet ao_do_channel_set);
 
         // state variables
         double torque_;
