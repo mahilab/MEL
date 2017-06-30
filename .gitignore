@@ -15,6 +15,7 @@
 
 # MEL
 daq_logs/
+clock_logs/
 
 # Build results
 [Dd]ebug/
