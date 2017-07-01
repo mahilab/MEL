@@ -9,12 +9,10 @@ namespace mel {
 
         // constructors
         PrismaticRobotJoint() {}
-        PrismaticRobotJoint(PositionSensor* position_sensor, Actuator* actuator);
+        PrismaticRobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission);
         
     private:
 
-        double encoder_to_joint_space(double counts);
-        double joint_torque_to_actuator_torque(double joint_torque);
         
     };
 

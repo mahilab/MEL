@@ -31,9 +31,8 @@ public:
         daqs_ = { new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options) };
         
 
-        // instantiate generic robot
-        
-        robot_ = new mel::Robot();
+        // instantiate MahiExoII
+        exo_ = new mel::MahiExoII();
 
 
         // initialize Q8 USB

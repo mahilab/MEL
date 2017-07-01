@@ -9,42 +9,28 @@ namespace mel {
 
         // constructors
         Motor() {}
-        Motor(double transmission, double kt, double current_limit, double amp_gain)
-            : transmission_(transmission),
-            kt_(kt),
-            current_limit_(current_limit),
-            amp_gain_(amp_gain)
-        {
+        Motor(double kt, double current_limit, double amp_gain, Daq::AoChannel ao_channel, Daq::DoChannel do_channel);
 
-        }
-
-        // setters of state variables
-        void set_torque(double actuator_torque);
+        void set_torque(double actuator_torque) override;
         void set_current(double current);
         double limit_current(double current_new);
 
-        void enable();
-        void disable();
+        void enable() override;
+        void disable() override;
+        
+        const double kt_ = 0;
+        const double current_limit_ = 0;
+        const double amp_gain_ = 0;
+        
+ 
 
     private:
-
-        // parameters
-        const double transmission_{};
-        const double kt_{};
-        const double amp_gain_{};
-        const double cont_current_limit_{};
-        const double peak_current_limit_{};
-        const double i2t_current_limit_{};
-        const uint32 ao_channel_{};
-        const uint32 do_channel_{};
-
         
+        Daq::AoChannel ao_channel_;
+        Daq::DoChannel do_channel_;
 
-        // state variables
-        double torque_;
         double current_;
         double limited_current_;
-        double current_limit_;
         bool is_enable_;
 
         

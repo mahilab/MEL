@@ -13,9 +13,9 @@ namespace mel {
 
 
         // inherited virtual functions from Exo class to be implemented
-        double_vec get_anatomical_joint_positions();
-        double_vec get_anatomical_joint_velocities();
-        void set_anatomical_joint_torques(double_vec new_torques);
+        double_vec get_anatomical_joint_positions() override;
+        double_vec get_anatomical_joint_velocities() override;
+        void set_anatomical_joint_torques(double_vec new_torques) override;
         
 
     private:
@@ -40,6 +40,7 @@ namespace mel {
         void psi_func(Eigen::VectorXd qp, Eigen::VectorXd qs, double R, double r, double a56, double alpha5, double alpha13);
         void psi_d_qp_func(Eigen::VectorXd qp, double r, double alpha5, double alpha13);
         void forward_kinematics(Eigen::VectorXd qs, uint32 max_it, double tol);
+        void forward_kinematics_velocity(Eigen::VectorXd qs_dot);
         
     };
 }

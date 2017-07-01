@@ -1,10 +1,9 @@
-#include "RevoluteJoint.h"
+#include "RevoluteRobotJoint.h"
 
 namespace mel {
 
-    RevoluteJoint::RevoluteJoint(double radius, Encoder* encoder, Actuator* actuator) :
-        radius_(radius),
-        Joint(encoder, actuator)
+    RevoluteRobotJoint::RevoluteRobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
+        RobotJoint(position_sensor, position_sensor_transmission, actuator, actuator_transmission)
     {
     }
 

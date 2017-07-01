@@ -7,15 +7,16 @@ namespace mel {
 
     public:
 
-
         // constructors
-        Actuator();
+        Actuator() {}
 
-        // setters of state variables
-        void set_torque(double actuator_torque);
+        virtual void set_torque(double actuator_torque) = 0;
 
+        virtual void enable();
+        virtual void disable();
 
-        void enable();
-        void disable();
+    protected:
+
+        double torque_;
     };
 }

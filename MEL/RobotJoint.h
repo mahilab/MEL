@@ -10,24 +10,20 @@ namespace mel {
 
         // constructor
         RobotJoint();
-        RobotJoint(PositionSensor* position_sensor, Actuator* actuator);
+        RobotJoint(PositionSensor* position_sensor, double position_sensor_transmission_, Actuator* actuator, double actuator_transmission);
 
         // references
         PositionSensor* position_sensor_;
         Actuator* actuator_;
-
         
+        const double position_sensor_transmission_;
+        const double actuator_transmission_;
 
         // getters of state variables
         double get_position();
         double get_velocity();
         void set_torque(double joint_torque);
-        void update_position();
         
-
-        // pure virtual functions 
-        virtual double encoder_to_joint_space(double counts) = 0;
-        virtual double joint_torque_to_actuator_torque(double joint_torque) = 0;
 
     private:
 

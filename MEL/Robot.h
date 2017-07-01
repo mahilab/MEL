@@ -16,7 +16,7 @@ namespace mel {
     public:
 
         // constructor
-        Robot();
+        Robot() {}
 
         // components
         std::vector<RobotJoint*> robot_joints_;

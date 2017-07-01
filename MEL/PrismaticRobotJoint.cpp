@@ -1,9 +1,9 @@
-#include "PrismaticJoint.h"
+#include "PrismaticRobotJoint.h"
 
 namespace mel {
 
-    PrismaticJoint::PrismaticJoint(Encoder* encoder, Actuator* actuator) :
-        Joint(encoder, actuator)
+    PrismaticRobotJoint::PrismaticRobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
+        RobotJoint(position_sensor, position_sensor_transmission, actuator, actuator_transmission)
     {
     }
 

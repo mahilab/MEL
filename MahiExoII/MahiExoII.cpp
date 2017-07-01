@@ -10,11 +10,11 @@ namespace mel {
         //psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
     {
 
-        position_sensors_.push_back(new Encoder(0.42 / 4.5, 2048));
-        position_sensors_.push_back(new Encoder(0.17 / 2.5, 2048));
-        position_sensors_.push_back(new Encoder(INCH2METER*0.23, 2048));
-        position_sensors_.push_back(new Encoder(INCH2METER*0.23, 2048));
-        position_sensors_.push_back(new Encoder(INCH2METER*0.23, 2048));
+        position_sensors_.push_back(new Encoder( 2048 ));
+        position_sensors_.push_back(new Encoder( 2048 ));
+        position_sensors_.push_back(new Encoder( 2048 ));
+        position_sensors_.push_back(new Encoder( 2048 ));
+        position_sensors_.push_back(new Encoder( 2048 ));
 
         actuators_.push_back(new Motor(0.42 / 4.5, 0.127, 6.0, 1.8));
         actuators_.push_back(new Motor(0.17 / 2.5, 0.0603, 3.17, 1.8));
@@ -22,11 +22,11 @@ namespace mel {
         actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
         actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
 
-        robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[0], actuators_[0])); // elbow flexion/extension
-        robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[1], actuators_[1])); // forearm pronation/supination
-        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[2], actuators_[2])); // wrist prismatic l_1
-        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[3], actuators_[3])); // wrist prismatic l_2
-        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[4], actuators_[4])); // wrist prismatic l_3
+        robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[0], 0.42 / 4.5, actuators_[0], 0.42 / 4.5)); // elbow flexion/extension
+        robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[1], 0.17 / 2.5, actuators_[1], 0.17 / 2.5)); // forearm pronation/supination
+        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[2], INCH2METER*0.23, actuators_[2], INCH2METER*0.23)); // wrist prismatic l_1
+        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[3], INCH2METER*0.23, actuators_[3], INCH2METER*0.23)); // wrist prismatic l_2
+        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[4], INCH2METER*0.23, actuators_[4], INCH2METER*0.23)); // wrist prismatic l_3
         /*
         joints_.push_back(new RevoluteJoint()); // wrist revolute theta_1
         joints_.push_back(new RevoluteJoint()); // wrist revolute theta_2
@@ -81,6 +81,11 @@ namespace mel {
         anatomical_joint_velocities_[3] = qp_(7);
 
         return anatomical_joint_velocities_;
+    }
+
+    void MahiExoII::set_anatomical_joint_torques(double_vec new_torques) {
+
+
     }
     
     /*
@@ -203,9 +208,4 @@ namespace mel {
     }
     */
 
-    /*
-    void MahiExoII::set_joint_torques(double joint_torques) {
-        joints_[joint]->torque_ = joint_torque;
-    }
-    */
 }

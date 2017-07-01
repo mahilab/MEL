@@ -9,12 +9,11 @@ namespace mel {
 
         // constructors
         RevoluteRobotJoint() {}
-        RevoluteRobotJoint(PositionSensor* position_sensor, Actuator* actuator);
+        RevoluteRobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission);
 
     private:
 
-        double encoder_to_joint_space(double counts);
-        double joint_torque_to_actuator_torque(double joint_torque);
+
 
     };
 }

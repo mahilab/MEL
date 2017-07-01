@@ -24,10 +24,11 @@
     <ClCompile Include="ControlLoop.cpp" />
     <ClCompile Include="Daq.cpp" />
     <ClCompile Include="Encoder.cpp" />
+    <ClCompile Include="Motor.cpp" />
     <ClCompile Include="RobotJoint.cpp" />
-    <ClCompile Include="PrismaticJoint.cpp" />
+    <ClCompile Include="PrismaticRobotJoint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
-    <ClCompile Include="RevoluteJoint.cpp" />
+    <ClCompile Include="RevoluteRobotJoint.cpp" />
     <ClCompile Include="Robot.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>

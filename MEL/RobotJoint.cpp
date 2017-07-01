@@ -1,20 +1,24 @@
-#include "Joint.h"
+#include "RobotJoint.h"
 
 namespace mel {
 
-    Joint::Joint() : 
-        encoder_(nullptr),
+    RobotJoint::RobotJoint() :
+        position_sensor_(nullptr),
+        position_sensor_transmission_(0.0),
         actuator_(nullptr),
+        actuator_transmission_(0.0),
         position_(0.0),
         velocity_(0.0),
         torque_(0.0)
     {
-        
+
     }
 
-    Joint::Joint(Encoder* encoder, Actuator* actuator) : 
-        encoder_(encoder),
+    RobotJoint::RobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
+        position_sensor_(position_sensor),
+        position_sensor_transmission_(position_sensor_transmission),
         actuator_(actuator),
+        actuator_transmission_(actuator_transmission),
         position_(0.0),
         velocity_(0.0),
         torque_(0.0)
@@ -23,24 +27,18 @@ namespace mel {
     }
 
 
-    double Joint::get_position() {
-        if (encoder_ != nullptr) {
-            position_ = encoder_to_joint_space(encoder_->get_count());
-        }
+    double RobotJoint::get_position() {
+        position_ = position_sensor_transmission_*position_sensor_->get_position();
         return position_;
     }
 
-    double Joint::get_velocity() {
-        velocity_ = encoder_to_joint_space(encoder_->get_count_rate());
+    double RobotJoint::get_velocity() {
+        velocity_ = position_sensor_transmission_*position_sensor_->get_velocity;
         return velocity_;
     }
 
-    void Joint::set_torque(double joint_torque) {
+    void RobotJoint::set_torque(double joint_torque) {
         torque_ = joint_torque;
-        actuator_->set_torque(joint_torque_to_actuator_torque(joint_torque));
-    }
-
-    void Joint::update_position() {
-        position_ = encoder_to_joint_space(encoder_->get_count());
+        actuator_->set_torque(actuator_transmission_*torque_);
     }
 }
