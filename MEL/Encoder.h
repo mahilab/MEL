@@ -6,10 +6,7 @@ namespace mel {
 
     class Encoder {
 
-    public:
-
-
-        
+    public:        
 
         // parameters
         const double transmission_ = 0;
@@ -18,7 +15,7 @@ namespace mel {
 
         // constructor
         Encoder() {}
-        Encoder(double transmission, uint counts_per_rev);
+        Encoder(double transmission, uint32 counts_per_rev);
 
     private:
 

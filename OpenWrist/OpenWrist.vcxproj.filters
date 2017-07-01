@@ -21,18 +21,18 @@
     <ClCompile Include="main_testing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenWrist.cpp">
+    <ClCompile Include="OpenWrist_old.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenWristShare.cpp">
+    <ClCompile Include="OpenWristShare_old.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenWrist.h">
+    <ClInclude Include="OpenWrist_old.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OpenWristShare.h">
+    <ClInclude Include="OpenWristShar_old.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
