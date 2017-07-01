@@ -70,19 +70,19 @@ namespace mel {
         virtual double get_encoder_rate(channel channel_number);
 
         // FUNCTIONS FOR SETTING OPTIONS
+        // TODO: PRESERVE SIZE
+        virtual void set_ai_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) { ai_min_voltages_ = min_voltages; ai_max_voltages_ = max_voltages; }
+        virtual void set_ao_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) { ao_min_voltages_ = min_voltages; ao_max_voltages_ = max_voltages; }
 
-        virtual void set_ai_max_voltages(voltage_vec max_voltages) {};
-        virtual void set_ai_min_voltages(voltage_vec min_voltages) {};
+        virtual void set_ao_initial_voltages(voltage_vec initial_voltages) { ao_initial_voltages_ = initial_voltages; }
+        virtual void set_ao_final_voltages(voltage_vec final_voltages) { ao_final_voltages_ = final_voltages;  }
+        virtual void set_ao_expire_voltages(voltage_vec expire_voltages) { ao_expire_voltages_ = expire_voltages;  }
 
-        virtual void set_ao_max_voltages(voltage_vec max_voltages) {};
-        virtual void set_ao_min_voltages(voltage_vec min_voltages) {};
-        virtual void set_ao_initial_voltages(voltage_vec initial_voltages) {};
-        virtual void set_ao_final_voltages(voltage_vec final_voltages) {};
-        
-        virtual void set_do_initial_states(dsignal_vec initial_states) {};
-        virtual void set_do_final_states(dsignal_vec final_states) {};
+        virtual void set_do_initial_signals(dsignal_vec initial_signals) { do_initial_signals_ = initial_signals; }
+        virtual void set_do_final_signals(dsignal_vec final_signals) { do_final_signals_ = final_signals; }
+        virtual void set_do_expire_signals(dsignal_vec expire_signals) { do_expire_signals_ = expire_signals; }
 
-        virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) {};
+        virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) { encoder_quadrature_factors_ = quadrature_factors; }
 
         // FUNCTIONS FOR GETTING OPTIONS
 

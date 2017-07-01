@@ -51,7 +51,7 @@ namespace mel {
                 result = hil_open("q8_usb", id_.c_str(), &q8_usb_);
                 if (result == 0) {
                     double temp[3]; // TODO: FIX THIS CRAP
-                    result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);
+                    //result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);
                     if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
                         std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
                         std::cout << "Done" << std::endl;
@@ -83,58 +83,16 @@ namespace mel {
             if (result < 0)
                 print_quarc_error(result);
 
-            // Stop and Clear Watchdog
+            // stop and clear watchdog
             stop_watchdog();
-
             // set analog I/O ranges
-            if (num_ai_channels_ > 0) {
-                result = hil_set_analog_input_ranges(q8_usb_, &ai_channels_nums_[0], num_ai_channels_, &ai_min_voltages_[0], &ai_max_voltages_[0]);
-                if (result < 0)
-                    print_quarc_error(result);
-            }
-            if (num_ao_channels_ > 0) {
-                result = hil_set_analog_output_ranges(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_min_voltages_[0], &ao_max_voltages_[0]);
-                if (result < 0)
-                    print_quarc_error(result);
-            }
-
-            // set analog/digital output expiration states
-            if (num_ao_channels_ > 0) {
-                result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_expire_voltages_[0]);
-                if (result < 0)
-                    print_quarc_error(result);
-            }
-            if (num_do_channels_ > 0) {
-                // must convert MEL type to Quanser type
-                std::vector<t_digital_state> converted_do_exp_signals;
-                for (auto it = do_expire_signals_.begin(); it != do_expire_signals_.end(); ++it) {
-                    if (*it == 1) {
-                        converted_do_exp_signals.push_back(DIGITAL_STATE_HIGH);
-                    }
-                    else {
-                        converted_do_exp_signals.push_back(DIGITAL_STATE_LOW);
-                    }
-                }                
-                result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_nums_[0], num_do_channels_, &converted_do_exp_signals[0]);
-                if (result < 0)
-                    print_quarc_error(result);
-            }
-
-            // set encoder quadrature modes
-            if (num_enc_channels_ > 0) {
-                // must convert MEL type to Quanser type
-                std::vector<t_encoder_quadrature_mode> converted_encoder_modes;
-                for (auto it = encoder_quadrature_factors_.begin(); it != encoder_quadrature_factors_.end(); ++it) {
-                    if (*it == 1)
-                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_NONE);
-                    else
-                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_4X);
-                }
-                result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channels_nums_[0], num_enc_channels_, &converted_encoder_modes[0]);
-                if (result < 0)
-                    print_quarc_error(result);
-            }
-
+            set_ao_voltage_ranges(ao_min_voltages_, ao_max_voltages_);
+            set_ai_voltage_ranges(ai_min_voltages_, ai_max_voltages_);
+            // set expiration states
+            set_ao_expire_voltages(ao_expire_voltages_);
+            set_do_expire_signals(do_expire_signals_);
+            // set encoder quadrature factors
+            set_encoder_quadrature_factors(encoder_quadrature_factors_);
             // set and write initial voltages and states
             ao_voltages_ = ao_initial_voltages_;
             do_signals_ = do_initial_signals_;
@@ -176,7 +134,6 @@ namespace mel {
             std::cout << "Done" << std::endl;
         }
     }
-
 
     int Q8Usb::deactivate() {
         if (active_) {
@@ -346,6 +303,69 @@ namespace mel {
         result = hil_watchdog_clear(q8_usb_);
         if (result < 0)
             print_quarc_error(result);
+    }
+
+    void Q8Usb::set_ai_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) {
+        Daq::set_ai_voltage_ranges(min_voltages, max_voltages);
+        if (num_ai_channels_ > 0) {
+            t_error result = hil_set_analog_input_ranges(q8_usb_, &ai_channels_nums_[0], num_ai_channels_, &ai_min_voltages_[0], &ai_max_voltages_[0]);
+            if (result < 0)
+                print_quarc_error(result);
+        }
+    }
+
+    void Q8Usb::set_ao_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) {
+        Daq::set_ao_voltage_ranges(min_voltages, max_voltages);
+        if (num_ao_channels_ > 0) {
+            t_error result = hil_set_analog_output_ranges(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_min_voltages_[0], &ao_max_voltages_[0]);
+            if (result < 0)
+                print_quarc_error(result);
+        }
+    }
+
+    void Q8Usb::set_ao_expire_voltages(voltage_vec expire_voltages) {
+        Daq::set_ao_expire_voltages(expire_voltages);
+        if (num_ao_channels_ > 0) {
+            t_error result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_expire_voltages_[0]);
+            if (result < 0)
+                print_quarc_error(result);
+        }
+    }
+
+    void Q8Usb::set_do_expire_signals(dsignal_vec expire_signals) {
+        Daq::set_do_expire_signals(expire_signals);
+        if (num_do_channels_ > 0) {
+            // must convert MEL type to Quanser type
+            std::vector<t_digital_state> converted_do_exp_signals;
+            for (auto it = do_expire_signals_.begin(); it != do_expire_signals_.end(); ++it) {
+                if (*it == 1) {
+                    converted_do_exp_signals.push_back(DIGITAL_STATE_HIGH);
+                }
+                else {
+                    converted_do_exp_signals.push_back(DIGITAL_STATE_LOW);
+                }
+            }
+            t_error result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_nums_[0], num_do_channels_, &converted_do_exp_signals[0]);
+            if (result < 0)
+                print_quarc_error(result);
+        }
+    }
+
+    void Q8Usb::set_encoder_quadrature_factors(uint32_vec quadrature_factors) {
+        Daq::set_encoder_quadrature_factors(quadrature_factors);
+        if (num_enc_channels_ > 0) {
+            // must convert MEL type to Quanser type
+            std::vector<t_encoder_quadrature_mode> converted_encoder_modes;
+            for (auto it = encoder_quadrature_factors_.begin(); it != encoder_quadrature_factors_.end(); ++it) {
+                if (*it == 1)
+                    converted_encoder_modes.push_back(ENCODER_QUADRATURE_NONE);
+                else
+                    converted_encoder_modes.push_back(ENCODER_QUADRATURE_4X);
+            }
+            t_error result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channels_nums_[0], num_enc_channels_, &converted_encoder_modes[0]);
+            if (result < 0)
+                print_quarc_error(result);
+        }
     }
 
     void Q8Usb::print_quarc_error(t_error result) {

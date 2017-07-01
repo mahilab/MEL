@@ -46,7 +46,7 @@ namespace mel {
 
     public:
 
-        /* inhereted virtual functions from Daq class to be implemented */
+        // inhereted virtual functions from Daq class to be implemented
         int activate() override;
         int deactivate() override;
 
@@ -71,6 +71,15 @@ namespace mel {
             channel_number += 14000;
             return Daq::get_encoder_rate(channel_number);
         }
+
+        virtual void set_ai_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) override;
+        virtual void set_ao_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) override;
+
+        virtual void set_ao_expire_voltages(voltage_vec expire_voltages) override;
+        virtual void set_do_expire_signals(dsignal_vec expire_signals) override;
+
+        virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) override;
+
 
     private:
 
