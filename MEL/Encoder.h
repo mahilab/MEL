@@ -17,8 +17,6 @@ namespace mel {
         Encoder() {}
         Encoder(double transmission, uint32 counts_per_rev);
 
-    private:
-
         // state variables
         double count_;
         double count_rate_;

@@ -62,7 +62,7 @@ class MyController : public mel::Controller {
 
         q8->write_all();
 
-        q8->log_data();
+        q8->log_data(get_time());
 
         q8->reload_watchdog();
 

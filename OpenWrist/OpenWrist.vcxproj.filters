@@ -27,12 +27,18 @@
     <ClCompile Include="OpenWristShare_old.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OpenWrist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenWrist_old.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OpenWristShar_old.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenWrist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

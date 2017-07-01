@@ -23,6 +23,30 @@ namespace mel {
             channel_vec enc_channels,
             char * options);
 
+
+        // DEFAULT Q8 USB SETTINGS
+
+    private:
+
+        const voltage  default_ai_min_voltage_ = -10;
+        const voltage  default_ai_max_voltage_ = +10;
+        const voltage  default_ao_min_voltage_ = -10;
+        const voltage  default_ao_max_voltage_ = +10;
+        const voltage  default_ao_initial_voltage_ = 0;
+        const voltage  default_ao_final_voltage_ = 0;
+        const voltage  default_ao_exp_voltage_ = 0;
+        const dsignal  default_do_initial_signal_ = 0;
+        const dsignal  default_do_final_signal_ = 0;
+        const dsignal  default_do_expire_signal_ = 0;
+        const uint8    default_encoder_quadrature_factor_ = 4;
+
+        // Q8USB OBJECT AND OPTIONS
+
+        t_card q8_usb_;
+        char       options_[1024];   // Quarc board specific options
+
+    public:
+
         /* inhereted virtual functions from Daq class to be implemented */
         int activate() override;
         int deactivate() override;
@@ -51,31 +75,10 @@ namespace mel {
 
     private:
 
-        t_card q8_usb_;
-        std::vector<t_digital_state> do_exp_signals_;
-        std::vector<t_encoder_quadrature_mode> enc_modes_;
-
-        char       options_[1024];   /* board specific options which include current controller gains */
-
-        // Q8 USB SETTINGS (WITH DEFAULTS INITIALIZED)
-
-        voltage  ai_min_voltage_ = -10;
-        voltage  ai_max_voltage_ = +10;
-        voltage  ao_min_voltage_ = -10;
-        voltage  ao_max_voltage_ = +10;
-        voltage  ao_initial_voltage_ = 0;
-        voltage  ao_final_voltage_ = 0;
-        voltage  ao_exp_voltage_ = 0;
-        dsignal   do_initial_signal_ = 0;
-        dsignal   do_final_signal_ = 0;
-
-        t_digital_state do_exp_state_ = DIGITAL_STATE_LOW;
-        t_encoder_quadrature_mode enc_mode_ = ENCODER_QUADRATURE_4X;
-
         // HELPTER FUNCTIONS 
 
         static void print_quarc_error(t_error result);
-        static channel_vec get_q8_velocity_channels(channel_vec enc_channels);
+        static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
 
     public:
 

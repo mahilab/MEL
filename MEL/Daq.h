@@ -71,18 +71,18 @@ namespace mel {
 
         // FUNCTIONS FOR SETTING OPTIONS
 
-        virtual void set_ai_max_voltages(voltage_vec max_voltages);
-        virtual void set_ai_min_voltages(voltage_vec min_voltages);
+        virtual void set_ai_max_voltages(voltage_vec max_voltages) {};
+        virtual void set_ai_min_voltages(voltage_vec min_voltages) {};
 
-        virtual void set_ao_max_voltages(voltage_vec max_voltages);
-        virtual void set_ao_min_voltages(voltage_vec min_voltages);
-        virtual void set_ao_initial_voltages(voltage_vec initial_voltages);
-        virtual void set_ao_final_voltages(voltage_vec final_voltages);
+        virtual void set_ao_max_voltages(voltage_vec max_voltages) {};
+        virtual void set_ao_min_voltages(voltage_vec min_voltages) {};
+        virtual void set_ao_initial_voltages(voltage_vec initial_voltages) {};
+        virtual void set_ao_final_voltages(voltage_vec final_voltages) {};
         
-        virtual void set_do_initial_states(dsignal_vec initial_states);
-        virtual void set_do_final_states(dsignal_vec final_states);
+        virtual void set_do_initial_states(dsignal_vec initial_states) {};
+        virtual void set_do_final_states(dsignal_vec final_states) {};
 
-        virtual void set_encoder_quadrature_factors(uint8_vec quadrature_factors);
+        virtual void set_encoder_quadrature_factors(uint8_vec quadrature_factors) {};
 
         // DAQ DATA LOGGING
 
@@ -129,10 +129,11 @@ namespace mel {
         voltage_vec ao_max_voltages_;      // vector of maximum output voltages allowed by the board 
         voltage_vec ao_initial_voltages_;  // vector of voltages analog outputs will go to when the program starts 
         voltage_vec ao_final_voltages_;    // vector of voltages analog outputs will go to when the program finishes 
-        voltage_vec ao_exp_voltages_;      // vector of voltages analog outputs will go to if the watchdog expires 
+        voltage_vec ao_expire_voltages_;   // vector of voltages analog outputs will go to if the watchdog expires 
 
-        dsignal_vec   do_initial_signals_;    // vector of states digital outputs will go to when the program starts 
-        dsignal_vec   do_final_signals_;      // vector of states digital outputs will go to when the program finishes 
+        dsignal_vec do_initial_signals_;   // vector of signals digital outputs will go to when the program starts 
+        dsignal_vec do_final_signals_;     // vector of signals digital outputs will go to when the program finishes 
+        dsignal_vec do_expire_signals_;    // vector of signals digital outputs will go to if the watchdog expires
 
         uint8_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
 
@@ -198,4 +199,6 @@ namespace mel {
         virtual EncRateChannel encrate_channel(channel channel_number) { return EncRateChannel(this, channel_number); }
         
     };
+
+
 }

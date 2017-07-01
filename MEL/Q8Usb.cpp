@@ -15,29 +15,30 @@ namespace mel {
             di_channels,
             do_channels,
             enc_channels,
-            get_q8_velocity_channels(enc_channels))
+            get_q8_encrate_channels(enc_channels))
     {
-        /* set up analog input channels */
-        ai_min_voltages_ = voltage_vec(ai_channels_nums_.size(), ai_min_voltage_);
-        ai_max_voltages_ = voltage_vec(ai_channels_nums_.size(), ai_max_voltage_);
+        // set up analog input channels
+        ai_min_voltages_ = voltage_vec(num_ai_channels_, default_ai_min_voltage_);
+        ai_max_voltages_ = voltage_vec(num_ai_channels_, default_ai_max_voltage_);
 
-        /* set up analog output channels */
-        ao_min_voltages_ = voltage_vec(ao_channels_nums_.size(), ao_min_voltage_);
-        ao_max_voltages_ = voltage_vec(ao_channels_nums_.size(), ao_max_voltage_);
-        ao_initial_voltages_ = voltage_vec(ao_channels_nums_.size(), ao_initial_voltage_);
-        ao_final_voltages_ = voltage_vec(ao_channels_nums_.size(), ao_final_voltage_);
-        ao_exp_voltages_ = voltage_vec(ao_channels_nums_.size(), ao_exp_voltage_);
+        // set up analog output channels
+        ao_min_voltages_ = voltage_vec(num_ao_channels_, default_ao_min_voltage_);
+        ao_max_voltages_ = voltage_vec(num_ao_channels_, default_ao_max_voltage_);
+        ao_initial_voltages_ = voltage_vec(num_ao_channels_, default_ao_initial_voltage_);
+        ao_final_voltages_ = voltage_vec(num_ao_channels_, default_ao_final_voltage_);
+        ao_expire_voltages_ = voltage_vec(num_ao_channels_, default_ao_exp_voltage_);
 
-        /* set up digital output channels */
-        do_initial_signals_ = dsignal_vec(do_channels_nums_.size(), do_initial_signal_);
-        do_final_signals_ = dsignal_vec(do_channels_nums_.size(), do_final_signal_);
-        do_exp_signals_ = std::vector<t_digital_state>(do_channels_nums_.size(), do_exp_state_);
+        // set up digital output channels
+        do_initial_signals_ = dsignal_vec(num_do_channels_, default_do_initial_signal_);
+        do_final_signals_ = dsignal_vec(num_do_channels_, default_do_final_signal_);
+        do_expire_signals_ = dsignal_vec(num_do_channels_, default_do_expire_signal_);
 
-        /* set up encoder channels */
-        enc_modes_ = std::vector<t_encoder_quadrature_mode>(enc_channels.size(), enc_mode_);
+        // set up encoder channels
+        encoder_quadrature_factors_ = uint8_vec(num_enc_channels_, default_encoder_quadrature_factor_);
 
-        /* set up options */
+        // set up options
         strcpy(options_, options);
+
     }
 
     int Q8Usb::activate() {
@@ -98,19 +99,36 @@ namespace mel {
 
             // set analog/digital output expiration states
             if (num_ao_channels_ > 0) {
-                result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_exp_voltages_[0]);
+                result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_expire_voltages_[0]);
                 if (result < 0)
                     print_quarc_error(result);
             }
             if (num_do_channels_ > 0) {
-                result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_nums_[0], num_do_channels_, &do_exp_signals_[0]);
+                // must convert MEL type to Quanser type
+                std::vector<t_digital_state> converted_do_exp_signals;
+                for (auto it = do_expire_signals_.begin(); it != do_expire_signals_.end(); ++it) {
+                    if (*it == 1)
+                        converted_do_exp_signals.push_back(DIGITAL_STATE_HIGH);
+                    else
+                        converted_do_exp_signals.push_back(DIGITAL_STATE_LOW);
+                }
+                result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_nums_[0], num_do_channels_, &converted_do_exp_signals[0]);
                 if (result < 0)
                     print_quarc_error(result);
             }
 
             // set encoder quadrature modes
             if (num_enc_channels_ > 0) {
-                result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channels_nums_[0], num_enc_channels_, &enc_modes_[0]);
+                std::vector<t_encoder_quadrature_mode> converted_encoder_modes;
+                for (auto it = encoder_quadrature_factors_.begin(); it != encoder_quadrature_factors_.end(); ++it) {
+                    if (*it == 1)
+                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_1X);
+                    else if (*it == 2)
+                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_2X);
+                    else
+                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_4X);
+                }
+                result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channels_nums_[0], num_enc_channels_, &converted_encoder_modes[0]);
                 if (result < 0)
                     print_quarc_error(result);
             }
@@ -168,7 +186,7 @@ namespace mel {
 
             // set and write final voltages and states
             ao_voltages_ = ao_final_voltages_;
-            do_signals_ = do_final_signals_;
+            do_signals_  = do_final_signals_;
             write_all();            
 
             // Delete all tasks and monitors (possibly unnecessary)
@@ -334,7 +352,7 @@ namespace mel {
         _tprintf(_T("%s (error %d)\n"), message, -result);
     }
 
-    uint32_vec Q8Usb::get_q8_velocity_channels(uint32_vec enc_channels) {
+    channel_vec Q8Usb::get_q8_encrate_channels(channel_vec enc_channels) {
         uint32_vec vel_channels = enc_channels;
         std::transform(vel_channels.begin(), vel_channels.end(), vel_channels.begin(), bind2nd(std::plus<uint32>(), 14000));
         return vel_channels;
