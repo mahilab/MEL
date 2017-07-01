@@ -16,11 +16,11 @@ namespace mel {
 
         /* constructor */
         Q8Usb(std::string name,
-            uint32_vec ai_channels,
-            uint32_vec ao_channels,
-            uint32_vec di_channels,
-            uint32_vec do_channels,
-            uint32_vec enc_channels,
+            channel_vec ai_channels,
+            channel_vec ao_channels,
+            channel_vec di_channels,
+            channel_vec do_channels,
+            channel_vec enc_channels,
             char * options);
 
         /* inhereted virtual functions from Daq class to be implemented */
@@ -44,7 +44,7 @@ namespace mel {
         void start_watchdog(double watchdog_timeout) override;
         void stop_watchdog() override;
 
-        double get_encoder_rate(int channel_number) override {
+        double get_encoder_rate(channel channel_number) override {
             channel_number += 14000;
             return Daq::get_encoder_rate(channel_number);
         }
@@ -52,30 +52,30 @@ namespace mel {
     private:
 
         t_card q8_usb_;
-        std::vector<t_digital_state> do_exp_states_;
+        std::vector<t_digital_state> do_exp_signals_;
         std::vector<t_encoder_quadrature_mode> enc_modes_;
 
         char       options_[1024];   /* board specific options which include current controller gains */
 
         // Q8 USB SETTINGS (WITH DEFAULTS INITIALIZED)
 
-        double  ai_min_voltage_ = -10;
-        double  ai_max_voltage_ = +10;
-        double  ao_min_voltage_ = -10;
-        double  ao_max_voltage_ = +10;
-        double  ao_initial_voltage_ = 0;
-        double  ao_final_voltage_ = 0;
-        double  ao_exp_voltage_ = 0;
-        char    do_initial_state_ = 0;
-        char    do_final_state_ = 0;
-        t_digital_state do_exp_state_ = DIGITAL_STATE_LOW;
+        voltage  ai_min_voltage_ = -10;
+        voltage  ai_max_voltage_ = +10;
+        voltage  ao_min_voltage_ = -10;
+        voltage  ao_max_voltage_ = +10;
+        voltage  ao_initial_voltage_ = 0;
+        voltage  ao_final_voltage_ = 0;
+        voltage  ao_exp_voltage_ = 0;
+        dsignal   do_initial_signal_ = 0;
+        dsignal   do_final_signal_ = 0;
 
+        t_digital_state do_exp_state_ = DIGITAL_STATE_LOW;
         t_encoder_quadrature_mode enc_mode_ = ENCODER_QUADRATURE_4X;
 
         // HELPTER FUNCTIONS 
 
         static void print_quarc_error(t_error result);
-        static uint32_vec get_q8_velocity_channels(uint32_vec enc_channels);
+        static channel_vec get_q8_velocity_channels(channel_vec enc_channels);
 
     public:
 

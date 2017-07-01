@@ -16,12 +16,12 @@ namespace mel {
         // CONSTRUCTOR / DESTRUCTOR 
 
         Daq(std::string name, std::string id,
-            uint32_vec ai_channels,
-            uint32_vec ao_channels,
-            uint32_vec di_channels,
-            uint32_vec do_channels,
-            uint32_vec encoder_channels,
-            uint32_vec encrate_channels);
+            channel_vec ai_channels,
+            channel_vec ao_channels,
+            channel_vec di_channels,
+            channel_vec do_channels,
+            channel_vec encoder_channels,
+            channel_vec encrate_channels);
 
         const std::string type_;       // string representing the DAQ type e.g. "q8_usb"
         const std::string id_;         // string representing the DAQ ID number e.g. "0"
@@ -54,35 +54,35 @@ namespace mel {
 
         // FUNCTIONS FOR GETTING/SETTING DAQ STATES (DEFAULT BEHAVIOR MAY BE OVERRIDDEN IF DESIRED)
 
-        virtual double_vec get_analog_voltages();
-        virtual double get_analog_voltage(int channel_number);
-        virtual void set_analog_voltages(double_vec new_voltages);
-        virtual void set_analog_voltage(int channel_number, double new_voltage);
+        virtual voltage_vec get_analog_voltages();
+        virtual voltage get_analog_voltage(channel channel_number);
+        virtual void set_analog_voltages(voltage_vec new_voltages);
+        virtual void set_analog_voltage(channel channel_number, voltage new_voltage);
 
-        virtual char_vec get_digital_states();
-        virtual char get_digital_state(int channel_number);
-        virtual void set_digital_states(char_vec new_states);
-        virtual void set_digital_state(int channel_number, char new_state);
+        virtual dsignal_vec get_digital_signals();
+        virtual dsignal get_digital_signal(channel channel_number);
+        virtual void set_digital_signals(dsignal_vec new_signals);
+        virtual void set_digital_signal(channel channel_number, dsignal new_signal);
 
         virtual int32_vec get_encoder_counts();
-        virtual int get_encoder_count(int channel_number);
+        virtual int32 get_encoder_count(channel channel_number);
         virtual double_vec get_encoder_rates();
-        virtual double get_encoder_rate(int channel_number);
+        virtual double get_encoder_rate(channel channel_number);
 
         // FUNCTIONS FOR SETTING OPTIONS
 
-        virtual void set_ai_max_voltages(double_vec max_voltages);
-        virtual void set_ai_min_voltages(double_vec min_voltages);
+        virtual void set_ai_max_voltages(voltage_vec max_voltages);
+        virtual void set_ai_min_voltages(voltage_vec min_voltages);
 
-        virtual void set_ao_max_voltages(double_vec max_voltages);
-        virtual void set_ao_min_voltages(double_vec min_voltages);
-        virtual void set_ao_initial_voltages(double_vec initial_voltages);
-        virtual void set_ao_final_voltages(double_vec final_voltages);
+        virtual void set_ao_max_voltages(voltage_vec max_voltages);
+        virtual void set_ao_min_voltages(voltage_vec min_voltages);
+        virtual void set_ao_initial_voltages(voltage_vec initial_voltages);
+        virtual void set_ao_final_voltages(voltage_vec final_voltages);
         
-        virtual void set_do_initial_states(uint32_vec initial_states);
-        virtual void set_do_final_states(uint32_vec final_states);
+        virtual void set_do_initial_states(dsignal_vec initial_states);
+        virtual void set_do_final_states(dsignal_vec final_states);
 
-        virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors);
+        virtual void set_encoder_quadrature_factors(uint8_vec quadrature_factors);
 
         // DAQ DATA LOGGING
 
@@ -95,51 +95,51 @@ namespace mel {
 
         bool active_ = false;             // bool indicating whether the DAQ is currently active
 
-        double_vec ai_voltages_;          // vector for which analog inputs should be read in to
-        double_vec ao_voltages_;          // vector for which analog outputs should be read out from
-        char_vec   di_states_;            // vector for which digital inputs should be read in to
-        char_vec   do_states_;            // vector for which digital outputs should be read out from
+        voltage_vec ai_voltages_;          // vector for which analog inputs should be read in to
+        voltage_vec ao_voltages_;          // vector for which analog outputs should be read out from
+        dsignal_vec   di_signals_;            // vector for which digital inputs should be read in to
+        dsignal_vec   do_signals_;            // vector for which digital outputs should be read out from
         int32_vec    enc_counts_;           // vector for which encoder counts should be read in to
-        double_vec enc_rates;             // vector for which encoder counts per second should be read in to
+        double_vec   enc_rates;             // vector for which encoder counts per second should be read in to
 
         // CHANNEL NUMBERS BEING USED
 
-        const uint32_vec   ai_channels_nums_;          // vector of analog input channels numbers being used 
-        const uint32_vec   ao_channels_nums_;          // vector of analog output channels numbers being used 
-        const uint32_vec   di_channels_nums_;          // vector of digital input channels numbers being used 
-        const uint32_vec   do_channels_nums_;          // vector of digital output channels numbers being used 
-        const uint32_vec   encoder_channels_nums_;     // vector of encoder channels being numbers used
-        const uint32_vec   encrate_channels_nums_;     // vector of encoder velocity channels numbers being used
+        const channel_vec   ai_channels_nums_;          // vector of analog input channels numbers being used 
+        const channel_vec   ao_channels_nums_;          // vector of analog output channels numbers being used 
+        const channel_vec   di_channels_nums_;          // vector of digital input channels numbers being used 
+        const channel_vec   do_channels_nums_;          // vector of digital output channels numbers being used 
+        const channel_vec   encoder_channels_nums_;     // vector of encoder channels being numbers used
+        const channel_vec   encrate_channels_nums_;     // vector of encoder velocity channels numbers being used
 
         // NUMBER OF CHANNELS DEFINED
 
-        const uint32   num_ai_channels_;          // vector of analog input channels being used 
-        const uint32   num_ao_channels_;          // vector of analog output channels being used 
-        const uint32   num_di_channels_;          // vector of digital input channels being used 
-        const uint32   num_do_channels_;          // vector of digital output channels being used 
-        const uint32   num_enc_channels_;         // vector of encoder channels being used
-        const uint32   num_vel_channels_;         // vector of encoder velocity channels being used
+        const size_t   num_ai_channels_;          // vector of analog input channels being used 
+        const size_t   num_ao_channels_;          // vector of analog output channels being used 
+        const size_t   num_di_channels_;          // vector of digital input channels being used 
+        const size_t   num_do_channels_;          // vector of digital output channels being used 
+        const size_t   num_enc_channels_;         // vector of encoder channels being used
+        const size_t   num_vel_channels_;         // vector of encoder velocity channels being used
 
         // DAQ SETTINGS (TO BE IMPLEMENTED IN DERIVED DAQ CLASSES)
 
-        double_vec ai_min_voltages_;      // vector of minimum input voltages allowed by the board 
-        double_vec ai_max_voltages_;      // vector of maximum input voltages allowed by the board 
+        voltage_vec ai_min_voltages_;      // vector of minimum input voltages allowed by the board 
+        voltage_vec ai_max_voltages_;      // vector of maximum input voltages allowed by the board 
 
-        double_vec ao_min_voltages_;      // vector of minimum output voltages allowed by the board 
-        double_vec ao_max_voltages_;      // vector of maximum output voltages allowed by the board 
-        double_vec ao_initial_voltages_;  // vector of voltages analog outputs will go to when the program starts 
-        double_vec ao_final_voltages_;    // vector of voltages analog outputs will go to when the program finishes 
-        double_vec ao_exp_voltages_;      // vector of voltages analog outputs will go to if the watchdog expires 
+        voltage_vec ao_min_voltages_;      // vector of minimum output voltages allowed by the board 
+        voltage_vec ao_max_voltages_;      // vector of maximum output voltages allowed by the board 
+        voltage_vec ao_initial_voltages_;  // vector of voltages analog outputs will go to when the program starts 
+        voltage_vec ao_final_voltages_;    // vector of voltages analog outputs will go to when the program finishes 
+        voltage_vec ao_exp_voltages_;      // vector of voltages analog outputs will go to if the watchdog expires 
 
-        char_vec   do_initial_states_;    // vector of states digital outputs will go to when the program starts 
-        char_vec   do_final_states_;      // vector of states digital outputs will go to when the program finishes 
+        dsignal_vec   do_initial_signals_;    // vector of states digital outputs will go to when the program starts 
+        dsignal_vec   do_final_signals_;      // vector of states digital outputs will go to when the program finishes 
 
-        uint32_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
+        uint8_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
 
         // HELPLER FUNCTIONS
 
-        uint32 channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
-        uint32_vec sort_and_reduce_channels(uint_vec channels);                               // turns input such as {3, 1, 1, 2} to {1, 2, 3}      
+        channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);  // returns index of a channel number in the channels vector
+        channel_vec sort_and_reduce_channels(channel_vec channels); // turns channel number input such as {3, 1, 1, 2} to {1, 2, 3}      
 
     public:
 
@@ -147,55 +147,55 @@ namespace mel {
 
         struct Channel { 
             Daq* daq_; 
-            uint32 channel_; 
-            Channel() : daq_(nullptr), channel_(-1) {};
-            Channel(Daq* daq, uint channel) : daq_(daq), channel_(channel) {} 
+            channel channel_number_; 
+            Channel() : daq_(nullptr), channel_number_(-1) {};
+            Channel(Daq* daq, channel channel_number) : daq_(daq), channel_number_(channel_number) {}
         };
 
         struct AiChannel : Channel { 
             AiChannel() : Channel() {}
-            AiChannel(Daq* daq, uint channel) : Channel(daq, channel) {} 
-            double get_voltage() { return daq_->get_analog_voltage(channel_); }
+            AiChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+            voltage get_voltage() { return daq_->get_analog_voltage(channel_number_); }
         };
 
         struct AoChannel : Channel {
             AoChannel() : Channel() {}
-            AoChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
-            void set_voltage(double new_voltage) { daq_->set_analog_voltage(channel_, new_voltage ); }
+            AoChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+            void set_voltage(voltage new_voltage) { daq_->set_analog_voltage(channel_number_, new_voltage ); }
         };
 
         struct DiChannel : Channel {
             DiChannel() : Channel() {}
-            DiChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
-            char get_state() { return daq_->get_digital_state(channel_); }
+            DiChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+            dsignal get_signal() { return daq_->get_digital_signal(channel_number_); }
         };
 
         struct DoChannel : Channel {
             DoChannel() : Channel() {}
-            DoChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
-            void set_state(double new_state) { daq_->set_digital_state(channel_, new_state); }
+            DoChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+            void set_signal(dsignal new_signal) { daq_->set_digital_signal(channel_number_, new_signal); }
         };
 
         struct EncoderChannel : Channel {
             EncoderChannel() : Channel() {}
-            EncoderChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
-            int get_count() { return daq_->get_encoder_count(channel_); }
+            EncoderChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+            int32 get_count() { return daq_->get_encoder_count(channel_number_); }
         };
 
         struct EncRateChannel : Channel {
             EncRateChannel() : Channel() {}
-            EncRateChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
-            double get_rate() { return daq_->get_encoder_rate(channel_); }
+            EncRateChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+            double get_rate() { return daq_->get_encoder_rate(channel_number_); }
         };
 
         // FUNCTIONS FOR GETTING CHANNEL STRUCTS AND SETS
 
-        virtual AiChannel ai_channel(uint channel_number) { return AiChannel(this, channel_number); }
-        virtual AoChannel ao_channel(uint channel_number) { return AoChannel(this, channel_number); }
-        virtual DiChannel di_channel(uint channel_number) { return DiChannel(this, channel_number); }
-        virtual DoChannel do_channel(uint channel_number) { return DoChannel(this, channel_number); }
-        virtual EncoderChannel encoder_channel(uint channel_number) { return EncoderChannel(this, channel_number); }
-        virtual EncRateChannel encrate_channel(uint channel_number) { return EncRateChannel(this, channel_number); }
+        virtual AiChannel ai_channel(channel channel_number) { return AiChannel(this, channel_number); }
+        virtual AoChannel ao_channel(channel channel_number) { return AoChannel(this, channel_number); }
+        virtual DiChannel di_channel(channel channel_number) { return DiChannel(this, channel_number); }
+        virtual DoChannel do_channel(channel channel_number) { return DoChannel(this, channel_number); }
+        virtual EncoderChannel encoder_channel(channel channel_number) { return EncoderChannel(this, channel_number); }
+        virtual EncRateChannel encrate_channel(channel channel_number) { return EncRateChannel(this, channel_number); }
         
     };
 }

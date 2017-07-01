@@ -32,10 +32,10 @@ namespace mel {
     }
 
     void Actuator::enable() {
-        daq_->set_digital_state(do_channel_, '0');
+        daq_->set_digital_signal(do_channel_, '0');
     }
 
     void Actuator::disable() {
-        daq_->set_digital_state(do_channel_, '1');
+        daq_->set_digital_signal(do_channel_, '1');
     }
 }

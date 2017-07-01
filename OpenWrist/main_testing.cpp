@@ -41,15 +41,15 @@ class MyController : public mel::Controller {
         q8->ao_channel(2).set_voltage(0);
         q8->ao_channel(3).set_voltage(0);
 
-        q8->di_channel(0).get_state();
-        q8->di_channel(1).get_state();
-        q8->di_channel(2).get_state();
-        q8->di_channel(3).get_state();
+        q8->di_channel(0).get_signal();
+        q8->di_channel(1).get_signal();
+        q8->di_channel(2).get_signal();
+        q8->di_channel(3).get_signal();
 
-        q8->do_channel(0).set_state(0);
-        q8->do_channel(1).set_state(1);
-        q8->do_channel(2).set_state(1);
-        q8->do_channel(3).set_state(1);
+        q8->do_channel(0).set_signal(0);
+        q8->do_channel(1).set_signal(1);
+        q8->do_channel(2).set_signal(1);
+        q8->do_channel(3).set_signal(1);
 
         q8->encoder_channel(0).get_count();
         q8->encoder_channel(1).get_count();
