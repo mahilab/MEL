@@ -3,32 +3,31 @@
 
 namespace mel {
 
-    MahiExoII::MahiExoII(Daq* daq, uint32_vec ai_channels, uint32_vec ao_channels, uint32_vec di_channels, uint32_vec do_channels, uint32_vec enc_channels) :
-        Robot(5),
-        daq_(daq),
-        qp_(Eigen::VectorXd::Zero(12)),
-        qs_(Eigen::VectorXd::Zero(3)),
-        psi_(Eigen::VectorXd::Zero(12)),
-        psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
+    MahiExoII::MahiExoII()
+        //qp_(Eigen::VectorXd::Zero(12)),
+        //qs_(Eigen::VectorXd::Zero(3)),
+        //psi_(Eigen::VectorXd::Zero(12)),
+        //psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
     {
 
-        encoders_.push_back(new Encoder(INCH2METER*0.42, 2048, 4, daq, enc_channels[0]));
-        encoders_.push_back(new Encoder(INCH2METER*0.17, 2048, 4, daq, enc_channels[1]));
-        encoders_.push_back(new Encoder(INCH2METER*0.23, 2048, 4, daq, enc_channels[2]));
-        encoders_.push_back(new Encoder(INCH2METER*0.23, 2048, 4, daq, enc_channels[3]));
-        encoders_.push_back(new Encoder(INCH2METER*0.23, 2048, 4, daq, enc_channels[4]));
+        position_sensors_.push_back(new Encoder(0.42 / 4.5, 2048));
+        position_sensors_.push_back(new Encoder(0.17 / 2.5, 2048));
+        position_sensors_.push_back(new Encoder(INCH2METER*0.23, 2048));
+        position_sensors_.push_back(new Encoder(INCH2METER*0.23, 2048));
+        position_sensors_.push_back(new Encoder(INCH2METER*0.23, 2048));
 
-        actuators_.push_back(new Actuator(INCH2METER*0.42, 0.127, 6.0, 1.8, daq, ao_channels[0], do_channels[0]));
-        actuators_.push_back(new Actuator(INCH2METER*0.17, 0.0603, 3.17, 1.8, daq, ao_channels[1], do_channels[1]));
-        actuators_.push_back(new Actuator(INCH2METER*0.23, 0.175, 0.626, 0.184, daq, ao_channels[2], do_channels[2]));
-        actuators_.push_back(new Actuator(INCH2METER*0.23, 0.175, 0.626, 0.184, daq, ao_channels[3], do_channels[3]));
-        actuators_.push_back(new Actuator(INCH2METER*0.23, 0.175, 0.626, 0.184, daq, ao_channels[4], do_channels[4]));
+        actuators_.push_back(new Motor(0.42 / 4.5, 0.127, 6.0, 1.8));
+        actuators_.push_back(new Motor(0.17 / 2.5, 0.0603, 3.17, 1.8));
+        actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
+        actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
+        actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
 
-        joints_.push_back(new RevoluteJoint(INCH2METER*4.5, encoders_[0], actuators_[0])); // elbow flexion/extension
-        joints_.push_back(new RevoluteJoint(INCH2METER*2.5, encoders_[1], actuators_[1])); // forearm pronation/supination
-        joints_.push_back(new PrismaticJoint(encoders_[2], actuators_[2])); // wrist prismatic l_1
-        joints_.push_back(new PrismaticJoint(encoders_[3], actuators_[3])); // wrist prismatic l_2
-        joints_.push_back(new PrismaticJoint(encoders_[4], actuators_[4])); // wrist prismatic l_3
+        robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[0], actuators_[0])); // elbow flexion/extension
+        robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[1], actuators_[1])); // forearm pronation/supination
+        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[2], actuators_[2])); // wrist prismatic l_1
+        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[3], actuators_[3])); // wrist prismatic l_2
+        robot_joints_.push_back(new PrismaticRobotJoint(position_sensors_[4], actuators_[4])); // wrist prismatic l_3
+        /*
         joints_.push_back(new RevoluteJoint()); // wrist revolute theta_1
         joints_.push_back(new RevoluteJoint()); // wrist revolute theta_2
         joints_.push_back(new RevoluteJoint()); // wrist revolute theta_3
@@ -38,30 +37,53 @@ namespace mel {
         joints_.push_back(new RevoluteJoint()); // wrist flexion/extension alpha
         joints_.push_back(new RevoluteJoint()); // wrist radial/ulnar deviation beta
         joints_.push_back(new RevoluteJoint()); // wrist platform roll gamma
+        */
+        //joint_positions_ = double_vec(joints_.size(), 0.0);
 
-        joint_positions_ = double_vec(joints_.size(), 0.0);
-
-        qp_ << -PI / 4, -PI / 4, -PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
+        //qp_ << -PI / 4, -PI / 4, -PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
                 
     }
 
-    MahiExoII::~MahiExoII() {
 
-        for (Encoder* encoder : encoders_) {
-            delete encoder;
-        }
+    double_vec MahiExoII::get_anatomical_joint_positions() {
 
-        for (Actuator* actuator : actuators_) {
-            delete actuator;
-        }
+        // get positions from first two anatomical joints, which have encoders
+        anatomical_joint_positions_[0] = robot_joints_[0]->get_position;
+        anatomical_joint_positions_[1] = robot_joints_[1]->get_position;
 
-        for (Joint* joint : joints_) {
-            delete joint;
-        }
+        // update qs_ (q star) with the three prismatic link positions
+        qs_ << robot_joints_[2]->get_position, robot_joints_[3]->get_position, robot_joints_[4]->get_position;
 
+        // run forward kinematics solver to update qp_ (q prime), which contains all 12 RPS positions
+        forward_kinematics(qs_, 10, 0.00000000001);
+
+        // get positions for last two anatomical joints from forward kinematics solver
+        anatomical_joint_positions_[2] = qp_(6);
+        anatomical_joint_positions_[3] = qp_(7);
+
+        return anatomical_joint_positions_;
     }
 
+    double_vec MahiExoII::get_anatomical_joint_velocities() {
+
+        // get velocities from first two anatomical joints, which have encoders
+        anatomical_joint_velocities_[0] = robot_joints_[0]->get_velocity;
+        anatomical_joint_velocities_[1] = robot_joints_[1]->get_velocity;
+
+        // update qs_dot_ (q star time derivative) with the three prismatic link velocities
+        qs_dot_ << robot_joints_[2]->get_velocity, robot_joints_[3]->get_velocity, robot_joints_[4]->get_velocity;
+
+        // run forward kinematics solver to update qp_dot_ (q prime time derivative), which contains all 12 RPS velocities
+        forward_kinematics_velocity(qs_dot_);
+
+        // get positions for last two anatomical joints from forward kinematics solver
+        anatomical_joint_velocities_[2] = qp_(6);
+        anatomical_joint_velocities_[3] = qp_(7);
+
+        return anatomical_joint_velocities_;
+    }
     
+    /*
     double_vec MahiExoII::get_joint_positions() {
 
         // get joint positions from first five joints, which have encoders
@@ -92,6 +114,7 @@ namespace mel {
         }
         return joint_positions_;
     }
+    
 
     void MahiExoII::forward_kinematics(Eigen::VectorXd qs, uint32 max_it, double tol) {
         
@@ -178,6 +201,7 @@ namespace mel {
                  0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
                  0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0;
     }
+    */
 
     /*
     void MahiExoII::set_joint_torques(double joint_torques) {

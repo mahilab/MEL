@@ -30,9 +30,6 @@
     <ClCompile Include="Encoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Joint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PrismaticJoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,6 +43,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotJoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,16 +68,7 @@
     <ClInclude Include="Encoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Joint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PrismaticJoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Q8Usb.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RevoluteJoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Robot.h">
@@ -96,6 +87,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AnatomicalJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionSensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Motor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PrismaticRobotJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RevoluteRobotJoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,29 +1,35 @@
 #pragma once
+#include "PositionSensor.h"
 #include "util.h"
 #include "Daq.h"
 
 namespace mel {
 
-    class Encoder {
+    class Encoder : public PositionSensor {
 
     public:        
 
-        // parameters
-        const double transmission_ = 0;
-        const uint32 counts_per_rev_ = 0;
-        //const uint quadrature_factor_ = 0;
-
         // constructor
         Encoder() {}
-        Encoder(double transmission, uint32 counts_per_rev);
+        Encoder(double transmission, uint32 counts_per_rev, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel);
+
+        const double transmission_ = 0;
+        const uint32 counts_per_rev_ = 0;
+
+        double get_position() override;
+        double get_velocity() override; 
+
+    private:
+
+        
+
+        Daq::EncoderChannel encoder_channel_;
+        Daq::EncRateChannel encrate_channel_;
 
         // state variables
         double count_;
-        double count_rate_;
+        double rate_;
 
-        // getters and setters of state variables
-        double get_count();
-        double get_count_rate();
 
     };
 }

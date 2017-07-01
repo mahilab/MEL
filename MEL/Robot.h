@@ -1,9 +1,10 @@
 #pragma once
-#include "Daq.h"
-#include "Joint.h"
-#include "RevoluteJoint.h"
-#include "PrismaticJoint.h"
+#include "RobotJoint.h"
+#include "RevoluteRobotJoint.h"
+#include "PrismaticRobotJoint.h"
 #include "Actuator.h"
+#include "Motor.h"
+#include "PositionSensor.h"
 #include "Encoder.h"
 #include "util.h"
 #include <vector>
@@ -15,27 +16,25 @@ namespace mel {
     public:
 
         // constructor
-        Robot() {};
-        Robot(std::vector<Daq*> daqs, uint32_vec ai_channels, uint32_vec ao_channels, uint32_vec di_channels, uint32_vec do_channels, uint32_vec enc_channels);
+        Robot();
 
         // components
-        std::vector<Daq*> daqs_;
-        std::vector<Joint*> joints_;
-        std::vector<Encoder*> encoders_;
+        std::vector<RobotJoint*> robot_joints_;
+        std::vector<PositionSensor*> position_sensors_;
         std::vector<Actuator*> actuators_;
 
         // getters and setters of state variables
-        double_vec get_joint_positions();
-        double_vec get_joint_velocities();
-        double_vec set_joint_torques(double_vec new_torques);
+        double_vec get_robot_joint_positions();
+        double_vec get_robot_joint_velocities();
+        void set_robot_joint_torques(double_vec new_torques);
 
 
     private:
 
         // state variables
-        double_vec joint_positions_;
-        double_vec joint_velocities_;
-        double_vec joint_torques_;
+        double_vec robot_joint_positions_;
+        double_vec robot_joint_velocities_;
+        double_vec robot_joint_torques_;
 
     };
 }
