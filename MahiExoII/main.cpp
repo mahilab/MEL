@@ -107,7 +107,7 @@ int main(int argc, char * argv[]) {
     /* manual zero joint positions */
     if (var_map.count("zero")) {
         exo.daq_->activate();
-        exo.daq_->zero_encoder_counts();
+        exo.daq_->zero_encoders();
     }
     
 

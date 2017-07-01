@@ -27,17 +27,17 @@ namespace mel {
         int activate() override;
         int deactivate() override;
 
-        void zero_encoder_counts() override;
-        void offset_encoder_counts(int_vec offset_counts) override;
+        void zero_encoders() override;
+        void offset_encoders(int_vec offset_counts) override;
 
-        void read_analog() override;
-        void read_digital() override;
-        void read_encoder_counts() override;
-        void read_encoder_count_rates() override;
+        void read_analogs() override;
+        void read_digitals() override;
+        void read_encoders() override;
+        void read_encrates() override;
         void read_all() override;
 
-        void write_digital() override;
-        void write_analog() override;
+        void write_digitals() override;
+        void write_analogs() override;
         void write_all() override;
 
         void reload_watchdog() override;

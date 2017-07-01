@@ -135,7 +135,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::zero_encoder_counts() {
+    void Q8Usb::zero_encoders() {
         if (active_ && num_enc_channels_ > 0) {
             std::cout << "Zeroing Encoder Counts ... ";
             int_vec enc_zero_counts(num_enc_channels_, 0);
@@ -146,7 +146,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::offset_encoder_counts(int_vec offset_counts) {
+    void Q8Usb::offset_encoders(int_vec offset_counts) {
         if (active_ && num_enc_channels_ > 0) {
             std::cout << "Offsetting Encoder Counts ... ";
             offset_counts.resize(num_enc_channels_, 0);
@@ -193,7 +193,7 @@ namespace mel {
         return 0;
     }
 
-    void Q8Usb::read_analog() {
+    void Q8Usb::read_analogs() {
         if (active_ && num_ai_channels_ > 0) {
             t_error result = hil_read_analog(q8_usb_, &ai_channels_nums_[0], num_ai_channels_, &ai_voltages_[0]);
             if (result < 0)
@@ -204,7 +204,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::read_digital() {
+    void Q8Usb::read_digitals() {
         if (active_ && num_di_channels_ > 0) {
             t_error result = hil_read_digital(q8_usb_, &di_channels_nums_[0], num_di_channels_, &di_states_[0]);
             if (result < 0)
@@ -215,7 +215,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::read_encoder_counts() {
+    void Q8Usb::read_encoders() {
         if (active_ && num_enc_channels_ > 0) {
             t_error result = hil_read_encoder(q8_usb_, &encoder_channels_nums_[0], num_enc_channels_, &enc_counts_[0]);
             if (result < 0)
@@ -226,7 +226,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::read_encoder_count_rates() {
+    void Q8Usb::read_encrates() {
         if (active_ && num_vel_channels_ > 0) {
             t_error result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], num_vel_channels_, &enc_rates[0]);
             if (result < 0)
@@ -256,7 +256,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::write_analog() {
+    void Q8Usb::write_analogs() {
         if (active_ && num_ao_channels_ > 0) {
             t_error result = hil_write_analog(q8_usb_, &ao_channels_nums_[0], num_ao_channels_, &ao_voltages_[0]);
             if (result < 0)
@@ -267,7 +267,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::write_digital() {
+    void Q8Usb::write_digitals() {
         if (active_ && num_do_channels_ > 0) {
             t_error result = hil_write_digital(q8_usb_, &do_channels_nums_[0], num_do_channels_, &do_states_[0]);
             if (result < 0)

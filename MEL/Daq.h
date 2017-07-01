@@ -23,8 +23,6 @@ namespace mel {
             uint_vec encoder_channels,
             uint_vec encrate_channels);
 
-
-
         const std::string type_;       // string representing the DAQ type e.g. "q8_usb"
         const std::string id_;         // string representing the DAQ ID number e.g. "0"
 
@@ -35,19 +33,18 @@ namespace mel {
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING READING / WRITING FUNCTIONALITY
 
-        virtual void read_analog() {}
-        virtual void read_digital() {}
-        virtual void read_encoder_counts() {}
-        virtual void read_encoder_count_rates() {}
-        virtual void read_encoder_pulses() {}
-        virtual void read_all() {}
+        virtual void read_analogs()   { std::cout << "WARNING: This DAQ does not implement read_analogs()"   << std::endl; }
+        virtual void read_digitals()  { std::cout << "WARNING: This DAQ does not implement read_digitals()"  << std::endl; }
+        virtual void read_encoders()  { std::cout << "WARNING: This DAQ does not implement read_encoders()"  << std::endl; }
+        virtual void read_encrates()  { std::cout << "WARNING: This DAQ does not implement read_encrates()"  << std::endl; }
+        virtual void read_all()       { std::cout << "WARNING: This DAQ does not implement read_all()"       << std::endl; }
 
-        virtual void write_analog() {}
-        virtual void write_digital() {}
-        virtual void write_all() {}
+        virtual void write_analogs()  { std::cout << "WARNING: This DAQ does not implement write_analogs()"  << std::endl; }
+        virtual void write_digitals() { std::cout << "WARNING: This DAQ does not implement write_digitals()" << std::endl; }
+        virtual void write_all()      { std::cout << "WARNING: This DAQ does not implement write_all()"      << std::endl;}
 
-        virtual void zero_encoder_counts() {}
-        virtual void offset_encoder_counts(int_vec offset_counts) {}
+        virtual void zero_encoders() {}
+        virtual void offset_encoders(int_vec offset_counts) {}
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING A WATCHDOG TIMER
 
@@ -72,14 +69,27 @@ namespace mel {
         virtual double_vec get_encoder_rates();
         virtual double get_encoder_rate(int channel_number);
 
+        // FUNCTIONS FOR SETTING OPTIONS
+
+        virtual void set_ai_max_voltages(double_vec max_voltages);
+        virtual void set_ai_min_voltages(double_vec min_voltages);
+
+        virtual void set_ao_max_voltages(double_vec max_voltages);
+        virtual void set_ao_min_voltages(double_vec min_voltages);
+        virtual void set_ao_initial_voltages(double_vec initial_voltages);
+        virtual void set_ao_final_voltages(double_vec final_voltages);
+        
+        virtual void set_do_initial_states(uint_vec initial_states);
+        virtual void set_do_final_states(uint_vec final_states);
+
+        virtual void set_encoder_quadrature_factors(uint_vec quadrature_factors);
+
         // DAQ DATA LOGGING
 
         const std::string   log_dir_ = "daq_logs"; // folder where data logs will be stored
         const std::string   data_log_filename_;    // filename of the data log
         std::ofstream data_log_;             // stream for logging to the data log file
-        void log_data(double timestamp);     // function to log all state information to data log file
-
-    
+        void log_data(double timestamp);     // function to log all state information to data log file    
 
         // STATE VARIABLES
 
@@ -138,7 +148,7 @@ namespace mel {
         struct Channel { 
             Daq* daq_; 
             uint channel_; 
-            Channel() : daq_(NULL), channel_(-1) {};
+            Channel() : daq_(nullptr), channel_(-1) {};
             Channel(Daq* daq, uint channel) : daq_(daq), channel_(channel) {} 
         };
 
@@ -169,9 +179,7 @@ namespace mel {
         struct EncoderChannel : Channel {
             EncoderChannel() : Channel() {}
             EncoderChannel(Daq* daq, uint channel) : Channel(daq, channel) {}
-            int quadrature_factor_;
             int get_count() { return daq_->get_encoder_count(channel_); }
-
         };
 
         struct EncRateChannel : Channel {
