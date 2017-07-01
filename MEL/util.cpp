@@ -11,14 +11,14 @@ namespace mel {
         return buf;
     }
 
-    void print_uint_vec(uint_vec vector) {
+    void print_uint_vec(uint32_vec vector) {
         for (auto it = vector.begin(); it != vector.end(); ++it) {
             std::cout << *it << " ";
         }
         std::cout << std::endl;
     }
 
-    void print_int_vec(int_vec vector) {
+    void print_int_vec(int32_vec vector) {
         for (auto it = vector.begin(); it != vector.end(); ++it) {
             std::cout << *it << " ";
         }

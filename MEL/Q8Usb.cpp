@@ -3,11 +3,11 @@
 namespace mel {
 
     Q8Usb::Q8Usb(std::string id,
-        uint_vec ai_channels,
-        uint_vec ao_channels,
-        uint_vec di_channels,
-        uint_vec do_channels,
-        uint_vec enc_channels,
+        uint32_vec ai_channels,
+        uint32_vec ao_channels,
+        uint32_vec di_channels,
+        uint32_vec do_channels,
+        uint32_vec enc_channels,
         char * options) :
         Daq("q8_usb", id,
             ai_channels,
@@ -138,7 +138,7 @@ namespace mel {
     void Q8Usb::zero_encoders() {
         if (active_ && num_enc_channels_ > 0) {
             std::cout << "Zeroing Encoder Counts ... ";
-            int_vec enc_zero_counts(num_enc_channels_, 0);
+            int32_vec enc_zero_counts(num_enc_channels_, 0);
             t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_nums_[0], encoder_channels_nums_.size(), &enc_zero_counts[0]);
             if (result != 0)
                 print_quarc_error(result);
@@ -146,7 +146,7 @@ namespace mel {
         }
     }
 
-    void Q8Usb::offset_encoders(int_vec offset_counts) {
+    void Q8Usb::offset_encoders(int32_vec offset_counts) {
         if (active_ && num_enc_channels_ > 0) {
             std::cout << "Offsetting Encoder Counts ... ";
             offset_counts.resize(num_enc_channels_, 0);
@@ -334,9 +334,9 @@ namespace mel {
         _tprintf(_T("%s (error %d)\n"), message, -result);
     }
 
-    uint_vec Q8Usb::get_q8_velocity_channels(uint_vec enc_channels) {
-        uint_vec vel_channels = enc_channels;
-        std::transform(vel_channels.begin(), vel_channels.end(), vel_channels.begin(), bind2nd(std::plus<uint>(), 14000));
+    uint32_vec Q8Usb::get_q8_velocity_channels(uint32_vec enc_channels) {
+        uint32_vec vel_channels = enc_channels;
+        std::transform(vel_channels.begin(), vel_channels.end(), vel_channels.begin(), bind2nd(std::plus<uint32>(), 14000));
         return vel_channels;
     }
 }

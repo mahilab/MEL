@@ -3,7 +3,7 @@
 
 namespace mel {
 
-    MahiExoII::MahiExoII(Daq* daq, uint_vec ai_channels, uint_vec ao_channels, uint_vec di_channels, uint_vec do_channels, uint_vec enc_channels) :
+    MahiExoII::MahiExoII(Daq* daq, uint32_vec ai_channels, uint32_vec ao_channels, uint32_vec di_channels, uint32_vec do_channels, uint32_vec enc_channels) :
         Robot(5),
         daq_(daq),
         qp_(Eigen::VectorXd::Zero(12)),
@@ -93,7 +93,7 @@ namespace mel {
         return joint_positions_;
     }
 
-    void MahiExoII::forward_kinematics(Eigen::VectorXd qs, uint max_it, double tol) {
+    void MahiExoII::forward_kinematics(Eigen::VectorXd qs, uint32 max_it, double tol) {
         
         // declare and initialize variables for keeping track of error
         double err = 2*tol;
@@ -104,7 +104,7 @@ namespace mel {
 
         // run no more than max_it iterations of updating the solution for qp_
         // exit loop once the error is below the input tolerance
-        uint it = 0;
+        uint32 it = 0;
         while (it < max_it && err > tol) {
             psi_func(qp_, qs_, R_, r_, a56_, alpha5_, alpha13_); // actually psi bar, which evaluates 9 constraints and three desired values
             psi_d_qp_func(qp_, r_, alpha5_, alpha13_); // derivative of psi w.r.t. qp, giving a 12x12 matrix

@@ -16,11 +16,11 @@ namespace mel {
 
         /* constructor */
         Q8Usb(std::string name,
-            uint_vec ai_channels,
-            uint_vec ao_channels,
-            uint_vec di_channels,
-            uint_vec do_channels,
-            uint_vec enc_channels,
+            uint32_vec ai_channels,
+            uint32_vec ao_channels,
+            uint32_vec di_channels,
+            uint32_vec do_channels,
+            uint32_vec enc_channels,
             char * options);
 
         /* inhereted virtual functions from Daq class to be implemented */
@@ -28,7 +28,7 @@ namespace mel {
         int deactivate() override;
 
         void zero_encoders() override;
-        void offset_encoders(int_vec offset_counts) override;
+        void offset_encoders(int32_vec offset_counts) override;
 
         void read_analogs() override;
         void read_digitals() override;
@@ -75,7 +75,7 @@ namespace mel {
         // HELPTER FUNCTIONS 
 
         static void print_quarc_error(t_error result);
-        static uint_vec get_q8_velocity_channels(uint_vec enc_channels);
+        static uint32_vec get_q8_velocity_channels(uint32_vec enc_channels);
 
     public:
 

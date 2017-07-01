@@ -16,12 +16,12 @@ namespace mel {
         // CONSTRUCTOR / DESTRUCTOR 
 
         Daq(std::string name, std::string id,
-            uint_vec ai_channels,
-            uint_vec ao_channels,
-            uint_vec di_channels,
-            uint_vec do_channels,
-            uint_vec encoder_channels,
-            uint_vec encrate_channels);
+            uint32_vec ai_channels,
+            uint32_vec ao_channels,
+            uint32_vec di_channels,
+            uint32_vec do_channels,
+            uint32_vec encoder_channels,
+            uint32_vec encrate_channels);
 
         const std::string type_;       // string representing the DAQ type e.g. "q8_usb"
         const std::string id_;         // string representing the DAQ ID number e.g. "0"
@@ -44,7 +44,7 @@ namespace mel {
         virtual void write_all()      { std::cout << "WARNING: This DAQ does not implement write_all()"      << std::endl;}
 
         virtual void zero_encoders() {}
-        virtual void offset_encoders(int_vec offset_counts) {}
+        virtual void offset_encoders(int32_vec offset_counts) {}
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING A WATCHDOG TIMER
 
@@ -64,7 +64,7 @@ namespace mel {
         virtual void set_digital_states(char_vec new_states);
         virtual void set_digital_state(int channel_number, char new_state);
 
-        virtual int_vec get_encoder_counts();
+        virtual int32_vec get_encoder_counts();
         virtual int get_encoder_count(int channel_number);
         virtual double_vec get_encoder_rates();
         virtual double get_encoder_rate(int channel_number);
@@ -79,10 +79,10 @@ namespace mel {
         virtual void set_ao_initial_voltages(double_vec initial_voltages);
         virtual void set_ao_final_voltages(double_vec final_voltages);
         
-        virtual void set_do_initial_states(uint_vec initial_states);
-        virtual void set_do_final_states(uint_vec final_states);
+        virtual void set_do_initial_states(uint32_vec initial_states);
+        virtual void set_do_final_states(uint32_vec final_states);
 
-        virtual void set_encoder_quadrature_factors(uint_vec quadrature_factors);
+        virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors);
 
         // DAQ DATA LOGGING
 
@@ -99,26 +99,26 @@ namespace mel {
         double_vec ao_voltages_;          // vector for which analog outputs should be read out from
         char_vec   di_states_;            // vector for which digital inputs should be read in to
         char_vec   do_states_;            // vector for which digital outputs should be read out from
-        int_vec    enc_counts_;           // vector for which encoder counts should be read in to
+        int32_vec    enc_counts_;           // vector for which encoder counts should be read in to
         double_vec enc_rates;             // vector for which encoder counts per second should be read in to
 
         // CHANNEL NUMBERS BEING USED
 
-        const uint_vec   ai_channels_nums_;          // vector of analog input channels numbers being used 
-        const uint_vec   ao_channels_nums_;          // vector of analog output channels numbers being used 
-        const uint_vec   di_channels_nums_;          // vector of digital input channels numbers being used 
-        const uint_vec   do_channels_nums_;          // vector of digital output channels numbers being used 
-        const uint_vec   encoder_channels_nums_;     // vector of encoder channels being numbers used
-        const uint_vec   encrate_channels_nums_;     // vector of encoder velocity channels numbers being used
+        const uint32_vec   ai_channels_nums_;          // vector of analog input channels numbers being used 
+        const uint32_vec   ao_channels_nums_;          // vector of analog output channels numbers being used 
+        const uint32_vec   di_channels_nums_;          // vector of digital input channels numbers being used 
+        const uint32_vec   do_channels_nums_;          // vector of digital output channels numbers being used 
+        const uint32_vec   encoder_channels_nums_;     // vector of encoder channels being numbers used
+        const uint32_vec   encrate_channels_nums_;     // vector of encoder velocity channels numbers being used
 
         // NUMBER OF CHANNELS DEFINED
 
-        const uint   num_ai_channels_;          // vector of analog input channels being used 
-        const uint   num_ao_channels_;          // vector of analog output channels being used 
-        const uint   num_di_channels_;          // vector of digital input channels being used 
-        const uint   num_do_channels_;          // vector of digital output channels being used 
-        const uint   num_enc_channels_;         // vector of encoder channels being used
-        const uint   num_vel_channels_;         // vector of encoder velocity channels being used
+        const uint32   num_ai_channels_;          // vector of analog input channels being used 
+        const uint32   num_ao_channels_;          // vector of analog output channels being used 
+        const uint32   num_di_channels_;          // vector of digital input channels being used 
+        const uint32   num_do_channels_;          // vector of digital output channels being used 
+        const uint32   num_enc_channels_;         // vector of encoder channels being used
+        const uint32   num_vel_channels_;         // vector of encoder velocity channels being used
 
         // DAQ SETTINGS (TO BE IMPLEMENTED IN DERIVED DAQ CLASSES)
 
@@ -134,12 +134,12 @@ namespace mel {
         char_vec   do_initial_states_;    // vector of states digital outputs will go to when the program starts 
         char_vec   do_final_states_;      // vector of states digital outputs will go to when the program finishes 
 
-        uint_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
+        uint32_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
 
         // HELPLER FUNCTIONS
 
-        uint channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
-        uint_vec sort_and_reduce_channels(uint_vec channels);                               // turns input such as {3, 1, 1, 2} to {1, 2, 3}      
+        uint32 channel_number_to_index(const uint_vec& channels, const uint channel_number);  // returns index of a channel number in the channels vector
+        uint32_vec sort_and_reduce_channels(uint_vec channels);                               // turns input such as {3, 1, 1, 2} to {1, 2, 3}      
 
     public:
 
@@ -147,7 +147,7 @@ namespace mel {
 
         struct Channel { 
             Daq* daq_; 
-            uint channel_; 
+            uint32 channel_; 
             Channel() : daq_(nullptr), channel_(-1) {};
             Channel(Daq* daq, uint channel) : daq_(daq), channel_(channel) {} 
         };

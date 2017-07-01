@@ -13,7 +13,7 @@ namespace mel {
 
         // parameters
         const double transmission_ = 0;
-        const uint counts_per_rev_ = 0;
+        const uint32 counts_per_rev_ = 0;
         //const uint quadrature_factor_ = 0;
 
         // constructor

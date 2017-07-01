@@ -3,7 +3,7 @@
 
 namespace mel {
 
-    Clock::Clock(uint frequency, bool enable_logging) :
+    Clock::Clock(uint32 frequency, bool enable_logging) :
         frequency_(frequency),
         tick_time_(std::chrono::nanoseconds(1000000000 / frequency)),
         enable_logging_(enable_logging)
@@ -18,7 +18,7 @@ namespace mel {
         }
     }
 
-    uint Clock::get_tick() {
+    uint32 Clock::get_tick() {
         return tick_count_;
     }
 

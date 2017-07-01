@@ -22,11 +22,11 @@ public:
 
         // instantiate Q8 USB for encoders, actuator controls, and EMG
         std::string id = "0";
-        mel::uint_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        mel::uint_vec  ao_channels = { 0, 1, 2, 3, 4 };
-        mel::uint_vec  di_channels = {};
-        mel::uint_vec  do_channels = { 0, 1, 2, 3, 4 };
-        mel::uint_vec enc_channels = { 0, 1, 2, 3, 4 };
+        mel::uint32_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        mel::uint32_vec  ao_channels = { 0, 1, 2, 3, 4 };
+        mel::uint32_vec  di_channels = {};
+        mel::uint32_vec  do_channels = { 0, 1, 2, 3, 4 };
+        mel::uint32_vec enc_channels = { 0, 1, 2, 3, 4 };
         char options[] = "update_rate=fast;decimation=1";
         daqs_ = { new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options) };
         

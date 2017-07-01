@@ -16,7 +16,7 @@ namespace mel {
 
         // constructor
         Robot() {};
-        Robot(std::vector<Daq*> daqs, uint_vec ai_channels, uint_vec ao_channels, uint_vec di_channels, uint_vec do_channels, uint_vec enc_channels);
+        Robot(std::vector<Daq*> daqs, uint32_vec ai_channels, uint32_vec ao_channels, uint32_vec di_channels, uint32_vec do_channels, uint32_vec enc_channels);
 
         // components
         std::vector<Daq*> daqs_;

@@ -3,12 +3,12 @@
 namespace mel {
 
     Daq::Daq(std::string type, std::string id,
-        uint_vec ai_channels,
-        uint_vec ao_channels,
-        uint_vec di_channels,
-        uint_vec do_channels,
-        uint_vec encoder_channels,
-        uint_vec encrate_channels) :
+        uint32_vec ai_channels,
+        uint32_vec ao_channels,
+        uint32_vec di_channels,
+        uint32_vec do_channels,
+        uint32_vec encoder_channels,
+        uint32_vec encrate_channels) :
         type_(type),
         id_(id),
         data_log_filename_(log_dir_ + "\\" + type + "_" + id + "_" + get_current_date_time() + ".txt"),
@@ -92,7 +92,7 @@ namespace mel {
         do_states_[channel_number_to_index(do_channels_nums_, channel_number)] = new_state;
     }
 
-    int_vec Daq::get_encoder_counts() {
+    int32_vec Daq::get_encoder_counts() {
         return enc_counts_;
     }
 
@@ -131,7 +131,7 @@ namespace mel {
 
     // HELPER FUNCTIONS
 
-    uint Daq::channel_number_to_index(const uint_vec& channels, const uint channel_number) {
+    uint32 Daq::channel_number_to_index(const uint32_vec& channels, const uint32 channel_number) {
         auto result = std::find(channels.begin(), channels.end(), channel_number);
         if (result != channels.end()) {
             return result - channels.begin();
@@ -141,7 +141,7 @@ namespace mel {
         }
     }
 
-    uint_vec Daq::sort_and_reduce_channels(uint_vec channels) {
+    uint32_vec Daq::sort_and_reduce_channels(uint32_vec channels) {
         std::sort(channels.begin(), channels.end());
         channels.erase(std::unique(channels.begin(), channels.end()), channels.end());
         return channels;

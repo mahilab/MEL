@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <stdio.h>
+#include <stdint.h>
 #include <time.h>
 #include <iostream>
 
@@ -20,16 +21,30 @@ namespace mel {
     #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
     */
 
-    typedef unsigned int              uint;
-    typedef std::vector<int>          int_vec;
-    typedef std::vector<unsigned int> uint_vec;
-    typedef std::vector<double>       double_vec;
-    typedef std::vector<char>         char_vec;
+    // TYPEDEFS
 
+    typedef   signed    char  int8;
+    typedef unsigned    char uint8;
+    typedef            short  int16;
+    typedef unsigned   short uint16;
+    typedef              int  int32;
+    typedef unsigned     int uint32;
+    typedef          __int64  int64;
+    typedef unsigned __int64 uint64;
+
+    typedef std::vector<int8>   int8_vec;
+    typedef std::vector<uint8>  uint8_vec;
+    typedef std::vector<int16>  int16_vec;
+    typedef std::vector<uint16> uint16_vec;
+    typedef std::vector<int32>  int32_vec;
+    typedef std::vector<uint32> uint32_vec;
+    typedef std::vector<int64>  int64_vec;
+    typedef std::vector<uint64> uint64_vec;
+    typedef std::vector<double> double_vec;
 
     // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
     const std::string get_current_date_time();
-    void print_uint_vec(uint_vec vector);
-    void print_int_vec(int_vec vector);
+    void print_uint_vec(uint32_vec vector);
+    void print_int_vec(int32_vec vector);
     void print_double_vec(double_vec vector);
 }

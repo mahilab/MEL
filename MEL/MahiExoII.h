@@ -9,7 +9,7 @@ namespace mel {
     public:
 
         // constructor
-        MahiExoII(Daq* daq, uint_vec ai_channels, uint_vec ao_channels, uint_vec di_channels, uint_vec do_channels, uint_vec enc_channels);
+        MahiExoII(Daq* daq, uint32_vec ai_channels, uint32_vec ao_channels, uint32_vec di_channels, uint32_vec do_channels, uint32_vec enc_channels);
 
         // destructor
         ~MahiExoII();

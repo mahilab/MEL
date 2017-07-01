@@ -11,9 +11,9 @@ namespace mel {
         
     public: 
 
-        Clock(uint frequency, bool enabled_logging = false);
+        Clock(uint32 frequency, bool enabled_logging = false);
 
-        uint get_tick();
+        uint32 get_tick();
         double get_time();        
 
 
@@ -25,8 +25,8 @@ namespace mel {
 
     private:
 
-        const uint frequency_;     // the control loop sampling rate in Hz (e.g. 1000 Hz)
-        uint tick_count_;          // the number or steps that have occured since that control loop was started 
+        const uint32 frequency_;     // the control loop sampling rate in Hz (e.g. 1000 Hz)
+        uint32 tick_count_;          // the number or steps that have occured since that control loop was started 
 
         std::chrono::high_resolution_clock::time_point start_;      // time taken at the start of the control loop
         std::chrono::high_resolution_clock::time_point start_tick_; // time taken at the top of each new loop iteration

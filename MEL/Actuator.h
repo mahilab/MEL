@@ -14,8 +14,8 @@ namespace mel {
         const double cont_current_limit_{};
         const double peak_current_limit_{};
         const double i2t_current_limit_{};
-        const uint ao_channel_{};
-        const uint do_channel_{};
+        const uint32 ao_channel_{};
+        const uint32 do_channel_{};
 
         // relatives
         Daq* daq_;
@@ -23,7 +23,7 @@ namespace mel {
         // constructors
         Actuator() {}
         //Actuator(double radius, double kt, double amp_gain, double current_limit, Daq::AoDoChannelSet ao_do_channel_set);
-        Actuator(double radius, double kt, double current_limit, double amp_gain, Daq* daq, uint ao_channel, uint do_channel)
+        Actuator(double radius, double kt, double current_limit, double amp_gain, Daq* daq, uint32 ao_channel, uint32 do_channel)
             : radius_(radius),
             kt_(kt),
             current_limit_(current_limit),
