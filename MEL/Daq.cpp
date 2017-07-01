@@ -108,6 +108,13 @@ namespace mel {
         return enc_rates[channel_number_to_index(encrate_channels_nums_, channel_number)];
     }
 
+    uint32_vec Daq::get_encoder_quadrature_factors() {
+        return encoder_quadrature_factors_;
+    }
+
+    uint32 Daq::get_encoder_quadrature_factor(channel channel_number) {
+        return encoder_quadrature_factors_[channel_number_to_index(encoder_channels_nums_, channel_number)];
+    }
 
     void Daq::log_data(double timestamp) {
 

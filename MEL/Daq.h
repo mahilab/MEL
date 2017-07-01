@@ -82,7 +82,14 @@ namespace mel {
         virtual void set_do_initial_states(dsignal_vec initial_states) {};
         virtual void set_do_final_states(dsignal_vec final_states) {};
 
-        virtual void set_encoder_quadrature_factors(uint8_vec quadrature_factors) {};
+        virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) {};
+
+        // FUNCTIONS FOR GETTING OPTIONS
+
+        uint32_vec get_encoder_quadrature_factors();
+        uint32 get_encoder_quadrature_factor(channel channel_number);
+
+    protected:
 
         // DAQ DATA LOGGING
 
@@ -135,7 +142,7 @@ namespace mel {
         dsignal_vec do_final_signals_;     // vector of signals digital outputs will go to when the program finishes 
         dsignal_vec do_expire_signals_;    // vector of signals digital outputs will go to if the watchdog expires
 
-        uint8_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
+        uint32_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
 
         // HELPLER FUNCTIONS
 
@@ -156,7 +163,7 @@ namespace mel {
         struct AiChannel : Channel { 
             AiChannel() : Channel() {}
             AiChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
-            voltage get_voltage() { return daq_->get_analog_voltage(channel_number_); }
+            voltage get_voltage() { return daq_->get_analog_voltage(channel_number_); }            
         };
 
         struct AoChannel : Channel {
@@ -181,12 +188,14 @@ namespace mel {
             EncoderChannel() : Channel() {}
             EncoderChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             int32 get_count() { return daq_->get_encoder_count(channel_number_); }
+            uint32 get_quadrature_factor() { return daq_->get_encoder_quadrature_factor(channel_number_); }
         };
 
         struct EncRateChannel : Channel {
             EncRateChannel() : Channel() {}
             EncRateChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             double get_rate() { return daq_->get_encoder_rate(channel_number_); }
+            uint32 get_quadrature_factor() { return daq_->get_encoder_quadrature_factor(channel_number_); }            
         };
 
         // FUNCTIONS FOR GETTING CHANNEL STRUCTS AND SETS

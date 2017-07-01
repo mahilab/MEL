@@ -10,6 +10,10 @@
 class MyController : public mel::Controller {
 
     mel::Daq* q8;
+    mel::Daq::DoChannel do0;
+    mel::Daq::AoChannel ao0;
+    mel::Daq::AiChannel ai0;
+    mel::Daq::EncoderChannel enc0;
 
     void start() override {
         std::cout << "Starting MyController" << std::endl;
@@ -24,47 +28,22 @@ class MyController : public mel::Controller {
 
         q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
+        do0 = q8->do_channel(0);
+        ao0 = q8->ao_channel(0);
+        ai0 = q8->ai_channel(0);
+        enc0 = q8->encoder_channel(0);
+
         q8->activate();
         q8->start_watchdog(0.1);
+
+        do0.set_signal(1);
+        ao0.set_voltage(2);
+        q8->zero_encoders();
     }
     void step() override {
         q8->read_all();
-
-        q8->ai_channel(0).get_voltage();
-        q8->ai_channel(1).get_voltage();
-        q8->ai_channel(2).get_voltage();
-        q8->ai_channel(3).get_voltage();
-
-        q8->ao_channel(0).set_voltage(0);
-        q8->ao_channel(1).set_voltage(0);
-        q8->ao_channel(2).set_voltage(0);
-        q8->ao_channel(3).set_voltage(0);
-
-        q8->di_channel(0).get_signal();
-        q8->di_channel(1).get_signal();
-        q8->di_channel(2).get_signal();
-        q8->di_channel(3).get_signal();
-
-        q8->do_channel(0).set_signal(0);
-        q8->do_channel(1).set_signal(1);
-        q8->do_channel(2).set_signal(1);
-        q8->do_channel(3).set_signal(1);
-
-        q8->encoder_channel(0).get_count();
-        q8->encoder_channel(1).get_count();
-        q8->encoder_channel(2).get_count();
-        q8->encoder_channel(3).get_count();
-
-        q8->encrate_channel(0).get_rate();
-        q8->encrate_channel(1).get_rate();
-        q8->encrate_channel(2).get_rate();
-        q8->encrate_channel(3).get_rate();
-
-        q8->write_all();
-
-        q8->log_data(get_time());
-
         q8->reload_watchdog();
+        q8->write_all();
 
         //std::cout << ai0.get_voltage() << std::endl;
     }

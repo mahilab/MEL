@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <iostream>
-#include "hil.h"
-#include "quanser_messages.h"
 #include "Daq.h"
 #include <thread>
 #include <chrono>
+#include "hil.h"
+#include "quanser_messages.h"
 
 namespace mel {
 
@@ -23,24 +23,23 @@ namespace mel {
             channel_vec enc_channels,
             char * options);
 
+    private:
 
         // DEFAULT Q8 USB SETTINGS
 
-    private:
-
-        const voltage  default_ai_min_voltage_ = -10;
-        const voltage  default_ai_max_voltage_ = +10;
-        const voltage  default_ao_min_voltage_ = -10;
-        const voltage  default_ao_max_voltage_ = +10;
+        const voltage  default_ai_min_voltage_     = -10;
+        const voltage  default_ai_max_voltage_     = +10;
+        const voltage  default_ao_min_voltage_     = -10;
+        const voltage  default_ao_max_voltage_     = +10;
         const voltage  default_ao_initial_voltage_ = 0;
-        const voltage  default_ao_final_voltage_ = 0;
-        const voltage  default_ao_exp_voltage_ = 0;
-        const dsignal  default_do_initial_signal_ = 0;
-        const dsignal  default_do_final_signal_ = 0;
-        const dsignal  default_do_expire_signal_ = 0;
-        const uint8    default_encoder_quadrature_factor_ = 4;
+        const voltage  default_ao_final_voltage_   = 0;
+        const voltage  default_ao_exp_voltage_     = 0;
+        const dsignal  default_do_initial_signal_  = 0;
+        const dsignal  default_do_final_signal_    = 0;
+        const dsignal  default_do_expire_signal_   = 0;
+        const uint32   default_encoder_quadrature_factor_ = 4; 
 
-        // Q8USB OBJECT AND OPTIONS
+        // QUARC SPECIFIC TYPES AND OPTIONS
 
         t_card q8_usb_;
         char       options_[1024];   // Quarc board specific options

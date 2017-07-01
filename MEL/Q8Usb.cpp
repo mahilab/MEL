@@ -1,5 +1,6 @@
 #include "Q8Usb.h"
 
+
 namespace mel {
 
     Q8Usb::Q8Usb(std::string id,
@@ -34,7 +35,7 @@ namespace mel {
         do_expire_signals_ = dsignal_vec(num_do_channels_, default_do_expire_signal_);
 
         // set up encoder channels
-        encoder_quadrature_factors_ = uint8_vec(num_enc_channels_, default_encoder_quadrature_factor_);
+        encoder_quadrature_factors_ = uint32_vec(num_enc_channels_, default_encoder_quadrature_factor_);
 
         // set up options
         strcpy(options_, options);
@@ -107,11 +108,13 @@ namespace mel {
                 // must convert MEL type to Quanser type
                 std::vector<t_digital_state> converted_do_exp_signals;
                 for (auto it = do_expire_signals_.begin(); it != do_expire_signals_.end(); ++it) {
-                    if (*it == 1)
+                    if (*it == 1) {
                         converted_do_exp_signals.push_back(DIGITAL_STATE_HIGH);
-                    else
+                    }
+                    else {
                         converted_do_exp_signals.push_back(DIGITAL_STATE_LOW);
-                }
+                    }
+                }                
                 result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_nums_[0], num_do_channels_, &converted_do_exp_signals[0]);
                 if (result < 0)
                     print_quarc_error(result);
@@ -119,12 +122,11 @@ namespace mel {
 
             // set encoder quadrature modes
             if (num_enc_channels_ > 0) {
+                // must convert MEL type to Quanser type
                 std::vector<t_encoder_quadrature_mode> converted_encoder_modes;
                 for (auto it = encoder_quadrature_factors_.begin(); it != encoder_quadrature_factors_.end(); ++it) {
                     if (*it == 1)
-                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_1X);
-                    else if (*it == 2)
-                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_2X);
+                        converted_encoder_modes.push_back(ENCODER_QUADRATURE_NONE);
                     else
                         converted_encoder_modes.push_back(ENCODER_QUADRATURE_4X);
                 }
