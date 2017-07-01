@@ -4,6 +4,7 @@
 #include "Clock.h"
 #include "Daq.h"
 #include "Q8Usb.h"
+#include "Encoder.h"
 
 
 // Controller implementation minimum working example
@@ -14,6 +15,9 @@ class MyController : public mel::Controller {
     mel::Daq::AoChannel ao0;
     mel::Daq::AiChannel ai0;
     mel::Daq::EncoderChannel enc0;
+    mel::Daq::EncRateChannel encr0;
+
+    mel::Encoder encoder0;
 
     void start() override {
         std::cout << "Starting MyController" << std::endl;
@@ -32,6 +36,7 @@ class MyController : public mel::Controller {
         ao0 = q8->ao_channel(0);
         ai0 = q8->ai_channel(0);
         enc0 = q8->encoder_channel(0);
+        encr0 = q8->encrate_channel(0);
 
         q8->activate();
         q8->start_watchdog(0.1);

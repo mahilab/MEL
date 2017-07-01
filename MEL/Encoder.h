@@ -16,19 +16,19 @@ namespace mel {
         const double transmission_ = 0;
         const uint32 counts_per_rev_ = 0;
 
+
         double get_position() override;
         double get_velocity() override; 
 
-    private:
-
-        
+    private:        
 
         Daq::EncoderChannel encoder_channel_;
         Daq::EncRateChannel encrate_channel_;
 
         // state variables
-        double count_;
-        double rate_;
+
+        double count_ = 0;
+        double rate_ = 0;
 
 
     };
