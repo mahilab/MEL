@@ -6,7 +6,6 @@
 #include "Q8Usb.h"
 #include "Encoder.h"
 
-
 // Controller implementation minimum working example
 class MyController : public mel::Controller {
 

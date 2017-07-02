@@ -48,40 +48,39 @@ namespace mel {
     int Q8Usb::activate() {
         if (!active_) {
             t_error result;
-            // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)
-            std::cout << "Opening Q8 USB ... ";
+            // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)            
             for (int attempt = 0; attempt < 10; attempt++) {
+                std::cout << "Q8 USB " << id_ << ": Activating (Attempt " << attempt + 1 << ") ... ";
                 result = hil_open("q8_usb", id_.c_str(), &q8_usb_);
                 if (result == 0) {
                     double temp[3]; // TODO: FIX THIS CRAP
                     //result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);
                     if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
-                        std::cout << "Attempt " << attempt + 1 << ": Success" << std::endl;
                         std::cout << "Done" << std::endl;
                         break;
                     }
                     else {
-                        std::cout << "Attempt " << attempt + 1 << ": Encoder Reading Errors" << std::endl;
+                        std::cout << "Failed (Encoder Read Error)" << std::endl;
                         result = 1;
                         hil_close(q8_usb_);
                     }
                 }
                 else {
-                    std::cout << "Attempt " << attempt + 1 << ": Failed to Open" << std::endl;
+                    std::cout << "Failed" << std::endl;
                     print_quarc_error(result);
                 }
             }
 
             // If all attempts were unsuccessful, display message and terminate the application.
             if (result != 0) {
-                std::cout << "Failed" << std::endl;
+                std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to activate." << std::endl;
                 return 0;
             }
 
             active_ = true;
 
             // Configure Q8 USB (Functions called in same order as Simulink compiled code)
-            std::cout << "Configuring Q8 USB ... ";
+            std::cout << "Q8 USB " << id_ << ": Configuring ... ";
             result = hil_set_card_specific_options(q8_usb_, options_, strlen(options_)); // TODO: make this optional or configured in another way
             if (result < 0)
                 print_quarc_error(result);
@@ -114,26 +113,33 @@ namespace mel {
             std::cout << "Done" << std::endl;
             return 1;
         }
+        return 0;
     }
 
     void Q8Usb::zero_encoders() {
         if (active_ && num_enc_channels_ > 0) {
-            std::cout << "Zeroing Encoder Counts ... ";
+            std::cout << "Q8 USB " << id_ << ": Zeroing encoder counts ...";
             int32_vec enc_zero_counts(num_enc_channels_, 0);
             t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_nums_[0], encoder_channels_nums_.size(), &enc_zero_counts[0]);
-            if (result != 0)
+            if (result != 0) {
+                std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
+                return;
+            }
             std::cout << "Done" << std::endl;
         }
     }
 
     void Q8Usb::offset_encoders(int32_vec offset_counts) {
         if (active_ && num_enc_channels_ > 0) {
-            std::cout << "Offsetting Encoder Counts ... ";
+            std::cout << "Q8 USB " << id_ << ": Offsetting encoder counts ... ";
             offset_counts.resize(num_enc_channels_, 0);
             t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_nums_[0], encoder_channels_nums_.size(), &offset_counts[0]);
-            if (result != 0)
+            if (result != 0) {
+                std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
+                return;
+            }
             std::cout << "Done" << std::endl;
         }
     }
@@ -159,7 +165,7 @@ namespace mel {
             stop_watchdog();
 
             // Close Q8 USB
-            std::cout << "Closing Q8 USB ... ";
+            std::cout << "Q8 USB " << id_ << ": Deactivating ... ";
             result = hil_close(q8_usb_);
             if (result != 0) {
                 std::cout << "Failed" << std::endl;
