@@ -9,7 +9,4 @@ namespace mel {
 
     }
 
-    double PositionSensor::get_velocity() {
-        return velocity_;
-    }
 }

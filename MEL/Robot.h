@@ -28,8 +28,7 @@ namespace mel {
         double_vec get_robot_joint_velocities();
         void set_robot_joint_torques(double_vec new_torques);
 
-
-    private:
+    protected:
 
         // state variables
         double_vec robot_joint_positions_;

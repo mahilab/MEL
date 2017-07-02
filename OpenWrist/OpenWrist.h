@@ -1,5 +1,5 @@
 #pragma once
-#include "Robot.h"
+#include "Exo.h"
 
 namespace mel {
 
@@ -7,13 +7,8 @@ namespace mel {
 
     public:
 
-        OpenWrist();
 
-        Daq* daq_;
 
-        std::vector<Encoder> encoders_;
-        std::vector<Actuator> actuators_;
-        std::vector<RevoluteJoint> joints_;
 
 
     };

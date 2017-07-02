@@ -78,7 +78,7 @@ int main(int argc, char * argv[]) {
     mel::Controller* my_controller = new MyController();
     mel::Controller* clock_tester = new ClockTester();
     mel::Clock my_clock(100, true);
-    mel::ControlLoop my_loop(my_clock, 5);
+    mel::ControlLoop my_loop(my_clock);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
