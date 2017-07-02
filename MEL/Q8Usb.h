@@ -25,7 +25,10 @@ namespace mel {
 
             struct AoMode {
 
-                enum Mode { Default = 0, VoltageMode = 0, CurrentMode2 = 1, CurrentMode1 = 2, CurrentMode0 = 3, ControlMode2 = 4, ControlMode1 = 5, ControlMode0 = 6 };
+                enum Mode { Default = 0, 
+                            VoltageMode = 0, 
+                            CurrentMode2 = 1, CurrentMode1 = 2, CurrentMode0 = 3, 
+                            ControlMode2 = 4, ControlMode1 = 5, ControlMode0 = 6 };
 
             private:
 
@@ -136,7 +139,6 @@ namespace mel {
 
         virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) override;
 
-
     private:
 
         // PRIVATE VARIABLES
@@ -147,7 +149,6 @@ namespace mel {
 
         static void print_quarc_error(int result);
         static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
-
         
 
     };

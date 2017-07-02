@@ -23,16 +23,16 @@ namespace mel {
         num_ao_channels_(ao_channels_nums_.size()),
         num_di_channels_(di_channels_nums_.size()),
         num_do_channels_(do_channels_nums_.size()),
-        num_enc_channels_(encoder_channels_nums_.size()),
-        num_vel_channels_(encrate_channels_nums_.size())
+        num_encoder_channels_(encoder_channels_nums_.size()),
+        num_encrate_channels_(encrate_channels_nums_.size())
     {
         // initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!) 
         ai_voltages_ = voltage_vec(num_ai_channels_, 0.0);
         ao_voltages_ = voltage_vec(num_ao_channels_, 0.0);
         di_signals_ = dsignal_vec(num_di_channels_, 0);
         do_signals_ = dsignal_vec(num_do_channels_, 0);
-        enc_counts_ = int32_vec(num_enc_channels_, 0);
-        enc_rates = double_vec(num_vel_channels_, 0.0);
+        enc_counts_ = int32_vec(num_encoder_channels_, 0);
+        enc_rates = double_vec(num_encrate_channels_, 0.0);
 
         // create data log specifically for this DAQ
         boost::filesystem::path dir(log_dir_.c_str());

@@ -34,24 +34,37 @@ namespace mel {
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING READING / WRITING FUNCTIONALITY
 
-        virtual void read_analogs()   { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_analogs()"   << std::endl; }
-        virtual void read_digitals()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_digitals()"  << std::endl; }
-        virtual void read_encoders()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encoders()"  << std::endl; }
-        virtual void read_encrates()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encrates()"  << std::endl; }
-        virtual void read_all()       { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_all()"       << std::endl; }
+        virtual void read_analogs() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_analogs()"    << std::endl; }
+        virtual void read_digitals() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_digitals()"   << std::endl; }
+        virtual void read_encoders() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encoders()"   << std::endl; }
+        virtual void read_encrates() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encrates()"   << std::endl; }
+        virtual void read_all() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_all()"        << std::endl; }
 
-        virtual void write_analogs()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_analogs()"  << std::endl; }
-        virtual void write_digitals() { std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_digitals()" << std::endl; }
-        virtual void write_all()      { std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_all()"      << std::endl;}
+        virtual void write_analogs() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_analogs()"   << std::endl; }
+        virtual void write_digitals() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_digitals()"  << std::endl; }
+        virtual void write_all() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_all()"       << std::endl; }
 
-        virtual void zero_encoders() {}
-        virtual void offset_encoders(int32_vec offset_counts) {}
+        virtual void zero_encoders()  { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement zero_encoders()"   << std::endl; }
+        virtual void offset_encoders(int32_vec offset_counts) { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement offset_encoders()" << std::endl; }
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING A WATCHDOG TIMER
 
-        virtual void reload_watchdog() {}
-        virtual void start_watchdog(double watchdog_timeout) {}
-        virtual void stop_watchdog() {}
+        virtual void reload_watchdog() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement reload_watchdog()" << std::endl; }
+        virtual void start_watchdog(double watchdog_timeout) { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement start_watchdog()"  << std::endl; }
+        virtual void stop_watchdog() { 
+            std::cout << "WARNING: DAQ <" << name_ << "> does not implement stop_watchdog()"   << std::endl; }
 
         // FUNCTIONS FOR GETTING/SETTING DAQ STATES (DEFAULT BEHAVIOR MAY BE OVERRIDDEN IF DESIRED)
 
@@ -101,54 +114,56 @@ namespace mel {
 
         // STATE VARIABLES
 
-        bool active_ = false;             // bool indicating whether the DAQ is currently active
+        bool active_ = false;      // bool indicating whether the DAQ is currently active
 
-        voltage_vec ai_voltages_;          // vector for which analog inputs should be read in to
-        voltage_vec ao_voltages_;          // vector for which analog outputs should be read out from
-        dsignal_vec   di_signals_;            // vector for which digital inputs should be read in to
-        dsignal_vec   do_signals_;            // vector for which digital outputs should be read out from
-        int32_vec    enc_counts_;           // vector for which encoder counts should be read in to
-        double_vec   enc_rates;             // vector for which encoder counts per second should be read in to
+        voltage_vec ai_voltages_;  // vector for which analog inputs should be read in to
+        voltage_vec ao_voltages_;  // vector for which analog outputs should be written out from
+        dsignal_vec di_signals_;   // vector for which digital inputs should be read in to
+        dsignal_vec do_signals_;   // vector for which digital outputs should be written out from
+        int32_vec   enc_counts_;   // vector for which encoder counts should be read in to
+        double_vec  enc_rates;     // vector for which encoder rates should be read in to
 
         // CHANNEL NUMBERS BEING USED
 
-        const channel_vec   ai_channels_nums_;          // vector of analog input channels numbers being used 
-        const channel_vec   ao_channels_nums_;          // vector of analog output channels numbers being used 
-        const channel_vec   di_channels_nums_;          // vector of digital input channels numbers being used 
-        const channel_vec   do_channels_nums_;          // vector of digital output channels numbers being used 
-        const channel_vec   encoder_channels_nums_;     // vector of encoder channels being numbers used
-        const channel_vec   encrate_channels_nums_;     // vector of encoder velocity channels numbers being used
+        const channel_vec   ai_channels_nums_;       // vector of analog input channels numbers being used 
+        const channel_vec   ao_channels_nums_;       // vector of analog output channels numbers being used 
+        const channel_vec   di_channels_nums_;       // vector of digital input channels numbers being used 
+        const channel_vec   do_channels_nums_;       // vector of digital output channels numbers being used 
+        const channel_vec   encoder_channels_nums_;  // vector of encoder channels being numbers used
+        const channel_vec   encrate_channels_nums_;  // vector of encoder velocity channels numbers being used
 
         // NUMBER OF CHANNELS DEFINED
 
-        const size_t   num_ai_channels_;          // vector of analog input channels being used 
-        const size_t   num_ao_channels_;          // vector of analog output channels being used 
-        const size_t   num_di_channels_;          // vector of digital input channels being used 
-        const size_t   num_do_channels_;          // vector of digital output channels being used 
-        const size_t   num_enc_channels_;         // vector of encoder channels being used
-        const size_t   num_vel_channels_;         // vector of encoder velocity channels being used
+        const size_t   num_ai_channels_;       // vector of analog input channels being used 
+        const size_t   num_ao_channels_;       // vector of analog output channels being used 
+        const size_t   num_di_channels_;       // vector of digital input channels being used 
+        const size_t   num_do_channels_;       // vector of digital output channels being used 
+        const size_t   num_encoder_channels_;  // vector of encoder channels being used
+        const size_t   num_encrate_channels_;  // vector of encoder velocity channels being used
 
         // DAQ SETTINGS
 
-        voltage_vec ai_min_voltages_;      // vector of minimum input voltages allowed by the board 
-        voltage_vec ai_max_voltages_;      // vector of maximum input voltages allowed by the board 
+        voltage_vec ai_min_voltages_;            // vector of minimum input voltages allowed by the board 
+        voltage_vec ai_max_voltages_;            // vector of maximum input voltages allowed by the board 
 
-        voltage_vec ao_min_voltages_;      // vector of minimum output voltages allowed by the board 
-        voltage_vec ao_max_voltages_;      // vector of maximum output voltages allowed by the board 
-        voltage_vec ao_initial_voltages_;  // vector of voltages analog outputs will go to when the program starts 
-        voltage_vec ao_final_voltages_;    // vector of voltages analog outputs will go to when the program finishes 
-        voltage_vec ao_expire_voltages_;   // vector of voltages analog outputs will go to if the watchdog expires 
+        voltage_vec ao_min_voltages_;            // vector of minimum output voltages allowed by the board 
+        voltage_vec ao_max_voltages_;            // vector of maximum output voltages allowed by the board 
+        voltage_vec ao_initial_voltages_;        // vector of voltages analog outputs will go to when the program starts 
+        voltage_vec ao_final_voltages_;          // vector of voltages analog outputs will go to when the program finishes 
+        voltage_vec ao_expire_voltages_;         // vector of voltages analog outputs will go to if the watchdog expires 
 
-        dsignal_vec do_initial_signals_;   // vector of signals digital outputs will go to when the program starts 
-        dsignal_vec do_final_signals_;     // vector of signals digital outputs will go to when the program finishes 
-        dsignal_vec do_expire_signals_;    // vector of signals digital outputs will go to if the watchdog expires
+        dsignal_vec do_initial_signals_;         // vector of signals digital outputs will go to when the program starts 
+        dsignal_vec do_final_signals_;           // vector of signals digital outputs will go to when the program finishes 
+        dsignal_vec do_expire_signals_;          // vector of signals digital outputs will go to if the watchdog expires
 
-        uint32_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
+        uint32_vec  encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
 
         // HELPER FUNCTIONS
 
-        channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);  // returns index of a channel number in the channels vector
-        channel_vec sort_and_reduce_channels(channel_vec channels); // turns channel number input such as {3, 1, 1, 2} to {1, 2, 3}      
+        // returns index of a channel number in the channels vector
+        channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);  
+        // turns channel number input such as {3, 1, 1, 2} to {1, 2, 3}  
+        channel_vec sort_and_reduce_channels(channel_vec channels);     
 
     public:
 
