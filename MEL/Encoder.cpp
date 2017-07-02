@@ -4,6 +4,8 @@ namespace mel {
 
     Encoder::Encoder() :
         PositionSensor(),
+        encoder_channel_(Daq::Encoder()),
+        encrate_channel_(Daq::EncRate()),
         counts_per_unit_(0),
         count_(0.0),
         rate_(0.0)
