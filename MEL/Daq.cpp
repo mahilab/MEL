@@ -10,7 +10,7 @@ namespace mel {
         channel_vec encoder_channels,
         channel_vec encrate_channels) :
         name_(name),
-        data_log_filename_(log_dir_ + "\\" + name + "_" + get_current_date_time() + ".txt"),
+        data_log_filename_(log_dir_ + "\\" + name + "_" + get_current_date_time() + ".csv"),
         // sort channel numbers from smallest to largest and delete duplicates and save
         ai_channels_nums_(sort_and_reduce_channels(ai_channels)),
         ao_channels_nums_(sort_and_reduce_channels(ao_channels)),

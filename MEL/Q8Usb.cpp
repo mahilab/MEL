@@ -12,7 +12,7 @@ namespace mel {
         channel_vec di_channels,
         channel_vec do_channels,
         channel_vec enc_channels,
-        char * options) :
+        Options options) :
         Daq("Q8_USB_" + std::to_string(id),
             ai_channels,
             ao_channels,
@@ -20,7 +20,8 @@ namespace mel {
             do_channels,
             enc_channels,
             get_q8_encrate_channels(enc_channels)),
-        id_(id)
+        id_(id),
+        options_(options)
     {
         // set up analog input channels
         ai_min_voltages_ = voltage_vec(num_ai_channels_, default_ai_min_voltage_);
@@ -41,8 +42,9 @@ namespace mel {
         // set up encoder channels
         encoder_quadrature_factors_ = uint32_vec(num_enc_channels_, default_encoder_quadrature_factor_);
 
-        // set up options
-        strcpy(options_, options);
+        // build options string
+        std::cout << options_.build() << std::endl;
+        strcpy(options_str_, options_.build().c_str());
     }
 
     int Q8Usb::activate() {
@@ -53,17 +55,17 @@ namespace mel {
                 std::cout << "Q8 USB " << id_ << ": Activating (Attempt " << attempt + 1 << ") ... ";
                 result = hil_open("q8_usb", std::to_string(id_).c_str(), &q8_usb_);
                 if (result == 0) {
-                    double temp[3]; // TODO: FIX THIS CRAP
+                    //double temp[3]; // TODO: FIX THIS CRAP
                     //result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);
-                    if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
+                    //if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
                         std::cout << "Done" << std::endl;
                         break;
-                    }
-                    else {
-                        std::cout << "Failed (Encoder Read Error)" << std::endl;
-                        result = 1;
-                        hil_close(q8_usb_);
-                    }
+                    //}
+                    //else {
+                    //    std::cout << "Failed (Encoder Read Error)" << std::endl;
+                    //   result = 1;
+                    //   hil_close(q8_usb_);
+                    //}
                 }
                 else {
                     std::cout << "Failed" << std::endl;
@@ -81,9 +83,15 @@ namespace mel {
 
             // Configure Q8 USB (Functions called in same order as Simulink compiled code)
             std::cout << "Q8 USB " << id_ << ": Configuring ... ";
-            result = hil_set_card_specific_options(q8_usb_, options_, strlen(options_)); // TODO: make this optional or configured in another way
-            if (result < 0)
+            result = hil_set_card_specific_options(q8_usb_, options_str_, strlen(options_str_)); // TODO: make this optional or configured in another way
+            if (result < 0) {
+                std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
+                std::cout << options_str_ << std::endl;
+                std::cout << options_.build().length() << std::endl;
+                std::cout << strlen(options_str_) << std::endl;
+                return 0;
+            }                
 
             // stop and clear watchdog
             stop_watchdog();
@@ -418,20 +426,29 @@ namespace mel {
                 options += enc + "z=1;";
             if (enc_reload_[i] == EncReload::OnPulse)
                 options += enc + "reload=1;";
-            if (enc_velocity_[i] > 0.0)
-                options += enc + "velocity=" + std::to_string(enc_velocity_[i]) + ";";
+            if (enc_velocity_[i] > 0.0) {
+                std::string velocity = std::to_string(enc_velocity_[i]); velocity.resize(7);
+                options += enc + "velocity=" + velocity + ";";
+            }
 
             std::string ch = "ch" + std::to_string(i) + "_";
             if (ao_modes_[i].mode_ != AoMode::Mode::Default) {
-                options += ch + "mode=" + std::to_string(ao_modes_[i].mode_) + ";";
-                options += ch + "kff=" + std::to_string(ao_modes_[i].kff_) + ";";
-                options += ch + "a0=" + std::to_string(ao_modes_[i].a0_) + ";";
-                options += ch + "a1=" + std::to_string(ao_modes_[i].a1_) + ";";
-                options += ch + "a2=" + std::to_string(ao_modes_[i].a2_) + ";";
-                options += ch + "b0=" + std::to_string(ao_modes_[i].b0_) + ";";
-                options += ch + "b1=" + std::to_string(ao_modes_[i].b1_) + ";";
-                options += ch + "post=" + std::to_string(ao_modes_[i].post_) + ";";
+                std::string kff  = std::to_string(ao_modes_[i].kff_);    kff.resize(7);
+                std::string a0   = std::to_string(ao_modes_[i].a0_);     a0.resize(7);
+                std::string a1   = std::to_string(ao_modes_[i].a1_);     a1.resize(7);
+                std::string a2   = std::to_string(ao_modes_[i].a2_);     a2.resize(7);
+                std::string b0   = std::to_string(ao_modes_[i].b0_);     b0.resize(7);
+                std::string b1   = std::to_string(ao_modes_[i].b1_);     b1.resize(7);
+                std::string post = std::to_string(ao_modes_[i].post_);   post.resize(7);
 
+                options += ch + "mode=" + std::to_string(ao_modes_[i].mode_) + ";";
+                options += ch + "kff=" + kff + ";";
+                options += ch + "a0=" + a0 + ";";
+                options += ch + "a1=" + a1 + ";";
+                options += ch + "a2=" + a2 + ";";
+                options += ch + "b0=" + b0 + ";";
+                options += ch + "b1=" + b1 + ";";
+                options += ch + "post=" + post + ";";
             }             
         }
         return options;
