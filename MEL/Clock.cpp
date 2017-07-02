@@ -10,7 +10,7 @@ namespace mel {
         enable_logging_(enable_logging)
     {
         if (enable_logging) {
-            data_log_filename_ = log_dir_ + "\\clock_" + get_current_date_time() + ".txt";
+            data_log_filename_ = log_dir_ + "\\clock_" + get_current_date_time() + ".csv";
             boost::filesystem::path dir(log_dir_.c_str());
             boost::filesystem::create_directory(dir);
             data_log_.open(data_log_filename_, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;

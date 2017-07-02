@@ -12,6 +12,7 @@ namespace mel {
     const double PI         = 3.14159265358979E+00;  // constant pi
     const double DEG2RAD    = 1.74532925199433E-02;  // multiply degrees by this value to convert to radians
     const double RAD2DEG    = 5.72957795130824E+01;  // multiply radians by this value to convert to degrees
+
     const double INCH2METER = 0.0254;                // multiply inches by this value to convert to meters
     const double METER2INCH = 1.0 / 0.0254;          // multiply meters by this value to convert to inches
 

@@ -9,18 +9,79 @@ namespace mel {
 
     public:
 
-        /* constructor */
+        // Q8 USB BOARD SPECIFIC OPTIONS (WIP)
+        // http://www.quanser.com/Products/quarc/documentation/q8_usb.html
+
+        class Options {
+
+
+        public:
+
+            enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
+            enum class EncDir { Default = 0, Reversed = 1 };
+            enum class EncFilter { Default = 0, Filtered = 1 };
+            enum class EncDetection { Default = 0, High = 0, Low = 1 };
+            enum class EncReload { Default = 0, OnPulse = 1 };
+
+            struct AoMode {
+
+                enum Mode { Default = 0, VoltageMode = 0, CurrentMode2 = 1, CurrentMode1 = 2, CurrentMode0 = 3, ControlMode2 = 4, ControlMode1 = 5, ControlMode0 = 6 };
+
+            private:
+
+                friend class Q8Usb;
+
+                Mode mode_ = Mode::Default;
+                double kff_ = 1;
+                double a0_ = 1;
+                double a1_ = 1;
+                double a2_ = 1;
+                double b0_ = 1;
+                double b1_ = 1;
+                double post_ = 1;
+
+            public:
+
+                AoMode() {}
+                AoMode(Mode mode, double kff, double a0, double a1, double a2, double b0, double b1, double post) :
+                    mode_(mode), kff_(kff), a0_(a0), a1_(a1), a2_(a2), b0_(b0), b1_(b1), post_(post) {}
+
+            };
+
+            uint32 decimation_ = 1;
+            UpdateRate update_rate_ = UpdateRate::Fast_8kHz;
+            std::vector<EncDir> enc_dir_ = std::vector<EncDir>(8, EncDir::Default);
+            std::vector<EncFilter> enc_filter_ = std::vector<EncFilter>(8, EncFilter::Default);
+            std::vector<EncDetection> enc_a_ = std::vector<EncDetection>(8, EncDetection::Default);
+            std::vector<EncDetection> enc_b_ = std::vector<EncDetection>(8, EncDetection::Default);
+            std::vector<EncDetection> enc_z_ = std::vector<EncDetection>(8, EncDetection::Default);
+            std::vector<EncReload> enc_reload_ = std::vector<EncReload>(8, EncReload::Default);
+            std::vector<double> enc_velocity_ = std::vector<double>(8, 0.0);
+            std::vector<AoMode> ao_modes_ = std::vector<AoMode>(8, AoMode());
+
+        private:
+
+            friend class Q8Usb;
+
+            std::string build();
+
+        };
+
+        // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        
         Q8Usb(uint32 id,
             channel_vec ai_channels,
             channel_vec ao_channels,
             channel_vec di_channels,
             channel_vec do_channels,
             channel_vec enc_channels,
-            char * options);
+            Options options = Options());
 
     private:
 
         // DEFAULT Q8 USB CHANNEL SETTINGS
+
+        Options options_;
 
         const voltage  default_ai_min_voltage_     = -10;
         const voltage  default_ai_max_voltage_     = +10;
@@ -37,7 +98,7 @@ namespace mel {
         // QUARC SPECIFIC TYPES AND OPTIONS
 
         t_card q8_usb_;
-        char       options_[1024];   // Quarc board specific options
+        char       options_str_[4096];   // Quarc board specific options
 
     public:
 
@@ -87,56 +148,7 @@ namespace mel {
         static void print_quarc_error(int result);
         static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
 
-    public:
-
-        // Q8 USB BOARD SPECIFIC OPTIONS (WIP)
-        // http://www.quanser.com/Products/quarc/documentation/q8_usb.html
-
-        class Options {
-
-        public:
-
-            enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
-            enum class EncDir { Default = 0, Reversed = 1 };
-            enum class EncFilter { Default = 0, Filtered = 1 };
-            enum class EncDetection { Default = 0, High = 0, Low = 1 };
-            enum class EncReload { Default = 0, OnPulse = 1 };
-
-            struct AoMode {
-
-                enum Mode { Default = 0, VoltageMode = 0, CurrentMode2 = 1, CurrentMode1 = 2, CurrentMode0 = 3, ControlMode2 = 4, ControlMode1 = 5, ControlMode0 = 6 };
-                
-                Mode mode_ = Mode::Default;
-                double kff_  = 1;
-                double a0_   = 1;
-                double a1_   = 1;
-                double a2_   = 1;
-                double b0_   = 1;
-                double b1_   = 1;
-                double post_ = 1;
-
-                AoMode() {}
-                AoMode(Mode mode, double kff, double a0, double a1, double a2, double b0, double b1, double post) :
-                    mode_(mode), kff_(kff), a0_(a0), a1_(a1), a2_(a2), b0_(b0), b1_(b1), post_(post) {}
-
-            };
-
-            uint32 decimation_ = 1;
-            UpdateRate update_rate_ = UpdateRate::Fast_8kHz;
-            std::vector<EncDir> enc_dir_ = std::vector<EncDir>(8, EncDir::Default);
-            std::vector<EncFilter> enc_filter_ = std::vector<EncFilter>(8, EncFilter::Default);
-            std::vector<EncDetection> enc_a_ = std::vector<EncDetection>(8, EncDetection::Default);
-            std::vector<EncDetection> enc_b_ = std::vector<EncDetection>(8, EncDetection::Default);
-            std::vector<EncDetection> enc_z_ = std::vector<EncDetection>(8, EncDetection::Default);
-            std::vector<EncReload> enc_reload_ = std::vector<EncReload>(8, EncReload::Default);
-            std::vector<double> enc_velocity_ = std::vector<double>(8, 0.0);
-            std::vector<AoMode> ao_modes_ = std::vector<AoMode>(8, AoMode());
-
-            friend class Q8Usb;
-
-            std::string build();
-
-        };
+        
 
     };
 }
