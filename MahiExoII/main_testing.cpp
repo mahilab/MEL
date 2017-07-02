@@ -2,7 +2,7 @@
 #include <csignal>
 #include "Q8Usb.h"
 #include "util.h"
-#include "Robot.h"
+#include "MahiExoII.h"
 #include "Controller.h"
 #include "ControlLoop.h"
 #include <boost/program_options.hpp>
@@ -14,8 +14,8 @@ class MyController : public mel::Controller {
 
 public:
 
-    std::vector<mel::Daq*> daqs_;
-    mel::Robot* robot_;
+    mel::Daq* q8;
+    mel::MahiExoII* exo_;
 
     void start() override {
         std::cout << "Starting MyController" << std::endl;
@@ -28,34 +28,60 @@ public:
         mel::uint32_vec  do_channels = { 0, 1, 2, 3, 4 };
         mel::uint32_vec enc_channels = { 0, 1, 2, 3, 4 };
         char options[] = "update_rate=fast;decimation=1";
-        daqs_ = { new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options) };
+        q8 =  new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
         
+        /*
+        do0 = q8->do_channel(0);
+        ao0 = q8->ao_channel(0);
+        enc0 = q8->encoder_channel(0);
+        encr0 = q8->encrate_channel(0);
+        
+        do1 = q8->do_channel(1);
+        ao1 = q8->ao_channel(1);
+        enc1 = q8->encoder_channel(1);
+        encr1 = q8->encrate_channel(1);
+
+        do2 = q8->do_channel(2);
+        ao2 = q8->ao_channel(2);
+        enc2 = q8->encoder_channel(2);
+        encr2 = q8->encrate_channel(2);
+
+        do3 = q8->do_channel(3);
+        ao3 = q8->ao_channel(3);
+        enc3 = q8->encoder_channel(3);
+        encr3 = q8->encrate_channel(3);
+
+        do4 = q8->do_channel(4);
+        ao4 = q8->ao_channel(4);
+        enc4 = q8->encoder_channel(4);
+        encr4 = q8->encrate_channel(4);
+        */
 
         // instantiate MahiExoII
-        exo_ = new mel::MahiExoII();
+        exo_ = new mel::MahiExoII(q8);
 
 
         // initialize Q8 USB
-        robot_->daqs_[0]->activate();
-        robot_->daqs_[0]->start_watchdog(0.1);        
+        q8->activate();
+        q8->start_watchdog(0.1);        
         
     }
 
     void step() override {
 
-        robot_->daqs_[0]->reload_watchdog();
-        robot_->daqs_[0]->read_all();
+        q8->reload_watchdog();
+        q8->read_all();
         
         //robot_->get_joint_positions;
         //robot_->get_joint_velocities;
         //robot_->set_joint_torques;
-        robot_->daqs_[0]->write_all();
+        q8->write_all();
     }
 
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
 
-        robot_->daqs_[0]->deactivate();
+        q8->deactivate();
     }
     void pause() override {
         std::cout << "Pausing MyController" << std::endl;

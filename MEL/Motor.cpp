@@ -2,12 +2,28 @@
 
 namespace mel {
 
+    Motor::Motor() :
+        kt_(0.0),
+        current_limit_(0.0),
+        amp_gain_(0.0),
+        is_enable_(false),
+        current_(0.0),
+        limited_current_(0.0),
+        Actuator()
+    {
+
+    }
+
     Motor::Motor(double kt, double current_limit, double amp_gain, Daq::AoChannel ao_channel, Daq::DoChannel do_channel) :
         kt_(kt),
         current_limit_(current_limit),
         amp_gain_(amp_gain),
+        is_enable_(false),
         ao_channel_(ao_channel),
-        do_channel_(do_channel)
+        do_channel_(do_channel),
+        current_(0.0),
+        limited_current_(0.0),
+        Actuator()
     {
 
     }

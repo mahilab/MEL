@@ -9,17 +9,17 @@ namespace mel {
     public:
 
         // constructor
-        MahiExoII();
+        MahiExoII(Daq* daq_);
 
 
         // inherited virtual functions from Exo class to be implemented
-        double_vec get_anatomical_joint_positions() override;
-        double_vec get_anatomical_joint_velocities() override;
-        void set_anatomical_joint_torques(double_vec new_torques) override;
+        //double_vec get_anatomical_joint_positions() override;
+        //double_vec get_anatomical_joint_velocities() override;
+        //void set_anatomical_joint_torques(double_vec new_torques) override;
         
 
     private:
-
+        /*
         // parameters (make these static?)
         const double R_ = 0.1044956;
         const double r_ = 0.05288174521;
@@ -41,6 +41,6 @@ namespace mel {
         void psi_d_qp_func(Eigen::VectorXd qp, double r, double alpha5, double alpha13);
         void forward_kinematics(Eigen::VectorXd qs, uint32 max_it, double tol);
         void forward_kinematics_velocity(Eigen::VectorXd qs_dot);
-        
+        */
     };
 }

@@ -3,24 +3,24 @@
 
 namespace mel {
 
-    MahiExoII::MahiExoII()
+    MahiExoII::MahiExoII(Daq* daq_)
         //qp_(Eigen::VectorXd::Zero(12)),
         //qs_(Eigen::VectorXd::Zero(3)),
         //psi_(Eigen::VectorXd::Zero(12)),
         //psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
     {
 
-        position_sensors_.push_back(new Encoder( 2048 ));
-        position_sensors_.push_back(new Encoder( 2048 ));
-        position_sensors_.push_back(new Encoder( 2048 ));
-        position_sensors_.push_back(new Encoder( 2048 ));
-        position_sensors_.push_back(new Encoder( 2048 ));
+        position_sensors_.push_back(new Encoder( 2048, daq_->encoder_channel(0), daq_->encrate_channel(0) ));
+        position_sensors_.push_back(new Encoder( 2048, daq_->encoder_channel(1), daq_->encrate_channel(1) ));
+        position_sensors_.push_back(new Encoder( 2048, daq_->encoder_channel(2), daq_->encrate_channel(2) ));
+        position_sensors_.push_back(new Encoder( 2048, daq_->encoder_channel(3), daq_->encrate_channel(3) ));
+        position_sensors_.push_back(new Encoder( 2048, daq_->encoder_channel(4), daq_->encrate_channel(4) ));
 
-        actuators_.push_back(new Motor(0.42 / 4.5, 0.127, 6.0, 1.8));
-        actuators_.push_back(new Motor(0.17 / 2.5, 0.0603, 3.17, 1.8));
-        actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
-        actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
-        actuators_.push_back(new Motor(INCH2METER*0.23, 0.175, 0.626, 0.184));
+        actuators_.push_back(new Motor( 0.127, 6.0, 1.8, daq_->ao_channel(0), daq_->do_channel(0) ));
+        actuators_.push_back(new Motor( 0.0603, 3.17, 1.8, daq_->ao_channel(1), daq_->do_channel(1) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_channel(2), daq_->do_channel(2) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_channel(3), daq_->do_channel(3) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_channel(4), daq_->do_channel(4) ));
 
         robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[0], 0.42 / 4.5, actuators_[0], 0.42 / 4.5)); // elbow flexion/extension
         robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[1], 0.17 / 2.5, actuators_[1], 0.17 / 2.5)); // forearm pronation/supination
@@ -44,7 +44,7 @@ namespace mel {
                 
     }
 
-
+/*
     double_vec MahiExoII::get_anatomical_joint_positions() {
 
         // get positions from first two anatomical joints, which have encoders
@@ -87,6 +87,7 @@ namespace mel {
 
 
     }
+    */
     
     /*
     double_vec MahiExoII::get_joint_positions() {

@@ -8,7 +8,7 @@ namespace mel {
     public:
 
         // constructors
-        Motor() {}
+        Motor();
         Motor(double kt, double current_limit, double amp_gain, Daq::AoChannel ao_channel, Daq::DoChannel do_channel);
 
         void set_torque(double actuator_torque) override;
@@ -18,10 +18,10 @@ namespace mel {
         void enable() override;
         void disable() override;
         
-        const double kt_ = 0;
-        const double current_limit_ = 0;
-        const double amp_gain_ = 0;
-        
+        const double kt_;
+        const double current_limit_;
+        const double amp_gain_;
+        bool is_enable_;
  
 
     private:
@@ -31,7 +31,7 @@ namespace mel {
 
         double current_;
         double limited_current_;
-        bool is_enable_;
+        
 
         
 
