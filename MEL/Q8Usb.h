@@ -25,7 +25,7 @@ namespace mel {
 
     private:
 
-        // DEFAULT Q8 USB SETTINGS
+        // DEFAULT Q8 USB CHANNEL SETTINGS
 
         const voltage  default_ai_min_voltage_     = -10;
         const voltage  default_ai_max_voltage_     = +10;
@@ -46,7 +46,7 @@ namespace mel {
 
     public:
 
-        // inhereted virtual functions from Daq class to be implemented
+        // inhereted virtual functions from Daq class to be overriden
         int activate() override;
         int deactivate() override;
 
@@ -90,28 +90,52 @@ namespace mel {
 
     public:
 
-        // Q8 USB BOARD SPECIFIC OPTIONS (W.I.P.)
+        // Q8 USB BOARD SPECIFIC OPTIONS (WIP)
+        // http://www.quanser.com/Products/quarc/documentation/q8_usb.html
 
-        enum class Q8EncoderDirction { Default, Normal, Reversed };
-        std::vector<Q8EncoderDirction> encoder_directions_;
+        class Options {
 
-        enum class Q8EncoderFilterMode { Default, Unfiltered, Filtered };
-        std::vector<Q8EncoderFilterMode> encoder_filter_modes_;
+        public:
 
-        enum class Q8EncoderDetectionMode { Default, Low, High };
-        std::vector<Q8EncoderDetectionMode> encoder_A_modes_;
-        std::vector<Q8EncoderDetectionMode> encoder_B_modes_;
-        std::vector<Q8EncoderDetectionMode> encoder_Z_modes_;
+            enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
+            enum class EncoderDirection { Default = 0, Reversed = 1 };
+            enum class EncoderFilter { Default = 0, Filtered = 1 };
+            enum class EncoderDetection { Default = 0, High = 0, Low = 1 };
+            enum class EncoderReload { Default = 0, OnPulse = 1 };
 
-        enum class Q8EncoderReloadMode { Default, Manual, OnPulse };
-        std::vector<Q8EncoderReloadMode> encoder_reload_modes_;
+            struct AnalogOutputMode {
 
-        enum class Q8UpdateRate { Default, Normal_1kHz, Fast_8kHz };
-        Q8UpdateRate update_rate_;
+                enum Mode { Default = 0, VoltageMode = 0, CurrentMode2 = 1, CurrentMode1 = 2, CurrentMode0 = 3, ControlMode2 = 4, ControlMode1 = 5, ControlMode0 = 6 };
+                
+                Mode mode = Mode::Default;
+                double kff_  = 1;
+                double a0_   = 1;
+                double a1_   = 1;
+                double a2_   = 1;
+                double b0_   = 1;
+                double b1_   = 1;
+                double post_ = 1;
 
-        enum class Q8AnalogOutputMode { Default, VoltageMode, CurrentMode0, CurrentMode1, CurrentMode2, ControlMode0, ControlMode1, ControlMode2 };
-        std::vector<Q8AnalogOutputMode> ao_modes_;
+            };
 
+            uint32 decimation_ = 1;
+            UpdateRate update_rate_ = UpdateRate::Fast_8kHz;
+            std::vector<EncoderDirection> enc_dir_ = std::vector<EncoderDirection>(8, EncoderDirection::Default);
+            std::vector<EncoderFilter> enc_filter_ = std::vector<EncoderFilter>(8, EncoderFilter::Default);
+            std::vector<EncoderDetection> enc_a_ = std::vector<EncoderDetection>(8, EncoderDetection::Default);
+            std::vector<EncoderDetection> enc_b_ = std::vector<EncoderDetection>(8, EncoderDetection::Default);
+            std::vector<EncoderDetection> enc_z_ = std::vector<EncoderDetection>(8, EncoderDetection::Default);
+            std::vector<EncoderReload> enc_reload_ = std::vector<EncoderReload>(8, EncoderReload::Default);
+            std::vector<double> enc_velocity_ = std::vector<double>(8, 0.0);
+            std::vector<AnalogOutputMode> ao_modes_ = std::vector<AnalogOutputMode>(8, AnalogOutputMode());
+
+        private:
+
+            friend class Q8Usb;
+
+            std::string build();
+
+        };
 
     };
 }

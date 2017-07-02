@@ -379,4 +379,52 @@ namespace mel {
         std::transform(vel_channels.begin(), vel_channels.end(), vel_channels.begin(), bind2nd(std::plus<uint32>(), 14000));
         return vel_channels;
     }
+
+
+    std::string Q8Usb::Options::build() {
+        std::string options = "";
+        
+        // append update rate
+        if (update_rate_ == UpdateRate::Normal_1kHz || update_rate_ == UpdateRate::Default)
+            options += "update_rate=normal;";
+        else if (update_rate_ == UpdateRate::Fast_8kHz)
+            options += "update_rate=fast;";
+
+        // append decimation
+        options += "decimation=" + std::to_string(decimation_); +" ;";
+
+        // append iterative options
+        for (int i = 0; i < 8; i++) {
+
+            std::string enc = "enc" + std::to_string(i) + "_";
+            if (enc_dir_[i] == EncoderDirection::Reversed)
+                options += enc + "dir=1;";
+            if (enc_filter_[i] == EncoderFilter::Filtered)
+                options += enc + "filter=1;";
+            if (enc_a_[i] == EncoderDetection::Low)
+                options += enc + "a=1;";
+            if (enc_b_[i] == EncoderDetection::Low)
+                options += enc + "b=1;";
+            if (enc_z_[i] == EncoderDetection::Low)
+                options += enc + "z=1;";
+            if (enc_reload_[i] == EncoderReload::OnPulse)
+                options += enc + "reload=1;";
+            if (enc_velocity_[i] > 0.0)
+                options += enc + "velocity=" + std::to_string(enc_velocity_[i]) + ";";
+
+            std::string ch = "ch" + std::to_string(i) + "_";
+            if (ao_modes_[i].mode != AnalogOutputMode::Mode::Default) {
+                options += ch + "mode=" + std::to_string(ao_modes_[i].mode) + ";";
+                options += ch + "kff=" + std::to_string(ao_modes_[i].kff_) + ";";
+                options += ch + "a0=" + std::to_string(ao_modes_[i].a0_) + ";";
+                options += ch + "a1=" + std::to_string(ao_modes_[i].a1_) + ";";
+                options += ch + "a2=" + std::to_string(ao_modes_[i].a2_) + ";";
+                options += ch + "b0=" + std::to_string(ao_modes_[i].b0_) + ";";
+                options += ch + "b1=" + std::to_string(ao_modes_[i].b1_) + ";";
+                options += ch + "post=" + std::to_string(ao_modes_[i].post_) + ";";
+
+            }             
+        }
+        return options;
+    }
 }
