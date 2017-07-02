@@ -85,6 +85,11 @@ int main(int argc, char * argv[]) {
     // execute the controller
     my_loop.execute();
 
+    mel::Q8Usb::Options q8_options;
+    //q8_options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::Mode::CurrentMode1, 1, 2, 3, 4, 5, 6, 7);
+
+    std::cout << q8_options.build() << std::endl;
+
     // delete controller
     delete my_controller;
 

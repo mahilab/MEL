@@ -1,12 +1,7 @@
 #pragma once
-#include <stdio.h>
-#include <tchar.h>
-#include <iostream>
 #include "Daq.h"
-#include <thread>
-#include <chrono>
-#include "hil.h"
-#include "quanser_messages.h"
+
+typedef struct tag_card *    t_card;
 
 namespace mel {
 
@@ -85,7 +80,7 @@ namespace mel {
 
         // HELPTER FUNCTIONS 
 
-        static void print_quarc_error(t_error result);
+        static void print_quarc_error(int result);
         static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
 
     public:
@@ -98,16 +93,16 @@ namespace mel {
         public:
 
             enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
-            enum class EncoderDirection { Default = 0, Reversed = 1 };
-            enum class EncoderFilter { Default = 0, Filtered = 1 };
-            enum class EncoderDetection { Default = 0, High = 0, Low = 1 };
-            enum class EncoderReload { Default = 0, OnPulse = 1 };
+            enum class EncDir { Default = 0, Reversed = 1 };
+            enum class EncFilter { Default = 0, Filtered = 1 };
+            enum class EncDetection { Default = 0, High = 0, Low = 1 };
+            enum class EncReload { Default = 0, OnPulse = 1 };
 
-            struct AnalogOutputMode {
+            struct AoMode {
 
                 enum Mode { Default = 0, VoltageMode = 0, CurrentMode2 = 1, CurrentMode1 = 2, CurrentMode0 = 3, ControlMode2 = 4, ControlMode1 = 5, ControlMode0 = 6 };
                 
-                Mode mode = Mode::Default;
+                Mode mode_ = Mode::Default;
                 double kff_  = 1;
                 double a0_   = 1;
                 double a1_   = 1;
@@ -116,20 +111,22 @@ namespace mel {
                 double b1_   = 1;
                 double post_ = 1;
 
+                AoMode() {}
+                AoMode(Mode mode, double kff, double a0, double a1, double a2, double b0, double b1, double post) :
+                    mode_(mode), kff_(kff), a0_(a0), a1_(a1), a2_(a2), b0_(b0), b1_(b1), post_(post) {}
+
             };
 
             uint32 decimation_ = 1;
             UpdateRate update_rate_ = UpdateRate::Fast_8kHz;
-            std::vector<EncoderDirection> enc_dir_ = std::vector<EncoderDirection>(8, EncoderDirection::Default);
-            std::vector<EncoderFilter> enc_filter_ = std::vector<EncoderFilter>(8, EncoderFilter::Default);
-            std::vector<EncoderDetection> enc_a_ = std::vector<EncoderDetection>(8, EncoderDetection::Default);
-            std::vector<EncoderDetection> enc_b_ = std::vector<EncoderDetection>(8, EncoderDetection::Default);
-            std::vector<EncoderDetection> enc_z_ = std::vector<EncoderDetection>(8, EncoderDetection::Default);
-            std::vector<EncoderReload> enc_reload_ = std::vector<EncoderReload>(8, EncoderReload::Default);
+            std::vector<EncDir> enc_dir_ = std::vector<EncDir>(8, EncDir::Default);
+            std::vector<EncFilter> enc_filter_ = std::vector<EncFilter>(8, EncFilter::Default);
+            std::vector<EncDetection> enc_a_ = std::vector<EncDetection>(8, EncDetection::Default);
+            std::vector<EncDetection> enc_b_ = std::vector<EncDetection>(8, EncDetection::Default);
+            std::vector<EncDetection> enc_z_ = std::vector<EncDetection>(8, EncDetection::Default);
+            std::vector<EncReload> enc_reload_ = std::vector<EncReload>(8, EncReload::Default);
             std::vector<double> enc_velocity_ = std::vector<double>(8, 0.0);
-            std::vector<AnalogOutputMode> ao_modes_ = std::vector<AnalogOutputMode>(8, AnalogOutputMode());
-
-        private:
+            std::vector<AoMode> ao_modes_ = std::vector<AoMode>(8, AoMode());
 
             friend class Q8Usb;
 
