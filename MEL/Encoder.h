@@ -14,6 +14,8 @@ namespace mel {
         Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel);
         Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel);
 
+        //Encoder& operator= (const Encoder &rhs);
+
         // PUBLIC FUNCTIONS
 
         double get_position() override;   // converts encoder count to encoder position in [unit], implicity defined by counts_per_unit_;
@@ -24,7 +26,7 @@ namespace mel {
 
         // PUBLIC VARIABLES
 
-        const uint32 counts_per_unit_; // the number of counts per one [unit] (e.g. 500 [counts/rev] OR 500  / ( 2 * PI ) [counts/rad])
+        uint32 counts_per_unit_; // the number of counts per one [unit] (e.g. 500 [counts/rev] OR 500  / ( 2 * PI ) [counts/rad])
 
     private:        
 

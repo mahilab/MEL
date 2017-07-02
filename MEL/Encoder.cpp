@@ -28,16 +28,21 @@ namespace mel {
         rate_(0.0)
     { }
 
+   // Encoder& Encoder::operator= (const Encoder &rhs) {
+
+    //}
+
+
     double Encoder::get_position() {
         count_ = encoder_channel_.get_count();
-        position_ = counts_per_unit_ * encoder_channel_.get_quadrature_factor() * count_;
+        position_ = count_ / (counts_per_unit_ *  encoder_channel_.get_quadrature_factor());
         return position_;
     }
 
     double Encoder::get_velocity() {
         if (velocity_enabled_) {
             rate_ = encrate_channel_.get_rate();
-            velocity_ = counts_per_unit_ * encoder_channel_.get_quadrature_factor() * rate_;
+            velocity_ = rate_ / (counts_per_unit_ * encoder_channel_.get_quadrature_factor());
             return velocity_;
         }
         return PositionSensor::get_velocity(); // else call the default get_velocity() function

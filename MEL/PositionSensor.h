@@ -20,13 +20,13 @@ namespace mel {
 
         // PUBLIC VARIABLES
 
-        const std::string name_;
+        std::string name_;
 
     protected:
 
         // PROTECTED VARIABLES
 
-        const bool velocity_enabled_; // whether or not this PositionSensor enables velocity measurement
+        bool velocity_enabled_; // whether or not this PositionSensor enables velocity measurement
 
         // STATE VARIABLES
 

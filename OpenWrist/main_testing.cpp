@@ -42,11 +42,13 @@ class MyController : public mel::Controller {
         do0 = q8->do_(0);
         ao0 = q8->ao_(0);
         ai0 = q8->ai_(0);
-        enc0 = q8->encoder_(0);
-        encr0 = q8->encrate_(0);
+        enc0 = q8->encoder_(2);
+        encr0 = q8->encrate_(2);
 
         q8->activate();
         q8->start_watchdog(0.1);
+
+        encoder0 = mel::Encoder("joint_0", 500 * 1 / ( 2 * mel::PI ), enc0, encr0);
 
         do0.set_signal(1);
         ao0.set_voltage(2);
@@ -55,6 +57,7 @@ class MyController : public mel::Controller {
     void step() override {
         q8->read_all();
         q8->reload_watchdog();
+        std::cout << enc0.get_count() << " " << encr0.get_rate() << " " << enc0.get_quadrature_factor() << " " << encoder0.get_position() * 0.234 / 6 * mel::RAD2DEG << std::endl;
         q8->write_all();
 
         //std::cout << ai0.get_voltage() << std::endl;
@@ -83,8 +86,8 @@ int main(int argc, char * argv[]) {
     // create an
     mel::Controller* my_controller = new MyController();
     mel::Controller* clock_tester = new ClockTester();
-    mel::Clock my_clock(100, true);
-    mel::ControlLoop my_loop(my_clock, 2);
+    mel::Clock my_clock(1000, true);
+    mel::ControlLoop my_loop(my_clock);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
