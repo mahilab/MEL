@@ -24,7 +24,9 @@
     <ClCompile Include="ControlLoop.cpp" />
     <ClCompile Include="Daq.cpp" />
     <ClCompile Include="Encoder.cpp" />
+    <ClCompile Include="Exo.cpp" />
     <ClCompile Include="Motor.cpp" />
+    <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="RobotJoint.cpp" />
     <ClCompile Include="PrismaticRobotJoint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />

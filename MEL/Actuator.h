@@ -7,13 +7,13 @@ namespace mel {
 
     public:
 
-        // constructors
-        Actuator() {}
+        // constructor
+        Actuator();
 
         virtual void set_torque(double actuator_torque) = 0;
 
-        virtual void enable();
-        virtual void disable();
+        virtual void enable() {}
+        virtual void disable() {}
 
     protected:
 

@@ -7,10 +7,10 @@ namespace mel {
     public:
 
         // constructor
-        PositionSensor() {}
+        PositionSensor();
 
         virtual double get_position() = 0;
-        virtual double get_velocity() {}
+        virtual double get_velocity();
 
     protected:
 

@@ -17,7 +17,7 @@ namespace mel {
         // getters and setters of state variables
         virtual double_vec get_anatomical_joint_positions();
         virtual double_vec get_anatomical_joint_velocities();
-        virtual void set_anatomical_joint_torques(double_vec new_torques);
+        virtual void set_anatomical_joint_torques(double_vec new_torques) {}
 
         /*
         virtual double get_elbow_joint_position();

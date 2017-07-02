@@ -9,10 +9,10 @@ namespace mel {
     public:        
 
         // constructor
-        Encoder() {}
+        Encoder();
         Encoder(uint32 counts_per_rev, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel);
 
-        const uint32 counts_per_rev_ = 0;
+        const uint32 counts_per_rev_;
 
 
         double get_position() override;
@@ -21,12 +21,13 @@ namespace mel {
 
     private:        
 
+        Daq::EncoderChannel encoder_channel_;
         Daq::EncRateChannel encrate_channel_;
 
         // state variables
 
-        double count_ = 0;
-        double rate_ = 0;
+        double count_;
+        double rate_;
 
 
     };

@@ -28,12 +28,12 @@ namespace mel {
 
 
     double RobotJoint::get_position() {
-        position_ = position_sensor_transmission_*position_sensor_->get_position();
+        position_ = position_sensor_transmission_ * position_sensor_->get_position();
         return position_;
     }
 
     double RobotJoint::get_velocity() {
-        velocity_ = position_sensor_transmission_*position_sensor_->get_velocity;
+        velocity_ = position_sensor_transmission_ * position_sensor_->get_velocity();
         return velocity_;
     }
 
