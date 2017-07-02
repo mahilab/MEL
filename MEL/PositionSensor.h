@@ -6,16 +6,21 @@ namespace mel {
 
     public:
 
-        // CONSTRUCTOR / DESTRUCTOR
+        // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
         PositionSensor();
+        PositionSensor(bool velocity_enabled) : velocity_enabled_(velocity_enabled) {}
 
         // PUBLIC FUNCTIONS
 
         virtual double get_position() = 0;
-        virtual double get_velocity() { return velocity_; }
+        virtual double get_velocity();
 
     protected:
+
+        // PROTECTED VARIABLES
+
+        bool velocity_enabled_; // whether or not this PositionSensor enables velocity measurement
 
         // STATE VARIABLES
 
