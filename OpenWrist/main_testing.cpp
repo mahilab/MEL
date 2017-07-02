@@ -6,6 +6,7 @@
 #include "Q8Usb.h"
 #include "Encoder.h"
 
+
 // Controller implementation minimum working example
 class MyController : public mel::Controller {
 
@@ -64,33 +65,34 @@ class MyController : public mel::Controller {
     }
 };
 
+class ClockTester : public mel::Controller {
+    void start() override { std::cout << "Starting ClockTest" << std::endl; }
+    void step() override { std::cout << get_time() << std::endl; }
+    void stop() override { std::cout << "Stopping ClockTester" << std::endl; }
+};
+
 int main(int argc, char * argv[]) {
     
+
     // create an
     mel::Controller* my_controller = new MyController();
-    mel::Clock my_clock(1000, true);
-    mel::ControlLoop my_loop(my_clock);
-
-    std::vector<double> evan(2,1);
-    evan[0] = 1;
+    mel::Controller* clock_tester = new ClockTester();
+    mel::Clock my_clock(100, true);
+    mel::ControlLoop my_loop(my_clock, 5);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
     getchar();
 
     // queue controllers
-    my_loop.queue_controller(my_controller);
+    my_loop.queue_controller(clock_tester);
 
     // execute the controller
-    my_loop.execute();
-
-    mel::Q8Usb::Options q8_options;
-    //q8_options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::Mode::CurrentMode1, 1, 2, 3, 4, 5, 6, 7);
-
-    std::cout << q8_options.build() << std::endl;
+    my_loop.execute();    
 
     // delete controller
     delete my_controller;
+    delete clock_tester;
 
     return 0;
 }

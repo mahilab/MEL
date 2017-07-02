@@ -1,9 +1,8 @@
 #pragma once
 #include <chrono>
-#include <iostream>
 #include <fstream>
-#include <boost/filesystem.hpp>
 #include "util.h"
+
 
 namespace mel {
 
@@ -15,7 +14,6 @@ namespace mel {
 
         uint32 get_tick();
         double get_time();        
-
 
         void start();
         void wait();
@@ -41,6 +39,9 @@ namespace mel {
         std::chrono::nanoseconds offset_time_;     // dynamic offset used to accurize waiting
 
         const double NS2S = 1.0 / 1000000000.0;
+
+        bool stop_ = false;
+        bool pause_ = false;
 
         // CLOCK DATA LOGGING
 

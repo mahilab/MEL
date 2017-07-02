@@ -5,8 +5,9 @@ namespace mel {
     bool ControlLoop::stop_ = false;
     bool ControlLoop::pause_ = false;
 
-    ControlLoop::ControlLoop(Clock& clock) :
-        clock_(clock)
+    ControlLoop::ControlLoop(Clock& clock, uint32 stop_time_seconds) :
+        clock_(clock),
+        stop_time_(stop_time_seconds)
     {
         // register signal SIGINT and SIGBREAK with ctrl_c_handler */
         signal(SIGINT, ctrl_c_handler);
@@ -30,7 +31,7 @@ namespace mel {
         clock_.start();
 
         // start the control loop
-        while (!stop_) {
+        while (!stop_ && clock_.get_time() <= stop_time_) {
 
             // step the Controller(s)
             for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
@@ -39,6 +40,9 @@ namespace mel {
             // wait for the next clock tick
             clock_.wait();
         }
+
+        // stop the Clock
+        clock_.stop();
 
         // stop the Controller(s)
         for (auto it = controllers_.begin(); it != controllers_.end(); ++it)

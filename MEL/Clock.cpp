@@ -1,5 +1,6 @@
 #include "Clock.h"
-
+#include "util.h"
+#include <boost/filesystem.hpp>
 
 namespace mel {
 
@@ -45,36 +46,38 @@ namespace mel {
     }
 
     void Clock::wait() {
-        
-        // increment sample number
-        tick_count_ += 1;
+        if (!stop_) {
+            // increment sample number
+            tick_count_ += 1;
 
-        // update time variables
-        now_ = std::chrono::high_resolution_clock::now();
-        elapsed_tick_ = now_ - start_tick_;
-        elapsed_actual_ = now_ - start_;
-        elapsed_exe_ = elapsed_tick_;
-
-        // spinlock / busy wait until the next tick has been reached
-        while (elapsed_tick_ < tick_time_ /*- offset_time_*/) {
+            // update time variables
             now_ = std::chrono::high_resolution_clock::now();
             elapsed_tick_ = now_ - start_tick_;
             elapsed_actual_ = now_ - start_;
-            elapsed_ideal_ = tick_count_ * tick_time_;
-            elapsed_wait_ = elapsed_tick_ - elapsed_exe_;
+            elapsed_exe_ = elapsed_tick_;
+
+            // spinlock / busy wait until the next tick has been reached        
+            while (elapsed_tick_ < tick_time_) {
+                now_ = std::chrono::high_resolution_clock::now();
+                elapsed_tick_ = now_ - start_tick_;
+                elapsed_actual_ = now_ - start_;
+                elapsed_ideal_ = tick_count_ * tick_time_;
+                elapsed_wait_ = elapsed_tick_ - elapsed_exe_;
+            }
+
+            // start the next tick
+            start_tick_ = std::chrono::high_resolution_clock::now();
+
+            // log this tick
+            if (enable_logging_) {
+                data_log_ << tick_count_ << "\t" << elapsed_ideal_.count() * NS2S << "\t" << elapsed_actual_.count() * NS2S << "\t"
+                    << elapsed_exe_.count() * NS2S << "\t" << elapsed_wait_.count() * NS2S << "\t" << elapsed_tick_.count() * NS2S << std::endl;
+            }
         }
+    }
 
-        // start the next tick
-        start_tick_ = std::chrono::high_resolution_clock::now();   
-
-        // calculate the offset time to be applied next tick (experimental)
-        // offset_time_ = elapsed_tick_ - tick_time_;
-
-        // log this tick
-        if (enable_logging_) {
-            data_log_ << tick_count_ << "\t" << elapsed_ideal_.count() * NS2S << "\t" << elapsed_actual_.count() * NS2S << "\t"
-                << elapsed_exe_.count() * NS2S << "\t" << elapsed_wait_.count() * NS2S << "\t" << elapsed_tick_.count() * NS2S << std::endl;
-        }
+    void Clock::stop() {
+        stop_ = true;
     }
 
 }
