@@ -48,7 +48,7 @@ class MyController : public mel::Controller {
         q8->activate();
         q8->start_watchdog(0.1);
 
-        encoder0 = mel::Encoder("joint_0", 500 * 1 / ( 2 * mel::PI ), enc0, encr0);
+        encoder0 = mel::Encoder("joint_0", 500 * 1 / ( 2 * mel::PI ), enc0);
 
         do0.set_signal(1);
         ao0.set_voltage(2);
@@ -57,7 +57,7 @@ class MyController : public mel::Controller {
     void step() override {
         q8->read_all();
         q8->reload_watchdog();
-        std::cout << enc0.get_count() << " " << encr0.get_rate() << " " << enc0.get_quadrature_factor() << " " << encoder0.get_position() * 0.234 / 6 * mel::RAD2DEG << std::endl;
+        std::cout << enc0.get_count() << " " << encr0.get_rate() << " " << enc0.get_quadrature_factor() << " " << encoder0.get_velocity() * 0.234 / 6 * mel::RAD2DEG << std::endl;
         q8->write_all();
 
         //std::cout << ai0.get_voltage() << std::endl;
