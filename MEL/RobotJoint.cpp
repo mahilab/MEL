@@ -3,28 +3,26 @@
 namespace mel {
 
     RobotJoint::RobotJoint() :
+        name_("no name"),
         position_sensor_(nullptr),
-        position_sensor_transmission_(0.0),
         actuator_(nullptr),
+        position_sensor_transmission_(0.0),
         actuator_transmission_(0.0),
         position_(0.0),
         velocity_(0.0),
         torque_(0.0)
-    {
+    { }
 
-    }
-
-    RobotJoint::RobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
+    RobotJoint::RobotJoint(std::string name, PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
+        name_(name),
         position_sensor_(position_sensor),
-        position_sensor_transmission_(position_sensor_transmission),
         actuator_(actuator),
+        position_sensor_transmission_(position_sensor_transmission),
         actuator_transmission_(actuator_transmission),
         position_(0.0),
         velocity_(0.0),
         torque_(0.0)
-    {
-
-    }
+    { }
 
 
     double RobotJoint::get_position() {

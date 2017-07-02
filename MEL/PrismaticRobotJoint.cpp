@@ -2,10 +2,13 @@
 
 namespace mel {
 
-    PrismaticRobotJoint::PrismaticRobotJoint(PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
-        RobotJoint(position_sensor, position_sensor_transmission, actuator, actuator_transmission)
-    {
-    }
+    PrismaticRobotJoint::PrismaticRobotJoint() :
+        RobotJoint()
+    { }
+
+    PrismaticRobotJoint::PrismaticRobotJoint(std::string name, PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
+        RobotJoint(name, position_sensor, position_sensor_transmission, actuator, actuator_transmission)
+    { }
 
     /*
     double PrismaticJoint::encoder_to_joint_space(double counts) {

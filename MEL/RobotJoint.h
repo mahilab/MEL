@@ -8,26 +8,32 @@ namespace mel {
 
     public:
 
-        // constructor
-        RobotJoint();
-        RobotJoint(PositionSensor* position_sensor, double position_sensor_transmission_, Actuator* actuator, double actuator_transmission);
+        // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
-        // references
+        RobotJoint();
+        RobotJoint(std::string name, PositionSensor* position_sensor, double position_sensor_transmission_, Actuator* actuator, double actuator_transmission);
+
+        // PUBLIC FUNCTIONS
+
+        double get_position(); // converts PositionSensor position to RobotJoint position
+        double get_velocity(); // converts PositionSensor velocity to RobotJoint velocity
+
+        void set_torque(double joint_torque);
+
+        // PUBLIC VARIABLES
+
+        std::string name_;
+
         PositionSensor* position_sensor_;
         Actuator* actuator_;
         
         const double position_sensor_transmission_;
         const double actuator_transmission_;
 
-        // getters of state variables
-        double get_position();
-        double get_velocity();
-        void set_torque(double joint_torque);
-        
+    protected:
 
-    private:
+        // STATE VARIABLES
 
-        // state variables
         double position_;
         double velocity_;
         double torque_;
