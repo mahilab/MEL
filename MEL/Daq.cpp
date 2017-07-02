@@ -2,16 +2,15 @@
 
 namespace mel {
 
-    Daq::Daq(std::string type, std::string id,
+    Daq::Daq(std::string name,
         channel_vec ai_channels,
         channel_vec ao_channels,
         channel_vec di_channels,
         channel_vec do_channels,
         channel_vec encoder_channels,
         channel_vec encrate_channels) :
-        type_(type),
-        id_(id),
-        data_log_filename_(log_dir_ + "\\" + type + "_" + id + "_" + get_current_date_time() + ".txt"),
+        name_(name),
+        data_log_filename_(log_dir_ + "\\" + name + "_" + get_current_date_time() + ".txt"),
         // sort channel numbers from smallest to largest and delete duplicates and save
         ai_channels_nums_(sort_and_reduce_channels(ai_channels)),
         ao_channels_nums_(sort_and_reduce_channels(ao_channels)),

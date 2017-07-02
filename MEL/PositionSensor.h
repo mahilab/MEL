@@ -11,7 +11,7 @@ namespace mel {
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
         PositionSensor();
-        PositionSensor(std::string name, bool velocity_enabled) : name_(name), velocity_enabled_(velocity_enabled) {}
+        PositionSensor(std::string name, bool velocity_enabled);
 
         // PUBLIC FUNCTIONS
 

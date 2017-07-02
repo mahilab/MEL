@@ -11,11 +11,11 @@
 class MyController : public mel::Controller {
 
     mel::Daq* q8;
-    mel::Daq::DoChannel do0;
-    mel::Daq::AoChannel ao0;
-    mel::Daq::AiChannel ai0;
-    mel::Daq::EncoderChannel enc0;
-    mel::Daq::EncRateChannel encr0;
+    mel::Daq::Do do0;
+    mel::Daq::Ao ao0;
+    mel::Daq::Ai ai0;
+    mel::Daq::Encoder enc0;
+    mel::Daq::EncRate encr0;
 
     mel::Encoder encoder0;
 
@@ -33,11 +33,11 @@ class MyController : public mel::Controller {
 
         q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
-        do0 = q8->do_channel(0);
-        ao0 = q8->ao_channel(0);
-        ai0 = q8->ai_channel(0);
-        enc0 = q8->encoder_channel(0);
-        encr0 = q8->encrate_channel(0);
+        do0 = q8->do_(0);
+        ao0 = q8->ao_(0);
+        ai0 = q8->ai_(0);
+        enc0 = q8->encoder_(0);
+        encr0 = q8->encrate_(0);
 
         q8->activate();
         q8->start_watchdog(0.1);

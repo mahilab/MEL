@@ -6,20 +6,21 @@
 
 namespace mel {
 
-    Q8Usb::Q8Usb(std::string id,
+    Q8Usb::Q8Usb(uint32 id,
         channel_vec ai_channels,
         channel_vec ao_channels,
         channel_vec di_channels,
         channel_vec do_channels,
         channel_vec enc_channels,
         char * options) :
-        Daq("q8_usb", id,
+        Daq("Q8_USB_" + std::to_string(id),
             ai_channels,
             ao_channels,
             di_channels,
             do_channels,
             enc_channels,
-            get_q8_encrate_channels(enc_channels))
+            get_q8_encrate_channels(enc_channels)),
+        id_(id)
     {
         // set up analog input channels
         ai_min_voltages_ = voltage_vec(num_ai_channels_, default_ai_min_voltage_);
@@ -42,7 +43,6 @@ namespace mel {
 
         // set up options
         strcpy(options_, options);
-
     }
 
     int Q8Usb::activate() {
@@ -51,7 +51,7 @@ namespace mel {
             // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)            
             for (int attempt = 0; attempt < 10; attempt++) {
                 std::cout << "Q8 USB " << id_ << ": Activating (Attempt " << attempt + 1 << ") ... ";
-                result = hil_open("q8_usb", id_.c_str(), &q8_usb_);
+                result = hil_open("q8_usb", std::to_string(id_).c_str(), &q8_usb_);
                 if (result == 0) {
                     double temp[3]; // TODO: FIX THIS CRAP
                     //result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);

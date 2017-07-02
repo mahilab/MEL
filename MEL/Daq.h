@@ -13,9 +13,9 @@ namespace mel {
 
     public:
 
-        // CONSTRUCTOR / DESTRUCTOR 
+        // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
-        Daq(std::string name, std::string id,
+        Daq(std::string name,
             channel_vec ai_channels,
             channel_vec ao_channels,
             channel_vec di_channels,
@@ -23,8 +23,9 @@ namespace mel {
             channel_vec encoder_channels,
             channel_vec encrate_channels);
 
-        const std::string type_;       // string representing the DAQ type e.g. "q8_usb"
-        const std::string id_;         // string representing the DAQ ID number e.g. "0"
+        // PUBLIC VARIABLES
+
+        const std::string name_;
 
         // PURE VIRTUAL FUNCTIONS FOR ACTIVATING AND DEACTIVATING DAQ (REQ'D BY ALL DERIVED CLASSES)
 
@@ -33,15 +34,15 @@ namespace mel {
 
         // VIRTUAL FUNCTIONS FOR IMPLEMENTING READING / WRITING FUNCTIONALITY
 
-        virtual void read_analogs()   { std::cout << "WARNING: This DAQ does not implement read_analogs()"   << std::endl; }
-        virtual void read_digitals()  { std::cout << "WARNING: This DAQ does not implement read_digitals()"  << std::endl; }
-        virtual void read_encoders()  { std::cout << "WARNING: This DAQ does not implement read_encoders()"  << std::endl; }
-        virtual void read_encrates()  { std::cout << "WARNING: This DAQ does not implement read_encrates()"  << std::endl; }
-        virtual void read_all()       { std::cout << "WARNING: This DAQ does not implement read_all()"       << std::endl; }
+        virtual void read_analogs()   { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_analogs()"   << std::endl; }
+        virtual void read_digitals()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_digitals()"  << std::endl; }
+        virtual void read_encoders()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encoders()"  << std::endl; }
+        virtual void read_encrates()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encrates()"  << std::endl; }
+        virtual void read_all()       { std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_all()"       << std::endl; }
 
-        virtual void write_analogs()  { std::cout << "WARNING: This DAQ does not implement write_analogs()"  << std::endl; }
-        virtual void write_digitals() { std::cout << "WARNING: This DAQ does not implement write_digitals()" << std::endl; }
-        virtual void write_all()      { std::cout << "WARNING: This DAQ does not implement write_all()"      << std::endl;}
+        virtual void write_analogs()  { std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_analogs()"  << std::endl; }
+        virtual void write_digitals() { std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_digitals()" << std::endl; }
+        virtual void write_all()      { std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_all()"      << std::endl;}
 
         virtual void zero_encoders() {}
         virtual void offset_encoders(int32_vec offset_counts) {}
@@ -127,7 +128,7 @@ namespace mel {
         const size_t   num_enc_channels_;         // vector of encoder channels being used
         const size_t   num_vel_channels_;         // vector of encoder velocity channels being used
 
-        // DAQ SETTINGS (TO BE IMPLEMENTED IN DERIVED DAQ CLASSES)
+        // DAQ SETTINGS
 
         voltage_vec ai_min_voltages_;      // vector of minimum input voltages allowed by the board 
         voltage_vec ai_max_voltages_;      // vector of maximum input voltages allowed by the board 
@@ -144,7 +145,7 @@ namespace mel {
 
         uint32_vec   encoder_quadrature_factors_; // vector of encoder quadrature factors, e.g. 1X, 2X, 4X
 
-        // HELPLER FUNCTIONS
+        // HELPER FUNCTIONS
 
         channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);  // returns index of a channel number in the channels vector
         channel_vec sort_and_reduce_channels(channel_vec channels); // turns channel number input such as {3, 1, 1, 2} to {1, 2, 3}      
@@ -160,52 +161,52 @@ namespace mel {
             Channel(Daq* daq, channel channel_number) : daq_(daq), channel_number_(channel_number) {}
         };
 
-        struct AiChannel : Channel { 
-            AiChannel() : Channel() {}
-            AiChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+        struct Ai : Channel { 
+            Ai() : Channel() {}
+            Ai(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             voltage get_voltage() { return daq_->get_analog_voltage(channel_number_); }            
         };
 
-        struct AoChannel : Channel {
-            AoChannel() : Channel() {}
-            AoChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+        struct Ao : Channel {
+            Ao() : Channel() {}
+            Ao(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             void set_voltage(voltage new_voltage) { daq_->set_analog_voltage(channel_number_, new_voltage ); }
         };
 
-        struct DiChannel : Channel {
-            DiChannel() : Channel() {}
-            DiChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+        struct Di : Channel {
+            Di() : Channel() {}
+            Di(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             dsignal get_signal() { return daq_->get_digital_signal(channel_number_); }
         };
 
-        struct DoChannel : Channel {
-            DoChannel() : Channel() {}
-            DoChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+        struct Do : Channel {
+            Do() : Channel() {}
+            Do(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             void set_signal(dsignal new_signal) { daq_->set_digital_signal(channel_number_, new_signal); }
         };
 
-        struct EncoderChannel : Channel {
-            EncoderChannel() : Channel() {}
-            EncoderChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+        struct Encoder : Channel {
+            Encoder() : Channel() {}
+            Encoder(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             int32 get_count() { return daq_->get_encoder_count(channel_number_); }
             uint32 get_quadrature_factor() { return daq_->get_encoder_quadrature_factor(channel_number_); }
         };
 
-        struct EncRateChannel : Channel {
-            EncRateChannel() : Channel() {}
-            EncRateChannel(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
+        struct EncRate : Channel {
+            EncRate() : Channel() {}
+            EncRate(Daq* daq, channel channel_number) : Channel(daq, channel_number) {}
             double get_rate() { return daq_->get_encoder_rate(channel_number_); }
             uint32 get_quadrature_factor() { return daq_->get_encoder_quadrature_factor(channel_number_); }            
         };
 
         // FUNCTIONS FOR GETTING CHANNEL STRUCTS AND SETS
-
-        virtual AiChannel ai_channel(channel channel_number) { return AiChannel(this, channel_number); }
-        virtual AoChannel ao_channel(channel channel_number) { return AoChannel(this, channel_number); }
-        virtual DiChannel di_channel(channel channel_number) { return DiChannel(this, channel_number); }
-        virtual DoChannel do_channel(channel channel_number) { return DoChannel(this, channel_number); }
-        virtual EncoderChannel encoder_channel(channel channel_number) { return EncoderChannel(this, channel_number); }
-        virtual EncRateChannel encrate_channel(channel channel_number) { return EncRateChannel(this, channel_number); }
+        // these functions are intended to act like indexed vectors 
+        virtual Ai ai_(channel channel_number) { return Ai(this, channel_number); }
+        virtual Ao ao_(channel channel_number) { return Ao(this, channel_number); }
+        virtual Di di_(channel channel_number) { return Di(this, channel_number); }
+        virtual Do do_(channel channel_number) { return Do(this, channel_number); }
+        virtual Encoder encoder_(channel channel_number) { return Encoder(this, channel_number); }
+        virtual EncRate encrate_(channel channel_number) { return EncRate(this, channel_number); }
         
     };
 

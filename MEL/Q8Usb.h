@@ -10,7 +10,7 @@ namespace mel {
     public:
 
         /* constructor */
-        Q8Usb(std::string name,
+        Q8Usb(uint32 id,
             channel_vec ai_channels,
             channel_vec ao_channels,
             channel_vec di_channels,
@@ -77,6 +77,10 @@ namespace mel {
 
 
     private:
+
+        // PRIVATE VARIABLES
+
+        uint32 id_;
 
         // HELPTER FUNCTIONS 
 

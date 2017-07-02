@@ -11,8 +11,8 @@ namespace mel {
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
         Encoder();
-        Encoder(std::string name, uint32 counts_per_unit, Daq::EncoderChannel encoder_channel);
-        Encoder(std::string name, uint32 counts_per_unit, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel);
+        Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel);
+        Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel);
 
         // PUBLIC FUNCTIONS
 
@@ -30,8 +30,8 @@ namespace mel {
 
         // PRIVATE VARIABLES
 
-        Daq::EncoderChannel encoder_channel_; // the DAQ encoder channel bound to this Encoder
-        Daq::EncRateChannel encrate_channel_; // the DAQ encoder rate channel bound to this Encoder (only used if if velocity_enabled_ = true)
+        Daq::Encoder encoder_channel_; // the DAQ encoder channel bound to this Encoder
+        Daq::EncRate encrate_channel_; // the DAQ encoder rate channel bound to this Encoder (only used if if velocity_enabled_ = true)
 
         // STATE VARIABLES
 

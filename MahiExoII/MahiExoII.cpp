@@ -10,17 +10,17 @@ namespace mel {
         //psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
     {
 
-        position_sensors_.push_back(new Encoder("Elbow",   2048 / (2 * PI), daq_->encoder_channel(0), daq_->encrate_channel(0) ));
-        position_sensors_.push_back(new Encoder("Forearm", 2048 / (2 * PI), daq_->encoder_channel(1), daq_->encrate_channel(1) ));
-        position_sensors_.push_back(new Encoder("Wrist 0", 2048 / (2 * PI), daq_->encoder_channel(2), daq_->encrate_channel(2) ));
-        position_sensors_.push_back(new Encoder("Wrist 1", 2048 / (2 * PI), daq_->encoder_channel(3), daq_->encrate_channel(3) ));
-        position_sensors_.push_back(new Encoder("Wrist 2", 2048 / (2 * PI), daq_->encoder_channel(4), daq_->encrate_channel(4) ));
+        position_sensors_.push_back(new Encoder("Elbow",   2048 / (2 * PI), daq_->encoder_(0), daq_->encrate_(0) ));
+        position_sensors_.push_back(new Encoder("Forearm", 2048 / (2 * PI), daq_->encoder_(1), daq_->encrate_(1) ));
+        position_sensors_.push_back(new Encoder("Wrist 0", 2048 / (2 * PI), daq_->encoder_(2), daq_->encrate_(2) ));
+        position_sensors_.push_back(new Encoder("Wrist 1", 2048 / (2 * PI), daq_->encoder_(3), daq_->encrate_(3) ));
+        position_sensors_.push_back(new Encoder("Wrist 2", 2048 / (2 * PI), daq_->encoder_(4), daq_->encrate_(4) ));
 
-        actuators_.push_back(new Motor( 0.127, 6.0, 1.8, daq_->ao_channel(0), daq_->do_channel(0) ));
-        actuators_.push_back(new Motor( 0.0603, 3.17, 1.8, daq_->ao_channel(1), daq_->do_channel(1) ));
-        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_channel(2), daq_->do_channel(2) ));
-        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_channel(3), daq_->do_channel(3) ));
-        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_channel(4), daq_->do_channel(4) ));
+        actuators_.push_back(new Motor( 0.127, 6.0, 1.8, daq_->ao_(0), daq_->do_(0) ));
+        actuators_.push_back(new Motor( 0.0603, 3.17, 1.8, daq_->ao_(1), daq_->do_(1) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_(2), daq_->do_(2) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_(3), daq_->do_(3) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_(4), daq_->do_(4) ));
 
         robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[0], 0.42 / 4.5, actuators_[0], 0.42 / 4.5)); // elbow flexion/extension
         robot_joints_.push_back(new RevoluteRobotJoint(position_sensors_[1], 0.17 / 2.5, actuators_[1], 0.17 / 2.5)); // forearm pronation/supination
