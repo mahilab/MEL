@@ -11,8 +11,8 @@ namespace mel {
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
         Encoder();
-        Encoder(uint32 counts_per_unit, Daq::EncoderChannel encoder_channel);
-        Encoder(uint32 counts_per_unit, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel);
+        Encoder(std::string name, uint32 counts_per_unit, Daq::EncoderChannel encoder_channel);
+        Encoder(std::string name, uint32 counts_per_unit, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel);
 
         // PUBLIC FUNCTIONS
 

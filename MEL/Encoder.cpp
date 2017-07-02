@@ -9,16 +9,16 @@ namespace mel {
         rate_(0.0)
     { }
 
-    Encoder::Encoder(uint32 counts_per_unit, Daq::EncoderChannel encoder_channel) :
-        PositionSensor(false),
+    Encoder::Encoder(std::string name, uint32 counts_per_unit, Daq::EncoderChannel encoder_channel) :
+        PositionSensor(name, false),
         counts_per_unit_(counts_per_unit),
         encoder_channel_(encoder_channel),
         count_(0.0),
         rate_(0.0)
     { }
 
-    Encoder::Encoder(uint32 counts_per_unit, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel) :
-        PositionSensor(true),
+    Encoder::Encoder(std::string name, uint32 counts_per_unit, Daq::EncoderChannel encoder_channel, Daq::EncRateChannel encrate_channel) :
+        PositionSensor(name, true),
         counts_per_unit_(counts_per_unit),
         encoder_channel_(encoder_channel),
         encrate_channel_(encrate_channel),
@@ -38,7 +38,6 @@ namespace mel {
             velocity_ = counts_per_unit_ * encoder_channel_.get_quadrature_factor() * rate_;
             return velocity_;
         }
-        std::cout << "WARNING: This Encoder does not enable velocity measurement." << std::endl;
-        return 0.0;
+        return PositionSensor::get_velocity(); // else call the default get_velocity() function
     }
 }
