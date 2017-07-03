@@ -15,6 +15,9 @@ namespace mel {
 
         // PUBLIC FUNCTIONS
 
+        virtual void enable();
+        virtual void disable();
+
         double get_position(); // converts PositionSensor position to RobotJoint position
         double get_velocity(); // converts PositionSensor velocity to RobotJoint velocity
 

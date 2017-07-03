@@ -11,7 +11,7 @@ namespace mel {
         rate_(0.0)
     { }
 
-    Encoder::Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel) :
+    Encoder::Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel) :
         PositionSensor(name, false),
         counts_per_unit_(counts_per_unit),
         encoder_channel_(encoder_channel),
@@ -19,7 +19,7 @@ namespace mel {
         rate_(0.0)
     { }
 
-    Encoder::Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel) :
+    Encoder::Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel) :
         PositionSensor(name, true),
         counts_per_unit_(counts_per_unit),
         encoder_channel_(encoder_channel),

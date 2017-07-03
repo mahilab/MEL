@@ -43,7 +43,6 @@ namespace mel {
         encoder_quadrature_factors_ = uint32_vec(num_encoder_channels_, default_encoder_quadrature_factor_);
 
         // build options string
-        std::cout << options_.build() << std::endl;
         strcpy(options_str_, options_.build().c_str());
     }
 
@@ -87,9 +86,6 @@ namespace mel {
             if (result < 0) {
                 std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
-                std::cout << options_str_ << std::endl;
-                std::cout << options_.build().length() << std::endl;
-                std::cout << strlen(options_str_) << std::endl;
                 return 0;
             }                
 

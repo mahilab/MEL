@@ -33,6 +33,7 @@ namespace mel {
     typedef std::vector<uint32> uint32_vec;
     typedef std::vector<double> double_vec;
 
+
     // TYPDEF MEL TYPES BASED ON DAQ MANUFACTUERER
 
 #define QUANSER

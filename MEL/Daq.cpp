@@ -40,19 +40,19 @@ namespace mel {
         data_log_.open(data_log_filename_, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;
 
         // print a header to the top of the data log
-        data_log_ << "Timestamp" << "\t";
+        data_log_ << "Timestamp" << ",";
         for (auto it = ai_channels_nums_.begin(); it != ai_channels_nums_.end(); ++it)
-            data_log_ << "AI_" + std::to_string(*it) << "\t";
+            data_log_ << "AI_" + std::to_string(*it) << ",";
         for (auto it = ao_channels_nums_.begin(); it != ao_channels_nums_.end(); ++it)
-            data_log_ << "AO_" + std::to_string(*it) << "\t";
+            data_log_ << "AO_" + std::to_string(*it) << ",";
         for (auto it = di_channels_nums_.begin(); it != di_channels_nums_.end(); ++it)
-            data_log_ << "DI_" + std::to_string(*it) << "\t";
+            data_log_ << "DI_" + std::to_string(*it) << ",";
         for (auto it = do_channels_nums_.begin(); it != do_channels_nums_.end(); ++it)
-            data_log_ << "DO_" + std::to_string(*it) << "\t";
+            data_log_ << "DO_" + std::to_string(*it) << ",";
         for (auto it = encoder_channels_nums_.begin(); it != encoder_channels_nums_.end(); ++it)
-            data_log_ << "ENC_COUNT_" + std::to_string(*it) << "\t";
+            data_log_ << "ENC_COUNT_" + std::to_string(*it) << ",";
         for (auto it = encrate_channels_nums_.begin(); it != encrate_channels_nums_.end(); ++it)
-            data_log_ << "ENC_RATE_" + std::to_string(*it) << "\t";
+            data_log_ << "ENC_RATE_" + std::to_string(*it) << ",";
         data_log_ << std::endl;
 
     }
@@ -117,20 +117,20 @@ namespace mel {
 
     void Daq::log_data(double timestamp) {
 
-        data_log_ << timestamp << "\t";
+        data_log_ << timestamp << ",";
 
         for (auto it = ai_voltages_.begin(); it != ai_voltages_.end(); ++it)
-            data_log_ << *it << "\t";
+            data_log_ << *it << ",";
         for (auto it = ao_voltages_.begin(); it != ao_voltages_.end(); ++it)
-            data_log_ << *it << "\t";
+            data_log_ << *it << ",";
         for (auto it = di_signals_.begin(); it != di_signals_.end(); ++it)
-            data_log_ << (int)*it << "\t";
+            data_log_ << (int)*it << ",";
         for (auto it = do_signals_.begin(); it != do_signals_.end(); ++it)
-            data_log_ << (int)*it << "\t";
+            data_log_ << (int)*it << ",";
         for (auto it = enc_counts_.begin(); it != enc_counts_.end(); ++it)
-            data_log_ << *it << "\t";
+            data_log_ << *it << ",";
         for (auto it = enc_rates.begin(); it != enc_rates.end(); ++it)
-            data_log_ << *it << "\t";
+            data_log_ << *it << ",";
         data_log_ << std::endl;
 
     }
@@ -144,6 +144,7 @@ namespace mel {
         }
         else {
             std::cout << "FATAL ERROR: Attempted to access invalid channel number " << channel_number << "." << std::endl;
+            return -1;
         }
     }
 

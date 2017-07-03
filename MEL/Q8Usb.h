@@ -1,5 +1,7 @@
 #pragma once
+#include <array>
 #include "Daq.h"
+
 
 typedef struct tag_card *    t_card;
 
@@ -13,7 +15,6 @@ namespace mel {
         // http://www.quanser.com/Products/quarc/documentation/q8_usb.html
 
         class Options {
-
 
         public:
 
@@ -51,18 +52,18 @@ namespace mel {
 
             };
 
-            uint32 decimation_ = 1;
-            UpdateRate update_rate_ = UpdateRate::Fast_8kHz;
-            std::vector<EncDir> enc_dir_ = std::vector<EncDir>(8, EncDir::Default);
-            std::vector<EncFilter> enc_filter_ = std::vector<EncFilter>(8, EncFilter::Default);
-            std::vector<EncDetection> enc_a_ = std::vector<EncDetection>(8, EncDetection::Default);
-            std::vector<EncDetection> enc_b_ = std::vector<EncDetection>(8, EncDetection::Default);
-            std::vector<EncDetection> enc_z_ = std::vector<EncDetection>(8, EncDetection::Default);
-            std::vector<EncReload> enc_reload_ = std::vector<EncReload>(8, EncReload::Default);
-            std::vector<double> enc_velocity_ = std::vector<double>(8, 0.0);
-            std::vector<AoMode> ao_modes_ = std::vector<AoMode>(8, AoMode());
+            uint32 decimation_                   = 1;
+            UpdateRate update_rate_              = UpdateRate::Fast_8kHz;
+            std::array<EncDir, 8> enc_dir_       = { EncDir::Default };
+            std::array<EncFilter, 8> enc_filter_ = { EncFilter::Default };
+            std::array<EncDetection, 8> enc_a_   = { EncDetection::Default };
+            std::array<EncDetection, 8> enc_b_   = { EncDetection::Default };
+            std::array<EncDetection, 8> enc_z_   = { EncDetection::Default };
+            std::array<EncReload, 8> enc_reload_ = { EncReload::Default };
+            std::array<double, 8> enc_velocity_  = { 0.0 };
+            std::array<AoMode, 8> ao_modes_      = { AoMode() };
 
-        private:
+        //private:
 
             friend class Q8Usb;
 

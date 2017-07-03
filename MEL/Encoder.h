@@ -11,8 +11,8 @@ namespace mel {
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
         Encoder();
-        Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel);
-        Encoder(std::string name, uint32 counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel);
+        Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel);
+        Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel);
 
         //Encoder& operator= (const Encoder &rhs);
 
@@ -26,7 +26,7 @@ namespace mel {
 
         // PUBLIC VARIABLES
 
-        uint32 counts_per_unit_; // the number of counts per one [unit] (e.g. 500 [counts/rev] OR 500  / ( 2 * PI ) [counts/rad])
+        double counts_per_unit_; // the number of counts per one [unit] (e.g. 500 [counts/rev] OR 500  / ( 2 * PI ) [counts/rad])
 
     private:        
 

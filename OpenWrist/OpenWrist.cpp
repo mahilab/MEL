@@ -1,20 +1,36 @@
 #include "OpenWrist.h"
 
-namespace mel {
+OpenWrist::OpenWrist(Config configuration, Params parameters) :
+    config_(configuration),
+    params_(parameters)
+{ 
+    for (int i = 0; i < 3; i++) {
 
-    OpenWrist::OpenWrist() :
-        Robot(3)
-    {
-        encoders_.push_back(Encoder(0.234, 500, 4, daq_, 0));
-        encoders_.push_back(Encoder(0.234, 500, 4, daq_, 1));
-        encoders_.push_back(Encoder(0.117, 500, 4, daq_, 2));
+        std::string num = std::to_string(i);
 
-        actuators_.push_back(Actuator(0.234, 0.0603, 1, 3.17, daq_, 0, 0));
-        actuators_.push_back(Actuator(0.234, 0.0603, 1, 3.17, daq_, 0, 0));
-        actuators_.push_back(Actuator(0.117, 0.0538, 1, 1.74, daq_, 0, 0));
+        mel::PositionSensor* encoder = new mel::Encoder("encoder_" + num, 
+            params_.encoder_res_[i] / (2 * mel::PI), 
+            config_.encoder_[i], 
+            config_.encrate_[i]);
 
-        joints_.push_back(RevoluteJoint(4.375, &encoders_[0], &actuators_[0]));
-        joints_.push_back(RevoluteJoint(4.500, &encoders_[1], &actuators_[1]));
-        joints_.push_back(RevoluteJoint(3.000, &encoders_[2], &actuators_[2]));    
-    }   
+        position_sensors_.push_back(encoder);
+
+        mel::Actuator* motor = new mel::Motor("motor_" + num,
+            params_.kt_[i],
+            params_.current_limits_[i],
+            config_.amp_gains_[i],
+            config_.command_[i],
+            config_.enable_[i],
+            mel::Actuator::EnableMode::High);
+
+        actuators_.push_back(motor);
+
+        mel::RobotJoint* joint = new mel::RevoluteRobotJoint("joint_" + num,
+            encoder,
+            params_.eta_[i],
+            motor,
+            params_.eta_[i]);
+
+        robot_joints_.push_back(joint);        
+    }
 }

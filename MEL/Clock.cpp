@@ -14,8 +14,8 @@ namespace mel {
             boost::filesystem::path dir(log_dir_.c_str());
             boost::filesystem::create_directory(dir);
             data_log_.open(data_log_filename_, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;
-            data_log_ << "Tick #" << "\t" << "Elapsed (Ideal) [s]" << "\t" << "Elapsed (Actual) [s]" << "\t" 
-                << "Execution [s]" << "\t" << "Wait [s]" << "\t" << "Tick [s]" << std::endl;
+            data_log_ << "Tick #" << "," << "Elapsed (Ideal) [s]" << "," << "Elapsed (Actual) [s]" << "," 
+                << "Execution [s]" << "," << "Wait [s]" << "," << "Tick [s]" << std::endl;
         }
     }
 
@@ -40,8 +40,8 @@ namespace mel {
         elapsed_ideal_ = std::chrono::nanoseconds(0);
         offset_time_ = std::chrono::nanoseconds(0);
         if (enable_logging_) {
-            data_log_ << tick_count_ << "\t" << elapsed_ideal_.count() * NS2S << "\t" << elapsed_actual_.count() * NS2S << "\t"
-                << elapsed_exe_.count() * NS2S << "\t" << elapsed_wait_.count() * NS2S << "\t" << elapsed_tick_.count() * NS2S << std::endl;
+            data_log_ << tick_count_ << "," << elapsed_ideal_.count() * NS2S << "," << elapsed_actual_.count() * NS2S << ","
+                << elapsed_exe_.count() * NS2S << "," << elapsed_wait_.count() * NS2S << "," << elapsed_tick_.count() * NS2S << std::endl;
         }
     }
 
@@ -70,8 +70,8 @@ namespace mel {
 
             // log this tick
             if (enable_logging_) {
-                data_log_ << tick_count_ << "\t" << elapsed_ideal_.count() * NS2S << "\t" << elapsed_actual_.count() * NS2S << "\t"
-                    << elapsed_exe_.count() * NS2S << "\t" << elapsed_wait_.count() * NS2S << "\t" << elapsed_tick_.count() * NS2S << std::endl;
+                data_log_ << tick_count_ << "," << elapsed_ideal_.count() * NS2S << "," << elapsed_actual_.count() * NS2S << ","
+                    << elapsed_exe_.count() * NS2S << "," << elapsed_wait_.count() * NS2S << "," << elapsed_tick_.count() * NS2S << std::endl;
             }
         }
     }

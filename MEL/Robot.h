@@ -23,6 +23,9 @@ namespace mel {
         std::vector<PositionSensor*> position_sensors_;
         std::vector<Actuator*> actuators_;
 
+        virtual void enable();
+        virtual void disable();
+
         // getters and setters of state variables
         double_vec get_robot_joint_positions();
         double_vec get_robot_joint_velocities();

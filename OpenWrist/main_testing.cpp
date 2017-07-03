@@ -2,9 +2,9 @@
 #include "Controller.h"
 #include "ControlLoop.h"
 #include "Clock.h"
-#include "Daq.h"
 #include "Q8Usb.h"
 #include "Encoder.h"
+#include "OpenWrist.h"
 
 
 // Controller implementation minimum working example
@@ -76,14 +76,45 @@ class MyController : public mel::Controller {
 
 class ClockTester : public mel::Controller {
     void start() override { std::cout << "Starting ClockTest" << std::endl; }
-    void step() override { std::cout << get_time() << std::endl; }
+    void step() override { }
     void stop() override { std::cout << "Stopping ClockTester" << std::endl; }
 };
 
-int main(int argc, char * argv[]) {
-    
+int main(int argc, char * argv[]) {    
 
-    // create an
+    //  create a Q8Usb object
+    mel::uint32 id = 0;
+
+    mel::channel_vec  ai_channels = { 0, 1, 2 };
+    mel::channel_vec  ao_channels = { 0, 1, 2 };
+    mel::channel_vec  di_channels = { 0, 1, 2 };
+    mel::channel_vec  do_channels = { 0, 1, 2 };
+    mel::channel_vec enc_channels = { 0, 1, 2 };
+
+    mel::Q8Usb::Options options;
+    options.update_rate_ = mel::Q8Usb::Options::UpdateRate::Fast_8kHz;
+    options.decimation_ = 1;
+    options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+    options.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+    options.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
+    std::cout << options.build() << std::endl;
+    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+
+    // create and configure an OpenWrist object
+    OpenWrist::Config config;
+    for (int i = 0; i < 3; i++) {
+        config.enable_[i] = q8->do_(i);
+        config.command_[i] = q8->ao_(i);
+        config.encoder_[i] = q8->encoder_(i);
+        config.encrate_[i] = q8->encrate_(i);
+    }    
+
+    OpenWrist open_wrist(config);
+
+    open_wrist.actuators_[0].
+
+
+    // create a controller, clock, and loop
     mel::Controller* my_controller = new MyController();
     mel::Controller* clock_tester = new ClockTester();
     mel::Clock my_clock(1000, true);
@@ -94,7 +125,7 @@ int main(int argc, char * argv[]) {
     getchar();
 
     // queue controllers
-    my_loop.queue_controller(my_controller);
+    my_loop.queue_controller(clock_tester);
 
     // execute the controller
     my_loop.execute();    
