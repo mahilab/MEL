@@ -12,19 +12,19 @@ namespace mel {
         name_(name),
         data_log_filename_(log_dir_ + "\\" + name + "_" + get_current_date_time() + ".csv"),
         // sort channel numbers from smallest to largest and delete duplicates and save
-        ai_channels_nums_(sort_and_reduce_channels(ai_channels)),
-        ao_channels_nums_(sort_and_reduce_channels(ao_channels)),
-        di_channels_nums_(sort_and_reduce_channels(di_channels)),
-        do_channels_nums_(sort_and_reduce_channels(do_channels)),
-        encoder_channels_nums_(sort_and_reduce_channels(encoder_channels)),
-        encrate_channels_nums_(sort_and_reduce_channels(encrate_channels)),
+        ai_channel_nums_(sort_and_reduce_channels(ai_channels)),
+        ao_channel_nums_(sort_and_reduce_channels(ao_channels)),
+        di_channel_nums_(sort_and_reduce_channels(di_channels)),
+        do_channel_nums_(sort_and_reduce_channels(do_channels)),
+        encoder_channel_nums_(sort_and_reduce_channels(encoder_channels)),
+        encrate_channel_nums_(sort_and_reduce_channels(encrate_channels)),
         // save number of unique channels being use
-        num_ai_channels_(ai_channels_nums_.size()),
-        num_ao_channels_(ao_channels_nums_.size()),
-        num_di_channels_(di_channels_nums_.size()),
-        num_do_channels_(do_channels_nums_.size()),
-        num_encoder_channels_(encoder_channels_nums_.size()),
-        num_encrate_channels_(encrate_channels_nums_.size())
+        num_ai_channels_(ai_channel_nums_.size()),
+        num_ao_channels_(ao_channel_nums_.size()),
+        num_di_channels_(di_channel_nums_.size()),
+        num_do_channels_(do_channel_nums_.size()),
+        num_encoder_channels_(encoder_channel_nums_.size()),
+        num_encrate_channels_(encrate_channel_nums_.size())
     {
         // initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!) 
         ai_voltages_ = voltage_vec(num_ai_channels_, 0.0);
@@ -41,17 +41,17 @@ namespace mel {
 
         // print a header to the top of the data log
         data_log_ << "Timestamp" << ",";
-        for (auto it = ai_channels_nums_.begin(); it != ai_channels_nums_.end(); ++it)
+        for (auto it = ai_channel_nums_.begin(); it != ai_channel_nums_.end(); ++it)
             data_log_ << "AI_" + std::to_string(*it) << ",";
-        for (auto it = ao_channels_nums_.begin(); it != ao_channels_nums_.end(); ++it)
+        for (auto it = ao_channel_nums_.begin(); it != ao_channel_nums_.end(); ++it)
             data_log_ << "AO_" + std::to_string(*it) << ",";
-        for (auto it = di_channels_nums_.begin(); it != di_channels_nums_.end(); ++it)
+        for (auto it = di_channel_nums_.begin(); it != di_channel_nums_.end(); ++it)
             data_log_ << "DI_" + std::to_string(*it) << ",";
-        for (auto it = do_channels_nums_.begin(); it != do_channels_nums_.end(); ++it)
+        for (auto it = do_channel_nums_.begin(); it != do_channel_nums_.end(); ++it)
             data_log_ << "DO_" + std::to_string(*it) << ",";
-        for (auto it = encoder_channels_nums_.begin(); it != encoder_channels_nums_.end(); ++it)
+        for (auto it = encoder_channel_nums_.begin(); it != encoder_channel_nums_.end(); ++it)
             data_log_ << "ENC_COUNT_" + std::to_string(*it) << ",";
-        for (auto it = encrate_channels_nums_.begin(); it != encrate_channels_nums_.end(); ++it)
+        for (auto it = encrate_channel_nums_.begin(); it != encrate_channel_nums_.end(); ++it)
             data_log_ << "ENC_RATE_" + std::to_string(*it) << ",";
         data_log_ << std::endl;
 
@@ -62,7 +62,7 @@ namespace mel {
     }
 
     voltage Daq::get_analog_voltage(channel channel_number) {
-        return ai_voltages_[channel_number_to_index(ai_channels_nums_, channel_number)];
+        return ai_voltages_[channel_number_to_index(ai_channel_nums_, channel_number)];
     }
 
     void Daq::set_analog_voltages(voltage_vec new_voltages) {
@@ -71,7 +71,7 @@ namespace mel {
     }
 
     void Daq::set_analog_voltage(channel channel_number, voltage new_voltage) {
-        ao_voltages_[channel_number_to_index(ao_channels_nums_, channel_number)] = new_voltage;
+        ao_voltages_[channel_number_to_index(ao_channel_nums_, channel_number)] = new_voltage;
     }
 
     dsignal_vec Daq::get_digital_signals() {
@@ -79,7 +79,7 @@ namespace mel {
     }
 
     dsignal Daq::get_digital_signal(channel channel_number) {
-        return di_signals_[channel_number_to_index(di_channels_nums_, channel_number)];
+        return di_signals_[channel_number_to_index(di_channel_nums_, channel_number)];
     }
 
     void Daq::set_digital_signals(dsignal_vec new_signals) {
@@ -88,7 +88,7 @@ namespace mel {
     }
 
     void Daq::set_digital_signal(channel channel_number, dsignal new_state) {
-        do_signals_[channel_number_to_index(do_channels_nums_, channel_number)] = new_state;
+        do_signals_[channel_number_to_index(do_channel_nums_, channel_number)] = new_state;
     }
 
     int32_vec Daq::get_encoder_counts() {
@@ -96,7 +96,7 @@ namespace mel {
     }
 
     int32 Daq::get_encoder_count(channel channel_number) {
-        return enc_counts_[channel_number_to_index(encoder_channels_nums_, channel_number)];
+        return enc_counts_[channel_number_to_index(encoder_channel_nums_, channel_number)];
     }
 
     double_vec Daq::get_encoder_rates() {
@@ -104,7 +104,7 @@ namespace mel {
     }
 
     double Daq::get_encoder_rate(channel channel_number) {
-        return enc_rates[channel_number_to_index(encrate_channels_nums_, channel_number)];
+        return enc_rates[channel_number_to_index(encrate_channel_nums_, channel_number)];
     }
 
     uint32_vec Daq::get_encoder_quadrature_factors() {
@@ -112,7 +112,7 @@ namespace mel {
     }
 
     uint32 Daq::get_encoder_quadrature_factor(channel channel_number) {
-        return encoder_quadrature_factors_[channel_number_to_index(encoder_channels_nums_, channel_number)];
+        return encoder_quadrature_factors_[channel_number_to_index(encoder_channel_nums_, channel_number)];
     }
 
     void Daq::log_data(double timestamp) {

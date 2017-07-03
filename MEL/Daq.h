@@ -125,12 +125,12 @@ namespace mel {
 
         // CHANNEL NUMBERS BEING USED
 
-        const channel_vec   ai_channels_nums_;       // vector of analog input channels numbers being used 
-        const channel_vec   ao_channels_nums_;       // vector of analog output channels numbers being used 
-        const channel_vec   di_channels_nums_;       // vector of digital input channels numbers being used 
-        const channel_vec   do_channels_nums_;       // vector of digital output channels numbers being used 
-        const channel_vec   encoder_channels_nums_;  // vector of encoder channels being numbers used
-        const channel_vec   encrate_channels_nums_;  // vector of encoder velocity channels numbers being used
+        const channel_vec   ai_channel_nums_;       // vector of analog input channels numbers being used 
+        const channel_vec   ao_channel_nums_;       // vector of analog output channels numbers being used 
+        const channel_vec   di_channel_nums_;       // vector of digital input channels numbers being used 
+        const channel_vec   do_channel_nums_;       // vector of digital output channels numbers being used 
+        const channel_vec   encoder_channel_nums_;  // vector of encoder channels being numbers used
+        const channel_vec   encrate_channel_nums_;  // vector of encoder velocity channels numbers being used
 
         // NUMBER OF CHANNELS DEFINED
 

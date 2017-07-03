@@ -15,8 +15,8 @@ namespace mel {
 
         // PUBLIC FUNCTIONS
 
-        virtual void enable();
-        virtual void disable();
+        virtual void enable() {}
+        virtual void disable() {}
 
         virtual double get_position() = 0;
         virtual double get_velocity();

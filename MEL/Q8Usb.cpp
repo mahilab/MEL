@@ -13,7 +13,7 @@ namespace mel {
         channel_vec do_channels,
         channel_vec enc_channels,
         Options options) :
-        Daq("Q8_USB_" + std::to_string(id),
+        Daq("q8_usb_" + std::to_string(id),
             ai_channels,
             ao_channels,
             di_channels,
@@ -24,23 +24,31 @@ namespace mel {
         options_(options)
     {
         // set up analog input channels
-        ai_min_voltages_ = voltage_vec(num_ai_channels_, default_ai_min_voltage_);
-        ai_max_voltages_ = voltage_vec(num_ai_channels_, default_ai_max_voltage_);
+        for (auto it = ai_channel_nums_.begin(); it != ai_channel_nums_.end(); ++it) {
+            ai_min_voltages_.push_back(options_.ai_min_voltages_[*it]);
+            ai_max_voltages_.push_back(options_.ai_max_voltages_[*it]);
+        }
 
         // set up analog output channels
-        ao_min_voltages_ = voltage_vec(num_ao_channels_, default_ao_min_voltage_);
-        ao_max_voltages_ = voltage_vec(num_ao_channels_, default_ao_max_voltage_);
-        ao_initial_voltages_ = voltage_vec(num_ao_channels_, default_ao_initial_voltage_);
-        ao_final_voltages_ = voltage_vec(num_ao_channels_, default_ao_final_voltage_);
-        ao_expire_voltages_ = voltage_vec(num_ao_channels_, default_ao_exp_voltage_);
+        for (auto it = ao_channel_nums_.begin(); it != ao_channel_nums_.end(); ++it) {
+            ao_min_voltages_.push_back(options_.ao_min_voltages_[*it]);
+            ao_max_voltages_.push_back(options_.ao_max_voltages_[*it]);
+            ao_initial_voltages_.push_back(options_.ao_initial_voltages_[*it]);
+            ao_final_voltages_.push_back(options_.ao_final_voltages_[*it]);
+            ao_expire_voltages_.push_back(options_.ao_expire_voltages_[*it]);
+        }
 
         // set up digital output channels
-        do_initial_signals_ = dsignal_vec(num_do_channels_, default_do_initial_signal_);
-        do_final_signals_ = dsignal_vec(num_do_channels_, default_do_final_signal_);
-        do_expire_signals_ = dsignal_vec(num_do_channels_, default_do_expire_signal_);
+        for (auto it = di_channel_nums_.begin(); it != di_channel_nums_.end(); ++it) {
+            do_initial_signals_.push_back(options_.do_initial_signals_[*it]);
+            do_final_signals_.push_back(options_.do_final_signals_[*it]);
+            do_expire_signals_.push_back(options_.do_expire_signals_[*it]);
+        }
 
         // set up encoder channels
-        encoder_quadrature_factors_ = uint32_vec(num_encoder_channels_, default_encoder_quadrature_factor_);
+        for (auto it = encoder_channel_nums_.begin(); it != encoder_channel_nums_.end(); ++it) {
+            encoder_quadrature_factors_.push_back(options_.encoder_quadrature_factors_[*it]);
+        }
 
         // build options string
         strcpy(options_str_, options_.build().c_str());
@@ -124,7 +132,7 @@ namespace mel {
         if (active_ && num_encoder_channels_ > 0) {
             std::cout << "Q8 USB " << id_ << ": Zeroing encoder counts ...";
             int32_vec enc_zero_counts(num_encoder_channels_, 0);
-            t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_nums_[0], static_cast<uint32>(num_encoder_channels_), &enc_zero_counts[0]);
+            t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(num_encoder_channels_), &enc_zero_counts[0]);
             if (result != 0) {
                 std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
@@ -138,7 +146,7 @@ namespace mel {
         if (active_ && num_encoder_channels_ > 0) {
             std::cout << "Q8 USB " << id_ << ": Offsetting encoder counts ... ";
             offset_counts.resize(num_encoder_channels_, 0);
-            t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channels_nums_[0], static_cast<uint32>(num_encoder_channels_), &offset_counts[0]);
+            t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(num_encoder_channels_), &offset_counts[0]);
             if (result != 0) {
                 std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
@@ -185,7 +193,7 @@ namespace mel {
 
     void Q8Usb::read_analogs() {
         if (active_ && num_ai_channels_ > 0) {
-            t_error result = hil_read_analog(q8_usb_, &ai_channels_nums_[0], static_cast<uint32>(num_ai_channels_), &ai_voltages_[0]);
+            t_error result = hil_read_analog(q8_usb_, &ai_channel_nums_[0], static_cast<uint32>(num_ai_channels_), &ai_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -196,7 +204,7 @@ namespace mel {
 
     void Q8Usb::read_digitals() {
         if (active_ && num_di_channels_ > 0) {
-            t_error result = hil_read_digital(q8_usb_, &di_channels_nums_[0], static_cast<uint32>(num_di_channels_), &di_signals_[0]);
+            t_error result = hil_read_digital(q8_usb_, &di_channel_nums_[0], static_cast<uint32>(num_di_channels_), &di_signals_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -207,7 +215,7 @@ namespace mel {
 
     void Q8Usb::read_encoders() {
         if (active_ && num_encoder_channels_ > 0) {
-            t_error result = hil_read_encoder(q8_usb_, &encoder_channels_nums_[0], static_cast<uint32>(num_encoder_channels_), &enc_counts_[0]);
+            t_error result = hil_read_encoder(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(num_encoder_channels_), &enc_counts_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -218,7 +226,7 @@ namespace mel {
 
     void Q8Usb::read_encrates() {
         if (active_ && num_encrate_channels_ > 0) {
-            t_error result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], static_cast<uint32>(num_encrate_channels_), &enc_rates[0]);
+            t_error result = hil_read_other(q8_usb_, &encrate_channel_nums_[0], static_cast<uint32>(num_encrate_channels_), &enc_rates[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -230,10 +238,10 @@ namespace mel {
     void Q8Usb::read_all() {
         if (active_) {
             t_error result = hil_read(q8_usb_,
-                num_ai_channels_ > 0 ? &ai_channels_nums_[0] : NULL, static_cast<uint32>(num_ai_channels_),
-                num_encoder_channels_ > 0 ? &encoder_channels_nums_[0] : NULL, static_cast<uint32>(num_encoder_channels_),
-                num_di_channels_ > 0 ? &di_channels_nums_[0] : NULL, static_cast<uint32>(num_di_channels_),
-                num_encrate_channels_ > 0 ? &encrate_channels_nums_[0] : NULL, static_cast<uint32>(num_encrate_channels_),
+                num_ai_channels_ > 0 ? &ai_channel_nums_[0] : NULL, static_cast<uint32>(num_ai_channels_),
+                num_encoder_channels_ > 0 ? &encoder_channel_nums_[0] : NULL, static_cast<uint32>(num_encoder_channels_),
+                num_di_channels_ > 0 ? &di_channel_nums_[0] : NULL, static_cast<uint32>(num_di_channels_),
+                num_encrate_channels_ > 0 ? &encrate_channel_nums_[0] : NULL, static_cast<uint32>(num_encrate_channels_),
                 num_ai_channels_ > 0 ? &ai_voltages_[0] : NULL,
                 num_encoder_channels_ > 0 ? &enc_counts_[0] : NULL,
                 num_di_channels_ > 0 ? &di_signals_[0] : NULL,
@@ -248,7 +256,7 @@ namespace mel {
 
     void Q8Usb::write_analogs() {
         if (active_ && num_ao_channels_ > 0) {
-            t_error result = hil_write_analog(q8_usb_, &ao_channels_nums_[0], static_cast<uint32>(num_ao_channels_), &ao_voltages_[0]);
+            t_error result = hil_write_analog(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(num_ao_channels_), &ao_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -259,7 +267,7 @@ namespace mel {
 
     void Q8Usb::write_digitals() {
         if (active_ && num_do_channels_ > 0) {
-            t_error result = hil_write_digital(q8_usb_, &do_channels_nums_[0], static_cast<uint32>(num_do_channels_), &do_signals_[0]);
+            t_error result = hil_write_digital(q8_usb_, &do_channel_nums_[0], static_cast<uint32>(num_do_channels_), &do_signals_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -271,9 +279,9 @@ namespace mel {
     void Q8Usb::write_all() {
         if (active_) {
             t_error result = hil_write(q8_usb_,
-                num_ao_channels_ > 0 ? &ao_channels_nums_[0] : NULL, static_cast<uint32>(num_ao_channels_),
+                num_ao_channels_ > 0 ? &ao_channel_nums_[0] : NULL, static_cast<uint32>(num_ao_channels_),
                 NULL, 0,
-                num_do_channels_ > 0 ? &do_channels_nums_[0] : NULL, static_cast<uint32>(num_do_channels_),
+                num_do_channels_ > 0 ? &do_channel_nums_[0] : NULL, static_cast<uint32>(num_do_channels_),
                 NULL, 0,
                 num_ao_channels_ > 0 ? &ao_voltages_[0] : NULL,
                 NULL,
@@ -321,7 +329,7 @@ namespace mel {
     void Q8Usb::set_ai_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) {
         Daq::set_ai_voltage_ranges(min_voltages, max_voltages);
         if (num_ai_channels_ > 0) {
-            t_error result = hil_set_analog_input_ranges(q8_usb_, &ai_channels_nums_[0], static_cast<uint32>(num_ai_channels_), &ai_min_voltages_[0], &ai_max_voltages_[0]);
+            t_error result = hil_set_analog_input_ranges(q8_usb_, &ai_channel_nums_[0], static_cast<uint32>(num_ai_channels_), &ai_min_voltages_[0], &ai_max_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -330,7 +338,7 @@ namespace mel {
     void Q8Usb::set_ao_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) {
         Daq::set_ao_voltage_ranges(min_voltages, max_voltages);
         if (num_ao_channels_ > 0) {
-            t_error result = hil_set_analog_output_ranges(q8_usb_, &ao_channels_nums_[0], static_cast<uint32>(num_ao_channels_), &ao_min_voltages_[0], &ao_max_voltages_[0]);
+            t_error result = hil_set_analog_output_ranges(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(num_ao_channels_), &ao_min_voltages_[0], &ao_max_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -339,7 +347,7 @@ namespace mel {
     void Q8Usb::set_ao_expire_voltages(voltage_vec expire_voltages) {
         Daq::set_ao_expire_voltages(expire_voltages);
         if (num_ao_channels_ > 0) {
-            t_error result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channels_nums_[0], static_cast<uint32>(num_ao_channels_), &ao_expire_voltages_[0]);
+            t_error result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(num_ao_channels_), &ao_expire_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -358,7 +366,7 @@ namespace mel {
                     converted_do_exp_signals.push_back(DIGITAL_STATE_LOW);
                 }
             }
-            t_error result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channels_nums_[0], static_cast<uint32>(num_do_channels_), &converted_do_exp_signals[0]);
+            t_error result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channel_nums_[0], static_cast<uint32>(num_do_channels_), &converted_do_exp_signals[0]);
             if (result < 0)
                 print_quarc_error(result);
         }
@@ -375,7 +383,7 @@ namespace mel {
                 else
                     converted_encoder_modes.push_back(ENCODER_QUADRATURE_4X);
             }
-            t_error result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channels_nums_[0], static_cast<uint32>(num_encoder_channels_), &converted_encoder_modes[0]);
+            t_error result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(num_encoder_channels_), &converted_encoder_modes[0]);
             if (result < 0)
                 print_quarc_error(result);
         }

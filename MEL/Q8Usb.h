@@ -18,6 +18,18 @@ namespace mel {
 
         public:
 
+            std::array<voltage, 8> ai_min_voltages_            = { -10 };
+            std::array<voltage, 8> ai_max_voltages_            = { +10 };
+            std::array<voltage, 8> ao_min_voltages_            = { -10 };
+            std::array<voltage, 8> ao_max_voltages_            = { +10 };
+            std::array<voltage, 8> ao_initial_voltages_        = {   0 };
+            std::array<voltage, 8> ao_final_voltages_          = {   0 };
+            std::array<voltage, 8> ao_expire_voltages_         = {   0 };
+            std::array<dsignal, 8> do_initial_signals_         = {   0 };
+            std::array<dsignal, 8> do_final_signals_           = {   0 };
+            std::array<dsignal, 8> do_expire_signals_          = {   0 };
+            std::array<uint32, 8>  encoder_quadrature_factors_ = {   4 };            
+
             enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
             enum class EncDir { Default = 0, Reversed = 1 };
             enum class EncFilter { Default = 0, Filtered = 1 };
@@ -33,6 +45,7 @@ namespace mel {
 
             private:
 
+                friend class Options;
                 friend class Q8Usb;
 
                 Mode mode_ = Mode::Default;
@@ -63,7 +76,7 @@ namespace mel {
             std::array<double, 8> enc_velocity_  = { 0.0 };
             std::array<AoMode, 8> ao_modes_      = { AoMode() };
 
-        //private:
+        private:
 
             friend class Q8Usb;
 
@@ -83,21 +96,7 @@ namespace mel {
 
     private:
 
-        // DEFAULT Q8 USB CHANNEL SETTINGS
-
         Options options_;
-
-        const voltage  default_ai_min_voltage_     = -10;
-        const voltage  default_ai_max_voltage_     = +10;
-        const voltage  default_ao_min_voltage_     = -10;
-        const voltage  default_ao_max_voltage_     = +10;
-        const voltage  default_ao_initial_voltage_ = 0;
-        const voltage  default_ao_final_voltage_   = 0;
-        const voltage  default_ao_exp_voltage_     = 0;
-        const dsignal  default_do_initial_signal_  = 0;
-        const dsignal  default_do_final_signal_    = 0;
-        const dsignal  default_do_expire_signal_   = 0;
-        const uint32   default_encoder_quadrature_factor_ = 4; 
 
         // QUARC SPECIFIC TYPES AND OPTIONS
 

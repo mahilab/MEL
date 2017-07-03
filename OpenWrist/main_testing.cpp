@@ -97,7 +97,6 @@ int main(int argc, char * argv[]) {
     options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
     options.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
     options.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
-    std::cout << options.build() << std::endl;
     mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
     // create and configure an OpenWrist object
@@ -110,9 +109,6 @@ int main(int argc, char * argv[]) {
     }    
 
     OpenWrist open_wrist(config);
-
-    open_wrist.actuators_[0].
-
 
     // create a controller, clock, and loop
     mel::Controller* my_controller = new MyController();
