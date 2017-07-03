@@ -17,6 +17,10 @@
 daq_logs/
 clock_logs/
 
+#Doxygen
+html/
+latex/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
