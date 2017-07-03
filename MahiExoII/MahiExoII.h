@@ -2,13 +2,13 @@
 #include "Exo.h"
 #include <Eigen\LU>
 
+
 namespace mel {
 
     class MahiExoII : public Exo {
 
     public:
 
-        // constructor
         MahiExoII(Daq* daq_);
 
 

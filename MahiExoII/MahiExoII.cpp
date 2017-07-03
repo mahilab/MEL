@@ -44,7 +44,7 @@ namespace mel {
                 
     }
 
-/*
+    /*
     double_vec MahiExoII::get_anatomical_joint_positions() {
 
         // get positions from first two anatomical joints, which have encoders
