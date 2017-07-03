@@ -130,7 +130,7 @@ namespace mel {
 
     void Q8Usb::zero_encoders() {
         if (active_ && num_encoder_channels_ > 0) {
-            std::cout << "Q8 USB " << id_ << ": Zeroing encoder counts ...";
+            std::cout << "Q8 USB " << id_ << ": Zeroing encoder counts ... ";
             int32_vec enc_zero_counts(num_encoder_channels_, 0);
             t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(num_encoder_channels_), &enc_zero_counts[0]);
             if (result != 0) {

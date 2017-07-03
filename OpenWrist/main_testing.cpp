@@ -21,6 +21,7 @@ public:
         std::cout << "Press ENTER to activate " << daq_->name_ << std::endl;
         getchar();
         daq_->activate();
+        daq_->zero_encoders();
         std::cout << "Press ENTER to enable the OpenWrist." << std::endl;
         getchar();
         open_wrist_.enable();
@@ -30,12 +31,10 @@ public:
     void step() override {
         daq_->read_all();
         daq_->reload_watchdog();
-        //std::cout << open_wrist_.robot_joints_[0]->get_velocity() * mel::RAD2DEG << " ";
-        //std::cout << open_wrist_.robot_joints_[1]->get_velocity() * mel::RAD2DEG << " ";
-        //std::cout << open_wrist_.robot_joints_[2]->get_velocity() * mel::RAD2DEG << std::endl;
-        open_wrist_.robot_joints_[2]->set_torque(0.345 / 2);
-        std::cout << daq_->ai_(2).get_voltage() << std::endl;
+        open_wrist_.robot_joints_[2]->set_torque(0.345);
+        open_wrist_.robot_joints_[1]->set_torque(0.345);
         daq_->write_all();
+        daq_->log_data(get_time());
     }
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
@@ -81,6 +80,7 @@ int main(int argc, char * argv[]) {
         config.command_[i] = q8->ao_(i);
         config.encoder_[i] = q8->encoder_(i);
         config.encrate_[i] = q8->encrate_(i);
+        config.amp_gains_[i] = 1;
     }    
 
     OpenWrist open_wrist(config);

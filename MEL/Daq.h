@@ -66,6 +66,11 @@ namespace mel {
         virtual void stop_watchdog() { 
             std::cout << "WARNING: DAQ <" << name_ << "> does not implement stop_watchdog()"   << std::endl; }
 
+        // PUBLIC FUNCTIONS
+
+        void log_data(double timestamp);     // function to log all state information to data log file    
+
+
         // FUNCTIONS FOR GETTING/SETTING DAQ STATES (DEFAULT BEHAVIOR MAY BE OVERRIDDEN IF DESIRED)
 
         virtual voltage_vec get_analog_voltages();
@@ -110,7 +115,6 @@ namespace mel {
         const std::string   log_dir_ = "daq_logs"; // folder where data logs will be stored
         const std::string   data_log_filename_;    // filename of the data log
         std::ofstream data_log_;             // stream for logging to the data log file
-        void log_data(double timestamp);     // function to log all state information to data log file    
 
         // STATE VARIABLES
 

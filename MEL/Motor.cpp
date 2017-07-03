@@ -66,7 +66,26 @@ namespace mel {
 
     void Motor::set_torque(double new_torque) {
         torque_ = new_torque;
-        set_current(kt_*torque_);
+        set_current( torque_ / kt_ );
+    }
+
+    void Motor::set_current(double new_current) {
+        current_ = new_current;
+        limited_current_ = saturate_current(current_);
+        ao_channel_.set_voltage(limited_current_ / amp_gain_);
+    }
+
+    double Motor::saturate_current(double new_current) {
+        if (new_current > current_limit_) {
+            return current_limit_;
+        }
+        else if (new_current < -current_limit_) {
+            return -current_limit_;
+        }
+        else {
+            return new_current;
+        }
+
     }
 
     double Motor::get_current_sense() {
@@ -106,24 +125,7 @@ namespace mel {
         }
     }
 
-    void Motor::set_current(double new_current) {
-        current_ = new_current;
-        limited_current_ = saturate_current(current_);
-        ao_channel_.set_voltage(limited_current_ / amp_gain_);
-    }
 
-    double Motor::saturate_current(double new_current) {
-        if (new_current > current_limit_) {
-            return current_limit_;
-        }
-        else if (new_current < -current_limit_) {
-            return -current_limit_;
-        }
-        else {
-            return new_current;
-        }
-
-    }
 
     
 

@@ -1,4 +1,5 @@
 #include "RobotJoint.h"
+#include <iostream>
 
 namespace mel {
 
