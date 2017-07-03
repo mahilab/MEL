@@ -22,4 +22,16 @@ namespace mel {
         }
     }
 
+    void Robot::enable() {
+        for (auto it = robot_joints_.begin(); it != robot_joints_.end(); ++it) {
+            (*it)->enable();
+        }
+    }
+
+    void Robot::disable() {
+        for (auto it = robot_joints_.begin(); it != robot_joints_.end(); ++it) {
+            (*it)->disable();
+        }
+    }
+
 }

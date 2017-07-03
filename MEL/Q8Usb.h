@@ -18,17 +18,17 @@ namespace mel {
 
         public:
 
-            std::array<voltage, 8> ai_min_voltages_            = { -10 };
-            std::array<voltage, 8> ai_max_voltages_            = { +10 };
-            std::array<voltage, 8> ao_min_voltages_            = { -10 };
-            std::array<voltage, 8> ao_max_voltages_            = { +10 };
-            std::array<voltage, 8> ao_initial_voltages_        = {   0 };
-            std::array<voltage, 8> ao_final_voltages_          = {   0 };
-            std::array<voltage, 8> ao_expire_voltages_         = {   0 };
-            std::array<dsignal, 8> do_initial_signals_         = {   0 };
-            std::array<dsignal, 8> do_final_signals_           = {   0 };
-            std::array<dsignal, 8> do_expire_signals_          = {   0 };
-            std::array<uint32, 8>  encoder_quadrature_factors_ = {   4 };            
+            std::array<voltage, 8> ai_min_voltages_            = { -10, -10, -10, -10, -10, -10, -10, -10 };
+            std::array<voltage, 8> ai_max_voltages_            = { +10, +10, +10, +10, +10, +10, +10, +10 };
+            std::array<voltage, 8> ao_min_voltages_            = { -10, -10, -10, -10, -10, -10, -10, -10 };
+            std::array<voltage, 8> ao_max_voltages_            = { +10, +10, +10, +10, +10, +10, +10, +10 };
+            std::array<voltage, 8> ao_initial_voltages_        = {   0,   0,   0,   0,   0,   0,   0,   0 };
+            std::array<voltage, 8> ao_final_voltages_          = {   0,   0,   0,   0,   0,   0,   0,   0 };
+            std::array<voltage, 8> ao_expire_voltages_         = {   0,   0,   0,   0,   0,   0,   0,   0 };
+            std::array<dsignal, 8> do_initial_signals_         = {   0,   0,   0,   0,   0,   0,   0,   0 };
+            std::array<dsignal, 8> do_final_signals_           = {   0,   0,   0,   0,   0,   0,   0,   0 };
+            std::array<dsignal, 8> do_expire_signals_          = {   0,   0,   0,   0,   0,   0,   0,   0 };
+            std::array<uint32, 8>  encoder_quadrature_factors_ = {   4,   4,   4,   4,   4,   4,   4,   4 };
 
             enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
             enum class EncDir { Default = 0, Reversed = 1 };

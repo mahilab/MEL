@@ -30,7 +30,6 @@ namespace mel {
         current_(0.0),
         limited_current_(0.0),
         current_sense_(0.0)
-
     { }
 
     Motor::Motor(std::string name, double kt, double current_limit, double amp_gain, Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode) :

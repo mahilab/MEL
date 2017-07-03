@@ -24,7 +24,6 @@ namespace mel {
         torque_(0.0)
     { }
 
-
     double RobotJoint::get_position() {
         position_ = position_sensor_transmission_ * position_sensor_->get_position();
         return position_;
@@ -37,6 +36,16 @@ namespace mel {
 
     void RobotJoint::set_torque(double joint_torque) {
         torque_ = joint_torque;
-        actuator_->set_torque(actuator_transmission_*torque_);
+        actuator_->set_torque(actuator_transmission_ * torque_);
+    }
+
+    void RobotJoint::enable() {
+        position_sensor_->enable();
+        actuator_->enable();
+    }
+
+    void RobotJoint::disable() {
+        position_sensor_->disable();
+        actuator_->disable();
     }
 }
