@@ -46,8 +46,8 @@ namespace mel {
         // stop the Clock
         clock_.stop();
 
-        // stop the Controller(s)
-        for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
+        // stop the Controller(s) in REVERSE order
+        for (auto it = controllers_.rbegin(); it != controllers_.rend(); ++it)
             (*it)->stop();
 
         // reset stop_

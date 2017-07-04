@@ -19,20 +19,20 @@ namespace mel {
         encoder_channel_nums_(sort_and_reduce_channels(encoder_channels)),
         encrate_channel_nums_(sort_and_reduce_channels(encrate_channels)),
         // save number of unique channels being use
-        num_ai_channels_(ai_channel_nums_.size()),
-        num_ao_channels_(ao_channel_nums_.size()),
-        num_di_channels_(di_channel_nums_.size()),
-        num_do_channels_(do_channel_nums_.size()),
-        num_encoder_channels_(encoder_channel_nums_.size()),
-        num_encrate_channels_(encrate_channel_nums_.size())
+        ai_channels_count_(ai_channel_nums_.size()),
+        ao_channels_count_(ao_channel_nums_.size()),
+        di_channels_count_(di_channel_nums_.size()),
+        do_channels_count_(do_channel_nums_.size()),
+        encoder_channels_count_(encoder_channel_nums_.size()),
+        encrate_channels_count_(encrate_channel_nums_.size())
     {
         // initialize state variables sizes and set values to zero (if this is not done now, a nullptr exception will be thrown!) 
-        ai_voltages_ = voltage_vec(num_ai_channels_, 0.0);
-        ao_voltages_ = voltage_vec(num_ao_channels_, 0.0);
-        di_signals_ = dsignal_vec(num_di_channels_, 0);
-        do_signals_ = dsignal_vec(num_do_channels_, 0);
-        enc_counts_ = int32_vec(num_encoder_channels_, 0);
-        enc_rates = double_vec(num_encrate_channels_, 0.0);
+        ai_voltages_ = voltage_vec(ai_channels_count_, 0.0);
+        ao_voltages_ = voltage_vec(ao_channels_count_, 0.0);
+        di_signals_ = dsignal_vec(di_channels_count_, 0);
+        do_signals_ = dsignal_vec(do_channels_count_, 0);
+        enc_counts_ = int32_vec(encoder_channels_count_, 0);
+        enc_rates = double_vec(encrate_channels_count_, 0.0);
 
         // create data log specifically for this DAQ
         boost::filesystem::path dir(log_dir_.c_str());
@@ -66,7 +66,7 @@ namespace mel {
     }
 
     void Daq::set_analog_voltages(voltage_vec new_voltages) {
-        new_voltages.resize(num_ao_channels_, 0.0); // ensures same size; pads with zeros if too short
+        new_voltages.resize(ao_channels_count_, 0.0); // ensures same size; pads with zeros if too short
         ao_voltages_ = new_voltages;
     }
 
@@ -83,7 +83,7 @@ namespace mel {
     }
 
     void Daq::set_digital_signals(dsignal_vec new_signals) {
-        new_signals.resize(num_do_channels_, 0); // ensures same size; pads with zeros if too short
+        new_signals.resize(do_channels_count_, 0); // ensures same size; pads with zeros if too short
         do_signals_ = new_signals;
     }
 
