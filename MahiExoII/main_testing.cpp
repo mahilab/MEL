@@ -10,7 +10,7 @@
 
 namespace po = boost::program_options;
 
-class MyController : public mel::Controller {
+class MyTask : public mel::Controller {
 
 public:
 
@@ -120,7 +120,7 @@ int main(int argc, char * argv[]) {
     */
     
     // create controller and control loop and clock
-    mel::Controller* my_controller = new MyController();
+    mel::Controller* my_controller = new MyTask();
     mel::Clock clock(1000,true);
     mel::Controller loop(clock);
 

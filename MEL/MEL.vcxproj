@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Actuator.cpp" />
     <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="ControlLoop.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Daq.cpp" />
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="Exo.cpp" />
@@ -40,7 +40,7 @@
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="GenericTasks.h" />
-    <ClInclude Include="ControlLoop.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />
     <ClInclude Include="EmgElectrode.h" />
     <ClInclude Include="Encoder.h" />

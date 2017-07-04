@@ -1,7 +1,7 @@
 #include <iostream>
 #include "GenericTasks.h"
 #include "Task.h"
-#include "ControlLoop.h"
+#include "Controller.h"
 #include "Clock.h"
 #include "Q8Usb.h"
 #include "Encoder.h"
@@ -10,17 +10,17 @@
 #include <Windows.h>
 
 // Controller implementation minimum working example
-class MyController : public mel::Task {
+class OpenWristController : public mel::Task {
 
 public:
 
-    MyController(OpenWrist& open_wrist, mel::Daq* daq) : open_wrist_(open_wrist), daq_(daq) {}
+    OpenWristController(OpenWrist& open_wrist, mel::Daq* daq) : Task("open_wrist_controller"), open_wrist_(open_wrist), daq_(daq) {}
     OpenWrist open_wrist_;
     mel::Daq* daq_;
 
     void start() override {
-        std::cout << "Starting MyController" << std::endl;     
-        std::cout << "Press ENTER to activate " << daq_->name_ << std::endl;
+        std::cout << "Starting OpenWrist Controller" << std::endl;     
+        std::cout << "Press ENTER to activate DAQ" << daq_->name_ << std::endl;
         getchar();
         daq_->activate();
         daq_->zero_encoders();
@@ -31,42 +31,25 @@ public:
         daq_->start_watchdog(0.1);
     }
     void step() override {
-        daq_->read_all();
         daq_->reload_watchdog();
-        open_wrist_.robot_joints_[2]->set_torque(0.345);
-        open_wrist_.robot_joints_[1]->set_torque(0.345);
-        daq_->write_all();
         daq_->log_data(time());
     }
     void stop() override {
-        std::cout << "Stopping MyController" << std::endl;
         daq_->deactivate();
     }
-    void pause() override {
-        std::cout << "Pausing MyController" << std::endl;
-    }
-    void resume() override {
-        std::cout << "Resuming MyController" << std::endl;
-    }
+    
 };
-
-
 
 double sin_trajectory(double amplitude, double frequency, double time) {
     return amplitude * sin(2 * mel::PI * frequency * time);
 }
 
-
-class ClockTester : public mel::Task {
-    void start() override { std::cout << "Starting ClockTest" << std::endl; }
-    void step() override {   }
-    void stop() override { std::cout << "Stopping ClockTester" << std::endl; }
-};
-
-
 int main(int argc, char * argv[]) {  
 
+    // set Windows thread priority
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
     HANDLE hThread = GetCurrentThread();
+    SetPriorityClass(hThread, HIGH_PRIORITY_CLASS); // use REALTIME_PRIORITY_CLASS with extreme care!
     SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);
 
     //  create a Q8Usb object
@@ -98,31 +81,33 @@ int main(int argc, char * argv[]) {
 
     OpenWrist open_wrist(config);
 
-    // create a controller, clock, and loop
-    mel::Task* my_controller = new MyController(open_wrist, q8);
-    mel::Task* clock_tester = new ClockTester();
-    auto traj0 = std::bind(sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+    // create some trajectoeries for OpenWrist to follow
+    auto traj0 = std::bind(sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1); // 80*sin(2*pi*0.25*t)
     auto traj1 = std::bind(sin_trajectory, 60 * mel::DEG2RAD, 0.25, std::placeholders::_1);
     auto traj2 = std::bind(sin_trajectory, 30 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+
+    // make a new Clock and Controller
+    mel::Clock clock(1000, true); // 1000 Hz, clock logging enabled
+    mel::Controller controller(clock);
+
+    // create tasks for our Controller
+    mel::Task* ow_ctrl = new OpenWristController(open_wrist, q8);
+    mel::Task* reader = new mel::ReaderTask(q8);
     mel::Task* pd_controller0 = new mel::PdJointController(open_wrist.robot_joints_[0], 20, 1, traj0, 0);
     mel::Task* pd_controller1 = new mel::PdJointController(open_wrist.robot_joints_[1], 20, 1, traj1, 0);
     mel::Task* pd_controller2 = new mel::PdJointController(open_wrist.robot_joints_[2], 20, 1, traj2, 0);
-    mel::Clock my_clock(1000, true);
-    mel::Controller my_loop(my_clock);
+    mel::Task* writer = new mel::WriterTask(q8);
 
-    // queue controllers
-    my_loop.queue_task(pd_controller0);
-    my_loop.queue_task(pd_controller1);
-    my_loop.queue_task(pd_controller2);
+    // queue Tasks for the Controller to execute
+    controller.queue_task(ow_ctrl);
+    controller.queue_task(reader);
+    controller.queue_task(pd_controller0);
+    controller.queue_task(pd_controller1);
+    controller.queue_task(pd_controller2);
+    controller.queue_task(writer);
 
     // execute the controller
-    my_loop.execute(); 
-
-    int i = 0;
-
-    // delete controller
-    delete my_controller;
-    delete clock_tester;
+    controller.execute(); 
 
     return 0;
 }
