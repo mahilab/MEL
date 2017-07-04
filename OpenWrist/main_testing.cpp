@@ -1,5 +1,6 @@
 #include <iostream>
-#include "Controller.h"
+#include "GenericTasks.h"
+#include "Task.h"
 #include "ControlLoop.h"
 #include "Clock.h"
 #include "Q8Usb.h"
@@ -9,7 +10,7 @@
 #include <Windows.h>
 
 // Controller implementation minimum working example
-class MyController : public mel::Controller {
+class MyController : public mel::Task {
 
 public:
 
@@ -35,7 +36,7 @@ public:
         open_wrist_.robot_joints_[2]->set_torque(0.345);
         open_wrist_.robot_joints_[1]->set_torque(0.345);
         daq_->write_all();
-        daq_->log_data(get_time());
+        daq_->log_data(time());
     }
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
@@ -49,30 +50,14 @@ public:
     }
 };
 
-class PdController : public mel::Controller {
-    
-public:
 
-    PdController(mel::RobotJoint* joint, double kp, double kd, std::function<double(double)> trajectory) : joint_(joint), kp_(kp), kd_(kd), trajectory_(trajectory) {}
-
-    mel::RobotJoint* joint_;
-    double kp_;
-    double kd_;
-    std::function<double(double)> trajectory_;
-
-    void start() override { }
-    void step() override {
-        std::cout << get_time() << " " << trajectory_(get_time()) << std::endl;
-    }
-    void stop() { }
-        
-};
 
 double sin_trajectory(double amplitude, double frequency, double time) {
     return amplitude * sin(2 * mel::PI * frequency * time);
 }
 
-class ClockTester : public mel::Controller {
+
+class ClockTester : public mel::Task {
     void start() override { std::cout << "Starting ClockTest" << std::endl; }
     void step() override {   }
     void stop() override { std::cout << "Stopping ClockTester" << std::endl; }
@@ -114,19 +99,26 @@ int main(int argc, char * argv[]) {
     OpenWrist open_wrist(config);
 
     // create a controller, clock, and loop
-    mel::Controller* my_controller = new MyController(open_wrist, q8);
-    mel::Controller* clock_tester = new ClockTester();
-    using namespace std::placeholders;  // for _1, _2, _3...
-    auto traj0 = std::bind(sin_trajectory, 5, 1, _1);
-    mel::Controller* pd_controller = new PdController(open_wrist.robot_joints_[0], 20, 1, traj0);
-    mel::Clock my_clock(10, true);
-    mel::ControlLoop my_loop(my_clock);
+    mel::Task* my_controller = new MyController(open_wrist, q8);
+    mel::Task* clock_tester = new ClockTester();
+    auto traj0 = std::bind(sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+    auto traj1 = std::bind(sin_trajectory, 60 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+    auto traj2 = std::bind(sin_trajectory, 30 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+    mel::Task* pd_controller0 = new mel::PdJointController(open_wrist.robot_joints_[0], 20, 1, traj0, 0);
+    mel::Task* pd_controller1 = new mel::PdJointController(open_wrist.robot_joints_[1], 20, 1, traj1, 0);
+    mel::Task* pd_controller2 = new mel::PdJointController(open_wrist.robot_joints_[2], 20, 1, traj2, 0);
+    mel::Clock my_clock(1000, true);
+    mel::Controller my_loop(my_clock);
 
     // queue controllers
-    my_loop.queue_controller(pd_controller);
+    my_loop.queue_task(pd_controller0);
+    my_loop.queue_task(pd_controller1);
+    my_loop.queue_task(pd_controller2);
 
     // execute the controller
-    my_loop.execute();    
+    my_loop.execute(); 
+
+    int i = 0;
 
     // delete controller
     delete my_controller;

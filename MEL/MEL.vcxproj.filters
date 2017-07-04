@@ -65,9 +65,6 @@
     <ClInclude Include="Clock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ControlLoop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -111,6 +108,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RevoluteRobotJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericTasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

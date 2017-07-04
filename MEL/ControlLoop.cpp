@@ -2,10 +2,10 @@
 
 namespace mel {
 
-    bool ControlLoop::stop_ = false;
-    bool ControlLoop::pause_ = false;
+    bool Controller::stop_ = false;
+    bool Controller::pause_ = false;
 
-    ControlLoop::ControlLoop(Clock& clock) :
+    Controller::Controller(Clock& clock) :
         clock_(clock),
         stop_time_(-1)
     {
@@ -14,29 +14,29 @@ namespace mel {
         signal(SIGBREAK, ctrl_c_handler);
     }
 
-    void ControlLoop::queue_controller(Controller* controller) {
+    void Controller::queue_task(Task* controller) {
         // connect the controller Clock to the control loop Clock
         controller->clock_ = &clock_;
         // add the controller to the queue
-        controllers_.push_back(controller);
+        tasks_.push_back(controller);
     }
 
-    void ControlLoop::execute(uint32 stop_time_seconds) {
+    void Controller::execute(uint32 stop_time_seconds) {
 
         stop_time_ = stop_time_seconds;
 
         // start the Controller(s)
-        for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
+        for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
             (*it)->start();
 
         // start the Clock
         clock_.start();
 
         // start the control loop
-        while (!stop_ && clock_.get_time() <= stop_time_) {
+        while (!stop_ && clock_.time() <= stop_time_) {
 
             // step the Controller(s)
-            for (auto it = controllers_.begin(); it != controllers_.end(); ++it)
+            for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
                 (*it)->step();
 
             // wait for the next clock tick
@@ -47,18 +47,18 @@ namespace mel {
         clock_.stop();
 
         // stop the Controller(s) in REVERSE order
-        for (auto it = controllers_.rbegin(); it != controllers_.rend(); ++it)
+        for (auto it = tasks_.rbegin(); it != tasks_.rend(); ++it)
             (*it)->stop();
 
         // reset stop_
         stop_ = false;
     }
 
-    void ControlLoop::ctrl_c_handler(int signum) {
+    void Controller::ctrl_c_handler(int signum) {
         stop_ = true;
     }
 
-    void ControlLoop::ctrl_break_handler(int signum) {
+    void Controller::ctrl_break_handler(int signum) {
         pause_ = !pause_;
     }
 

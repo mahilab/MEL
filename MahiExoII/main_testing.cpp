@@ -122,10 +122,10 @@ int main(int argc, char * argv[]) {
     // create controller and control loop and clock
     mel::Controller* my_controller = new MyController();
     mel::Clock clock(1000,true);
-    mel::ControlLoop loop(clock);
+    mel::Controller loop(clock);
 
     // queue controllrs
-    loop.queue_controller(my_controller);
+    loop.queue_task(my_controller);
 
     // request users permission to execute the controller
     std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;

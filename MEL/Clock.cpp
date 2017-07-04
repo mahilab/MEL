@@ -20,11 +20,11 @@ namespace mel {
         }
     }
 
-    uint32 Clock::get_tick() {
+    uint32 Clock::tick() {
         return tick_count_;
     }
 
-    double Clock::get_time() {
+    double Clock::time() {
         return elapsed_ideal_;
     }
 

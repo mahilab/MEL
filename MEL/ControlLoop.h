@@ -1,21 +1,21 @@
 #pragma once
 #include <chrono>
 #include <csignal>
-#include "Controller.h"
+#include "Task.h"
 #include "Clock.h"
 #include "util.h"
 
 namespace mel {
 
-    class ControlLoop {
+    class Controller {
 
     public:
 
         // CONSTRUCTOR / DESTRUCTOR
 
-        ControlLoop(Clock& clock);
+        Controller(Clock& clock);
 
-        void queue_controller(Controller* controller);
+        void queue_task(Task* controller);
 
         void execute(uint32 stop_time_seconds = -1);
 
@@ -27,7 +27,7 @@ namespace mel {
 
         // SIGNAL HANDLING
 
-        std::vector<Controller*> controllers_;
+        std::vector<Task*> tasks_;
 
         static bool stop_;   // static boolean that will stop all ControlLoops when set to true
         static bool pause_;  // static boolean that will pause all ControlLoops when set to true

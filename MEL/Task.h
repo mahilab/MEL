@@ -4,7 +4,7 @@
 
 namespace mel {
 
-    class Controller {
+    class Task {
 
     public:
 
@@ -12,7 +12,7 @@ namespace mel {
 
     protected:
 
-        friend class ControlLoop;  // give friendship to ControlLoop so start(), step(), stop(), pause(), resume() and clock_ can be accessed       
+        friend class Controller;  // give friendship to ControlLoop so start(), step(), stop(), pause(), resume() and clock_ can be accessed       
 
         // PURE VIRTUAL FUNCTIONS TO BE OVERRIDEN BY DERIVED CONTROLLERS
 
@@ -25,8 +25,8 @@ namespace mel {
         virtual void pause() {};   // override this function with code that should be called if the control loop is paused
         virtual void resume() {};  // override this function with code that should be called if the control loop is resumed from a pause
 
-        double get_time() {        // returns the ideal fixed rate time from the controller clock
-            return clock_->get_time();
+        double time() {        // returns the ideal fixed rate time from the controller clock
+            return clock_->time();
         }
 
     private:

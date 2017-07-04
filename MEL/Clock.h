@@ -12,8 +12,8 @@ namespace mel {
 
         Clock(uint32 frequency, bool enabled_logging = false);
 
-        uint32 get_tick();
-        double get_time();        
+        uint32 tick();
+        double time();        
 
         void start();
         void wait();
