@@ -6,6 +6,7 @@ namespace mel {
 
     Clock::Clock(uint32 frequency, bool enable_logging) :
         frequency_(frequency),
+        tick_time_d_(1.0 / frequency),
         tick_time_(std::chrono::nanoseconds(1000000000 / frequency)),
         enable_logging_(enable_logging)
     {
@@ -24,7 +25,7 @@ namespace mel {
     }
 
     double Clock::get_time() {
-        return elapsed_ideal_.count() * NS2S;
+        return elapsed_ideal_;
     }
 
     void Clock::start() {
@@ -37,10 +38,9 @@ namespace mel {
         elapsed_actual_ = std::chrono::nanoseconds(0);
         elapsed_exe_ = std::chrono::nanoseconds(0);
         elapsed_wait_ = std::chrono::nanoseconds(0);
-        elapsed_ideal_ = std::chrono::nanoseconds(0);
-        offset_time_ = std::chrono::nanoseconds(0);
+        elapsed_ideal_ = 0;
         if (enable_logging_) {
-            data_log_ << tick_count_ << "," << elapsed_ideal_.count() * NS2S << "," << elapsed_actual_.count() * NS2S << ","
+            data_log_ << tick_count_ << "," << elapsed_ideal_ << "," << elapsed_actual_.count() * NS2S << ","
                 << elapsed_exe_.count() * NS2S << "," << elapsed_wait_.count() * NS2S << "," << elapsed_tick_.count() * NS2S << std::endl;
         }
     }
@@ -55,13 +55,13 @@ namespace mel {
             elapsed_tick_ = now_ - start_tick_;
             elapsed_actual_ = now_ - start_;
             elapsed_exe_ = elapsed_tick_;
+            elapsed_ideal_ = tick_count_ * tick_time_d_;
 
             // spinlock / busy wait until the next tick has been reached        
             while (elapsed_tick_ < tick_time_) {
                 now_ = std::chrono::high_resolution_clock::now();
                 elapsed_tick_ = now_ - start_tick_;
-                elapsed_actual_ = now_ - start_;
-                elapsed_ideal_ = tick_count_ * tick_time_;
+                elapsed_actual_ = now_ - start_;                
                 elapsed_wait_ = elapsed_tick_ - elapsed_exe_;
             }
 
@@ -70,7 +70,7 @@ namespace mel {
 
             // log this tick
             if (enable_logging_) {
-                data_log_ << tick_count_ << "," << elapsed_ideal_.count() * NS2S << "," << elapsed_actual_.count() * NS2S << ","
+                data_log_ << tick_count_ << "," << elapsed_ideal_ << "," << elapsed_actual_.count() * NS2S << ","
                     << elapsed_exe_.count() * NS2S << "," << elapsed_wait_.count() * NS2S << "," << elapsed_tick_.count() * NS2S << std::endl;
             }
         }

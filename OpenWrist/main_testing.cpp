@@ -5,7 +5,8 @@
 #include "Q8Usb.h"
 #include "Encoder.h"
 #include "OpenWrist.h"
-
+#include <functional>
+#include <Windows.h>
 
 // Controller implementation minimum working example
 class MyController : public mel::Controller {
@@ -48,13 +49,40 @@ public:
     }
 };
 
+class PdController : public mel::Controller {
+    
+public:
+
+    PdController(mel::RobotJoint* joint, double kp, double kd, std::function<double(double)> trajectory) : joint_(joint), kp_(kp), kd_(kd), trajectory_(trajectory) {}
+
+    mel::RobotJoint* joint_;
+    double kp_;
+    double kd_;
+    std::function<double(double)> trajectory_;
+
+    void start() override { }
+    void step() override {
+        std::cout << get_time() << " " << trajectory_(get_time()) << std::endl;
+    }
+    void stop() { }
+        
+};
+
+double sin_trajectory(double amplitude, double frequency, double time) {
+    return amplitude * sin(2 * mel::PI * frequency * time);
+}
+
 class ClockTester : public mel::Controller {
     void start() override { std::cout << "Starting ClockTest" << std::endl; }
-    void step() override { std::cout << get_time() << std::endl;  }
+    void step() override {   }
     void stop() override { std::cout << "Stopping ClockTester" << std::endl; }
 };
 
-int main(int argc, char * argv[]) {    
+
+int main(int argc, char * argv[]) {  
+
+    HANDLE hThread = GetCurrentThread();
+    SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);
 
     //  create a Q8Usb object
     mel::uint32 id = 0;
@@ -88,11 +116,14 @@ int main(int argc, char * argv[]) {
     // create a controller, clock, and loop
     mel::Controller* my_controller = new MyController(open_wrist, q8);
     mel::Controller* clock_tester = new ClockTester();
-    mel::Clock my_clock(1000, true);
+    using namespace std::placeholders;  // for _1, _2, _3...
+    auto traj0 = std::bind(sin_trajectory, 5, 1, _1);
+    mel::Controller* pd_controller = new PdController(open_wrist.robot_joints_[0], 20, 1, traj0);
+    mel::Clock my_clock(10, true);
     mel::ControlLoop my_loop(my_clock);
 
     // queue controllers
-    my_loop.queue_controller(my_controller);
+    my_loop.queue_controller(pd_controller);
 
     // execute the controller
     my_loop.execute();    
@@ -103,3 +134,5 @@ int main(int argc, char * argv[]) {
 
     return 0;
 }
+
+

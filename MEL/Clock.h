@@ -30,13 +30,13 @@ namespace mel {
         std::chrono::high_resolution_clock::time_point start_tick_; // time taken at the top of each new loop iteration
         std::chrono::high_resolution_clock::time_point now_;        // time taken a specific points
 
+        double                   tick_time_d_;     // the control loop fixed step time or fundamental sample time in seconds (e.g. 0.001 seconds)
         std::chrono::nanoseconds tick_time_;       // the control loop fixed step time or fundamental sample time in nanoseconds (e.g. 0.001 seconds)
         std::chrono::nanoseconds elapsed_tick_;    // the amout of time that has elapsed during a single loop iteration                  
         std::chrono::nanoseconds elapsed_actual_;  // the actual amount of time that has elapsed since the control loop started
         std::chrono::nanoseconds elapsed_exe_;     // the actual amount of time that elapsed due to execution
         std::chrono::nanoseconds elapsed_wait_;    // the actual amount of tmee that elapsed due to waiting
-        std::chrono::nanoseconds elapsed_ideal_;   // the ideal ammount of time that has elapsed since the control loop started
-        std::chrono::nanoseconds offset_time_;     // dynamic offset used to accurize waiting
+        double                   elapsed_ideal_;   // the ideal ammount of time that has elapsed since the control loop started
 
         const double NS2S = 1.0 / 1000000000.0;
 
