@@ -1,6 +1,7 @@
 #include "MahiExoII.h"
 
 
+<<<<<<< HEAD
 MahiExoII::MahiExoII(Config configuration, Params parameters) :
     Exo("mahi_exo_ii"),
     config_(configuration),
@@ -40,6 +41,49 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
             params_.eta_[i]);
 
         robot_joints_.push_back(joint);
+=======
+namespace mel {
+
+    MahiExoII::MahiExoII(Daq* daq_)
+        //qp_(Eigen::VectorXd::Zero(12)),
+        //qs_(Eigen::VectorXd::Zero(3)),
+        //psi_(Eigen::VectorXd::Zero(12)),
+        //psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
+    {
+
+        position_sensors_.push_back(new Encoder("Elbow",   2048 / (2 * PI), daq_->encoder_(0), daq_->encrate_(0) ));
+        position_sensors_.push_back(new Encoder("Forearm", 2048 / (2 * PI), daq_->encoder_(1), daq_->encrate_(1) ));
+        position_sensors_.push_back(new Encoder("Wrist 0", 2048 / (2 * PI), daq_->encoder_(2), daq_->encrate_(2) ));
+        position_sensors_.push_back(new Encoder("Wrist 1", 2048 / (2 * PI), daq_->encoder_(3), daq_->encrate_(3) ));
+        position_sensors_.push_back(new Encoder("Wrist 2", 2048 / (2 * PI), daq_->encoder_(4), daq_->encrate_(4) ));
+
+        actuators_.push_back(new Motor( 0.127, 6.0, 1.8, daq_->ao_(0), daq_->do_(0) ));
+        actuators_.push_back(new Motor( 0.0603, 3.17, 1.8, daq_->ao_(1), daq_->do_(1) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_(2), daq_->do_(2) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_(3), daq_->do_(3) ));
+        actuators_.push_back(new Motor( 0.175, 0.626, 0.184, daq_->ao_(4), daq_->do_(4) ));
+
+        joints_.push_back(new RevoluteRobotJoint(position_sensors_[0], 0.42 / 4.5, actuators_[0], 0.42 / 4.5)); // elbow flexion/extension
+        joints_.push_back(new RevoluteRobotJoint(position_sensors_[1], 0.17 / 2.5, actuators_[1], 0.17 / 2.5)); // forearm pronation/supination
+        joints_.push_back(new PrismaticRobotJoint(position_sensors_[2], INCH2METER*0.23, actuators_[2], INCH2METER*0.23)); // wrist prismatic l_1
+        joints_.push_back(new PrismaticRobotJoint(position_sensors_[3], INCH2METER*0.23, actuators_[3], INCH2METER*0.23)); // wrist prismatic l_2
+        joints_.push_back(new PrismaticRobotJoint(position_sensors_[4], INCH2METER*0.23, actuators_[4], INCH2METER*0.23)); // wrist prismatic l_3
+        /*
+        joints_.push_back(new RevoluteJoint()); // wrist revolute theta_1
+        joints_.push_back(new RevoluteJoint()); // wrist revolute theta_2
+        joints_.push_back(new RevoluteJoint()); // wrist revolute theta_3
+        joints_.push_back(new PrismaticJoint()); // wrist platform position x_c
+        joints_.push_back(new PrismaticJoint()); // wrist platform position y_c
+        joints_.push_back(new PrismaticJoint()); // wrist platform position z_c
+        joints_.push_back(new RevoluteJoint()); // wrist flexion/extension alpha
+        joints_.push_back(new RevoluteJoint()); // wrist radial/ulnar deviation beta
+        joints_.push_back(new RevoluteJoint()); // wrist platform roll gamma
+        */
+        //joint_positions_ = double_vec(joints_.size(), 0.0);
+
+        //qp_ << -PI / 4, -PI / 4, -PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
+                
+>>>>>>> 0bc865449dbc78c4d6d1ff95ff60e9b4233e644f
     }
 
     /*

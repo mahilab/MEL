@@ -1,7 +1,5 @@
 #pragma once
-#include "RobotJoint.h"
-#include "RevoluteRobotJoint.h"
-#include "PrismaticRobotJoint.h"
+#include "Joint.h"
 #include "Actuator.h"
 #include "Motor.h"
 #include "PositionSensor.h"
@@ -25,6 +23,7 @@ namespace mel {
 
         /// Default constructor.
         Robot() : name_("no_name") {}
+        /// Prefered constructor.
         Robot(std::string name) : name_(name) {}
 
         // PUBLIC FUNCTIONS
@@ -36,27 +35,26 @@ namespace mel {
         virtual void disable();
 
         /// Get the most recently read robot joint positions.
-        double_vec get_robot_joint_positions();
+        double_vec get_joint_positions();
 
         /// Get the most recently read robot joint velocities.
-        double_vec get_robot_joint_velocities();
+        double_vec get_joint_velocities();
 
         /// Set the desired actuator torques.
-        void set_robot_joint_torques(double_vec new_torques);
+        void set_joint_torques(double_vec new_torques);
 
         // PUBLIC VARIABLES
 
         std::string name_;
 
         /// Vector of RobotJoint pointers.
-        std::vector<RobotJoint*> robot_joints_;
+        std::vector<Joint*> joints_;
 
         /// Vector of PositionSensor pointers.
         std::vector<PositionSensor*> position_sensors_;
 
         /// Vector of Actuator pointers.
         std::vector<Actuator*> actuators_;
-
         
 
     protected:
@@ -64,13 +62,13 @@ namespace mel {
         // STATE VARIABLES
 
         /// Stores the robot joint positions since the last call of get_robot_joint_positions(). 
-        double_vec robot_joint_positions_;
+        double_vec joint_positions_;
         
         /// Stores the robot joint velocities since the last call of get_robot_joint_velocities().
-        double_vec robot_joint_velocities_;
+        double_vec joint_velocities_;
         
         /// Does this need to exist?
-        double_vec robot_joint_torques_;
+        double_vec joint_torques_;
 
     };
 }
