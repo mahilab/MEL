@@ -39,7 +39,7 @@ namespace mel {
         }
 
         // set up digital output channels
-        for (auto it = di_channel_nums_.begin(); it != di_channel_nums_.end(); ++it) {
+        for (auto it = do_channel_nums_.begin(); it != do_channel_nums_.end(); ++it) {
             do_initial_signals_.push_back(options_.do_initial_signals_[*it]);
             do_final_signals_.push_back(options_.do_final_signals_[*it]);
             do_expire_signals_.push_back(options_.do_expire_signals_[*it]);

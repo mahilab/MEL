@@ -1,7 +1,6 @@
 #include "MahiExoII.h"
 
 
-<<<<<<< HEAD
 MahiExoII::MahiExoII(Config configuration, Params parameters) :
     Exo("mahi_exo_ii"),
     config_(configuration),
@@ -11,7 +10,6 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
     //psi_(Eigen::VectorXd::Zero(12)),
     //psi_d_qp_(Eigen::MatrixXd::Zero(12, 12))
 {
-
 
     for (int i = 0; i < 5; i++) {
 
@@ -34,17 +32,20 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
         actuators_.push_back(motor);
 
-        mel::RobotJoint* joint = new mel::RevoluteRobotJoint("joint_" + num,
+        mel::Joint* joint = new mel::Joint("joint_" + num,
             encoder,
             params_.eta_[i],
             motor,
             params_.eta_[i]);
 
-        robot_joints_.push_back(joint);
-=======
-namespace mel {
+        joints_.push_back(joint);
 
-    MahiExoII::MahiExoII(Daq* daq_)
+    }
+
+}
+
+    /*
+    MahiExoII::MahiExoII(mel::Daq* daq_)
         //qp_(Eigen::VectorXd::Zero(12)),
         //qs_(Eigen::VectorXd::Zero(3)),
         //psi_(Eigen::VectorXd::Zero(12)),
@@ -83,8 +84,7 @@ namespace mel {
 
         //qp_ << -PI / 4, -PI / 4, -PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
                 
->>>>>>> 0bc865449dbc78c4d6d1ff95ff60e9b4233e644f
-    }
+
 
     /*
     position_sensors_.push_back(new Encoder("Elbow",   2048 / (2 * PI), daq_->encoder_(0), daq_->encrate_(0) ));
@@ -120,7 +120,7 @@ namespace mel {
 
     //qp_ << -PI / 4, -PI / 4, -PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
                 
-}
+
 
 /*
 double_vec MahiExoII::get_anatomical_joint_positions() {
