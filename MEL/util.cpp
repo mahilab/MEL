@@ -35,4 +35,9 @@ namespace mel {
     double sin_trajectory(double amplitude, double frequency, double time) {
         return amplitude * sin(2 * mel::PI * frequency * time);
     }
+
+    double pd_control_effort(double kp, double kd, double x_ref, double x, double xd_ref, double xd) {
+        return kp * (x_ref - x) + kd * (xd_ref - xd);
+    }
+
 }

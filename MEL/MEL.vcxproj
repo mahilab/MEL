@@ -38,7 +38,6 @@
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="AnatomicalJoint.h" />
     <ClInclude Include="Clock.h" />
-    <ClInclude Include="GenericTasks.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />

@@ -7,7 +7,55 @@
 #include "OpenWrist.h"
 #include <functional>
 #include <Windows.h>
-#include "GenericTasks.h"
+
+class PdController : public mel::Task {
+
+public:
+    PdController(OpenWrist open_wrist, mel::Daq* daq) : Task("pd_controller"), open_wrist_(open_wrist), daq_(daq) {}
+
+    OpenWrist open_wrist_;
+    mel::Daq* daq_;
+
+    void start() override {
+        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
+        getchar();
+        daq_->activate();
+        daq_->zero_encoders();
+        std::cout << "Press ENTER to enable OpenWrist" << std::endl;
+        getchar();
+        open_wrist_.enable();
+        std::cout << "Press Enter to start the controller" << std::endl;
+        daq_->start_watchdog(0.1);
+    }
+
+    void step() override {
+
+        daq_->read_all();
+        daq_->reload_watchdog();
+
+        double traj0 = mel::sin_trajectory(80 * mel::DEG2RAD, 0.25, time());
+        double traj1 = mel::sin_trajectory(60 * mel::DEG2RAD, 0.25, time());
+        double traj2 = mel::sin_trajectory(30 * mel::DEG2RAD, 0.25, time());
+
+        double torque0 = mel::pd_control_effort(25, 1.15, traj0, open_wrist_.robot_joints_[0]->get_position(), 0, open_wrist_.robot_joints_[0]->get_velocity());
+        double torque1 = mel::pd_control_effort(25, 1.15, traj1, open_wrist_.robot_joints_[1]->get_position(), 0, open_wrist_.robot_joints_[1]->get_velocity());
+        double torque2 = mel::pd_control_effort(25, 1.15, traj2, open_wrist_.robot_joints_[2]->get_position(), 0, open_wrist_.robot_joints_[2]->get_velocity());
+
+        open_wrist_.robot_joints_[0]->set_torque(torque0);
+        open_wrist_.robot_joints_[1]->set_torque(torque1);
+        open_wrist_.robot_joints_[2]->set_torque(torque2);
+
+        daq_->write_all();
+
+    }
+
+    void stop() override {
+        open_wrist_.disable();
+        daq_->deactivate();
+    }
+
+};
+
 
 int main(int argc, char * argv[]) {  
 
@@ -45,7 +93,8 @@ int main(int argc, char * argv[]) {
         config.amp_gains_[i] = 1;
     }    
 
-    mel::Exo* open_wrist = new OpenWrist(config);
+    // mel::Exo* open_wrist = new OpenWrist(config);
+    OpenWrist open_wrist(config);
 
     // create some trajectoeries for OpenWrist to follow
     auto traj0 = std::bind(mel::sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1); // 80*sin(2*pi*0.25*t)
@@ -57,14 +106,7 @@ int main(int argc, char * argv[]) {
     mel::Controller controller(clock);
     
     // queue Tasks for the Controller to execute
-    controller.queue_start_task(new mel::StartExo(open_wrist, q8));
-    controller.queue_step_task(new mel::DaqReaderTask(q8));
-    controller.queue_step_task(new mel::DaqReloaderTask(q8));
-    controller.queue_step_task(new mel::PdJointController(open_wrist->robot_joints_[0], 20, 1, traj0, 0));
-    controller.queue_step_task(new mel::PdJointController(open_wrist->robot_joints_[0], 20, 1, traj0, 0));
-    controller.queue_step_task(new mel::PdJointController(open_wrist->robot_joints_[0], 20, 1, traj0, 0));
-    controller.queue_step_task(new mel::DaqWriterTask(q8));
-    controller.queue_stop_task(new mel::StopExo(open_wrist, q8));
+    controller.queue_task(new PdController(open_wrist, q8));
 
     // execute the controller
     controller.execute(); 
