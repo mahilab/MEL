@@ -4,84 +4,54 @@
 #include "util.h"
 #include "MahiExoII.h"
 #include "Controller.h"
-#include "ControlLoop.h"
+#include "Task.h"
 #include <boost/program_options.hpp>
 #include "Exo.h"
 
 namespace po = boost::program_options;
 
-class MyTask : public mel::Controller {
+class MyTask : public mel::Task {
 
 public:
 
-    mel::Daq* q8;
-    mel::MahiExoII* exo_;
+    MyTask(MahiExoII exo, mel::Daq* daq) : Task("testing"), exo_(exo), daq_(daq) {}
+
+    MahiExoII exo_;
+    mel::Daq* daq_;
 
     void start() override {
-        std::cout << "Starting MyController" << std::endl;
-
-        // instantiate Q8 USB for encoders, actuator controls, and EMG
-        std::string id = "0";
-        mel::uint32_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        mel::uint32_vec  ao_channels = { 0, 1, 2, 3, 4 };
-        mel::uint32_vec  di_channels = {};
-        mel::uint32_vec  do_channels = { 0, 1, 2, 3, 4 };
-        mel::uint32_vec enc_channels = { 0, 1, 2, 3, 4 };
-        char options[] = "update_rate=fast;decimation=1";
-        q8 =  new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
-        
-        /*
-        do0 = q8->do_channel(0);
-        ao0 = q8->ao_channel(0);
-        enc0 = q8->encoder_channel(0);
-        encr0 = q8->encrate_channel(0);
-        
-        do1 = q8->do_channel(1);
-        ao1 = q8->ao_channel(1);
-        enc1 = q8->encoder_channel(1);
-        encr1 = q8->encrate_channel(1);
-
-        do2 = q8->do_channel(2);
-        ao2 = q8->ao_channel(2);
-        enc2 = q8->encoder_channel(2);
-        encr2 = q8->encrate_channel(2);
-
-        do3 = q8->do_channel(3);
-        ao3 = q8->ao_channel(3);
-        enc3 = q8->encoder_channel(3);
-        encr3 = q8->encrate_channel(3);
-
-        do4 = q8->do_channel(4);
-        ao4 = q8->ao_channel(4);
-        enc4 = q8->encoder_channel(4);
-        encr4 = q8->encrate_channel(4);
-        */
-
-        // instantiate MahiExoII
-        exo_ = new mel::MahiExoII(q8);
-
-
-        // initialize Q8 USB
-        q8->activate();
-        q8->start_watchdog(0.1);        
+        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
+        getchar();
+        daq_->activate();
+        std::cout << "Press ENTER to enable MahiExoII" << std::endl;
+        getchar();
+        exo_.enable();
+        std::cout << "Press Enter to start the controller" << std::endl;
+        getchar();
+        daq_->start_watchdog(0.1);
+        std::cout << "Starting the controller ... " << std::endl;
         
     }
 
     void step() override {
 
-        q8->reload_watchdog();
-        q8->read_all();
+        daq_->read_all();
+        daq_->reload_watchdog();
         
-        //robot_->get_joint_positions;
-        //robot_->get_joint_velocities;
-        //robot_->set_joint_torques;
-        q8->write_all();
+        
+        //mel::print_double_vec(exo_.get_robot_joint_positions());
+        //robot_->get_joint_velocities();
+        //robot_->set_joint_torques();
+
+
+
+        //daq_->write_all();
     }
 
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
 
-        q8->deactivate();
+        daq_->deactivate();
     }
     void pause() override {
         std::cout << "Pausing MyController" << std::endl;
@@ -104,38 +74,50 @@ int main(int argc, char * argv[]) {
     po::store(po::parse_command_line(argc, argv, desc), var_map);
     po::notify(var_map);
 
-
     if (var_map.count("help")) {
         std::cout << desc << "\n";
         return -1;
     }
 
+    //  create a Q8Usb object
+    mel::uint32 id = 0;
 
-    /*
+    mel::channel_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    mel::channel_vec  ao_channels = { 0, 1, 2, 3, 4 };
+    mel::channel_vec  di_channels = { };
+    mel::channel_vec  do_channels = { 0, 1, 2, 3, 4 };
+    mel::channel_vec enc_channels = { 0, 1, 2, 3, 4 };
+    
+    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+
+    // create and configure an MahiExoII object
+    MahiExoII::Config config;
+    for (int i = 0; i < 5; i++) {
+        config.enable_[i] = q8->do_(i);
+        config.command_[i] = q8->ao_(i);
+        config.encoder_[i] = q8->encoder_(i);
+        config.encrate_[i] = q8->encrate_(i);
+        config.amp_gains_[i] = 1;
+    }
+    MahiExoII exo(config);
+
+
     // manual zero joint positions
     if (var_map.count("zero")) {
-        robot.daqs_[0]->activate();
-        robot.daqs_[0]->offset_encoder_counts({ 0, 0, 29125, 29125, 29125 });
+        q8->activate();
+        q8->offset_encoders({ 0, 0, 29125, 29125, 29125 });
     }
-    */
     
-    // create controller and control loop and clock
-    mel::Controller* my_controller = new MyTask();
-    mel::Clock clock(1000,true);
-    mel::Controller loop(clock);
+    
+    // make a new Clock and Controller
+    mel::Clock clock(1000, true); // 1000 Hz, clock logging enabled
+    mel::Controller controller(clock);
 
-    // queue controllrs
-    loop.queue_task(my_controller);
-
-    // request users permission to execute the controller
-    std::cout << "Press ENTER to execute the controller. CTRL+C will stop the controller once it's started." << std::endl;
-    getchar();
+    // queue Tasks for the Controller to execute
+    controller.queue_task(new MyTask(exo, q8));
 
     // execute the controller
-    loop.execute();
-
-    // delete controller
-    delete my_controller;
+    controller.execute();
   
     return 0;
 }
