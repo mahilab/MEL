@@ -39,13 +39,14 @@ public:
         daq_->reload_watchdog();
         
         
-        std::cout << exo_.joints_[0]->get_position() << " "
+       /* std::cout << exo_.joints_[0]->get_position() << " "
                   << exo_.joints_[1]->get_position() << " "
                   << exo_.joints_[2]->get_position() << " " 
                   << exo_.joints_[3]->get_position() << " " 
                   << exo_.joints_[4]->get_position() << std::endl;
+                  */
 
-        exo_.get_joint_positions();
+        mel::print_double_vec(exo_.get_joint_positions());
 
         //robot_->get_joint_velocities();
         //robot_->set_joint_torques();
