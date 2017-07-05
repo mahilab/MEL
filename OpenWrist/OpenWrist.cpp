@@ -1,6 +1,7 @@
 #include "OpenWrist.h"
 
 OpenWrist::OpenWrist(Config configuration, Params parameters) :
+    Exo("open_wrist"),
     config_(configuration),
     params_(parameters)
 { 

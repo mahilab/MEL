@@ -31,4 +31,8 @@ namespace mel {
         }
         std::cout << std::endl;
     }
+
+    double sin_trajectory(double amplitude, double frequency, double time) {
+        return amplitude * sin(2 * mel::PI * frequency * time);
+    }
 }

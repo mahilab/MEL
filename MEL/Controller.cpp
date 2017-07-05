@@ -14,19 +14,36 @@ namespace mel {
         signal(SIGBREAK, ctrl_c_handler);
     }
 
-    void Controller::queue_task(Task* controller) {
-        // connect the controller Clock to the control loop Clock
-        controller->clock_ = &clock_;
-        // add the controller to the queue
-        tasks_.push_back(controller);
+    void Controller::queue_task(Task* task) {
+        // connect the task Clock to the controller Clock
+        task->clock_ = &clock_;
+        // add the controller to the task queues
+        start_tasks_.push_back(task);
+        step_tasks_.push_back(task);
+        stop_tasks_.push_back(task);
+    }
+
+    void Controller::queue_start_task(Task* task) {
+        task->clock_ = &clock_;
+        start_tasks_.push_back(task);
+    }
+
+    void Controller::queue_step_task(Task* task) {
+        task->clock_ = &clock_;
+        step_tasks_.push_back(task);
+    }
+
+    void Controller::queue_stop_task(Task* task) {
+        task->clock_ = &clock_;
+        stop_tasks_.push_back(task);
     }
 
     void Controller::execute(uint32 stop_time_seconds) {
 
         stop_time_ = stop_time_seconds;
 
-        // start the Controller(s)
-        for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
+        // start the start Task(s)
+        for (auto it = start_tasks_.begin(); it != start_tasks_.end(); ++it)
             (*it)->start();
 
         // start the Clock
@@ -35,8 +52,8 @@ namespace mel {
         // start the control loop
         while (!stop_ && clock_.time() <= stop_time_) {
 
-            // step the Controller(s)
-            for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
+            // step the step Tasks(s)
+            for (auto it = step_tasks_.begin(); it != step_tasks_.end(); ++it)
                 (*it)->step();
 
             // wait for the next clock tick
@@ -46,8 +63,8 @@ namespace mel {
         // stop the Clock
         clock_.stop();
 
-        // stop the Controller(s) in REVERSE order
-        for (auto it = tasks_.rbegin(); it != tasks_.rend(); ++it)
+        // stop the stop Tasks(s)
+        for (auto it = stop_tasks_.begin(); it != stop_tasks_.end(); ++it)
             (*it)->stop();
 
         // reset stop_

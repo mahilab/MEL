@@ -10,6 +10,7 @@ namespace mel {
 
         // constructor
         Exo();
+        Exo(std::string name);
 
         // components
         //std::vector<AnatomicalJoint*> anatomical_joints_; // anatomical joints

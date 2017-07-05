@@ -1,5 +1,4 @@
 #include <iostream>
-#include "GenericTasks.h"
 #include "Task.h"
 #include "Controller.h"
 #include "Clock.h"
@@ -8,43 +7,10 @@
 #include "OpenWrist.h"
 #include <functional>
 #include <Windows.h>
-
-// Controller implementation minimum working example
-class OpenWristController : public mel::Task {
-
-public:
-
-    OpenWristController(OpenWrist& open_wrist, mel::Daq* daq) : Task("open_wrist_controller"), open_wrist_(open_wrist), daq_(daq) {}
-    OpenWrist open_wrist_;
-    mel::Daq* daq_;
-
-    void start() override {
-        std::cout << "Starting OpenWrist Controller" << std::endl;     
-        std::cout << "Press ENTER to activate DAQ" << daq_->name_ << std::endl;
-        getchar();
-        daq_->activate();
-        daq_->zero_encoders();
-        std::cout << "Press ENTER to enable the OpenWrist." << std::endl;
-        getchar();
-        open_wrist_.enable();
-        std::cout << "Press ENTER to start the controller." << std::endl;
-        daq_->start_watchdog(0.1);
-    }
-    void step() override {
-        daq_->reload_watchdog();
-        daq_->log_data(time());
-    }
-    void stop() override {
-        daq_->deactivate();
-    }
-    
-};
-
-double sin_trajectory(double amplitude, double frequency, double time) {
-    return amplitude * sin(2 * mel::PI * frequency * time);
-}
+#include "GenericTasks.h"
 
 int main(int argc, char * argv[]) {  
+
 
     // set Windows thread priority
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
@@ -79,32 +45,26 @@ int main(int argc, char * argv[]) {
         config.amp_gains_[i] = 1;
     }    
 
-    OpenWrist open_wrist(config);
+    mel::Exo* open_wrist = new OpenWrist(config);
 
     // create some trajectoeries for OpenWrist to follow
-    auto traj0 = std::bind(sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1); // 80*sin(2*pi*0.25*t)
-    auto traj1 = std::bind(sin_trajectory, 60 * mel::DEG2RAD, 0.25, std::placeholders::_1);
-    auto traj2 = std::bind(sin_trajectory, 30 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+    auto traj0 = std::bind(mel::sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1); // 80*sin(2*pi*0.25*t)
+    auto traj1 = std::bind(mel::sin_trajectory, 60 * mel::DEG2RAD, 0.25, std::placeholders::_1);
+    auto traj2 = std::bind(mel::sin_trajectory, 30 * mel::DEG2RAD, 0.25, std::placeholders::_1);
 
     // make a new Clock and Controller
     mel::Clock clock(1000, true); // 1000 Hz, clock logging enabled
     mel::Controller controller(clock);
-
-    // create tasks for our Controller
-    mel::Task* ow_ctrl = new OpenWristController(open_wrist, q8);
-    mel::Task* reader = new mel::ReaderTask(q8);
-    mel::Task* pd_controller0 = new mel::PdJointController(open_wrist.robot_joints_[0], 20, 1, traj0, 0);
-    mel::Task* pd_controller1 = new mel::PdJointController(open_wrist.robot_joints_[1], 20, 1, traj1, 0);
-    mel::Task* pd_controller2 = new mel::PdJointController(open_wrist.robot_joints_[2], 20, 1, traj2, 0);
-    mel::Task* writer = new mel::WriterTask(q8);
-
+    
     // queue Tasks for the Controller to execute
-    controller.queue_task(ow_ctrl);
-    controller.queue_task(reader);
-    controller.queue_task(pd_controller0);
-    controller.queue_task(pd_controller1);
-    controller.queue_task(pd_controller2);
-    controller.queue_task(writer);
+    controller.queue_start_task(new mel::StartExo(open_wrist, q8));
+    controller.queue_step_task(new mel::DaqReaderTask(q8));
+    controller.queue_step_task(new mel::DaqReloaderTask(q8));
+    controller.queue_step_task(new mel::PdJointController(open_wrist->robot_joints_[0], 20, 1, traj0, 0));
+    controller.queue_step_task(new mel::PdJointController(open_wrist->robot_joints_[0], 20, 1, traj0, 0));
+    controller.queue_step_task(new mel::PdJointController(open_wrist->robot_joints_[0], 20, 1, traj0, 0));
+    controller.queue_step_task(new mel::DaqWriterTask(q8));
+    controller.queue_stop_task(new mel::StopExo(open_wrist, q8));
 
     // execute the controller
     controller.execute(); 

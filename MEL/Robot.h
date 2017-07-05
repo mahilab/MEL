@@ -24,7 +24,8 @@ namespace mel {
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
         /// Default constructor.
-        Robot() {}
+        Robot() : name_("no_name") {}
+        Robot(std::string name) : name_(name) {}
 
         // PUBLIC FUNCTIONS
 
@@ -44,6 +45,8 @@ namespace mel {
         void set_robot_joint_torques(double_vec new_torques);
 
         // PUBLIC VARIABLES
+
+        std::string name_;
 
         /// Vector of RobotJoint pointers.
         std::vector<RobotJoint*> robot_joints_;

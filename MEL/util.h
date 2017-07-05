@@ -59,4 +59,7 @@ namespace mel {
     void print_uint_vec(uint32_vec vector);
     void print_int_vec(int32_vec vector);
     void print_double_vec(double_vec vector);
+
+    // GENERIC FUNCTIONS
+    double sin_trajectory(double amplitude, double frequency, double time);
 }
