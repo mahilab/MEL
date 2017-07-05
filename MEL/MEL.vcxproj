@@ -27,10 +27,8 @@
     <ClCompile Include="Exo.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
-    <ClCompile Include="RobotJoint.cpp" />
-    <ClCompile Include="PrismaticRobotJoint.cpp" />
+    <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
-    <ClCompile Include="RevoluteRobotJoint.cpp" />
     <ClCompile Include="Robot.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
@@ -44,12 +42,10 @@
     <ClInclude Include="EmgElectrode.h" />
     <ClInclude Include="Encoder.h" />
     <ClInclude Include="Exo.h" />
-    <ClInclude Include="RobotJoint.h" />
+    <ClInclude Include="Joint.h" />
     <ClInclude Include="Motor.h" />
     <ClInclude Include="PositionSensor.h" />
-    <ClInclude Include="PrismaticRobotJoint.h" />
     <ClInclude Include="Q8Usb.h" />
-    <ClInclude Include="RevoluteRobotJoint.h" />
     <ClInclude Include="Robot.h" />
     <ClInclude Include="Sensor.h" />
     <ClInclude Include="util.h" />

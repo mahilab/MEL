@@ -26,12 +26,12 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
 
         actuators_.push_back(motor);
 
-        mel::RobotJoint* joint = new mel::RevoluteRobotJoint("joint_" + num,
+        mel::Joint* joint = new mel::Joint("joint_" + num,
             encoder,
             params_.eta_[i],
             motor,
             params_.eta_[i]);
 
-        robot_joints_.push_back(joint);        
+        joints_.push_back(joint);        
     }
 }

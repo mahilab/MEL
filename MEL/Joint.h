@@ -4,14 +4,14 @@
 
 namespace mel {
 
-    class RobotJoint {
+    class Joint {
 
     public:
 
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
-        RobotJoint();
-        RobotJoint(std::string name, PositionSensor* position_sensor, double position_sensor_transmission_, Actuator* actuator, double actuator_transmission);
+        Joint();
+        Joint(std::string name, PositionSensor* position_sensor, double position_sensor_transmission_, Actuator* actuator, double actuator_transmission);
 
         // PUBLIC FUNCTIONS
 

@@ -36,15 +36,6 @@
     <ClCompile Include="util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RobotJoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PrismaticRobotJoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RevoluteRobotJoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Motor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,6 +46,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Joint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,19 +92,13 @@
     <ClInclude Include="Motor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RobotJoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PrismaticRobotJoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RevoluteRobotJoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Task.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Joint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

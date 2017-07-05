@@ -21,7 +21,6 @@ public:
         getchar();
         daq_->activate();
         daq_->zero_encoders();
-        daq_->ao_(2).set_voltage(0);
         std::cout << "Press ENTER to enable OpenWrist" << std::endl;
         getchar();
         open_wrist_.enable();
@@ -40,13 +39,13 @@ public:
         double traj1 = mel::sin_trajectory(60 * mel::DEG2RAD, 0.25, time());
         double traj2 = mel::sin_trajectory(30 * mel::DEG2RAD, 0.25, time());
 
-        double torque0 = mel::pd_control_effort(25, 1.15, traj0, open_wrist_.robot_joints_[0]->get_position(), 0, open_wrist_.robot_joints_[0]->get_velocity());
-        double torque1 = mel::pd_control_effort(25, 1.15, traj1, open_wrist_.robot_joints_[1]->get_position(), 0, open_wrist_.robot_joints_[1]->get_velocity());
-        double torque2 = mel::pd_control_effort(25, 1.15, traj2, open_wrist_.robot_joints_[2]->get_position(), 0, open_wrist_.robot_joints_[2]->get_velocity());
+        double torque0 = mel::pd_control_effort(25, 1.15, traj0, open_wrist_.joints_[0]->get_position(), 0, open_wrist_.joints_[0]->get_velocity());
+        double torque1 = mel::pd_control_effort(25, 1.15, traj1, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity());
+        double torque2 = mel::pd_control_effort(25, 1.15, traj2, open_wrist_.joints_[2]->get_position(), 0, open_wrist_.joints_[2]->get_velocity());
 
-        open_wrist_.robot_joints_[0]->set_torque(torque0);
-        open_wrist_.robot_joints_[1]->set_torque(torque1);
-        open_wrist_.robot_joints_[2]->set_torque(torque2);
+        open_wrist_.joints_[0]->set_torque(torque0);
+        open_wrist_.joints_[1]->set_torque(torque1);
+        open_wrist_.joints_[2]->set_torque(torque2);
 
         daq_->write_all();
 
