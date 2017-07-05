@@ -21,11 +21,14 @@ public:
         getchar();
         daq_->activate();
         daq_->zero_encoders();
+        daq_->ao_(2).set_voltage(0);
         std::cout << "Press ENTER to enable OpenWrist" << std::endl;
         getchar();
         open_wrist_.enable();
         std::cout << "Press Enter to start the controller" << std::endl;
+        getchar();
         daq_->start_watchdog(0.1);
+        std::cout << "Starting the controller ... " << std::endl;
     }
 
     void step() override {
@@ -95,11 +98,6 @@ int main(int argc, char * argv[]) {
 
     // mel::Exo* open_wrist = new OpenWrist(config);
     OpenWrist open_wrist(config);
-
-    // create some trajectoeries for OpenWrist to follow
-    auto traj0 = std::bind(mel::sin_trajectory, 80 * mel::DEG2RAD, 0.25, std::placeholders::_1); // 80*sin(2*pi*0.25*t)
-    auto traj1 = std::bind(mel::sin_trajectory, 60 * mel::DEG2RAD, 0.25, std::placeholders::_1);
-    auto traj2 = std::bind(mel::sin_trajectory, 30 * mel::DEG2RAD, 0.25, std::placeholders::_1);
 
     // make a new Clock and Controller
     mel::Clock clock(1000, true); // 1000 Hz, clock logging enabled
