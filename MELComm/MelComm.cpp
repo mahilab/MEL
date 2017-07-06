@@ -1,8 +1,30 @@
 #include "MelComm.h"
 #include <boost/interprocess/windows_shared_memory.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/containers/vector.hpp>
 
 using namespace boost::interprocess;
+
+template <typename T>
+int create_map<T>(char* map_name) {
+    sizeof(T);
+}
+
+template <typename T>
+int read_values(char* map_name, T(&values)[16]) {
+
+    return 1;
+}
+
+template <typename T>
+int write_values(char* map_name, T(&values)[16]) {
+
+    return 1;
+}
 
 int receive_ints(int(&values)[16]) {
     try {
