@@ -1,22 +1,31 @@
 #include "MelShare.h"
-#include <string>   
+#include <iostream>   
 
 namespace mel {
 
-    MelShare::MelShare(char* name, int size) : name_(name), size_(size) {
-        // remove any shared memory obejects with the same name
-        boost::interprocess::shared_memory_object::remove(name_);
-        shmem_ = boost::interprocess::shared_memory_object(boost::interprocess::create_only, name_, boost::interprocess::read_write);
-        shmem_.truncate(4 * 16);
-        region_ = boost::interprocess::mapped_region(shmem_, boost::interprocess::read_write);
-        //values_ = (int(*)[16])(region_.get_address());
-        values_ = new int[size_];
-        values_ = (int*)(region_.get_address());
-        for (int i = 0; i < size; i++)
-            values_[i] = 0;
+    MelShare::MelShare(const char* name, const unsigned int bytes) : name_(name), bytes_(bytes) {
+        try {
+            // create a new windows shared memory 
+            // (note this MelShare must remain in scope for as long as the shared memory needs to be accessed)
+            shm_ = ip::windows_shared_memory(ip::create_only, name_, ip::read_write, bytes_);
+            region_ = boost::interprocess::mapped_region(shm_, boost::interprocess::read_write);
+
+            //values_ = (int(*)[16])(region_.get_address());
+            //values_ = new int[size_];
+            //values_ = (int*)(region_.get_address());
+
+            // remove possibly lingering mutex
+            strcpy(mutex_name_, name);
+            strcat(mutex_name_, "_mutex");
+            ip::named_mutex::remove(mutex_name_);
+        }
+        catch (ip::interprocess_exception &ex) {
+            std::cout << "ERROR: Failed to create or open shared memory <" << name_ << ">." << std::endl;
+        }
     }
     
     MelShare::~MelShare() {
-        boost::interprocess::shared_memory_object::remove(name_);
+        ip::named_mutex::remove(mutex_name_);
     }
+
 }

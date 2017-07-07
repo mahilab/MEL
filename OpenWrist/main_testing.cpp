@@ -112,20 +112,24 @@ int main(int argc, char * argv[]) {
 
     */
 
-    mel::MelShare share("test", 10);
+    mel::MelShare map("test");
 
     std::cout << "Press ENTER to send values." << std::endl;
-    getchar();
-   
-    for (int i = 0; i < 10; i++)
-        share.values_[i] = i;
+    getchar();   
+
+    mel::double_vec values{ 0,1,2,3,4,5,6,7,8,9 };
+    map.write(values);
+    
+    std::cout << "Write: ";
+    mel::print_vec(values);
 
     std::cout << "Press ENTER to receive values." << std::endl;
     getchar();
 
-    for (int i = 0; i < 10; i++)
-        std::cout << share.values_[i] << " ";
-    std::cout << std::endl;
+    map.read(values);
+
+    std::cout << "Read: ";
+    mel::print_vec(values);
 
     std::cout << "Press ENTER to exit." << std::endl;
     getchar();

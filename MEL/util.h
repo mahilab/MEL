@@ -56,9 +56,14 @@ namespace mel {
     // UTILITY FUNCTIONS
 
     const std::string get_current_date_time();  // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
-    void print_uint_vec(uint32_vec vector);
-    void print_int_vec(int32_vec vector);
-    void print_double_vec(double_vec vector);
+
+    template <typename T> 
+    void print_vec(std::vector<T> vector) {
+        for (auto it = vector.begin(); it != vector.end(); ++it) {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+    }
 
     // GENERIC FUNCTIONS
     double sin_trajectory(double amplitude, double frequency, double time);
