@@ -25,6 +25,7 @@
     <ClCompile Include="Daq.cpp" />
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="Exo.cpp" />
+    <ClCompile Include="MelShare.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="Joint.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="AnatomicalJoint.h" />
     <ClInclude Include="Clock.h" />
+    <ClInclude Include="MelShare.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />

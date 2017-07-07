@@ -7,6 +7,7 @@
 #include "OpenWrist.h"
 #include <functional>
 #include <Windows.h>
+#include "MelShare.h"
 
 class PdController : public mel::Task {
 
@@ -61,6 +62,7 @@ public:
 
 int main(int argc, char * argv[]) {  
 
+    /*
 
     // set Windows thread priority
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
@@ -107,6 +109,26 @@ int main(int argc, char * argv[]) {
 
     // execute the controller
     controller.execute(); 
+
+    */
+
+    mel::MelShare share("test", 10);
+
+    std::cout << "Press ENTER to send values." << std::endl;
+    getchar();
+   
+    for (int i = 0; i < 10; i++)
+        share.values_[i] = i;
+
+    std::cout << "Press ENTER to receive values." << std::endl;
+    getchar();
+
+    for (int i = 0; i < 10; i++)
+        std::cout << share.values_[i] << " ";
+    std::cout << std::endl;
+
+    std::cout << "Press ENTER to exit." << std::endl;
+    getchar();
 
     return 0;
 }
