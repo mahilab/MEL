@@ -4,6 +4,7 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <vector>
+#include <chrono>
 
 
 namespace mel {
@@ -47,18 +48,22 @@ namespace mel {
 
         template <typename T>
         static int  write_map(const char* name, T* buffer, int size) {
+            //std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
             char mutex_name[32];
             strcpy(mutex_name, name);
             strcat(mutex_name, "_mutex");
-            ip::named_mutex mutex(ip::open_or_create, mutex_name);
+           // ip::named_mutex mutex(ip::open_or_create, mutex_name);
             try {
-                ip::scoped_lock<ip::named_mutex> lock(mutex);
+                //ip::scoped_lock<ip::named_mutex> lock(mutex);
                 ip::windows_shared_memory shm(ip::open_only, name, ip::read_write);
                 ip::mapped_region region(shm, ip::read_write);
                 volatile T* temp = static_cast<T*>(region.get_address());
                 for (int i = 0; i < size; i++) {
                     temp[i] = buffer[i];
                 }
+                //std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+                //std::chrono::nanoseconds duration = end - start;
+                //std::cout << duration.count() / 1000000000.0 << std::endl;
                 return 1;
             }
             catch (ip::interprocess_exception &ex) {

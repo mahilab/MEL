@@ -16,8 +16,10 @@ public:
 
     OpenWrist open_wrist_;
     mel::Daq* daq_;
+    mel::double_vec state = mel::double_vec(10, 0);
 
     void start() override {
+       
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
         getchar();
         daq_->activate();
@@ -48,6 +50,16 @@ public:
         open_wrist_.joints_[1]->set_torque(torque1);
         open_wrist_.joints_[2]->set_torque(torque2);
 
+        state[0] = time();
+        state[1] = open_wrist_.joints_[0]->get_position();
+        state[2] = open_wrist_.joints_[1]->get_position();
+        state[3] = open_wrist_.joints_[2]->get_position();
+        state[4] = open_wrist_.joints_[0]->get_velocity();
+        state[5] = open_wrist_.joints_[1]->get_velocity();
+        state[6] = open_wrist_.joints_[2]->get_velocity();
+
+        mel::MelShare::write_map("ow_state", state);
+
         daq_->write_all();
 
     }
@@ -62,7 +74,7 @@ public:
 
 int main(int argc, char * argv[]) {  
 
-    /*
+    
 
     // set Windows thread priority
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
@@ -100,6 +112,9 @@ int main(int argc, char * argv[]) {
     // mel::Exo* open_wrist = new OpenWrist(config);
     OpenWrist open_wrist(config);
 
+    // open a MELShare map
+    mel::MelShare map("ow_state");
+
     // make a new Clock and Controller
     mel::Clock clock(1000, true); // 1000 Hz, clock logging enabled
     mel::Controller controller(clock);
@@ -110,8 +125,9 @@ int main(int argc, char * argv[]) {
     // execute the controller
     controller.execute(); 
 
-    */
+    
 
+    /*
     mel::MelShare map("test");
 
     std::cout << "Press ENTER to send values." << std::endl;
@@ -133,7 +149,7 @@ int main(int argc, char * argv[]) {
 
     std::cout << "Press ENTER to exit." << std::endl;
     getchar();
-
+    */
     return 0;
 }
 

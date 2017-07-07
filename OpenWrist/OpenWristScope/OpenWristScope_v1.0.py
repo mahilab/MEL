@@ -16,11 +16,6 @@ ver = '1.0'
 # define constants
 RAD2DEG = 180 / math.pi
 
-# create OpenWristShare object, necessary types, and variables
-ows = ctypes.WinDLL("OpenWristShare.dll")
-DoubleArray16 = ctypes.c_double * 16
-state = DoubleArray16(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,)
-
 # create PyQt application, main window, and layout
 app = QtGui.QApplication([])
 mw = QtGui.QMainWindow()
@@ -261,17 +256,23 @@ def updateFPS():
 		fps = fps * (1-s) + (1.0/dt) * s
 	fpsCounter.setText('%0.0f' %fps)
 
+# create MELShare object, necessary types, and variables
+mel_share = ctypes.WinDLL("MELShare.dll")
+DoubleArray10 = ctypes.c_double * 10
+state = DoubleArray10()
+name = ctypes.c_char_p("ow_state")
+size = ctypes.c_int(10)
 
 # define main update function to be passed to Qt
 def update():
-	ows.get_full_state(ctypes.byref(state))
-	updateScope( data0, curve0, v0, state[1] * RAD2DEG )
-	updateScope( data1, curve1, v1, state[2] * RAD2DEG )
-	updateScope( data2, curve2, v2, state[3] * RAD2DEG )
-	updateScope( data3, curve3, v3, state[4] * RAD2DEG )
-	updateScope( data4, curve4, v4, state[5] * RAD2DEG )
-	updateScope( data5, curve5, v5, state[6] * RAD2DEG )
-	updateFPS()
+    mel_share.read_double_map(name, ctypes.byref(state), size)
+    updateScope( data0, curve0, v0, state[1] * RAD2DEG )
+    updateScope( data1, curve1, v1, state[2] * RAD2DEG )
+    updateScope( data2, curve2, v2, state[3] * RAD2DEG )
+    updateScope( data3, curve3, v3, state[4] * RAD2DEG )
+    updateScope( data4, curve4, v4, state[5] * RAD2DEG )
+    updateScope( data5, curve5, v5, state[6] * RAD2DEG )
+    updateFPS()
 
 # show the main window
 mw.show()
