@@ -56,6 +56,7 @@ namespace mel {
             elapsed_actual_ = now_ - start_;
             elapsed_exe_ = elapsed_tick_;
             elapsed_ideal_ = tick_count_ * tick_time_d_;
+            elapsed_wait_ = std::chrono::nanoseconds(0);
 
             // spinlock / busy wait until the next tick has been reached        
             while (elapsed_tick_ < tick_time_) {

@@ -392,7 +392,7 @@ namespace mel {
     void Q8Usb::print_quarc_error(int result) {
         TCHAR message[512];
         msg_get_error_message(NULL, result, message, sizeof(message));
-        _tprintf(_T("QUARC: %s (error %d)\n"), message, -result);
+        _tprintf(_T("QUARC ERROR: %s (error %d)\n"), message, -result);
     }
 
     channel_vec Q8Usb::get_q8_encrate_channels(channel_vec enc_channels) {

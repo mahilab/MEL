@@ -11,25 +11,25 @@
 #endif
 
 extern "C" {
-    MELSHARE_API int read_char_map(const char* name, char* buffer, const int size);
+    MELSHARE_API int read_char_map(char* name, char* buffer, int size);
 }
 
 extern "C" {
-    MELSHARE_API int read_int_map(const char* name, int* buffer, const int size);
+    MELSHARE_API int read_int_map(char* name, int* buffer, int size);
 }
 
 extern "C" {
-    MELSHARE_API int read_double_map(const char* name, double* buffer, const int size);
+    MELSHARE_API int read_double_map(char* name, double* buffer, int size);
 }
 
 extern "C" {
-    MELSHARE_API int write_char_map(const char* name, const char* buffer, const int size);
+    MELSHARE_API int write_char_map(char* name, char* buffer, int size);
 }
 
 extern "C" {
-    MELSHARE_API int write_int_map(const char* name, const int* buffer, const int size);
+    MELSHARE_API int write_int_map(char* name, int* buffer, int size);
 }
 
 extern "C" {
-    MELSHARE_API int write_double_map(const char* name, const double* buffer, const int size);
+    MELSHARE_API int write_double_map(char* name, double* buffer, int size);
 }
