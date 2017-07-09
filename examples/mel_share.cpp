@@ -1,6 +1,9 @@
 #include <iostream>
 #include "MelShare.h"
 #include "util.h"
+#include "MelShareDLL.h"
+
+// https://docs.microsoft.com/en-us/cpp/build/walkthrough-creating-and-using-a-dynamic-link-library-cpp
 
 int main(int argc, char * argv[]) {
 

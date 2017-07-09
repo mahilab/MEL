@@ -124,3 +124,24 @@ int write_int_map(char* name, int* buffer, int size) {
 int write_double_map(char* name, double* buffer, int size) {
     return write_map(name, buffer, size);
 }
+
+// MathLibrary.cpp : Defines the exported functions for the DLL application.  
+// Compile by using: cl /EHsc /DMATHLIBRARY_EXPORTS /LD MathLibrary.cpp  
+
+namespace MathLibrary
+{
+    double Functions::Add(double a, double b)
+    {
+        return a + b;
+    }
+
+    double Functions::Multiply(double a, double b)
+    {
+        return a * b;
+    }
+
+    double Functions::AddMultiply(double a, double b)
+    {
+        return a + (a * b);
+    }
+}

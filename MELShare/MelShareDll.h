@@ -1,13 +1,9 @@
 #pragma once
 
-#ifdef _WIN32
 #ifdef MELSHARE_EXPORTS
 #	define MELSHARE_API __declspec(dllexport)
 #else
 #	define MELSHARE_API __declspec(dllimport)
-#endif
-#elif
-#	define MELSHARE_API
 #endif
 
 extern "C" {
@@ -32,4 +28,21 @@ extern "C" {
 
 extern "C" {
     MELSHARE_API int write_double_map(char* name, double* buffer, int size);
+}
+
+namespace MathLibrary
+{
+    // This class is exported from the MathLibrary.dll  
+    class Functions
+    {
+    public:
+        // Returns a + b  
+        static MELSHARE_API double Add(double a, double b);
+
+        // Returns a * b  
+        static MELSHARE_API double Multiply(double a, double b);
+
+        // Returns a + (a * b)  
+        static MELSHARE_API double AddMultiply(double a, double b);
+    };
 }
