@@ -25,6 +25,7 @@ namespace mel {
     typedef              int  int32;  // -2,147,483,648 to +2,147,483,647
     typedef unsigned     int uint32;  //              0 to +4,294,967,295
 
+    typedef std::vector<char>   char_vec;
     typedef std::vector<int8>   int8_vec;
     typedef std::vector<uint8>  uint8_vec;
     typedef std::vector<int16>  int16_vec;
@@ -58,9 +59,17 @@ namespace mel {
     const std::string get_current_date_time();  // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 
     template <typename T> 
-    void print_vec(std::vector<T> vector) {
+    void print_vector(std::vector<T> vector) {
         for (auto it = vector.begin(); it != vector.end(); ++it) {
             std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    template <typename T>
+    void print_array(T* array, size_t size) {
+        for (int i = 0; i < size; i++) {
+            std::cout << array[i] << " ";
         }
         std::cout << std::endl;
     }

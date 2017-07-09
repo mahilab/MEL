@@ -5,7 +5,7 @@
 
 namespace ip = boost::interprocess;
 
-// return codes
+// error codes
 //  1 = successful read/write
 // -1 = failed to open shared memory map
 // -2 = failed to open mutex
@@ -71,8 +71,8 @@ int write_map(char* name, T* buffer, int size) {
         switch (dwWaitResult) {
         case WAIT_OBJECT_0:
             try {
-                ip::windows_shared_memory shm(ip::open_only, name, ip::read_only);
-                ip::mapped_region region(shm, ip::read_only);
+                ip::windows_shared_memory shm(ip::open_only, name, ip::read_write);
+                ip::mapped_region region(shm, ip::read_write);
                 temp = static_cast<T*>(region.get_address());
                 for (int i = 0; i < size; i++) {
                     temp[i] = buffer[i];
