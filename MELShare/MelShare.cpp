@@ -1,7 +1,4 @@
-#include <Windows.h>
-#include <boost/interprocess/windows_shared_memory.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
-#include "MelShareDll.h"
+#include "MelShare.h"
 
 namespace ip = boost::interprocess;
 
@@ -125,23 +122,39 @@ int write_double_map(char* name, double* buffer, int size) {
     return write_map(name, buffer, size);
 }
 
-// MathLibrary.cpp : Defines the exported functions for the DLL application.  
-// Compile by using: cl /EHsc /DMATHLIBRARY_EXPORTS /LD MathLibrary.cpp  
+namespace mel {
 
-namespace MathLibrary
-{
-    double Functions::Add(double a, double b)
-    {
-        return a + b;
+    MelShare::MelShare(char* name, unsigned int bytes) : name_(name), bytes_(bytes) {
+        try {
+            // create a new windows shared memory 
+            // (note this MelShare must remain in scope for as long as the shared memory needs to be accessed)
+            shm_ = ip::windows_shared_memory(ip::open_or_create, name_, ip::read_write, bytes_);
+            region_ = boost::interprocess::mapped_region(shm_, boost::interprocess::read_write);
+
+            //values_ = (int(*)[16])(region_.get_address());
+            //values_ = new int[size_];
+            //values_ = (int*)(region_.get_address());
+
+            mutex_name_ = std::string(name) + "_mutex";
+            mutex_name_w_ = std::wstring(mutex_name_.begin(), mutex_name_.end());
+            mutex_ = CreateMutex(NULL, FALSE, mutex_name_w_.c_str());
+            if (mutex_ == NULL) {
+                std::cout << "ERROR: Failed to create mutex <" << name << ">." << std::endl;
+                printf("WINDOWS ERROR: %d\n", GetLastError());
+            }
+            else {
+                ReleaseMutex(mutex_);
+            }
+        }
+        catch (ip::interprocess_exception &ex) {
+            std::cout << "ERROR: Failed to create or open shared memory <" << name_ << ">." << std::endl;
+        }
     }
 
-    double Functions::Multiply(double a, double b)
-    {
-        return a * b;
+    MelShare::~MelShare() {
+        ReleaseMutex(mutex_);
+        CloseHandle(mutex_);
     }
 
-    double Functions::AddMultiply(double a, double b)
-    {
-        return a + (a * b);
-    }
+
 }
