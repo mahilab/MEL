@@ -17,7 +17,7 @@ public:
     mel::Daq* daq_;
     mel::double_vec state = mel::double_vec(10, 0);
 
-    mel::MelShare map_ = mel::MelShare("ow_state");
+    mel::shr::MelShare map_ = mel::shr::MelShare("ow_state");
 
     void start() override {
        
