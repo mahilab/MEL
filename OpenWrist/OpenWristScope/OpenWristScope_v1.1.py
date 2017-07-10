@@ -20,7 +20,7 @@ RAD2DEG = 180 / math.pi
 app = QtGui.QApplication([])
 mw = QtGui.QMainWindow()
 mw.setWindowTitle('OpenWrist Scope v'+ver)
-scale = 2
+scale = 1
 mw.setFixedSize(800*scale, 400*scale)
 #mw.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 pg.setConfigOption('background', (240,240,240))
@@ -261,16 +261,15 @@ def updateFPS():
 mel_share = ctypes.WinDLL("MELShare.dll")
 DoubleArray10 = ctypes.c_double * 10
 state = DoubleArray10()
-name = ctypes.c_char_p("ow_state")
 size = ctypes.c_int(10)
 result = ctypes.c_int(0);
 
 # define main update function to be passed to Qt
 def update():
     global result
-    result = mel_share.read_double_map(name, ctypes.byref(state), size)
+    result = mel_share.read_double_map(b"ow_state", ctypes.byref(state), 10)
     if result != 1:
-        print 'READ ERROR:', result
+       print(result)
     updateScope( data0, curve0, v0, state[1] * RAD2DEG )
     updateScope( data1, curve1, v1, state[2] * RAD2DEG )
     updateScope( data2, curve2, v2, state[3] * RAD2DEG )
