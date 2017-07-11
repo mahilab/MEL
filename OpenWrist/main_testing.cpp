@@ -29,7 +29,7 @@ public:
         open_wrist_.enable();
         std::cout << "Press Enter to start the controller" << std::endl;
         getchar();
-        daq_->start_watchdog(0.1);
+        daq_->start_watchdog(0.5);
         std::cout << "Starting the controller ... " << std::endl;
     }
 
@@ -66,14 +66,12 @@ public:
 
 int main(int argc, char * argv[]) {  
     
-    /*
+    
     // set Windows thread priority
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
     HANDLE hThread = GetCurrentThread();
     SetPriorityClass(hThread, HIGH_PRIORITY_CLASS); // use REALTIME_PRIORITY_CLASS with extreme care!
-    SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);
-    */
-
+    SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);   
     
     //  create a Q8Usb object
     mel::uint32 id = 0;
@@ -106,7 +104,7 @@ int main(int argc, char * argv[]) {
     OpenWrist open_wrist(config);
 
     // make a new Clock and Controller
-    mel::Clock clock(1000, true); // 1000 Hz, clock logging enabled
+    mel::Clock clock(1000);
     mel::Controller controller(clock);
     
     // queue Tasks for the Controller to execute
