@@ -1,15 +1,4 @@
 #include "MelShare.h"
-
-// error codes
-//  1 = successful read/write
-// -1 = failed to open shared memory map
-// -2 = failed to open mutex
-// -3 = wait on mutex abandoned
-// -4 = wait on mutex timed out
-// -5 = wait on mutex failed
-// -6 = failed to release mutex
-// -7 = failed to close mutex handle
-
 namespace mel {
 
     namespace share {
@@ -21,19 +10,23 @@ namespace mel {
                 shm_ = boost::interprocess::windows_shared_memory(boost::interprocess::open_or_create, name_, boost::interprocess::read_write, bytes_);
                 region_ = boost::interprocess::mapped_region(shm_, boost::interprocess::read_write);
 
-                std::string mutex_name_s = std::string(name) + "_mutex";
-                mutex_name_ = std::wstring(mutex_name_s.begin(), mutex_name_s.end());
-                mutex_ = CreateMutex(NULL, FALSE, mutex_name_.c_str());
+                mutex_name_ = std::string(name) + "_mutex";
+                std::wstring w_mutex_name = std::wstring(mutex_name_.begin(), mutex_name_.end());
+                mutex_ = CreateMutex(NULL, FALSE, w_mutex_name.c_str());
                 if (mutex_ == NULL) {
-                    std::cout << "ERROR: Failed to create mutex <" << name << ">." << std::endl;
+                    std::cout << "ERROR: Failed to create mutex <" << mutex_name_ << ">." << std::endl;
                     printf("WINDOWS ERROR: %d\n", GetLastError());
                 }
                 else {
+                    if (GetLastError() == ERROR_ALREADY_EXISTS) {
+                        std::cout << "WARNING: CreateMutex opened an existing mutex when trying to create mutex <" << mutex_name_ << ">." << std::endl;
+                    }
                     ReleaseMutex(mutex_);
                 }
             }
             catch (boost::interprocess::interprocess_exception &ex) {
                 std::cout << "ERROR: Failed to create or open shared memory <" << name_ << ">." << std::endl;
+                std::cout << "BOOST ERROR: " << ex.what() << std::endl;
             }
         }
 
@@ -43,7 +36,8 @@ namespace mel {
             shm_ = boost::interprocess::windows_shared_memory(boost::interprocess::open_or_create, name_, boost::interprocess::read_write, bytes_);
             region_ = boost::interprocess::mapped_region(shm_, boost::interprocess::read_write);
             mutex_name_ = other.mutex_name_;
-            mutex_ = other.mutex_;
+            mutex_ = other.mutex_; // may need to use this https://msdn.microsoft.com/en-us/library/windows/desktop/ms724251(v=vs.85).aspx
+
         }
 
         MelShare& MelShare::operator=(const MelShare& other) {
@@ -52,7 +46,7 @@ namespace mel {
             shm_ = boost::interprocess::windows_shared_memory(boost::interprocess::open_or_create, name_, boost::interprocess::read_write, bytes_);
             region_ = boost::interprocess::mapped_region(shm_, boost::interprocess::read_write);
             mutex_name_ = other.mutex_name_;
-            mutex_ = other.mutex_;
+            mutex_ = other.mutex_; // may need to use this https://msdn.microsoft.com/en-us/library/windows/desktop/ms724251(v=vs.85).aspx
             return *this;
         }
 

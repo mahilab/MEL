@@ -11,33 +11,32 @@
 class PdController : public mel::Task {
 
 public:
-    PdController(OpenWrist open_wrist, mel::Daq* daq) : Task("pd_controller"), open_wrist_(open_wrist), daq_(daq) {}
+    PdController(OpenWrist& open_wrist, mel::Daq* daq) : Task("pd_controller"), open_wrist_(open_wrist), daq_(daq) {}
 
     OpenWrist open_wrist_;
     mel::Daq* daq_;
-    mel::double_vec state = mel::double_vec(10, 0);
 
-    mel::share::MelShare map_ = mel::share::MelShare("ow_state");
+    //mel::share::MelShare map_ = mel::share::MelShare("ow_state");
 
     void start() override {
        
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
         getchar();
-        //daq_->activate();
-        //daq_->zero_encoders();
+        daq_->activate();
+        daq_->zero_encoders();
         std::cout << "Press ENTER to enable OpenWrist" << std::endl;
         getchar();
         open_wrist_.enable();
         std::cout << "Press Enter to start the controller" << std::endl;
         getchar();
-        //daq_->start_watchdog(0.1);
+        daq_->start_watchdog(0.1);
         std::cout << "Starting the controller ... " << std::endl;
     }
 
     void step() override {
 
-        //daq_->read_all();
-        //daq_->reload_watchdog();
+        daq_->read_all();
+        daq_->reload_watchdog();
 
         double traj0 = mel::sin_trajectory(80 * mel::DEG2RAD, 0.25, time());
         double traj1 = mel::sin_trajectory(60 * mel::DEG2RAD, 0.25, time());
@@ -51,18 +50,9 @@ public:
         open_wrist_.joints_[1]->set_torque(torque1);
         open_wrist_.joints_[2]->set_torque(torque2);
 
-        state[0] = time();
-        state[1] = traj0;// open_wrist_.joints_[0]->get_position();
-        state[2] = traj1;// open_wrist_.joints_[1]->get_position();
-        state[3] = traj2;// open_wrist_.joints_[2]->get_position();
-        state[4] = open_wrist_.joints_[0]->get_velocity();
-        state[5] = open_wrist_.joints_[1]->get_velocity();
-        state[6] = open_wrist_.joints_[2]->get_velocity();
+        open_wrist_.update_state_map();
 
-        //mel::MelShare::write_map("ow_state", state);
-        map_.write(state);
-
-        //daq_->write_all();
+        daq_->write_all();
 
     }
 
