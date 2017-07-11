@@ -10,9 +10,9 @@
 
 ## Table of Contents
 
-1.[Installation (Windows)](#installation-windows)
+1.[Installation (Windows 64-bit)](#installation-windows)
 
-## Installation (Windows)
+## Installation (Windows 64-bit)
 
 ###  Visual Studio 2017 - Visual C++
 
