@@ -786,6 +786,11 @@ The newly built NavMeshData, or null if the NavMeshData was empty or an error oc
         <para>The agent type ID the NavMesh will be baked for.</para>
       </summary>
     </member>
+    <member name="P:UnityEngine.AI.NavMeshBuildSettings.minRegionArea">
+      <summary>
+        <para>The approximate minimum area of individual NavMesh regions.</para>
+      </summary>
+    </member>
     <member name="P:UnityEngine.AI.NavMeshBuildSettings.overrideTileSize">
       <summary>
         <para>Enables overriding the default tile size. See Also: tileSize.</para>
@@ -4486,12 +4491,12 @@ Note: Using raw JNI functions requires advanced knowledge of the Android Java Na
     </member>
     <member name="P:UnityEngine.AnimatorControllerParameter.defaultFloat">
       <summary>
-        <para>The default bool value for the parameter.</para>
+        <para>The default float value for the parameter.</para>
       </summary>
     </member>
     <member name="P:UnityEngine.AnimatorControllerParameter.defaultInt">
       <summary>
-        <para>The default bool value for the parameter.</para>
+        <para>The default int value for the parameter.</para>
       </summary>
     </member>
     <member name="P:UnityEngine.AnimatorControllerParameter.name">
@@ -20670,7 +20675,7 @@ GUILayout.MaxHeight, GUILayout.ExpandWidth, GUILayout.ExpandHeight.</param>
     </member>
     <member name="M:UnityEngine.GUILayout.Button(UnityEngine.Texture,UnityEngine.GUILayoutOption[])">
       <summary>
-        <para>Make a single press button. The user clicks them and something happens immediately.</para>
+        <para>Make a single press button.</para>
       </summary>
       <param name="text">Text to display on the button.</param>
       <param name="image">Texture to display on the button.</param>
@@ -20685,7 +20690,7 @@ GUILayout.MaxHeight, GUILayout.ExpandWidth, GUILayout.ExpandHeight.</param>
     </member>
     <member name="M:UnityEngine.GUILayout.Button(System.String,UnityEngine.GUILayoutOption[])">
       <summary>
-        <para>Make a single press button. The user clicks them and something happens immediately.</para>
+        <para>Make a single press button.</para>
       </summary>
       <param name="text">Text to display on the button.</param>
       <param name="image">Texture to display on the button.</param>
@@ -20700,7 +20705,7 @@ GUILayout.MaxHeight, GUILayout.ExpandWidth, GUILayout.ExpandHeight.</param>
     </member>
     <member name="M:UnityEngine.GUILayout.Button(UnityEngine.GUIContent,UnityEngine.GUILayoutOption[])">
       <summary>
-        <para>Make a single press button. The user clicks them and something happens immediately.</para>
+        <para>Make a single press button.</para>
       </summary>
       <param name="text">Text to display on the button.</param>
       <param name="image">Texture to display on the button.</param>
@@ -20715,7 +20720,7 @@ GUILayout.MaxHeight, GUILayout.ExpandWidth, GUILayout.ExpandHeight.</param>
     </member>
     <member name="M:UnityEngine.GUILayout.Button(UnityEngine.Texture,UnityEngine.GUIStyle,UnityEngine.GUILayoutOption[])">
       <summary>
-        <para>Make a single press button. The user clicks them and something happens immediately.</para>
+        <para>Make a single press button.</para>
       </summary>
       <param name="text">Text to display on the button.</param>
       <param name="image">Texture to display on the button.</param>
@@ -20730,7 +20735,7 @@ GUILayout.MaxHeight, GUILayout.ExpandWidth, GUILayout.ExpandHeight.</param>
     </member>
     <member name="M:UnityEngine.GUILayout.Button(System.String,UnityEngine.GUIStyle,UnityEngine.GUILayoutOption[])">
       <summary>
-        <para>Make a single press button. The user clicks them and something happens immediately.</para>
+        <para>Make a single press button.</para>
       </summary>
       <param name="text">Text to display on the button.</param>
       <param name="image">Texture to display on the button.</param>
@@ -20745,7 +20750,7 @@ GUILayout.MaxHeight, GUILayout.ExpandWidth, GUILayout.ExpandHeight.</param>
     </member>
     <member name="M:UnityEngine.GUILayout.Button(UnityEngine.GUIContent,UnityEngine.GUIStyle,UnityEngine.GUILayoutOption[])">
       <summary>
-        <para>Make a single press button. The user clicks them and something happens immediately.</para>
+        <para>Make a single press button.</para>
       </summary>
       <param name="text">Text to display on the button.</param>
       <param name="image">Texture to display on the button.</param>
@@ -28447,6 +28452,11 @@ Only usable on Android, Windows Phone or Windows Tablets.</para>
         <para>The main material's color.</para>
       </summary>
     </member>
+    <member name="P:UnityEngine.Material.doubleSidedGI">
+      <summary>
+        <para>Gets and sets whether the Double Sided Global Illumination setting is enabled for this material.</para>
+      </summary>
+    </member>
     <member name="P:UnityEngine.Material.enableInstancing">
       <summary>
         <para>Gets and sets whether GPU instancing is enabled for this material.</para>
@@ -33525,6 +33535,11 @@ The Player ID is always 1, because only one Editor can be connected.</param>
     <member name="P:UnityEngine.Networking.UnityWebRequest.responseCode">
       <summary>
         <para>The numeric HTTP response code returned by the server, such as 200, 404 or 500. (Read Only)</para>
+      </summary>
+    </member>
+    <member name="P:UnityEngine.Networking.UnityWebRequest.timeout">
+      <summary>
+        <para>Sets UnityWebRequest to attempt to abort after the number of seconds in timeout have passed.</para>
       </summary>
     </member>
     <member name="P:UnityEngine.Networking.UnityWebRequest.uploadedBytes">
@@ -45706,14 +45721,14 @@ Updating a probe's cubemap is a costly operation. Unity needs to render the enti
     </member>
     <member name="M:UnityEngine.RenderTexture.DiscardContents">
       <summary>
-        <para>Discards the contents of the RenderTexture.</para>
+        <para>Hint the GPU driver that the contents of the RenderTexture will not be used.</para>
       </summary>
       <param name="discardColor">Should the colour buffer be discarded?</param>
       <param name="discardDepth">Should the depth buffer be discarded?</param>
     </member>
     <member name="M:UnityEngine.RenderTexture.DiscardContents(System.Boolean,System.Boolean)">
       <summary>
-        <para>Discards the contents of the RenderTexture.</para>
+        <para>Hint the GPU driver that the contents of the RenderTexture will not be used.</para>
       </summary>
       <param name="discardColor">Should the colour buffer be discarded?</param>
       <param name="discardDepth">Should the depth buffer be discarded?</param>
@@ -45850,6 +45865,11 @@ Updating a probe's cubemap is a costly operation. Unity needs to render the enti
         <para>Scalar (R) render texture format, 32 bit floating point.</para>
       </summary>
     </member>
+    <member name="F:UnityEngine.RenderTextureFormat.RG16">
+      <summary>
+        <para>Two channel (RG) render texture format, 8 bits per channel.</para>
+      </summary>
+    </member>
     <member name="F:UnityEngine.RenderTextureFormat.RG32">
       <summary>
         <para>Two color (RG) render texture format, 16 bits per channel, fixed point, unsigned normalized.</para>
@@ -45863,6 +45883,11 @@ Updating a probe's cubemap is a costly operation. Unity needs to render the enti
     <member name="F:UnityEngine.RenderTextureFormat.RGB565">
       <summary>
         <para>Color render texture format.</para>
+      </summary>
+    </member>
+    <member name="F:UnityEngine.RenderTextureFormat.RGBAUShort">
+      <summary>
+        <para>Four channel (RGBA) render texture format, 16 bit unsigned integer per channel.</para>
       </summary>
     </member>
     <member name="F:UnityEngine.RenderTextureFormat.RGFloat">
@@ -45928,7 +45953,7 @@ Updating a probe's cubemap is a costly operation. Unity needs to render the enti
     </member>
     <member name="M:UnityEngine.RequireComponent.#ctor(System.Type,System.Type)">
       <summary>
-        <para>Require a two components.</para>
+        <para>Require two components.</para>
       </summary>
       <param name="requiredComponent"></param>
       <param name="requiredComponent2"></param>
@@ -52254,9 +52279,19 @@ Returns NULL if there is no associated alpha texture for the source sprite. This
         <para>A 16 bit color texture format that only has a red channel.</para>
       </summary>
     </member>
+    <member name="F:UnityEngine.TextureFormat.R8">
+      <summary>
+        <para>Scalar (R) render texture format, 8 bit fixed point.</para>
+      </summary>
+    </member>
     <member name="F:UnityEngine.TextureFormat.RFloat">
       <summary>
         <para>Scalar (R) texture format, 32 bit floating point.</para>
+      </summary>
+    </member>
+    <member name="F:UnityEngine.TextureFormat.RG16">
+      <summary>
+        <para>Two color (RG) texture format, 8-bits per channel.</para>
       </summary>
     </member>
     <member name="F:UnityEngine.TextureFormat.RGB24">
@@ -54751,7 +54786,7 @@ The actual number of audio tracks cannot be known in advance when playing URLs, 
     </member>
     <member name="P:UnityEngine.Video.VideoPlayer.targetTexture">
       <summary>
-        <para>RenderTexture to draw to when Video.VideoPlayer.renderMode is set to Video.VideoTarget.RenderTexture.</para>
+        <para>RenderTexture to draw to when Video.VideoPlayer.renderMode is set to Video.VideoTarget.RenderTexture. For optimal performance, the dimensions of the RenderTexture should match those of the video media exactly.</para>
       </summary>
     </member>
     <member name="P:UnityEngine.Video.VideoPlayer.texture">
