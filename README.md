@@ -99,7 +99,7 @@
 
 8. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and insure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
-9. Run the following Python script to test PyQt5 + PyQtGraph. Play around with each test example, particularly the benchmarks, to insure everything is working properly.
+9. Run the following Python script to test PyQt4 + PyQtGraph. Play around with each test example, particularly the benchmarks, to insure everything is working properly.
 
     ```python
     import pyqtgraph.examples
