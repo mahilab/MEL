@@ -35,7 +35,7 @@
     - Set the installation directory to **C:\dev\boost\_1\_64\_0**
     - Alternatively, you can choose to build the [Boost](http://www.boost.org/) yourself
 
-2. Download the latest stable release [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
+2. Download the latest stable release of [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
 
     - Extract the folder labeled **eigen-eigen-5a10...** to **C:\dev** and change the folder name to just **eigen**
     - If you are in **C:\dev\eigen** you should see folders *bench*, *blas*, *cmake*, *debug*, etc.
@@ -44,7 +44,7 @@
 
     - Copy the *include* and *lib* folders to a new directory *C:\dev\quarc*
     - From *C:\dev\quarc\lib* you can delete all folders EXCEPT *windows* and *win64*
-    - If you don't have Quarc installed, you can get the folders from another MAHI lab member who does.
+    - If you don't have Quarc installed, you can get the folders from another MAHI lab member who does
 
 ###   Git / GitHub Installation
 
@@ -58,7 +58,7 @@
 
 3. Clone the repository. Navigate to the local path in Windows Explorer and verify that the repository has been cloned.
 
-###   Python 3.6 + NumPy + PyQt5 + PyQtGraph (Recommended)
+###   Python 3.6 + NumPy + PyQt5 + PyQtGraph
 
 1. Download [Python 3.6.1 (64-bit)](https://www.python.org/downloads/release/python-361/)
 
@@ -82,7 +82,7 @@
    pip3 install PyOpenGL
    pip3 install PyOpenGL_accelerate
    pip3 install PyQt5
-   pip install ipython
+   pip3 install iPython
    ```
 
    **NOTE:** PyOpenGL_accelerate may fail to install with the following error:
@@ -93,7 +93,7 @@
 
 5. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and insure that the Python installation directory is correctly identified as C:\dev\Python36
 
-6. Run the following Python script to test PyQt5 + PyQtGraph
+6. Run the following Python script to test PyQt5 + PyQtGraph. Play around with each test example.
 
     ```python
     import pyqtgraph.examples
