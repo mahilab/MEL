@@ -58,47 +58,50 @@
 
 3. Clone the repository. Navigate to the local path in Windows Explorer and verify that the repository has been cloned.
 
-###   Python 3.6 + NumPy + PyQt5 + PyQtGraph
+###   Python 2.7 + NumPy + PyQt4 + PyQtGraph
 
-1. Download [Python 3.6.1 (64-bit)](https://www.python.org/downloads/release/python-361/)
 
-2. Choose Customize installation. Click Next. Check **Install for all users** and **Add Python to environment variables**. Set the installation location to **C:\dev\Python36**.
 
-3. Go to the [Unofficial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/) page. Download the latest binaries for **NumPy**, **SciPy**, and **MatPlotLib**. Make sure you select the correct build (i.e. listings ending with -cp36-cp36m-win\_amd64.whl). At the time of writing, the latest versions were:
+1. Download [Python 2.7.13 (64-bit) Installer](https://www.python.org/downloads/release/python-2713/)
 
-    - numpy-1.13.1+mkl-cp36-cp36m-win_amd64.whl
-    - scipy-0.19.1-cp36-cp36m-win_amd64
-    - matplotlib-2.0.2-cp36-cp36m-win_amd64
+2. Run the installer and set the installation location to **C:\dev\Python27**. Ensure that the "Add python.exe to path" option is set to "Will be installed on local hard drive"
 
-4. Add the .whl files to a new directory **C:\dev\Python36\wheels**
+3. Download and install the [Microsoft Visual C++ Compilter for Python 2.7](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
-3. While in this directory in Windows Explorer, Shift+Right-Click in an empty space and select "Open command (or PowerShell) window here". Execute the following console commands **IN THIS ORDER**:
+4. Go to the [Unofficial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/) page. Download the latest binaries for **NumPy**, **SciPy**, and **MatPlotLib**. Make sure you select the correct build (i.e. listings ending with -cp27-cp27m-win\_amd64.whl). At the time of writing, the latest versions were:
+
+    - numpy-1.13.1+mkl-cp27-cp27m-win_amd64.whl
+    - scipy-0.19.1-cp27-cp27m-win_amd64
+    - matplotlib-2.0.2-cp27-cp27m-win_amd64
+
+5. Add the .whl files to a new directory **C:\dev\Python27\wheels**
+
+6. While in this directory in Windows Explorer, Shift+Right-Click in an empty space and select "Open command (or PowerShell) window here". Execute the following console commands **IN THIS ORDER**:
 
    ```
-   pip3 install --upgrade pip
-   pip3 install numpy-1.13.1+mkl-cp36-cp36m-win_amd64.whl
-   pip3 install scipy-0.19.1-cp36-cp36m-win_amd64.whl
-   pip3 install matplotlib-2.0.2-cp36-cp36m-win_amd64.whl
-   pip3 install PyOpenGL
-   pip3 install PyOpenGL_accelerate
-   pip3 install PyQt5
-   pip3 install iPython
+   pip install --upgrade pip
+   pip install numpy-1.13.1+mkl-cp27-cp27m-win_amd64.whl
+   pip install scipy-0.19.1-cp27-cp27m-win_amd64.whl
+   pip install matplotlib-2.0.2-cp27-cp27m-win_amd64.whl
+   pip install PyOpenGL
+   pip install PyOpenGL_accelerate
+   pip install iPython
    ```
 
-   **NOTE:** PyOpenGL_accelerate may fail to install with the following error:
+   **NOTE:** PyOpenGL_accelerate may fail to install if you skipped step 2. This is because it must be built and requires the legacy MSVC compiler be installed.
 
-   *error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools*
+7. Download and the [PyQt4 binaries for Python 2.7 (64-bit)](https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe/download?use_mirror=managedway&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpyqt%2Ffiles%2FPyQt4%2FPyQt-4.11.4%2F&use_mirror=managedway). Run the installer and insure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
-   If this happens, follow the URL and download and install the standalone compiler (Visual C++ 2015 Build Tools). Go to the installation location **C:\Program Files (x86)\Microsoft Visual C++ Build Tools** and run **Visual C++ 2015 x86 x64 Cross Build Tools Command Prompt**. Execute **pip3 install PyOpenGL_accelerate** from here.
+8. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and insure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
-5. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and insure that the Python installation directory is correctly identified as C:\dev\Python36
-
-6. Run the following Python script to test PyQt5 + PyQtGraph. Play around with each test example.
+9. Run the following Python script to test PyQt5 + PyQtGraph. Play around with each test example, particularly the benchmarks, to insure everything is working properly.
 
     ```python
     import pyqtgraph.examples
     pyqtgraph.examples.run()
     ```
+
+**NOTE:** The newer Python 3.6 and PyQt5 have been tested and were found to be less stable and slower than the more mature Python 2.7 + PyQt4 pairing when used with PyQtGraph. You may choose to install Python 3.6 and PyQt5 (or any combination of the two, really) but note that the installation procedure will differ slightly (specifically when downloading wheels/binaries and building PyOpenGl_accelerate).
 
 
 
