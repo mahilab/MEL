@@ -5,8 +5,12 @@
 
 ## Developers
 
-- Evan Pezent (epezent@rice.edu)
-- Craig McDonald (craig.g.mcdonald@gmail.com)
+- [Evan Pezent](http://evanpezent.com) (epezent@rice.edu)
+- [Craig McDonald](http://craiggmcdonald.com/) (craig.g.mcdonald@gmail.com)
+
+## Table of Contents
+
+1.[Installation (Windows)](#installation-windows)
 
 ## Installation (Windows)
 
