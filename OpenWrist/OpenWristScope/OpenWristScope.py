@@ -20,7 +20,7 @@ RAD2DEG = 180 / math.pi
 app = QtGui.QApplication([])
 mw = QtGui.QMainWindow()
 mw.setWindowTitle('OpenWrist Scope v'+ver)
-scale = 1
+scale = 2
 mw.setFixedSize(800*scale, 400*scale)
 #mw.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 pg.setConfigOption('background', (240,240,240))
