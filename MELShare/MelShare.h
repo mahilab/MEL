@@ -14,7 +14,7 @@
 
 namespace mel {
 
-    namespace shr {
+    namespace share {
 
         // base read/write template functions from which all others are derived
 

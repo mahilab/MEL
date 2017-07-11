@@ -10,9 +10,9 @@ int main(int argc, char * argv[]) {
     // note that on Windows, the shared memory maps will only stay active for as long as
     // these instances stay in scope, so create them inside of your main loop or inside of a
     // class isntance that you expect to stay alive for the duration of the program (e.g. OpenWrist or ME-II).
-    mel::shr::MelShare map0("map0");
-    mel::shr::MelShare map1("map1");
-    mel::shr::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
+    mel::share::MelShare map0("map0");
+    mel::share::MelShare map1("map1");
+    mel::share::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
 
     // create new data containers to write to map (vectos and C-style arrays can be used)
     mel::char_vec  my_chars = { 'a','b','c' };
@@ -24,7 +24,7 @@ int main(int argc, char * argv[]) {
 
     // write the data to the maps
     map0.write(my_chars); // non-static version called using dot operator on a MelShare instance (fastest method)
-    mel::shr::write_map("map1",my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
+    mel::share::write_map("map1",my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
     map2.write(my_doubles, 10); // C-style arrays can be used with both non-static and static versions, but you must input size manually
 
     std::cout << "Wrote: " << std::endl;
@@ -45,7 +45,7 @@ int main(int argc, char * argv[]) {
     // read the altered data from the maps
     map0.read(my_chars);
     map1.read(my_doubles, 10); // this demonstrates that we can read doubles from a map that previously wrote ints
-    mel::shr::read_map("map2", my_ints); // and vice-versa
+    mel::share::read_map("map2", my_ints); // and vice-versa
 
     std::cout << "Read: " << std::endl;
     std::cout << "map0:    ";  mel::print_vector(my_chars);

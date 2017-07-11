@@ -12,7 +12,7 @@
 
 namespace mel {
 
-    namespace shr {
+    namespace share {
 
         MelShare::MelShare(char* name, unsigned int bytes) : name_(name), bytes_(bytes) {
             try {
