@@ -51,7 +51,7 @@
     <ClCompile Include="Joint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NanoLog.cpp">
+    <ClCompile Include="DataLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,7 +104,7 @@
     <ClInclude Include="Joint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NanoLog.hpp">
+    <ClInclude Include="DataLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

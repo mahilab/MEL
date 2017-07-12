@@ -23,10 +23,10 @@
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Daq.cpp" />
+    <ClCompile Include="DataLog.cpp" />
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="Exo.cpp" />
     <ClCompile Include="Motor.cpp" />
-    <ClCompile Include="NanoLog.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
@@ -37,7 +37,7 @@
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="AnatomicalJoint.h" />
     <ClInclude Include="Clock.h" />
-    <ClInclude Include="NanoLog.hpp" />
+    <ClInclude Include="DataLog.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />

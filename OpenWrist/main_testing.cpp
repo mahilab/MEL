@@ -7,6 +7,7 @@
 #include "OpenWrist.h"
 #include <functional>
 #include "MelShare.h"
+#include "DataLog.h"
 
 class PdController : public mel::Task {
 
@@ -15,10 +16,11 @@ public:
 
     OpenWrist open_wrist_;
     mel::Daq* daq_;
-
-    //mel::share::MelShare map_ = mel::share::MelShare("ow_state");
+    mel::DataLog my_log_ = mel::DataLog("testing", "my_log");
 
     void start() override {
+
+        my_log_.add_column("Traj0").add_column("Traj1").add_column("Traj2");
        
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
         getchar();
@@ -42,6 +44,10 @@ public:
         double traj1 = mel::sin_trajectory(60 * mel::DEG2RAD, 0.25, time());
         double traj2 = mel::sin_trajectory(30 * mel::DEG2RAD, 0.25, time());
 
+        std::vector<double> traj012 = { traj0, traj1, traj2 };
+
+        my_log_.add_row(traj012);
+
         double torque0 = mel::pd_control_effort(25, 1.15, traj0, open_wrist_.joints_[0]->get_position(), 0, open_wrist_.joints_[0]->get_velocity());
         double torque1 = mel::pd_control_effort(25, 1.15, traj1, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity());
         double torque2 = mel::pd_control_effort(25, 1.15, traj2, open_wrist_.joints_[2]->get_position(), 0, open_wrist_.joints_[2]->get_velocity());
@@ -59,6 +65,7 @@ public:
     void stop() override {
         open_wrist_.disable();
         daq_->deactivate();
+        my_log_.save_data();
     }
 
 };
@@ -66,13 +73,14 @@ public:
 
 int main(int argc, char * argv[]) {  
     
-    
+    /*
     // set Windows thread priority
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
     HANDLE hThread = GetCurrentThread();
     SetPriorityClass(hThread, HIGH_PRIORITY_CLASS); // use REALTIME_PRIORITY_CLASS with extreme care!
     SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);   
-    
+    */
+
     //  create a Q8Usb object
     mel::uint32 id = 0;
 
