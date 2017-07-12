@@ -143,9 +143,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="mel_share_demo.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MELShare\MELShare.vcxproj">
       <Project>{59ba7985-cd63-4dbd-bd8b-8636cbc4e2a3}</Project>
     </ProjectReference>
