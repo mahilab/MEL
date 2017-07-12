@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mel_share.cpp">
+    <ClCompile Include="mel_share_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

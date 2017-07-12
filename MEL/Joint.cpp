@@ -35,6 +35,10 @@ namespace mel {
         return velocity_;
     }
 
+    double Joint::get_torque() {
+        return torque_;
+    }
+
     void Joint::set_torque(double joint_torque) {
         torque_ = joint_torque;
         actuator_->set_torque(actuator_transmission_ * torque_);

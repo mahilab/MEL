@@ -18,14 +18,15 @@ public:
 
     MahiExoII exo_;
     mel::Daq* daq_;
+    mel::double_vec anatomical_joint_velocities_;
 
     void start() override {
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
         getchar();
         daq_->activate();
-        std::cout << "Press ENTER to enable MahiExoII" << std::endl;
-        getchar();
-        exo_.enable();
+        //std::cout << "Press ENTER to enable MahiExoII" << std::endl;
+        //getchar();
+        //exo_.enable();
         std::cout << "Press Enter to start the controller" << std::endl;
         getchar();
         daq_->start_watchdog(0.1);
@@ -37,25 +38,35 @@ public:
 
         daq_->read_all();
         daq_->reload_watchdog();
+
+        //double traj0 = mel::sin_trajectory(10 * mel::DEG2RAD, 0.25, time());
+        //double traj1 = mel::sin_trajectory(10 * mel::DEG2RAD, 0.25, time());
         
+        exo_.update_kinematics(); // must call this to update qp and qp_dot
+        anatomical_joint_velocities_ = exo_.get_anatomical_joint_velocities();
+        //std::cout << exo_.joints_[2]->get_velocity() << std::endl;
         
-       /* std::cout << exo_.joints_[0]->get_position() << " "
-                  << exo_.joints_[1]->get_position() << " "
-                  << exo_.joints_[2]->get_position() << " " 
-                  << exo_.joints_[3]->get_position() << " " 
-                  << exo_.joints_[4]->get_position() << std::endl;
-                  */
+        //std::cout << mel::RAD2DEG * anatomical_joint_velocities_[2] << std::endl;
 
-        mel::print_double_vec(exo_.get_joint_positions());
+        //double torque0 = mel::pd_control_effort(35, 0.25, traj0, exo_.joints_[0]->get_position(), 0, exo_.joints_[0]->get_velocity());
+        //double torque1 = mel::pd_control_effort(7, 0.06, traj1, exo_.joints_[1]->get_position(), 0, exo_.joints_[1]->get_velocity());
+        /*
+        double torque0 = 0;
+        double torque1 = 0;
+        double torque2 = 0;
+        double torque3 = 0;
+        double torque4 = 0;
 
-        //robot_->get_joint_velocities();
-        //robot_->set_joint_torques();
-        
+        exo_.joints_[0]->set_torque(torque0);
+        exo_.joints_[1]->set_torque(torque1);
+        exo_.joints_[2]->set_torque(torque2);
+        exo_.joints_[3]->set_torque(torque3);
+        exo_.joints_[4]->set_torque(torque4);
 
-
-
-        //daq_->write_all();
+        daq_->write_all();
+        */        
     }
+
 
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
@@ -73,7 +84,7 @@ public:
 int main(int argc, char * argv[]) {
 
 
-    /* set up program options */
+    // set up program options 
     po::options_description desc("Available Options");
     desc.add_options()
         ("help", "produces help message")
@@ -96,8 +107,15 @@ int main(int argc, char * argv[]) {
     mel::channel_vec  di_channels = { };
     mel::channel_vec  do_channels = { 0, 1, 2, 3, 4 };
     mel::channel_vec enc_channels = { 0, 1, 2, 3, 4 };
+
+    mel::Q8Usb::Options options;
+    for (auto it = do_channels.begin(); it != do_channels.end(); ++it) {
+        options.do_initial_signals_[it - do_channels.begin()] = 1;
+        options.do_final_signals_[it - do_channels.begin()] = 1;
+    }
+
     
-    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels,options);
 
     // create and configure an MahiExoII object
     MahiExoII::Config config;
@@ -114,7 +132,8 @@ int main(int argc, char * argv[]) {
     // manual zero joint positions
     if (var_map.count("zero")) {
         q8->activate();
-        q8->offset_encoders({ 0, 0, 29125, 29125, 29125 });
+        q8->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
+        return 0;
     }
     
     

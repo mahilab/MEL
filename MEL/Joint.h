@@ -20,6 +20,7 @@ namespace mel {
 
         double get_position(); // converts PositionSensor position to RobotJoint position
         double get_velocity(); // converts PositionSensor velocity to RobotJoint velocity
+        double get_torque();   // returns last set torque
 
         void set_torque(double joint_torque);
 

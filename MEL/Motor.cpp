@@ -101,10 +101,12 @@ namespace mel {
         if (enable_mode_ == EnableMode::High) {
             is_enable_ = true;
             do_channel_.set_signal(1);
+            do_channel_.daq_->write_digitals();
         }
         else if (enable_mode_ == EnableMode::Low) {
             is_enable_ = true;
             do_channel_.set_signal(0);
+            do_channel_.daq_->write_digitals();
         }
         else {
             std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
@@ -115,10 +117,12 @@ namespace mel {
         if (enable_mode_ == EnableMode::High) {
             is_enable_ = false;
             do_channel_.set_signal(0);
+            do_channel_.daq_->write_digitals();
         }
         else if (enable_mode_ == EnableMode::Low) {
             is_enable_ = false;
             do_channel_.set_signal(1);
+            do_channel_.daq_->write_digitals();
         }
         else {
             std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;

@@ -2,6 +2,7 @@
 #include <array>
 #include "Exo.h"
 #include "util.h"
+#include "MelShare.h"
 
 class OpenWrist : public mel::Exo {
 
@@ -24,6 +25,12 @@ public:
     };
 
     OpenWrist(Config configuration, Params parameters = Params());
+
+    // OPENWRIST MELSHARE STATE MAP
+
+    mel::share::MelShare state_map_ = mel::share::MelShare("ow_state"); // 10 doubles * 8 bytes/double
+    void update_state_map(float timestamp = 0.0);
+    mel::double_vec state_ = mel::double_vec(10, 0);
 
     const Config config_;
     const Params params_;
