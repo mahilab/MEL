@@ -268,8 +268,8 @@ result = ctypes.c_int(0);
 def update():
     global result
     result = mel_share.read_double_map(b"ow_state", ctypes.byref(state), 10)
-    if result != 1:
-       print(result)
+    #if result != 1:
+       #print(result)
     updateScope( data0, curve0, v0, state[1] * RAD2DEG )
     updateScope( data1, curve1, v1, state[2] * RAD2DEG )
     updateScope( data2, curve2, v2, state[3] * RAD2DEG )
