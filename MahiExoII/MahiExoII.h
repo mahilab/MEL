@@ -31,11 +31,15 @@ public:
     const Params params_;
 
     void update_kinematics();
+    double get_anatomical_joint_position(int index);
+    double get_anatomical_joint_velocity(int index);
 
     // inherited virtual functions from Exo class to be implemented
     mel::double_vec get_anatomical_joint_positions() override;
     mel::double_vec get_anatomical_joint_velocities() override;
     void set_anatomical_joint_torques(mel::double_vec new_torques) override;
+
+    
         
 
 private:
@@ -58,14 +62,13 @@ private:
     Eigen::VectorXd psi_;
     Eigen::MatrixXd psi_d_qp_;
     Eigen::MatrixXd rho_;
+    Eigen::MatrixXd rho_sub_;
     Eigen::MatrixXd alpha_mat_;
     Eigen::MatrixXd X_mat_;
 
-    void forward_kinematics(Eigen::VectorXd* qp, Eigen::VectorXd q_par, mel::uint32 max_it, double tol);
-    void forward_kinematics_velocity(Eigen::VectorXd* qp_dot, Eigen::VectorXd q_par_dot);
-    void psi_func(Eigen::VectorXd* psi, Eigen::VectorXd qp, Eigen::VectorXd q_par, double R, double r, double a56, double alpha5, double alpha13);
-    void psi_d_qp_func(Eigen::MatrixXd* psi_d_qp, Eigen::VectorXd qp, double r, double alpha5, double alpha13);
-    void rho_func(Eigen::VectorXd qp, double r, double alpha5, double alpha13);
-
+    void forward_kinematics(mel::uint32 max_it, double tol);
+    void forward_kinematics_velocity();
+    void psi_func();
+    void psi_d_qp_func();
     
 };

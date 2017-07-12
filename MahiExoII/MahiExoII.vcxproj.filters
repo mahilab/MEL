@@ -24,9 +24,6 @@
     <ClCompile Include="MahiExoII.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MahiExoII_kinematics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MahiExoII.h">
