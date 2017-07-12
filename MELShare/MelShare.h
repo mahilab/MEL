@@ -166,7 +166,7 @@ namespace mel {
             }
         }
 
-        // base read/write template functions that open a new instance of the shared memory map and accept a stl vector
+        // base read/write template functions that open a new instance of the shared memory map and accept a stl vector or array
 
         template <typename T>
         int read_map(char* name, std::vector<T>& buffer) {
@@ -175,6 +175,16 @@ namespace mel {
 
         template <typename T>
         int write_map(char* name, std::vector<T>& buffer) {
+            return write_map(name, &buffer[0], buffer.size());
+        }
+
+        template <typename T, std::size_t N>
+        int read_map(char* name, std::array<T, N> buffer) {
+            return read_map(name, &buffer[0], buffer.size());
+        }
+
+        template <typename T, std::size_t N>
+        int write_map(char* name, std::array<T, N> buffer) {
             return write_map(name, &buffer[0], buffer.size());
         }
 
