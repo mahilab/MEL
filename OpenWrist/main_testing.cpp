@@ -20,19 +20,19 @@ public:
 
     void start() override {
 
-        my_log_.add_column("Traj0").add_column("Traj1").add_column("Traj2");
+        my_log_.add_col("Traj0").add_col("Traj1").add_col("Traj2");
        
-        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
+        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
         getchar();
         daq_->activate();
         daq_->zero_encoders();
-        std::cout << "Press ENTER to enable OpenWrist" << std::endl;
+        std::cout << "Press ENTER to enable OpenWrist.";
         getchar();
         open_wrist_.enable();
-        std::cout << "Press Enter to start the controller" << std::endl;
+        std::cout << "Press ENTER to start the controller.";
         getchar();
         daq_->start_watchdog(0.5);
-        std::cout << "Starting the controller ... " << std::endl;
+        std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
     }
 
     void step() override {
@@ -112,7 +112,7 @@ int main(int argc, char * argv[]) {
     OpenWrist open_wrist(config);
 
     // make a new Clock and Controller
-    mel::Clock clock(1000);
+    mel::Clock clock(1000, true);
     mel::Controller controller(clock);
     
     // queue Tasks for the Controller to execute

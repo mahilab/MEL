@@ -13,7 +13,7 @@ namespace mel {
 
         DataLog(std::string directory, std::string filename, size_t num_rows = 1000000);
 
-        DataLog& add_column(std::string column_name);
+        DataLog& add_col(std::string column_name);
         void add_row(std::vector<double> row_data);
 
         std::vector<std::string> column_names_;

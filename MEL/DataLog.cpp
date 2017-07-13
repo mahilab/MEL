@@ -12,7 +12,7 @@ namespace mel {
         log_started_(false)
     { }
 
-    DataLog& DataLog::add_column(std::string column_name) {
+    DataLog& DataLog::add_col(std::string column_name) {
         if (!log_started_) {
             column_names_.push_back(column_name);
             data_.push_back(std::vector<double>(max_rows_, 0));
@@ -49,7 +49,7 @@ namespace mel {
             }
             data_log_ << std::endl;
         }
-        std::cout << std::endl;
+        std::cout << "Done" << std::endl;
     }
 
 

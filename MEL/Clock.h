@@ -2,6 +2,7 @@
 #include <chrono>
 #include <fstream>
 #include "util.h"
+#include "DataLog.h"
 
 
 namespace mel {
@@ -46,9 +47,7 @@ namespace mel {
         // CLOCK DATA LOGGING
 
         bool enable_logging_;
-        std::string   log_dir_ = "clock_logs";  // folder where data logs will be stored
-        std::string   data_log_filename_;     // filename of the data log
-        std::ofstream data_log_;              // stream for logging to the data log file
+        DataLog log_;
 
     };
 
