@@ -14,10 +14,10 @@ int main(int argc, char * argv[]) {
     mel::share::MelShare map1("map1");
     mel::share::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
 
-    // create new data containers to write to map (vectos and C-style arrays can be used)
-    mel::char_vec  my_chars = { 'a','b','c' };
-    mel::int32_vec my_ints = { 1,1,2,3,5 };
-    double my_doubles[10] = { 0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9 };
+    // create new data containers to write to map (vectors, STL arrays, and C-style arrays can be used)
+    std::vector<char> my_chars = { 'a','b','c' }; // STL vector
+    std::array<int,5> my_ints = { 1,1,2,3,5 };    // STL array
+    double my_doubles[10] = { 0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9 }; // C-style array
 
     std::cout << "Press ENTER to write values.";
     getchar();
@@ -27,10 +27,10 @@ int main(int argc, char * argv[]) {
     mel::share::write_map("map1",my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
     map2.write(my_doubles, 10); // C-style arrays can be used with both non-static and static versions, but you must input size manually
 
-    std::cout << "Wrote: " << std::endl;
-    std::cout << "map0:    ";  mel::print_vector(my_chars);
-    std::cout << "map1:    ";  mel::print_vector(my_ints);
-    std::cout << "map2:    ";  mel::print_array(my_doubles, 10);
+    mel::print("Wrote: ");
+    std::cout << "map0:    ";  mel::print(my_chars);
+    std::cout << "map1:    ";  mel::print(my_ints);
+    std::cout << "map2:    ";  mel::print(my_doubles, 10);
 
     std::cout << "Run Python or C# code, then press ENTER to receive new values.";
     getchar();
@@ -40,20 +40,19 @@ int main(int argc, char * argv[]) {
     // last wrote a double type vector/array to a map, you must read the map back into a double type vector/array
     // for any meaningful interpretation.
 
-    my_ints.resize(7); // here we expect the size of my_ints to increase by two (see Python or C#)
+    // Here we expect the size of my_ints to increase by two (see Python or C#). If you require this sort of behavior, 
+    // consider using a single vector instead of the multiple arrays like this example shows.
+    std::array<int, 7> my_ints_bigger{ 0,1,0,0,0,0,0 };
 
     // read the altered data from the maps
     map0.read(my_chars);
     map1.read(my_doubles, 10); // this demonstrates that we can read doubles from a map that previously wrote ints
-    mel::share::read_map("map2", my_ints); // and vice-versa
+    mel::share::read_map("map2", my_ints_bigger); // and vice-versa
 
-    std::cout << "Read: " << std::endl;
-    std::cout << "map0:    ";  mel::print_vector(my_chars);
-    std::cout << "map1:    ";  mel::print_array(my_doubles, 10);
-    std::cout << "map2:    ";  mel::print_vector(my_ints);
-
-    std::cout << "Press ENTER to exit and free the shared memory.";
-    getchar();
+    mel::print("Read: ");
+    std::cout << "map0:    ";  mel::print(my_chars);
+    std::cout << "map1:    ";  mel::print(my_doubles, 10);
+    std::cout << "map2:    ";  mel::print(my_ints_bigger);
 
     return 0;
 }

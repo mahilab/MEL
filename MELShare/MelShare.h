@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <Windows.h>
+#include <array>
 #include <boost/interprocess/windows_shared_memory.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
@@ -173,18 +174,18 @@ namespace mel {
             return read_map(name, &buffer[0], buffer.size());
         }
 
+        template <typename T, std::size_t N>
+        int read_map(char* name, std::array<T, N>& buffer) {
+            return read_map(name, &buffer[0], buffer.size());
+        }
+
         template <typename T>
         int write_map(char* name, std::vector<T>& buffer) {
             return write_map(name, &buffer[0], buffer.size());
         }
 
         template <typename T, std::size_t N>
-        int read_map(char* name, std::array<T, N> buffer) {
-            return read_map(name, &buffer[0], buffer.size());
-        }
-
-        template <typename T, std::size_t N>
-        int write_map(char* name, std::array<T, N> buffer) {
+        int write_map(char* name, std::array<T, N>& buffer) {
             return write_map(name, &buffer[0], buffer.size());
         }
 
@@ -209,6 +210,11 @@ namespace mel {
                 return read(&buffer[0], buffer.size());
             }
 
+            template <typename T, std::size_t N>
+            int read(std::array<T, N>& buffer) {
+                return read(&buffer[0], buffer.size());
+            }
+
             template<typename T>
             int write(T* buffer, int size) {
                 return write_map(name_, buffer, size, shm_, region_, mutex_name_);
@@ -216,6 +222,11 @@ namespace mel {
 
             template<typename T>
             int write(std::vector<T>& buffer) {
+                return write(&buffer[0], buffer.size());
+            }
+
+            template <typename T, std::size_t N>
+            int write(std::array<T, N>& buffer) {
                 return write(&buffer[0], buffer.size());
             }
 

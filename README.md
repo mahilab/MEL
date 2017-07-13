@@ -10,7 +10,7 @@
 
 ## Table of Contents
 
-1.[Installation (Windows 64-bit)](#installation-windows)
+1.[Installation (Windows 64-bit)](#installation-windows-64-bit)
 
 ## Installation (Windows 64-bit)
 

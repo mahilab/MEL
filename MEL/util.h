@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <array>
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
@@ -58,16 +59,36 @@ namespace mel {
 
     const std::string get_current_date_time();  // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 
+
+    // PRINTING FUNCTIONS
+
+    /// Prints anything that will std::cout
+    template <typename T>
+    void print(T value) {
+        std::cout << value << std::endl;
+    }
+
+    /// Prints STL vector
     template <typename T> 
-    void print_vector(std::vector<T> vector) {
+    void print(std::vector<T> vector) {
         for (auto it = vector.begin(); it != vector.end(); ++it) {
             std::cout << *it << " ";
         }
         std::cout << std::endl;
     }
 
+    /// Prints STL array
+    template <typename T, size_t N>
+    void print(std::array<T, N> array) {
+        for (auto it = array.begin(); it != array.end(); ++it) {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    /// Pritns C-style array
     template <typename T>
-    void print_array(T* array, size_t size) {
+    void print(T* array, size_t size) {
         for (int i = 0; i < size; i++) {
             std::cout << array[i] << " ";
         }
