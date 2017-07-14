@@ -128,7 +128,7 @@ public:
     double pos_ref;
     double pos_act;
     double vel_act;
-    double vel_ref = 30 * mel::DEG2RAD;
+    double vel_ref = 60 * mel::DEG2RAD;
 
     mel::share::MelShare scope = mel::share::MelShare("scope", 16);
 
@@ -157,9 +157,8 @@ public:
         pos_ref += vel_ref * delta_time();
 
         double torque = mel::pd_controller(20, 1, pos_ref, pos_act, 0, vel_act);
-        torque = mel::saturate(torque, 0.25);
+        torque = mel::saturate(torque, 0.5);
         mel::double_vec scope_data = { time(),torque };
-
 
         ow.joints_[0]->set_torque(mel::pd_controller(25, 1.15, 0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
         ow.joints_[1]->set_torque(torque);
