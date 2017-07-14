@@ -14,6 +14,8 @@
 
 ## Installation (Windows 64-bit)
 
+**IMPORTANT:** In order for you experience installing MEL to go as smoothly as possible, it is important that you install all items exactly where specified. If you choose to install items in locations other than **C:\dev**, you will break dependency location references in the MEL Visual Studio Solution and will have to update them yourself.
+
 ###  Visual Studio 2017 - Visual C++
 
 1. Download [Visual Studio 2017 Community](https://www.visualstudio.com/)
