@@ -8,6 +8,7 @@
 #include <functional>
 #include "MelShare.h"
 #include "DataLog.h"
+#include <boost/circular_buffer.hpp>
 
 class PdController : public mel::Task {
 
@@ -125,14 +126,26 @@ public:
     OpenWrist ow;
     mel::Daq* daq;
 
-    double pos_ref;
-    double pos_act;
-    double vel_act;
+    std::array<double, 3> kp_gains = { 25, 20, 20 };
+    std::array<double, 3> kd_gains = { 1.15, 1.0, 0.25 };
+    std::array<double, 3> sat_torques = { 1.0, 0.5, 0.5 };
+    std::array<double, 3> offsets = { 85 * mel::DEG2RAD, 60 * mel::DEG2RAD, 35 * mel::DEG2RAD };
+    std::array<double, 3> zeros = { 0,0,0 };
+
+    double pos_ref = 0;
     double vel_ref = 60 * mel::DEG2RAD;
+
+    bool stopped = false;
+    bool returning = false;
+
+    mel::uint32 calibrating_joint = 0;
+
+    boost::circular_buffer<double> last_500 = boost::circular_buffer<double>(500);
 
     mel::share::MelShare scope = mel::share::MelShare("scope", 16);
 
     void start() override {
+
         std::cout << "Press ENTER to activate Daq <" << daq->name_ << ">.";
         getchar();
         daq->activate();
@@ -142,29 +155,75 @@ public:
         ow.enable();
         std::cout << "Press ENTER to start the controller.";
         getchar();
+
+        for (int i = 0; i < 500; i++)
+            last_500.push_back(mel::PI);
+
         daq->start_watchdog(0.1);
         std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
-        pos_ref = ow.joints_[1]->get_position();
+
     }
 
     void step() override {
         daq->read_all();
         daq->reload_watchdog();
 
-        double pos_act = ow.joints_[1]->get_position();
-        double vel_act = ow.joints_[1]->get_velocity();
+        // iterate over all joints
+        for (int i = 0; i < 3; i++) {
 
-        pos_ref += vel_ref * delta_time();
+            // get positions and velocities
+            double pos_act = ow.joints_[i]->get_position();
+            double vel_act = ow.joints_[i]->get_velocity();
 
-        double torque = mel::pd_controller(20, 1, pos_ref, pos_act, 0, vel_act);
-        torque = mel::saturate(torque, 0.5);
-        mel::double_vec scope_data = { time(),torque };
+            double torque;
+            if (i == calibrating_joint) {
+                
+                if (!returning) {
+                    // check if the calibrating joint has reached the hardstop
+                    last_500.push_back(pos_act);
+                    for (i = 0; i < last_500.size(); i++) {
+                        stopped = pos_act == last_500[i];
+                        if (!stopped)
+                            break;
+                    }
 
-        ow.joints_[0]->set_torque(mel::pd_controller(25, 1.15, 0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
-        ow.joints_[1]->set_torque(torque);
-        ow.joints_[2]->set_torque(mel::pd_controller(20, 0.25, 0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
+                    if (stopped) {
+                        zeros[i] = pos_act - offsets[i];
+                        returning = true;
+                    }
+                    else {
+                        // calculate torque req'd to move the calibrating joint forward at constant speed
+                        pos_ref += vel_ref * delta_time();
+                        torque = mel::pd_controller(kp_gains[i], kd_gains[i], pos_ref, pos_act, 0, vel_act);
+                        torque = mel::saturate(torque, 0.5);
+                    }
+                }
+                else {
+                    // calculate torque req'd to retur the calibrating joint back to zero
+                    pos_ref -= vel_ref * delta_time();
+                    if (pos_ref <= zeros[i]) {
+                        pos_ref = zeros[i];
+                        // reset for the next joint
+                        calibrating_joint += 1;
+                        stopped = false;
+                        returning = false;
+                    }
+                    torque = mel::pd_controller(kp_gains[i], kd_gains[i], pos_ref, pos_act, 0, vel_act);
+                    torque = mel::saturate(torque, sat_torques[i]);
+                }
+            }
+            else {
+                // lock all other joints at their zero positions
+                torque = mel::pd_controller(kp_gains[i], kd_gains[i], zeros[i], pos_act, 0, vel_act);
+            }
 
+            ow.joints_[i]->set_torque(torque);
+
+        }
+
+        mel::double_vec scope_data = { time(), pos_ref };
         scope.write(scope_data);
+
 
         ow.update_state_map();
         daq->write_all();

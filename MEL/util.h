@@ -7,8 +7,10 @@
 #include <iostream>
 
 namespace mel {
-
+    
+    ////////////
     // CONSTANTS
+    ////////////
 
     const double PI         = 3.14159265358979E+00;  // constant pi
     const double DEG2RAD    = 1.74532925199433E-02;  // multiply degrees by this value to convert to radians
@@ -17,7 +19,9 @@ namespace mel {
     const double INCH2METER = 0.0254;                // multiply inches by this value to convert to meters
     const double METER2INCH = 1.0 / 0.0254;          // multiply meters by this value to convert to inches
 
+    //////////////////////
     // TYPEDEF BASIC TYPES
+    //////////////////////
 
     typedef             char  int8;   //           -127 to +127
     typedef unsigned    char uint8;   //              0 to +255
@@ -55,14 +59,17 @@ namespace mel {
 
 #endif
 
+    ////////////////////
     // UTILITY FUNCTIONS
+    ////////////////////
 
     const std::string get_current_date_time();  // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 
-
+    /////////////////////
     // PRINTING FUNCTIONS
+    /////////////////////
 
-    /// Prints anything that will std::cout
+    /// Prints anything that works with std::cout
     template <typename T>
     void print(T value) {
         std::cout << value << std::endl;
@@ -95,10 +102,18 @@ namespace mel {
         std::cout << std::endl;
     }
 
-    // GENERIC FUNCTIONS
+    ////////////////////////////////
+    // GENERIC ENGINEERING FUNCTIONS
+    ////////////////////////////////
+
     double sin_trajectory(double amplitude, double frequency, double time);
     double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
     double saturate(double value, double max, double min);
     double saturate(double value, double abs_max);
+
+    /////////////////////////
+    // USEFUL CLASSES & TYPES
+    /////////////////////////
+
 
 }
