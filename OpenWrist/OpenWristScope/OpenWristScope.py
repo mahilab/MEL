@@ -240,7 +240,7 @@ def updateScope(data,curve,v,value):
 	data[:-1] = data[1:]
 	data[-1] = value
 	curve.setData(data)
-	v.setText('%+0.2f' %value)
+	v.setText('%+0.4f' %value)
 
 # create FPS monitor function
 lastTime = time()
