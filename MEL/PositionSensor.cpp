@@ -3,7 +3,7 @@
 namespace mel {
 
     PositionSensor::PositionSensor() :
-        name_("no name"),
+        name_("no_name"),
         velocity_enabled_(false),
         position_(0.0),
         velocity_(0.0)

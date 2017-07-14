@@ -97,5 +97,8 @@ namespace mel {
 
     // GENERIC FUNCTIONS
     double sin_trajectory(double amplitude, double frequency, double time);
-    double pd_control_effort(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
+    double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
+    double saturate(double value, double max, double min);
+    double saturate(double value, double abs_max);
+
 }

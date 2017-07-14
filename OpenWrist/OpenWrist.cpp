@@ -50,3 +50,38 @@ void OpenWrist::update_state_map(float timestamp) {
     state_[9] = joints_[2]->get_torque();
     state_map_.write(state_);
 }
+
+double OpenWrist::compute_gravity_compensation(mel::uint32 joint) {
+    mel::double_vec q = get_joint_positions();
+    if (joint == 0)
+        return 1.3939*sin(q[0]) - 0.395038*cos(q[0]) + 0.351716*cos(q[0])*cos(q[1]) + 0.0826463*cos(q[0])*sin(q[1]) + 0.0397738*cos(q[2])*sin(q[0]) - 0.0929844*sin(q[0])*sin(q[2]) - 0.0929844*cos(q[0])*cos(q[2])*sin(q[1]) - 0.0397738*cos(q[0])*sin(q[1])*sin(q[2]);
+    else if (joint == 1)
+        return -8.50591e-18*sin(q[0])*(4.13496e16*sin(q[1]) - 9.71634e15*cos(q[1]) + 1.09317e16*cos(q[1])*cos(q[2]) + 4.67601e15*cos(q[1])*sin(q[2]));
+    else if (joint == 2)
+        return 0.0929844*cos(q[0])*cos(q[2]) + 0.0397738*cos(q[0])*sin(q[2]) + 0.0929844*sin(q[0])*sin(q[1])*sin(q[2]) - 0.0397738*cos(q[2])*sin(q[0])*sin(q[1]);
+    else
+        return 0.0;
+}
+
+double OpenWrist::compute_friction_compensation(mel::uint32 joint) {
+    return params_.kin_friction_[joint] * tanh(10.0 * joints_[joint]->get_velocity());
+}
+
+std::array<double, 3> OpenWrist::compute_friction_compensation() {
+    std::array<double, 3> friction_torques = { 0,0,0 };
+    for (int joint = 0; joint < 3; joint++) {
+        friction_torques[joint] = params_.kin_friction_[joint] * tanh(10.0 * joints_[joint]->get_velocity());
+    }
+    return friction_torques;
+}
+
+std::array<double,3> OpenWrist::compute_gravity_compensation() {
+    mel::double_vec q = get_joint_positions();
+    std::array<double, 3> gravity_torques = { 0,0,0 };
+    gravity_torques[0] = 1.3939*sin(q[0]) - 0.395038*cos(q[0]) + 0.351716*cos(q[0])*cos(q[1]) + 0.0826463*cos(q[0])*sin(q[1]) + 0.0397738*cos(q[2])*sin(q[0]) - 0.0929844*sin(q[0])*sin(q[2]) - 0.0929844*cos(q[0])*cos(q[2])*sin(q[1]) - 0.0397738*cos(q[0])*sin(q[1])*sin(q[2]);
+    gravity_torques[1] = -8.50591e-18*sin(q[0])*(4.13496e16*sin(q[1]) - 9.71634e15*cos(q[1]) + 1.09317e16*cos(q[1])*cos(q[2]) + 4.67601e15*cos(q[1])*sin(q[2]));
+    gravity_torques[2] = 0.0929844*cos(q[0])*cos(q[2]) + 0.0397738*cos(q[0])*sin(q[2]) + 0.0929844*sin(q[0])*sin(q[1])*sin(q[2]) - 0.0397738*cos(q[2])*sin(q[0])*sin(q[1]);
+    return gravity_torques;
+}
+
+

@@ -4,7 +4,7 @@
 namespace mel {
 
     Joint::Joint() :
-        name_("no name"),
+        name_("no_name"),
         position_sensor_(nullptr),
         actuator_(nullptr),
         position_sensor_transmission_(0.0),

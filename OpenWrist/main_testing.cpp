@@ -16,7 +16,7 @@ public:
 
     OpenWrist open_wrist_;
     mel::Daq* daq_;
-    mel::DataLog my_log_ = mel::DataLog("testing", "my_log");
+    mel::DataLog my_log_ = mel::DataLog("my_log");
 
     void start() override {
 
@@ -48,9 +48,9 @@ public:
 
         my_log_.add_row(traj012);
 
-        double torque0 = mel::pd_control_effort(25, 1.15, traj0, open_wrist_.joints_[0]->get_position(), 0, open_wrist_.joints_[0]->get_velocity());
-        double torque1 = mel::pd_control_effort(25, 1.15, traj1, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity());
-        double torque2 = mel::pd_control_effort(25, 1.15, traj2, open_wrist_.joints_[2]->get_position(), 0, open_wrist_.joints_[2]->get_velocity());
+        double torque0 = mel::pd_controller(25, 1.15, traj0, open_wrist_.joints_[0]->get_position(), 0, open_wrist_.joints_[0]->get_velocity());
+        double torque1 = mel::pd_controller(25, 1.15, traj1, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity());
+        double torque2 = mel::pd_controller(25, 1.15, traj2, open_wrist_.joints_[2]->get_position(), 0, open_wrist_.joints_[2]->get_velocity());
 
         open_wrist_.joints_[0]->set_torque(torque0);
         open_wrist_.joints_[1]->set_torque(torque1);
@@ -65,10 +65,119 @@ public:
     void stop() override {
         open_wrist_.disable();
         daq_->deactivate();
-        my_log_.save_data();
+        my_log_.save_data("testing");
     }
 
 };
+
+
+class Compensation : public mel::Task {
+
+public:
+
+    Compensation(OpenWrist& open_wrist, mel::Daq* daq) : Task("gravity_compensation"), ow_(open_wrist), daq_(daq) {}
+
+    OpenWrist ow_;
+    mel::Daq* daq_;
+
+    void start() override {
+
+
+        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
+        getchar();
+        daq_->activate();
+        daq_->zero_encoders();
+        std::cout << "Press ENTER to enable OpenWrist.";
+        getchar();
+        ow_.enable();
+        std::cout << "Press ENTER to start the controller.";
+        getchar();
+        daq_->start_watchdog(0.5);
+        std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
+    }
+
+    void step() override {
+
+        daq_->read_all();
+        daq_->reload_watchdog();
+
+        ow_.joints_[0]->set_torque( ow_.compute_gravity_compensation(0) + ow_.compute_friction_compensation(0) );
+        ow_.joints_[1]->set_torque( ow_.compute_gravity_compensation(1) + ow_.compute_friction_compensation(1) );
+        ow_.joints_[2]->set_torque( ow_.compute_friction_compensation(2) * 0.5 );
+
+        ow_.update_state_map();
+        daq_->write_all();
+
+    }
+
+    void stop() override {
+        ow_.disable();
+        daq_->deactivate();
+    }
+
+};
+
+class Calibrate : public mel::Task {
+
+public:
+
+    Calibrate(OpenWrist& open_wrist, mel::Daq* daq) : Task("ow_calibration"), ow(open_wrist), daq(daq) {}
+    OpenWrist ow;
+    mel::Daq* daq;
+
+    double pos_ref;
+    double pos_act;
+    double vel_act;
+    double vel_ref = 30 * mel::DEG2RAD;
+
+    mel::share::MelShare scope = mel::share::MelShare("scope", 16);
+
+    void start() override {
+        std::cout << "Press ENTER to activate Daq <" << daq->name_ << ">.";
+        getchar();
+        daq->activate();
+        daq->zero_encoders();
+        std::cout << "Press ENTER to enable OpenWrist.";
+        getchar();
+        ow.enable();
+        std::cout << "Press ENTER to start the controller.";
+        getchar();
+        daq->start_watchdog(0.1);
+        std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
+        pos_ref = ow.joints_[1]->get_position();
+    }
+
+    void step() override {
+        daq->read_all();
+        daq->reload_watchdog();
+
+        double pos_act = ow.joints_[1]->get_position();
+        double vel_act = ow.joints_[1]->get_velocity();
+
+        pos_ref += vel_ref * delta_time();
+
+        double torque = mel::pd_controller(20, 1, pos_ref, pos_act, 0, vel_act);
+        torque = mel::saturate(torque, 0.25);
+        mel::double_vec scope_data = { time(),torque };
+
+
+        ow.joints_[0]->set_torque(mel::pd_controller(25, 1.15, 0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
+        ow.joints_[1]->set_torque(torque);
+        ow.joints_[2]->set_torque(mel::pd_controller(20, 0.25, 0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
+
+        scope.write(scope_data);
+
+        ow.update_state_map();
+        daq->write_all();
+    }
+
+    void stop() override {
+        ow.disable();
+        daq->deactivate();
+    }
+
+};
+
 
 
 int main(int argc, char * argv[]) {  
@@ -116,11 +225,16 @@ int main(int argc, char * argv[]) {
     mel::Controller controller(clock);
     
     // queue Tasks for the Controller to execute
-    controller.queue_task(new PdController(open_wrist, q8));
+    mel::Task* task = new Calibrate(open_wrist, q8);
+    controller.queue_task(task);
 
     // execute the controller
     controller.execute(); 
-    
+
+    // clean up
+    delete q8;
+    delete task;
+
     return 0;
 }
 

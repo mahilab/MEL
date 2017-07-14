@@ -6,22 +6,14 @@ namespace mel {
 
     Clock::Clock(uint32 frequency, bool enable_logging) :
         frequency_(frequency),
-        tick_time_d_(1.0 / frequency),
+        delta_time_(1.0 / frequency),
         tick_time_(std::chrono::nanoseconds(1000000000 / frequency)),
         enable_logging_(enable_logging),
-        log_(DataLog("clock_logs", "clock"))
+        log_(DataLog("clock"))
     {
         if (enable_logging) {
             log_.add_col("Tick #").add_col("Elapsed (Ideal) [s]").add_col("Elapsed (Actual) [s]").add_col("Execution [s]").add_col("Wait [s]").add_col("Tick [s]");
         }
-    }
-
-    uint32 Clock::tick() {
-        return tick_count_;
-    }
-
-    double Clock::time() {
-        return elapsed_ideal_;
     }
 
     void Clock::start() {
@@ -51,7 +43,7 @@ namespace mel {
             elapsed_tick_ = now_ - start_tick_;
             elapsed_actual_ = now_ - start_;
             elapsed_exe_ = elapsed_tick_;
-            elapsed_ideal_ = tick_count_ * tick_time_d_;
+            elapsed_ideal_ = tick_count_ * delta_time_;
             elapsed_wait_ = std::chrono::nanoseconds(0);
 
             // spinlock / busy wait until the next tick has been reached        
@@ -76,7 +68,7 @@ namespace mel {
     void Clock::stop() {
         stop_ = true;
         if (enable_logging_)
-            log_.save_data();
+            log_.save_data("clock_logs");
     }
 
 }

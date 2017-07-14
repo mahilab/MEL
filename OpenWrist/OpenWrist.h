@@ -26,6 +26,13 @@ public:
 
     OpenWrist(Config configuration, Params parameters = Params());
 
+    // PUBLIC FUNCTIONS
+
+    double compute_gravity_compensation(mel::uint32 joint);
+    double compute_friction_compensation(mel::uint32 joint);
+    std::array<double, 3> compute_gravity_compensation();
+    std::array<double, 3> compute_friction_compensation();
+
     // OPENWRIST MELSHARE STATE MAP
 
     mel::share::MelShare state_map_ = mel::share::MelShare("ow_state"); // 10 doubles * 8 bytes/double

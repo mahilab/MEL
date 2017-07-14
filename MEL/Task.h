@@ -9,6 +9,7 @@ namespace mel {
     public:
 
         Task(std::string name) : name_(name) {}
+        virtual ~Task() {};
 
         std::string name_; // the task name
 
@@ -29,6 +30,10 @@ namespace mel {
 
         double time() {        // returns the ideal fixed rate time from the task clock
             return clock_->time();
+        }
+
+        double delta_time() {
+            return clock_->delta_time();
         }
 
     private:

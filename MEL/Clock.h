@@ -13,8 +13,18 @@ namespace mel {
 
         Clock(uint32 frequency, bool enabled_logging = false);
 
-        uint32 tick();
-        double time();        
+
+        uint32 tick() {
+            return tick_count_;
+        }
+
+        double time() {
+            return elapsed_ideal_;
+        }
+
+        double delta_time() {
+            return delta_time_;
+        }
 
         void start();
         void wait();
@@ -31,7 +41,7 @@ namespace mel {
         std::chrono::high_resolution_clock::time_point start_tick_; // time taken at the top of each new loop iteration
         std::chrono::high_resolution_clock::time_point now_;        // time taken a specific points
 
-        double                   tick_time_d_;     // the control loop fixed step time or fundamental sample time in seconds (e.g. 0.001 seconds)
+        double                   delta_time_;     // the control loop fixed step time or fundamental sample time in seconds (e.g. 0.001 seconds)
         std::chrono::nanoseconds tick_time_;       // the control loop fixed step time or fundamental sample time in nanoseconds (e.g. 0.001 seconds)
         std::chrono::nanoseconds elapsed_tick_;    // the amout of time that has elapsed during a single loop iteration                  
         std::chrono::nanoseconds elapsed_actual_;  // the actual amount of time that has elapsed since the control loop started

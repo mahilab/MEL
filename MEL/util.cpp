@@ -15,8 +15,21 @@ namespace mel {
         return amplitude * sin(2 * mel::PI * frequency * time);
     }
 
-    double pd_control_effort(double kp, double kd, double x_ref, double x, double xd_ref, double xd) {
+    double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd) {
         return kp * (x_ref - x) + kd * (xd_ref - xd);
+    }
+
+    double saturate(double value, double max, double min) {
+        if (value > max)
+            return max;
+        else if (value < min)
+            return min;
+        else
+            return value;
+    }
+
+    double saturate(double value, double abs_max) {
+        return saturate(value, abs_max, -abs_max);
     }
 
 }
