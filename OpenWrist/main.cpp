@@ -10,12 +10,7 @@
 #include "DataLog.h"
 #include <boost/program_options.hpp>
 
-
-
-
-
 namespace po = boost::program_options;
-
 
 int main(int argc, char * argv[]) {  
     
@@ -28,15 +23,15 @@ int main(int argc, char * argv[]) {
     */
 
     // set up program options 
-    po::options_description desc("Available Options");
+    boost::program_options::options_description desc("Available Options");
     desc.add_options()
         ("help", "produces help message")
         ("calibrate", "calibrate OpenWrist zero position")
         ("transparency_mode", "puts OpenWrist in gravity and friction compensated state");
 
-    po::variables_map var_map;
-    po::store(po::parse_command_line(argc, argv, desc), var_map);
-    po::notify(var_map);
+    boost::program_options::variables_map var_map;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
+    boost::program_options::notify(var_map);
 
     if (var_map.count("help")) {
         std::cout << desc << "\n";
@@ -68,8 +63,7 @@ int main(int argc, char * argv[]) {
         config.encoder_[i] = q8->encoder_(i);
         config.encrate_[i] = q8->encrate_(i);
         config.amp_gains_[i] = 1;
-    }    
-      
+    }          
 
     OpenWrist open_wrist(config);
     
