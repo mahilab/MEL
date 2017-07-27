@@ -39,7 +39,6 @@ namespace mel {
     typedef std::vector<uint32> uint32_vec;
     typedef std::vector<double> double_vec;
 
-
     // TYPDEF MEL TYPES BASED ON DAQ MANUFACTUERER
 
 #define QUANSER
@@ -93,7 +92,7 @@ namespace mel {
         std::cout << std::endl;
     }
 
-    /// Pritns C-style array
+    /// Prints C-style array
     template <typename T>
     void print(T* array, size_t size) {
         for (int i = 0; i < size; i++) {

@@ -92,6 +92,7 @@
    pip install matplotlib-2.0.2-cp27-cp27m-win_amd64.whl
    pip install PyOpenGL
    pip install PyOpenGL_accelerate
+   pip install PyYAML
    pip install iPython
    ```
 

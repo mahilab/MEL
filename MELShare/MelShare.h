@@ -1,9 +1,8 @@
 #pragma once
-
 #include <iostream>
 #include <vector>
-#include <Windows.h>
 #include <array>
+#include <Windows.h>
 #include <boost/interprocess/windows_shared_memory.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
@@ -14,7 +13,8 @@
 #endif
 
 // error codes
-//  1 = successful read/write
+// >0 = successful read/write, return value is current map size
+//  0   map size is zero
 // -1 = failed to open shared memory map
 // -2 = failed to open mutex
 // -3 = wait on mutex abandoned
@@ -33,13 +33,16 @@ namespace mel {
 
         // base read/write template functions from which all others are derived
 
+        /// Reads the first n = #buffer_size values from mapped region #region into C-style array #buffer. 
+        /// If the size of the buffer is greater than the size of the data in the map, extra buffer indices will be ignored.
         template <typename T>
-        int read_map(char* name, T* buffer, int size,
-            boost::interprocess::windows_shared_memory& shm,
-            boost::interprocess::mapped_region& region,
-            std::string mutex_name)
+        int read_map(T* buffer, const int buffer_size,
+            const boost::interprocess::mapped_region& region_data,
+            const boost::interprocess::mapped_region& region_size,
+            const std::string& mutex_name)
         {
-            volatile T* temp;
+            volatile int* size;
+            volatile T* data;
             std::wstring w_mutex_name = std::wstring(mutex_name.begin(), mutex_name.end());
             HANDLE mutex;
             mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, w_mutex_name.c_str());
@@ -48,9 +51,12 @@ namespace mel {
                 dwWaitResult = WaitForSingleObject(mutex, INFINITE);
                 switch (dwWaitResult) {
                 case WAIT_OBJECT_0:
-                    temp = static_cast<T*>(region.get_address());
-                    for (int i = 0; i < size; i++) {
-                        buffer[i] = temp[i];
+                    size = static_cast<int*>(region_size.get_address());  
+                    if (buffer_size > 0) {
+                        data = static_cast<T*>(region_data.get_address());
+                        for (int i = 0; i < min(buffer_size, *size); i++) {
+                            buffer[i] = data[i];
+                        }
                     }
                     if (!ReleaseMutex(mutex)) {
                         std::cout << "ERROR: Failed to release mutex <" << mutex_name << ">." << std::endl;
@@ -62,7 +68,7 @@ namespace mel {
                         printf("WINDOWS ERROR: %d\n", GetLastError());
                         return -7;
                     }
-                    return 1;
+                    return *size;
                 case WAIT_ABANDONED:
                     std::cout << "ERROR: Wait on mutex <" << mutex_name << "> abandoned." << std::endl;
                     printf("WINDOWS ERROR: %d\n", GetLastError());
@@ -84,13 +90,15 @@ namespace mel {
             }
         }
 
+        /// Writes n = #buffer_size values into mapped region #region from #buffer.
         template <typename T>
-        int write_map(char* name, T* buffer, int size,
-            boost::interprocess::windows_shared_memory& shm,
-            boost::interprocess::mapped_region& region,
-            std::string mutex_name)
+        int write_map(T* buffer, const int buffer_size,
+            const boost::interprocess::mapped_region& region_data,
+            const boost::interprocess::mapped_region& region_size,
+            const std::string& mutex_name)
         {
-            volatile T* temp;
+            volatile int* size;
+            volatile T* data;
             std::wstring w_mutex_name = std::wstring(mutex_name.begin(), mutex_name.end());
             HANDLE mutex;
             mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, w_mutex_name.c_str());
@@ -99,9 +107,13 @@ namespace mel {
                 dwWaitResult = WaitForSingleObject(mutex, INFINITE);
                 switch (dwWaitResult) {
                 case WAIT_OBJECT_0:
-                    temp = static_cast<T*>(region.get_address());
-                    for (int i = 0; i < size; i++) {
-                        temp[i] = buffer[i];
+                    size = static_cast<int*>(region_size.get_address());
+                    if (buffer_size > 0) {
+                        data = static_cast<T*>(region_data.get_address());
+                        *size = buffer_size;
+                        for (int i = 0; i < buffer_size; i++) {
+                            data[i] = buffer[i];
+                        }
                     }
                     if (!ReleaseMutex(mutex)) {
                         std::cout << "ERROR: Failed to release mutex <" << mutex_name << ">." << std::endl;
@@ -113,7 +125,7 @@ namespace mel {
                         printf("WINDOWS ERROR: %d\n", GetLastError());
                         return -7;
                     }
-                    return 1;
+                    return *size;
                 case WAIT_ABANDONED:
                     std::cout << "ERROR: Wait on mutex <" << mutex_name << "> abandoned." << std::endl;
                     printf("WINDOWS ERROR: %d\n", GetLastError());
@@ -135,15 +147,22 @@ namespace mel {
             }
         }
 
-        // base read/write template functions that open a new instance of the shared memory map
 
+
+        // base read/write template functions that open a new instance of the shared memory map and read/write from C-style array
+
+        /// Opens shared memory map #name and reads n = #buffer_size values into C-style array #buffer
         template <typename T>
-        int read_map(char* name, T* buffer, int size) {
+        int read_map(const std::string& name, T* buffer, const int buffer_size) {
             try {
-                boost::interprocess::windows_shared_memory shm(boost::interprocess::open_only, name, boost::interprocess::read_only);
-                boost::interprocess::mapped_region region(shm, boost::interprocess::read_only);
-                std::string mutex_name = std::string(name) + "_mutex";
-                return read_map(name, buffer, size, shm, region, mutex_name);
+                std::string name_size = name + "_size";
+                std::string mutex_name = name + "_mutex";
+                boost::interprocess::windows_shared_memory shm_data(boost::interprocess::open_only, name.c_str(), boost::interprocess::read_only);
+                boost::interprocess::windows_shared_memory shm_size(boost::interprocess::open_only, name_size.c_str(), boost::interprocess::read_only);
+                boost::interprocess::mapped_region region_data(shm_data, boost::interprocess::read_only);
+                boost::interprocess::mapped_region region_size(shm_size, boost::interprocess::read_only);
+
+                return read_map(buffer, buffer_size, region_data, region_size, mutex_name);
             }
             catch (boost::interprocess::interprocess_exception &ex) {
                 std::cout << "ERROR: Failed to open shared memory map <" << name << ">." << std::endl;
@@ -152,13 +171,17 @@ namespace mel {
             }
         }
 
+        /// Opens shared memory map #name and writes n = #buffer_size values from C-style array #buffer
         template <typename T>
-        int write_map(char* name, T* buffer, int size) {
+        int write_map(const std::string& name, T* buffer, const int buffer_size) {
             try {
-                boost::interprocess::windows_shared_memory shm(boost::interprocess::open_only, name, boost::interprocess::read_write);
-                boost::interprocess::mapped_region region(shm, boost::interprocess::read_write);
-                std::string mutex_name = std::string(name) + "_mutex";
-                return write_map(name, buffer, size, shm, region, mutex_name);
+                std::string name_size = name + "_size";
+                std::string mutex_name = name + "_mutex";
+                boost::interprocess::windows_shared_memory shm_data(boost::interprocess::open_only, name.c_str(), boost::interprocess::read_write);
+                boost::interprocess::windows_shared_memory shm_size(boost::interprocess::open_only, name_size.c_str(), boost::interprocess::read_write);
+                boost::interprocess::mapped_region region_data(shm_data, boost::interprocess::read_write);
+                boost::interprocess::mapped_region region_size(shm_size, boost::interprocess::read_write);
+                return write_map(buffer, buffer_size, region_data, region_data, mutex_name);
             }
             catch (boost::interprocess::interprocess_exception &ex) {
                 std::cout << "ERROR: Failed to open shared memory map <" << name << ">." << std::endl;
@@ -167,25 +190,29 @@ namespace mel {
             }
         }
 
-        // base read/write template functions that open a new instance of the shared memory map and accept a stl vector or array
+        // base read/write template functions that open a new instance of the shared memory map and accept a STL vector or array
 
+        /// Opens shared memory map #name and reads n = buffer.size() values into STL vector #buffer
         template <typename T>
-        int read_map(char* name, std::vector<T>& buffer) {
+        int read_map(const std::string& name, std::vector<T>& buffer) {
             return read_map(name, &buffer[0], buffer.size());
         }
 
+        /// Opens shared memory map #name and reads n = buffer.size() values into STL array #buffer
         template <typename T, std::size_t N>
-        int read_map(char* name, std::array<T, N>& buffer) {
+        int read_map(const std::string& name, std::array<T, N>& buffer) {
             return read_map(name, &buffer[0], buffer.size());
         }
 
+        /// Opens shared memory map #name and writes n = buffer.size() values from STL vector #buffer
         template <typename T>
-        int write_map(char* name, std::vector<T>& buffer) {
+        int write_map(const std::string& name, std::vector<T>& buffer) {
             return write_map(name, &buffer[0], buffer.size());
         }
 
+        /// Opens shared memory map #name and writes n = buffer.size() values from STL array #buffer
         template <typename T, std::size_t N>
-        int write_map(char* name, std::array<T, N>& buffer) {
+        int write_map(const std::string& name, std::array<T, N>& buffer) {
             return write_map(name, &buffer[0], buffer.size());
         }
 
@@ -195,14 +222,14 @@ namespace mel {
 
         public:
 
-            MelShare(char* name, unsigned int bytes = 256);
+            MelShare(std::string name, unsigned int bytes = 256);
             MelShare(const MelShare& other);
             MelShare& operator=(const MelShare& other);
             ~MelShare();
 
             template<typename T>
-            int read(T* buffer, int size) {
-                return read_map(name_, buffer, size, shm_, region_, mutex_name_);
+            int read(T* buffer, int buffer_size) {
+                return read_map(buffer, buffer_size, region_data_, region_size_, mutex_name_);
             }
 
             template<typename T>
@@ -216,8 +243,8 @@ namespace mel {
             }
 
             template<typename T>
-            int write(T* buffer, int size) {
-                return write_map(name_, buffer, size, shm_, region_, mutex_name_);
+            int write(T* buffer, int buffer_size) {
+                return write_map(buffer, buffer_size, region_data_, region_size_, mutex_name_);
             }
 
             template<typename T>
@@ -230,18 +257,33 @@ namespace mel {
                 return write(&buffer[0], buffer.size());
             }
 
+            int get_size() {
+                int* empty = nullptr;
+                return read_map(empty, 0, region_data_, region_size_, mutex_name_);
+            }
+
+            std::string name_;
+
         private:
 
-            char* name_;
-            unsigned int bytes_;
-            boost::interprocess::windows_shared_memory shm_;
-            boost::interprocess::mapped_region region_;
+            const char* name_data_;
+            const char* name_size_;
+            unsigned int bytes_data_;
+            unsigned int bytes_size_;
+            boost::interprocess::windows_shared_memory shm_data_;
+            boost::interprocess::windows_shared_memory shm_size_;
+            boost::interprocess::mapped_region region_data_;
+            boost::interprocess::mapped_region region_size_;
             std::string mutex_name_;
             HANDLE mutex_ = NULL;
 
         };
 
         // C Linkages for Python and C#
+
+        extern "C" {
+            MELSHARE_API int get_map_size(char* name);
+        }
 
         extern "C" {
             MELSHARE_API int read_char_map(char* name, char* buffer, int size);
