@@ -18,18 +18,23 @@ public:
 
     MelScopeTest() : Task("scope_test") {};
 
-    mel::share::MelShare map0 = mel::share::MelShare("map0");
+    mel::share::MelShare map0 = mel::share::MelShare("ow_state");
     mel::share::MelShare map1 = mel::share::MelShare("map1");
 
-    std::array<double, 5> data0 = { 0, 0,0,0,0 };
+    std::array<double, 6> data0 = { 0, 0, 0, 0, 0, 0 };
     std::array<double, 1> data1 = { 0 };
 
     void start() override {}
     void step() override {
 
-        for (int i = 0; i < 5; i++) {
-            data0[i] = mel::sin_trajectory(1, 1.0/pow(10,i), time());
-        }
+        data0[0] = mel::sin_trajectory(80, 0.25, time());
+        data0[1] = mel::sin_trajectory(60, 0.25, time());
+        data0[2] = mel::sin_trajectory(35, 0.25, time());
+
+        data0[3] = mel::sin_trajectory(400, 1, time());
+        data0[4] = data0[3];
+        data0[5] = data0[3];
+
         map0.write(data0);
 
         data1[0] = data0[1];

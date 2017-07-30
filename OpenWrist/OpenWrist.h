@@ -47,7 +47,7 @@ public:
 
     // OPENWRIST MELSHARE STATE MAP
 
-    mel::share::MelShare state_map_ = mel::share::MelShare("ow_state"); // 10 doubles * 8 bytes/double
+    mel::share::MelShare state_map_ = mel::share::MelShare("ow_state"); 
     void update_state_map(float timestamp = 0.0);
     mel::double_vec state_ = mel::double_vec(10, 0);
 

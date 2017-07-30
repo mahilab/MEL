@@ -93,6 +93,7 @@
    pip install PyOpenGL
    pip install PyOpenGL_accelerate
    pip install PyYAML
+   pip install qdarkstyle
    pip install iPython
    ```
 
