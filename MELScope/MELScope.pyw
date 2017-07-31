@@ -62,6 +62,7 @@ widg.setLayout(grid)
 bold_font = QtGui.QFont()
 bold_font.setBold(True)
 
+
 ##############
 # THEME SETUP
 ##############
@@ -71,6 +72,7 @@ theme_stylesheets = {'Classic': '', 'Dark': qdarkstyle.load_stylesheet(pyside=Fa
 theme_scope_bg_colors = {"Classic": [240, 240, 240], "Dark": [49,  54,  59 ]}
 theme_scope_fg_colors = {"Classic": [0,   0,   0  ], "Dark": [240, 240, 240]}
 theme_scope_vb_colors = {"Classic": [240, 240, 240], "Dark": [35,  38,  41 ]}
+theme_io_rw_colors = {"Classic": [204, 232, 255], "Dark": [24, 70, 93]}
 
 theme = 'Dark'
 
@@ -159,10 +161,12 @@ def connect_melshare():
 sample_duration = 10
 sampled_times = None
 sampled_data = []
+sampled_values_text = []
 
 def sample_data():
-    global sampled_times, sampled_data, delta_time
+    global sampled_times, sampled_data, sampled_values_text, delta_time
     result = melshare.read_double_map(melshare_name, ctypes.byref(melshare_buffer), melshare_size)
+    sampled_values_text = ['%0.2f' % value for value in melshare_buffer]
     if result >= 0:
         sampled_times[:-1] = sampled_times[1:] - delta_time
         sampled_times[-1] = 0
@@ -334,7 +338,7 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         self.curves = []
         # scope title label
         self.label = QtGui.QLabel()
-        self.label.mouseDoubleClickEvent = self.initiate_rename
+        self.label.mouseDoubleClickEvent = self.rename_scope
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setFont(bold_font)
         # scope module layout
@@ -348,44 +352,25 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         # IO Tab Setup
         self.io_tab = QtGui.QWidget()
         self.io_layout = QtGui.QGridLayout()
+        self.io_layout.setAlignment(QtCore.Qt.AlignTop)
         self.io_label = QtGui.QLabel()
-        self.io_label.mouseDoubleClickEvent = self.initiate_rename
+        self.io_label.mouseDoubleClickEvent = self.rename_io
         self.io_label.setAlignment(QtCore.Qt.AlignCenter)
         self.io_label.setFont(bold_font)
         self.io_layout.addWidget(self.io_label,0,0,1,3)
-        self.io_layout.setRowStretch(0,1)
         self.io_tab.setLayout(self.io_layout)
+        self.addTab(self.io_tab,' I/O ')
         self.io_names = []
         self.io_values = []
         self.io_sliders = []
-        self.addTab(self.io_tab,' I/O ')
         # filter
         self.filter = []
         # on tab changed
         self.currentChanged.connect(self.on_tab_changed)
 
-    def initiate_rename(self, event=None):
-        self.line_edit = QtGui.QLineEdit()
-        self.line_edit.setText(self.title)
-        self.line_edit.setAlignment(QtCore.Qt.AlignCenter)
-        self.line_edit.setFont(bold_font)
-        self.line_edit.editingFinished.connect(self.confirm_rename)
-        self.line_edit.focusOutEvent = self.confirm_rename
-        self.layout.addWidget(self.line_edit, 0, 0, 1, 1)
-        self.line_edit.selectAll()
-        self.line_edit.setFocus()
-
     def on_tab_changed(self):
         global scope_modes
         scope_modes[self.index] = scope_mode_options[self.currentIndex()]
-
-    def confirm_rename(self, event=None):
-        self.title = str(self.line_edit.text())
-        scope_titles[self.index] = self.title
-        self.label.setText(self.title)
-        self.layout.removeWidget(self.line_edit)
-        self.line_edit.deleteLater()
-        self.line_edit = None
 
     def refresh(self):
         # set current tab
@@ -411,17 +396,21 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
             self.setStyleSheet(' background-color: %s' % color.name() )
         else:
             self.setStyleSheet('')
-         # update curves and IO rows
-        self.curves = []
+         # remove IO items
         for name in self.io_names:
-            self.io_layout.removeWidget(name)
-            name.deleteLater()
+            if name is not None:
+                self.io_layout.removeWidget(name)
+                name.deleteLater()
         for spinbox in self.io_values:
-            self.io_layout.removeWidget(spinbox)
-            spinbox.deleteLater()
+            if spinbox is not None:
+                self.io_layout.removeWidget(spinbox)
+                spinbox.deleteLater()
         for slider in self.io_sliders:
-            self.io_layout.removeWidget(slider)
-            slider.deleteLater()
+            if slider is not None:
+                self.io_layout.removeWidget(slider)
+                slider.deleteLater()
+        # rebuild
+        self.curves = []
         self.io_names, self.io_values, self.io_sliders = [], [], []
         row = 1
         for i in range(melshare_size):
@@ -434,18 +423,21 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
                 # update IO
                 new_name = QtGui.QLabel(self)
                 new_name.setText(curve_names[i])
-                if curve_modes[i] == 'Read Write':
-                    new_value = QtGui.QDoubleSpinBox(self)
-                else:
-                    new_value = QtGui.QLabel(self)
-                    new_value.setText('0.00')
+                new_name.mouseDoubleClickEvent = self.rename_data_factory(i)
+                new_value = QtGui.QLineEdit(self)
+                new_value.setText('0.00')
+                new_value.setValidator(QtGui.QDoubleValidator())
+                if curve_modes[i] == 'Read Only':
+                    new_value.setReadOnly(True)
+                elif curve_modes[i] == 'Read Write':
+                    rw_color = QtGui.QColor(theme_io_rw_colors[theme][0], theme_io_rw_colors[theme][1], theme_io_rw_colors[theme][2] )
+                    new_value.setStyleSheet(' background-color: %s' % rw_color.name() )
                 new_value.setAlignment(QtCore.Qt.AlignCenter)
                 new_slider = QtGui.QSlider(self)
                 new_slider.setOrientation(QtCore.Qt.Horizontal)
                 self.io_layout.addWidget(new_name,row,0)
                 self.io_layout.addWidget(new_value,row,1)
                 self.io_layout.addWidget(new_slider,row,2)
-                self.io_layout.setRowStretch(i,1)
                 for i in range(3):
                     self.io_layout.setColumnStretch(i,1)
                 self.io_names.append(new_name)
@@ -454,12 +446,90 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
                 row += 1
             else:
                 self.curves.append(None)
+                self.io_names.append(None)
+                self.io_values.append(None)
+                self.io_sliders.append(None)
 
 
     def update(self):
-        for curve, draw, data in zip(self.curves, self.filter, sampled_data):
-            if draw:
-                curve.setData(sampled_times, data)
+        global curve_modes
+        for curve, curve_mode, io_value, filter, data, value_text in zip(self.curves, curve_modes, self.io_values, self.filter, sampled_data, sampled_values_text):
+            if filter:
+                if scope_modes[self.index] == 'Scope':
+                    curve.setData(sampled_times, data)
+                elif scope_modes[self.index] == 'I/O':
+                    if curve_mode == 'Read Only':
+                        pass
+                        io_value.setText(value_text)
+                    elif curve_mode == 'Read Write':
+                        pass
+
+    def rename_scope(self, event=None):
+        self.temp_line_edit = QtGui.QLineEdit()
+        self.temp_line_edit.setText(self.title)
+        self.temp_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.temp_line_edit.setFont(bold_font)
+        self.temp_line_edit.editingFinished.connect(self.confirm_scope_rename)
+        self.temp_line_edit.focusOutEvent = self.confirm_scope_rename
+        self.layout.addWidget(self.temp_line_edit, 0, 0, 1, 1)
+        self.temp_line_edit.selectAll()
+        self.temp_line_edit.setFocus()
+
+    def confirm_scope_rename(self, event=None):
+        self.title = str(self.temp_line_edit.text())
+        scope_titles[self.index] = self.title
+        self.label.setText(self.title)
+        self.io_label.setText(self.title)
+        self.layout.removeWidget(self.temp_line_edit)
+        self.temp_line_edit.deleteLater()
+        self.temp_line_edit = None
+
+    def rename_io(self, event=None):
+        self.temp_line_edit = QtGui.QLineEdit()
+        self.temp_line_edit.setText(self.title)
+        self.temp_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.temp_line_edit.setFont(bold_font)
+        self.temp_line_edit.editingFinished.connect(self.confirm_io_rename)
+        self.temp_line_edit.focusOutEvent = self.confirm_io_rename
+        self.io_layout.addWidget(self.temp_line_edit, 0, 0, 1, 3)
+        self.temp_line_edit.selectAll()
+        self.temp_line_edit.setFocus()
+
+    def confirm_io_rename(self, event=None):
+        self.title = str(self.temp_line_edit.text())
+        scope_titles[self.index] = self.title
+        self.io_label.setText(self.title)
+        self.label.setText(self.title)
+        self.layout.removeWidget(self.temp_line_edit)
+        self.temp_line_edit.deleteLater()
+        self.temp_line_edit = None
+
+    def rename_data_factory(self, index):
+        return lambda event: self.rename_data(index, event)
+
+    def rename_data(self, index, event=None):
+        print 'start', index
+        self.temp_line_edit1 = QtGui.QLineEdit()
+        self.temp_line_edit1.setText(curve_names[index])
+        self.temp_line_edit1.editingFinished.connect(lambda : self.confirm_data_rename(index))
+        self.temp_line_edit1.focusOutEvent = lambda event: self.confirm_data_rename(index, event)
+        self.io_layout.addWidget(self.temp_line_edit1, index + 1, 0)
+        self.temp_line_edit1.selectAll()
+        self.temp_line_edit1.setFocus()
+
+    def confirm_data_rename(self, index, event=None):
+        print 'confirm', index
+        curve_names[index] = str(self.temp_line_edit1.text())
+        self.io_names[index].setText(curve_names[index])
+        self.io_layout.removeWidget(self.temp_line_edit1)
+        self.temp_line_edit1.deleteLater()
+        self.temp_line_edit1 = None
+        refresh_scopes()
+
+
+
+
+
 
 ###############################
 # GRID VARIABLES / FUNCTIONS
@@ -477,7 +547,6 @@ grid_cols = 1
 
 def resize_grid():
     global main_window, widg, grid, grid_rows, grid_cols, scope_count, splitter_widgets
-    #print 'CALL: resize_grid()'
     new_count = grid_rows * grid_cols
     # remove scopes from grid
     for i in range(scope_count):
@@ -519,8 +588,7 @@ def resize_grid():
     scope_count = new_count
     status_bar.showMessage('Scope grid resized to ' +
                            str(grid_rows) + ' x ' + str(grid_cols))
-    #print '    scope_count:', scope_count
-    #print '    size of scope_modules:', len(scope_modules)
+
 
 ##################################
 # OPEN/SAVE VARIABLES / FUNCTIONS
@@ -927,6 +995,15 @@ def prompt_resize_grid():
         grid_rows, grid_cols = grid_options_dict[str(selection)]
         reload_grid()
 
+def about():
+    msg = QtGui.QMessageBox()
+    msg.setWindowTitle('About')
+    msg.setText('MAHI Lab - Rice University\n'+
+        'Author: Evan Pezent\n'
+        'Email: epezent@rice.edu\n'+
+        'Website: evanpezent.com')
+    msg.exec_()
+
 def open_github():
     webbrowser.open('https://github.com/epezent/MEL')
 
@@ -957,70 +1034,57 @@ def reload_grid():
 
 menu_bar = main_window.menuBar()
 
-file_menu = menu_bar.addMenu('File')
-edit_menu = menu_bar.addMenu('Edit')
-pref_menu = menu_bar.addMenu('Preferences')
-help_menu = menu_bar.addMenu('Help')
+file_menu = menu_bar.addMenu('&File')
+edit_menu = menu_bar.addMenu('&Edit')
+pref_menu = menu_bar.addMenu('&Preferences')
+help_menu = menu_bar.addMenu('&Help')
 
-new_action = QtGui.QAction('New', main_window)
-new_action.setShortcut('Ctrl+N')
-new_action.triggered.connect(open_new_instance)
+new_action = QtGui.QAction('&New', main_window,
+    shortcut='Ctrl+N', statusTip='Create a new scope', triggered=open_new_instance)
 file_menu.addAction(new_action)
 
-open_action = QtGui.QAction('Open...', main_window)
-open_action.setShortcut('Ctrl+O')
-open_action.triggered.connect(open)
+open_action = QtGui.QAction('&Open...', main_window,
+    shortcut='Ctrl+O', statusTip='Open an existing scope', triggered=open)
 file_menu.addAction(open_action)
 
-save_action = QtGui.QAction('Save', main_window)
-save_action.setShortcut('Ctrl+S')
-save_action.triggered.connect(save)
+save_action = QtGui.QAction('&Save', main_window,
+    shortcut='Ctrl+S', statusTip='Save the current scope', triggered=save)
 file_menu.addAction(save_action)
 
-save_as_action = QtGui.QAction('Save As...', main_window)
-save_as_action.setShortcut('Ctrl+Shift+S')
-save_as_action.triggered.connect(save_as)
+save_as_action = QtGui.QAction('Save &As...', main_window,
+    shortcut='Ctrl+Shift+S', statusTip='Save the current scope under a new name', triggered=save_as)
 file_menu.addAction(save_as_action)
 
-reload_action = QtGui.QAction('Reload', main_window)
-reload_action.setShortcut('Ctrl+R')
-reload_action.triggered.connect(reload_all)
+reload_action = QtGui.QAction('&Reload', main_window,
+    shortcut='Ctrl+R', statusTip='Reload the current scope', triggered=reload_all)
 file_menu.addAction(reload_action)
 
-connect_action = QtGui.QAction('Connect MELShare...', main_window)
-connect_action.setShortcut('Ctrl+M')
-connect_action.triggered.connect(prompt_connect_melshare)
+connect_action = QtGui.QAction('Connect &MELShare...', main_window,
+    shortcut='Ctrl+M', statusTip='Connect to a MELShare map', triggered=prompt_connect_melshare)
 edit_menu.addAction(connect_action)
 
-grid_action = QtGui.QAction('Resize Grid...', main_window)
-grid_action.setShortcut('Ctrl+G')
-grid_action.triggered.connect(prompt_resize_grid)
+grid_action = QtGui.QAction('Resize &Grid...', main_window,
+    shortcut='Ctrl+G', statusTip='Resize the scope grid', triggered=prompt_resize_grid)
 edit_menu.addAction(grid_action)
 
-config_curves_action = QtGui.QAction('Configure Data...', main_window)
-config_curves_action.setShortcut('Ctrl+D')
-config_curves_action.triggered.connect(prompt_configure_data)
-config_curves_action.setDisabled(True)
+config_curves_action = QtGui.QAction('Configure &Data...', main_window,
+    shortcut='Ctrl+D', statusTip='Configure data and curve properties', triggered=prompt_configure_data)
 edit_menu.addAction(config_curves_action)
 
-configure_modules_action = QtGui.QAction('Configure Modules(s)...', main_window)
-configure_modules_action.setShortcut('Ctrl+C')
-configure_modules_action.triggered.connect(prompt_configure_modules)
-configure_modules_action.setDisabled(True)
+configure_modules_action = QtGui.QAction('&Configure Modules(s)...', main_window,
+    shortcut='Ctrl+C', statusTip='Configure scope module(s) properties', triggered=prompt_configure_modules)
 edit_menu.addAction(configure_modules_action)
 
-theme_action = QtGui.QAction('Theme...', main_window)
-theme_action.setShortcut('F10')
-theme_action.triggered.connect(prompt_change_theme)
+theme_action = QtGui.QAction('&Theme...', main_window,
+    shortcut='F10', statusTip='Change the current theme', triggered=prompt_change_theme)
 pref_menu.addAction(theme_action)
 
-about_action = QtGui.QAction('About...', main_window)
-about_action.setShortcut('F11')
+about_action = QtGui.QAction('&About', main_window,
+    shortcut='F11', statusTip='About MELScope', triggered=about)
 help_menu.addAction(about_action)
 
-github_action = QtGui.QAction('GitHub...', main_window)
-github_action.setShortcut('F12')
-github_action.triggered.connect(open_github)
+github_action = QtGui.QAction('&GitHub...', main_window,
+    shortcut='F12', statusTip='Open MEL GitHub webpage', triggered=open_github)
 help_menu.addAction(github_action)
 
 def update_menu():

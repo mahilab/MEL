@@ -6,7 +6,7 @@ curve_colors:
 - [169, 255, 70]
 - [83, 189, 255]
 curve_lines: [Solid, Solid, Solid, Solid, Solid, Solid]
-curve_modes: [Read Write, Read Write, Read Write, Read Write, Read Write, Read Write]
+curve_modes: [Read Only, Read Only, Read Only, Read Only, Read Only, Read Write]
 curve_names: [Joint 0 Position, Joint 1 Position, Joint 2 Position, Joint 0 Velocity,
   Joint 1 Velocity, Joint 2 Velocity]
 curve_sizes: [2, 2, 2, 2, 2, 2]
@@ -15,7 +15,7 @@ grid_rows: 2
 melshare_name: ow_state
 melshare_size: 6
 scope_filters:
-- [true, true, true, false, false, false]
+- [true, false, false, false, false, false]
 - [false, true, false, false, false, false]
 - [false, false, true, false, false, false]
 - [true, true, true, true, true, true]
