@@ -6,26 +6,14 @@ namespace mel {
 
     Clock::Clock(uint32 frequency, bool enable_logging) :
         frequency_(frequency),
-        tick_time_d_(1.0 / frequency),
+        delta_time_(1.0 / frequency),
         tick_time_(std::chrono::nanoseconds(1000000000 / frequency)),
-        enable_logging_(enable_logging)
+        enable_logging_(enable_logging),
+        log_(DataLog("clock"))
     {
         if (enable_logging) {
-            data_log_filename_ = log_dir_ + "\\clock_" + get_current_date_time() + ".csv";
-            boost::filesystem::path dir(log_dir_.c_str());
-            boost::filesystem::create_directory(dir);
-            data_log_.open(data_log_filename_, std::ofstream::out | std::ofstream::trunc); // change trunc to app to append;
-            data_log_ << "Tick #" << "," << "Elapsed (Ideal) [s]" << "," << "Elapsed (Actual) [s]" << "," 
-                << "Execution [s]" << "," << "Wait [s]" << "," << "Tick [s]" << std::endl;
+            log_.add_col("Tick #").add_col("Elapsed (Ideal) [s]").add_col("Elapsed (Actual) [s]").add_col("Execution [s]").add_col("Wait [s]").add_col("Tick [s]");
         }
-    }
-
-    uint32 Clock::tick() {
-        return tick_count_;
-    }
-
-    double Clock::time() {
-        return elapsed_ideal_;
     }
 
     void Clock::start() {
@@ -40,8 +28,8 @@ namespace mel {
         elapsed_wait_ = std::chrono::nanoseconds(0);
         elapsed_ideal_ = 0;
         if (enable_logging_) {
-            data_log_ << tick_count_ << "," << elapsed_ideal_ << "," << elapsed_actual_.count() * NS2S << ","
-                << elapsed_exe_.count() * NS2S << "," << elapsed_wait_.count() * NS2S << "," << elapsed_tick_.count() * NS2S << std::endl;
+            std::vector<double> row = { static_cast<double>(tick_count_) , elapsed_ideal_ , elapsed_actual_.count() * NS2S , elapsed_exe_.count() * NS2S , elapsed_wait_.count() * NS2S , elapsed_tick_.count() * NS2S };
+            log_.add_row(row);
         }
     }
 
@@ -55,7 +43,7 @@ namespace mel {
             elapsed_tick_ = now_ - start_tick_;
             elapsed_actual_ = now_ - start_;
             elapsed_exe_ = elapsed_tick_;
-            elapsed_ideal_ = tick_count_ * tick_time_d_;
+            elapsed_ideal_ = tick_count_ * delta_time_;
             elapsed_wait_ = std::chrono::nanoseconds(0);
 
             // spinlock / busy wait until the next tick has been reached        
@@ -71,14 +59,16 @@ namespace mel {
 
             // log this tick
             if (enable_logging_) {
-                data_log_ << tick_count_ << "," << elapsed_ideal_ << "," << elapsed_actual_.count() * NS2S << ","
-                    << elapsed_exe_.count() * NS2S << "," << elapsed_wait_.count() * NS2S << "," << elapsed_tick_.count() * NS2S << std::endl;
+                std::vector<double> row = { static_cast<double>(tick_count_) , elapsed_ideal_ , elapsed_actual_.count() * NS2S , elapsed_exe_.count() * NS2S , elapsed_wait_.count() * NS2S , elapsed_tick_.count() * NS2S };
+                log_.add_row(row);
             }
         }
     }
 
     void Clock::stop() {
         stop_ = true;
+        if (enable_logging_)
+            log_.save_data("clock_logs");
     }
 
 }

@@ -64,10 +64,12 @@ public:
 		//traj_[2] = setpoints_[2] + mel::sin_trajectory(10 * mel::DEG2RAD, 0.25, time());
 		//traj_[3] = setpoints_[3] + mel::sin_trajectory(10 * mel::DEG2RAD, 0.25, time());
 
+
         //torques_[0] = mel::pd_control_effort(35, 0.25, traj_[0], exo_.get_anatomical_joint_position(0), 0, exo_.get_anatomical_joint_velocity(0));
         //torques_[1] = mel::pd_control_effort( 7, 0.06, traj_[1], exo_.get_anatomical_joint_position(1), 0, exo_.get_anatomical_joint_velocity(1));
 		//torques_[2] = mel::pd_control_effort(25, 0.05, traj_[2], exo_.get_anatomical_joint_position(2), 0, exo_.get_anatomical_joint_velocity(2));
 		//torques_[3] = mel::pd_control_effort(30, 0.08, traj_[3], exo_.get_anatomical_joint_position(3), 0, exo_.get_anatomical_joint_velocity(3));
+
 
 		//exo_.set_anatomical_joint_torques(torques_);
 

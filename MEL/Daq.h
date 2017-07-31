@@ -12,8 +12,10 @@ namespace mel {
     class Daq {
 
     public:
-
+        
+        /////////////////////////////////
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        /////////////////////////////////
 
         Daq(std::string name,
             channel_vec ai_channels,
@@ -58,15 +60,10 @@ namespace mel {
         /// This function should stop and/or clear the watchdog timer if the DAQ supports one.
         virtual void stop_watchdog() {
             std::cout << "WARNING: DAQ <" << name_ << "> does not implement stop_watchdog()" << std::endl; }
-        /// Logs all current input and output values to the Daq log file when called.
-        void log_data(double timestamp);
 
     protected:
 
         bool              active_ = false;       ///< bool indicating whether the DAQ is currently active
-        const std::string log_dir_ = "daq_logs"; ///< folder where Daq data logs will be stored
-        const std::string data_log_filename_;    ///< filename of this Daq data log
-        std::ofstream     data_log_;             ///< stream for logging to the Daq data log file
 
         /// Returns index of a channel number in a channel numbers vector.
         channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);

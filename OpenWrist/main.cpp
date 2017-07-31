@@ -1,178 +1,135 @@
-// Evan Pezent (epezent@rice.edu, evanpezent.com)
-// 06/2017
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string>
-#include <math.h>
-#include <fstream>
-#include <chrono>
-#include <cstdio>
-#include <csignal>
-#include <windows.h>
-#include <boost/interprocess/windows_shared_memory.hpp>
-#include <boost/interprocess/mapped_region.hpp>
-#include <boost/program_options.hpp>
 #include <iostream>
-#include "Daq.h"
-#include "Q8USB.h"
+#include "Task.h"
+#include "Controller.h"
+#include "Clock.h"
+#include "Q8Usb.h"
+#include "Encoder.h"
 #include "OpenWrist.h"
-#include "OpenWristShare.h"
-#include <vector>
-#include "util.h"
-#define QUANSER
-static bool        stop = false;                          /* flag used to stop the controller */
-static const int   frequency = 1000;                  /* controller loop rate (Hz) */
+#include <functional>
+#include "MelShare.h"
+#include "DataLog.h"
+#include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
 
-/* Ctrl-C handler */
-static void signal_handler(int signum) {
-	stop = true;
+class MelScopeTest : public mel::Task {
+
+public:
+
+    MelScopeTest() : Task("scope_test") {};
+
+    mel::share::MelShare map0 = mel::share::MelShare("ow_state");
+    mel::share::MelShare map1 = mel::share::MelShare("map1");
+
+    std::array<double, 6> data0 = { 0, 0, 0, 0, 0, 0 };
+    std::array<double, 1> data1 = { 0 };
+
+    void start() override {}
+    void step() override {
+
+        data0[0] = mel::sin_trajectory(80, 0.25, time());
+        data0[1] = mel::sin_trajectory(60, 0.25, time());
+        data0[2] = mel::sin_trajectory(35, 0.25, time());
+
+        data0[3] = mel::sin_trajectory(400, 1, time());
+        data0[4] = data0[3];
+        data0[5] = data0[3];
+
+        map0.write(data0);
+
+        data1[0] = data0[1];
+        map1.write(data1);
+    }
+    void stop() override {}
+
+};
+
+int main(int argc, char * argv[]) {  
+    
+    /*
+    // set Windows thread priority
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms685100(v=vs.85).aspx
+    HANDLE hThread = GetCurrentThread();
+    SetPriorityClass(hThread, HIGH_PRIORITY_CLASS); // use REALTIME_PRIORITY_CLASS with extreme care!
+    SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL);   
+    */
+
+    // set up program options 
+    boost::program_options::options_description desc("Available Options");
+    desc.add_options()
+        ("help", "produces help message")
+        ("calibrate", "calibrate OpenWrist zero position")
+        ("transparency_mode", "puts OpenWrist in gravity and friction compensated state")
+        ("testing","various testing")
+        ("test", "quick tests");
+
+    boost::program_options::variables_map var_map;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
+    boost::program_options::notify(var_map);
+
+    if (var_map.count("help")) {
+        mel::print(desc);
+        return -1;
+    }
+
+    if (var_map.count("testing")) {
+        mel::Clock clock(1000);
+        mel::Controller controller(clock);
+        mel::Task* task = new MelScopeTest();
+        controller.queue_task(task);
+        controller.execute();
+        return 0;
+    }
+
+    if (var_map.count("test")) {
+        const char* name_data = "mel";
+        std::string name_temp = std::string(name_data) + "_size";
+        const char* name_size = name_temp.c_str();
+        std::cout << name_size << std::endl;
+    }
+
+    //  create a Q8Usb object
+    mel::uint32 id = 0;
+
+    mel::channel_vec  ai_channels = { 0, 1, 2 };
+    mel::channel_vec  ao_channels = { 0, 1, 2 };
+    mel::channel_vec  di_channels = { 0, 1, 2 };
+    mel::channel_vec  do_channels = { 0, 1, 2 };
+    mel::channel_vec enc_channels = { 0, 1, 2 };
+
+    mel::Q8Usb::Options options;
+    options.update_rate_ = mel::Q8Usb::Options::UpdateRate::Fast_8kHz;
+    options.decimation_ = 1;
+    options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+    options.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+    options.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
+    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+
+    // create and configure an OpenWrist object
+    OpenWrist::Config config;
+    for (int i = 0; i < 3; i++) {
+        config.enable_[i] = q8->do_(i);
+        config.command_[i] = q8->ao_(i);
+        config.encoder_[i] = q8->encoder_(i);
+        config.encrate_[i] = q8->encrate_(i);
+        config.amp_gains_[i] = 1;
+    }          
+
+    OpenWrist open_wrist(config);
+    
+    if (var_map.count("calibrate")) {
+        open_wrist.calibrate(q8);
+    }
+
+    if (var_map.count("transparency_mode")) {
+        open_wrist.transparency_mode(q8);
+    }
+
+
+    // clean up
+    delete q8;
+
+    return 0;
 }
 
-int main(int argc, char * argv[]) {
 
-	/* register signal SIGINT and SIGBREAK with signal handler */
-	signal(SIGINT, signal_handler);
-	signal(SIGBREAK, signal_handler);
-
-	/* set up program options */
-	po::options_description desc("Available Options");
-	desc.add_options()
-		("help", "produces help message")
-		("zero", "zeros encoder counts on startup")
-		("calibrate", "calibrate OpenWrist zero position on start-up")
-		("disable_q8", "disables Q8 USB initialization for debugging purposes");
-
-	po::variables_map var_map;
-	po::store(po::parse_command_line(argc, argv, desc), var_map);
-	po::notify(var_map);
-
-	if (var_map.count("help")) {
-		std::cout << desc << "\n";
-		return -1;
-	}
-
-	/* instatiate Q8 USB */
-    std::string id = "0";
-	uint_vec  ai_channels = { 0, 1, 2 };
-	uint_vec  ao_channels = { 0, 1, 2 };
-	uint_vec  di_channels = { 0, 1, 2 };
-	uint_vec  do_channels = { 0, 1, 2 };
-	uint_vec enc_channels = { 0, 1, 2 };
-	char options[] = "ch0_mode=2;ch0_kff=0;ch0_a0=-1.382;ch0_a1=8.03;ch0_a2=0;ch0_b0=-1;ch0_b1=0;ch0_post=1000;ch1_mode=2;ch1_kff=0;ch1_a0=-1.382;ch1_a1=8.03;ch1_a2=0;ch1_b0=-1;ch1_b1=0;ch1_post=1000;ch2_mode=2;ch2_kff=0;ch2_a0=1.912;ch2_a1=18.43;ch2_a2=0;ch2_b0=-1;ch2_b1=0;ch2_post=1000;update_rate=fast;ext_int_polarity=0;convert_polarity=1;watchdog_polarity=0;ext_int_watchdog=0;use_convert=0;pwm_immediate=0;decimation=1";
-	Daq *q8 = new Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
-
-	/* instantiate and initialize OpenWrist */
-	OpenWrist ow;
-	ow.bind_daq(q8);
-
-	/* calibrate joint positions */
-	if (var_map.count("calibrate")) {
-		std::cout << "Press ENTER to start calibration.";
-		getchar();
-		ow.calibrate(stop);
-	}
-
-	/* initialize Q8 USB */
-	if (!var_map.count("disable_q8")) {
-		if (!q8->init()) {
-			std::cout << "Terminating controller" << std::endl;
-			return -1;
-		}
-	}
-	
-	/* manual zero joint positions */
-	if (var_map.count("zero")) {
-		ow.zero_joint_positions();
-	}
-
-	/* create OpenWristShare */
-	OpenWristShare ow_share(&ow);
-
-	/* declare controller variables */
-	double_vec gravity_torques = { 0, 0, 0 };
-	double_vec friction_torques = { 0, 0, 0 };
-
-	/* request users permission to execute the controller */
-	std::cout << "Press ENTER to execute the controller.";
-	getchar();
-
-	/* begin control */
-	std::cout << "Executing control. Press Ctrl+C to terminate the controller." << std::endl;
-
-	// enable OpenWrist
-	ow.enable_high();
-
-	/* start watchdog */
-	q8->start_watchdog(0.1);
-
-	/* start time keeping variables */
-	std::chrono::high_resolution_clock::time_point time_start = std::chrono::high_resolution_clock::now();
-	std::chrono::high_resolution_clock::time_point time_start_loop = time_start;
-	std::chrono::high_resolution_clock::time_point time_now = time_start;
-	std::chrono::nanoseconds time_elapsed_loop(0);
-	std::chrono::nanoseconds time_elapsed_total(0);
-	std::chrono::nanoseconds time_per_sample(1000000000 / frequency);
-	std::chrono::nanoseconds time_per_sample_offset(200);
-	double controller_time = 0;
-
-	/* start the control loop */
-	int sample_number = 0;
-	while (stop == 0) {
-		time_start_loop = std::chrono::high_resolution_clock::now();
-		controller_time = (double)sample_number / frequency;
-		/* reloead watchdog */
-		q8->reload_watchdog();
-
-		/* START CONTROLLER SPECIFIC CODE */
-		ow.read_all();
-		q8->read_analog();
-
-		
-		OpenWrist::compute_gravity_compensation_joint_torques(ow.joint_positions_, gravity_torques);
-		gravity_torques[2] = 0;
-		OpenWrist::compute_friction_compensation_joint_torques(ow.joint_velocities_, friction_torques);
-		for (int i = 0; i < ow.num_joints_; i++)
-			ow.joint_torques_[i] = gravity_torques[i] + friction_torques[i];
-
-
-		ow.command_joint_torques();
-		
-
-		/* END CONTROLLER SPECIFIC CODE */
-		/* log data */
-        q8->log_data(controller_time);
-		/* update state values over OpenWristShare */
-		ow_share.update_state(controller_time);
-		/* increment sample number */
-		sample_number += 1;
-		/* spinlock / busy wait the control loop until the loop rate has been reached */
-		time_now = std::chrono::high_resolution_clock::now();
-		time_elapsed_loop = time_now - time_start_loop;
-		time_elapsed_total = time_now - time_start;
-		while (time_elapsed_loop < time_per_sample - time_per_sample_offset) {
-			time_now = std::chrono::high_resolution_clock::now();
-			time_elapsed_loop = time_now - time_start_loop;
-			time_elapsed_total = time_now - time_start;
-		}
-		time_now = std::chrono::high_resolution_clock::now();
-		time_elapsed_loop = time_now - time_start_loop;
-	}
-
-	std::cout << "Ctrl-C pressed. Terminating control." << std::endl;
-
-	/* end control and clean up */
-	ow.disable_low();
-	q8->terminate();
-
-	return 0;
-}
-
-// Useful Links
-// http://www.quanser.com/Products/quarc/documentation/q8_usb.html
-// https://www.codeproject.com/KB/winsdk/console_event_handling.aspx?display=PrintAll
-// https://superuser.com/questions/459609/what-does-it-do-exactly-if-i-click-in-the-window-of-cmd
-// https://theboostcpplibraries.com/boost.interprocess-shared-memory

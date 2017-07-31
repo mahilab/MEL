@@ -3,7 +3,7 @@
 namespace mel {
 
     Actuator::Actuator() :
-        name_("no name"),
+        name_("no_name"),
         torque_(0.0),
         enable_mode_(EnableMode::None)
     { }
