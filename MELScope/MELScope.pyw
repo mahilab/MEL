@@ -33,6 +33,8 @@ import qdarkstyle
 # open from .scope
 # add scope mode
 # change grid item class structure to be less bulky and titles separate
+# change grid dialog that uses checkboxes
+# each scope has own melshare?
 
 #######################
 # MEL SCOPE ABOUT INFO
@@ -108,7 +110,7 @@ time_now = time()
 delta_time = 0
 elapsed_time = 0
 
-fps_target = 60
+fps_target = 120
 fps_actual = None
 
 def update_time():
@@ -126,7 +128,7 @@ def update_FPS():
     else:
         s = np.clip(delta_time * 3., 0, 1)
         fps_actual = fps_actual * (1 - s) + (1.0 / delta_time) * s
-    fps_label.setText('FPS: %0.0f ' % fps_actual)
+    fps_label.setText('%0.0f Hz ' % fps_actual)
 
 #################################
 # MELSHARE VARIABLES / FUNCTIONS
@@ -196,7 +198,7 @@ def reset_samples():
 default_curve_mode = 'Read Only'
 curve_mode_options = ['Read Only', 'Read Write']
 
-default_curve_size = 3
+default_curve_size = 1.5 * resolution_scale
 default_curve_colors = [[31, 120, 180], [227, 26, 28], [51, 160, 44],
                         [255, 127, 0], [106, 61, 154], [177, 89, 40],
                         [166, 206, 227], [251, 154, 153], [178, 223, 138],
