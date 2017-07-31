@@ -51,24 +51,45 @@ private:
     const double a56_ = 0.0268986 - 0.0272820;
     const double alpha5_ = 0.094516665054824;
     const double alpha13_ = mel::DEG2RAD * 5;
-    Eigen::VectorXd qp_0_;
+    
 
-    // state variables
+    // kinematics variables
     Eigen::VectorXd qp_;
-    Eigen::VectorXd qp_prev_;
+    Eigen::VectorXd qp_0_;
+    //Eigen::VectorXd q_par_;
+    //Eigen::VectorXd q_ser_;
     Eigen::VectorXd qp_dot_;
-    Eigen::VectorXd q_par_;
     Eigen::VectorXd q_par_dot_;
+    Eigen::VectorXd q_ser_dot_;
+    Eigen::MatrixXd A_;
+	//Eigen::VectorXd phi_;
     Eigen::VectorXd psi_;
+    //Eigen::VectorXd phi_d_qp_; 
     Eigen::MatrixXd psi_d_qp_;
     Eigen::MatrixXd rho_;
     Eigen::MatrixXd rho_sub_;
-    Eigen::MatrixXd alpha_mat_;
-    Eigen::MatrixXd X_mat_;
+    Eigen::MatrixXd selector_mat_;
+    const mel::uint32 max_it_ = 5;
+    const double tol_ = 1e-8;
 
-    void forward_kinematics(mel::uint32 max_it, double tol);
-    void forward_kinematics_velocity();
-    void psi_func();
-    void psi_d_qp_func();
+
+    
+    void forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out);
+    void forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out);
+    void inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out);
+    void inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out);
+    Eigen::VectorXd solve_kinematics(mel::uint8_vec select_q, Eigen::VectorXd& qs, mel::uint32 max_it, double tol);
+    void psi_update(Eigen::VectorXd& qs, Eigen::VectorXd& qp);
+    void psi_d_qp_update(Eigen::VectorXd& qp);
+    Eigen::VectorXd phi_func(Eigen::VectorXd& qp);
+    Eigen::VectorXd a_func(Eigen::VectorXd& qp);
+    Eigen::MatrixXd phi_d_qp_func(Eigen::VectorXd& qp);
+    //void forward_kinematics_velocity();
+    
+	
+    
+    
+    
+    
     
 };
