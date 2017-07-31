@@ -5,6 +5,7 @@
 #include "Q8Usb.h"
 #include "Encoder.h"
 #include "OpenWrist.h"
+#include "Cuff.h"
 #include <functional>
 #include "MelShare.h"
 #include "DataLog.h"
@@ -44,6 +45,55 @@ public:
 
 };
 
+class CuffTest : public mel::Task {
+public:
+    CuffTest(OpenWrist* open_wrist, mel::Daq* daq) : Task("cuff_test"), ow_(open_wrist), daq_(daq) {}
+    mel::Daq* daq_;
+    OpenWrist* ow_;
+    Cuff cuff_;
+    int cuff_motor_position_0_ = 0;
+    int cuff_motor_position_1_ = 0;
+    short int cuff_position_sl_ = 0;
+    short int cuff_position_sq_ = 0;
+
+    double radius = 30 * mel::DEG2RAD;
+
+    void start() override {
+        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
+        getchar();
+        daq_->activate();
+        std::cout << "Press ENTER to enable OpenWrist.";
+        getchar();
+        ow_->enable();
+        std::cout << "Press ENTER to enable CUFF";
+        getchar();
+        cuff_.enable();
+        std::cout << "Press ENTER to start the controller.";
+        getchar();
+        daq_->start_watchdog(0.1);
+        std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
+    }
+
+    void step() override {
+        daq_->reload_watchdog();
+        daq_->read_all();
+        ow_->update_state_map();
+
+        double user_radius = sqrt(pow(ow_->joints_[1]->get_position(), 2) + pow(ow_->joints_[2]->get_position(), 2));
+        double rad_error = radius - user_radius;
+
+        double mot_input = mel::RAD2DEG * abs(rad_error) *500;
+        cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
+    }
+
+    void stop() override {
+        ow_->disable();
+        daq_->deactivate();
+        cuff_.disable();
+    }
+
+};
+
 int main(int argc, char * argv[]) {  
     
     /*
@@ -61,7 +111,8 @@ int main(int argc, char * argv[]) {
         ("calibrate", "calibrate OpenWrist zero position")
         ("transparency_mode", "puts OpenWrist in gravity and friction compensated state")
         ("testing","various testing")
-        ("test", "quick tests");
+        ("test", "quick tests")
+        ("cuff_test", "Cuff testing biatch");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
@@ -123,6 +174,14 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("transparency_mode")) {
         open_wrist.transparency_mode(q8);
+    }
+
+    if (var_map.count("cuff_test")) {
+        mel::Clock clock(1000);
+        mel::Controller controller(clock);
+        mel::Task* task = new CuffTest(&open_wrist, q8);
+        controller.queue_task(task);
+        controller.execute();
     }
 
 

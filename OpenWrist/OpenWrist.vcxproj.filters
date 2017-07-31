@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="CUFF">
+      <UniqueIdentifier>{0e370fab-c724-4371-81ea-2bffa33c0d32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenWrist.cpp">
@@ -21,9 +24,27 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qbmove_communications.cpp">
+      <Filter>CUFF</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenWrist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="commands.h">
+      <Filter>CUFF</Filter>
+    </ClInclude>
+    <ClInclude Include="definitions.h">
+      <Filter>CUFF</Filter>
+    </ClInclude>
+    <ClInclude Include="qbmove_communications.h">
+      <Filter>CUFF</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

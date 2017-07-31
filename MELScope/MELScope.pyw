@@ -168,7 +168,7 @@ sampled_values_text = []
 def sample_data():
     global sampled_times, sampled_data, sampled_values_text, delta_time
     result = melshare.read_double_map(melshare_name, ctypes.byref(melshare_buffer), melshare_size)
-    sampled_values_text = ['%0.2f' % value for value in melshare_buffer]
+    sampled_values_text = ['%0.4f' % value for value in melshare_buffer]
     if result >= 0:
         sampled_times[:-1] = sampled_times[1:] - delta_time
         sampled_times[-1] = 0
