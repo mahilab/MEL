@@ -137,6 +137,7 @@ def update_FPS():
 #################################
 
 melshare = ctypes.WinDLL("MELShare.dll")
+
 melshare_name = ''
 melshare_size = 0
 double_array = ctypes.c_double * melshare_size
@@ -144,6 +145,16 @@ melshare_read_buffer = double_array()
 melshare_write_buffer = double_array()
 melshare_connected = False
 
+default_melshare_mode = 'Read Only'
+MELSHARE_MODES_OPTIONS = ['Read Only', 'Write Only']
+
+MELSHARE_NAMES = []
+melshare_sizes = []
+MELSHARE_MODES = []
+double_arrays  = []
+melshare_read_buffers =  []
+melshare_write_buffers = []
+melshare_connections = []
 
 def connect_melshare():
     global melshare_name, melshare_size, melshare_read_buffer, melshare_write_buffer, double_array, melshare_connected
@@ -173,8 +184,8 @@ sampled_values_text = []
 
 def sample_data():
     global sampled_times, sampled_data, sampled_values_text, delta_time
-    result = melshare.read_write_double_map(melshare_name, ctypes.byref(
-        melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
+    result = melshare.read_double_map(melshare_name, ctypes.byref(
+        melshare_read_buffer), melshare_size)
     sampled_values_text = ['%0.4f' % value for value in melshare_read_buffer]
     if result >= 0:
         sampled_times[:-1] = sampled_times[1:] - delta_time
@@ -193,8 +204,8 @@ def reset_samples():
     sampled_times = None
     sampled_data = []
     sampled_times = np.zeros(num_samples)
-    result = melshare.read_write_double_map(melshare_name, ctypes.byref(
-        melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
+    melshare.read_double_map(melshare_name, ctypes.byref(
+        melshare_read_buffer), melshare_size)
     for i in range(melshare_size):
         sampled_data.append(np.ones(num_samples) * melshare_read_buffer[i])
 
@@ -202,9 +213,6 @@ def reset_samples():
 ########################
 # DATA PROPERTIES SETUP
 ########################
-
-default_curve_mode = 'Read Only'
-curve_mode_options = ['Read Only', 'Read Write']
 
 default_curve_size = 1.5 * resolution_scale
 default_curve_colors = [[31, 120, 180], [227, 26, 28], [51, 160, 44],
@@ -222,25 +230,18 @@ curve_line_options = collections.OrderedDict([
 
 # curve properties
 curve_names = []
-curve_modes = []
 curve_sizes = []
 curve_colors = []
 curve_lines = []
 
 
 def validate_curve_properties():
-    global curve_names, curve_modes, curve_sizes, curve_colors, curve_lines
-    # print 'CALL: validate_curve_properties()'
+    global curve_names, curve_sizes, curve_colors, curve_lines
     if melshare_size > len(curve_names):
         for i in range(len(curve_names), melshare_size):
             curve_names.append('Curve' + str(i))
     else:
         curve_names = curve_names[:melshare_size]
-    if melshare_size > len(curve_modes):
-        for i in range(len(curve_modes), melshare_size):
-            curve_modes.append(default_curve_mode)
-    else:
-        curve_modes = curve_modes[:melshare_size]
     if melshare_size > len(curve_sizes):
         for i in range(len(curve_sizes), melshare_size):
             curve_sizes.append(default_curve_size)
@@ -441,8 +442,9 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                 new_value = QtGui.QLineEdit(self)
                 new_value.setText('0.00')
                 new_value.setValidator(QtGui.QDoubleValidator())
-                if curve_modes[i] == 'Read Only':
-                    new_value.setReadOnly(True)
+                #if curve_modes[i] == 'Read Only':
+                new_value.setReadOnly(True)
+                """
                 elif curve_modes[i] == 'Read Write':
                     rw_color = QtGui.QColor(theme_io_rw_colors[theme][0], theme_io_rw_colors[
                                             theme][1], theme_io_rw_colors[theme][2])
@@ -450,6 +452,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                         ' background-color: %s' % rw_color.name())
                     new_value.editingFinished.connect(
                         self.write_data_factory(i, new_value))
+                """
                 new_value.setAlignment(QtCore.Qt.AlignCenter)
                 new_slider = QtGui.QSlider(self)
                 new_slider.setOrientation(QtCore.Qt.Horizontal)
@@ -469,17 +472,13 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                 self.io_sliders.append(None)
 
     def update(self):
-        global curve_modes
-        for curve, curve_mode, io_value, filter, data, value_text in zip(self.curves, curve_modes, self.io_values, self.filter, sampled_data, sampled_values_text):
+        for curve, io_value, filter, data, value_text in zip(self.curves, self.io_values, self.filter, sampled_data, sampled_values_text):
             if filter:
                 if scope_modes[self.index] == 'Scope':
                     curve.setData(sampled_times, data)
                 elif scope_modes[self.index] == 'I/O':
-                    if curve_mode == 'Read Only':
-                        pass
-                        io_value.setText(value_text)
-                    elif curve_mode == 'Read Write':
-                        pass
+                    io_value.setText(value_text)
+
 
     def write_data(self, index, line_edit):
         global melshare_write_buffer
@@ -670,14 +669,13 @@ def save_as():
 
 def deploy_config(config):
     global theme, melshare_name, melshare_size
-    global curve_modes, curve_names, curve_sizes, curve_colors, curve_lines
+    global curve_names, curve_sizes, curve_colors, curve_lines
     global grid_rows, grid_cols
     global scope_titles, scope_modes, scope_filters, scope_legends, scope_ranges
     theme = config['theme']
     melshare_name = config['melshare_name']
     melshare_size = config['melshare_size']
     curve_names = config['curve_names']
-    curve_modes = config['curve_modes']
     curve_sizes = config['curve_sizes']
     curve_colors = config['curve_colors']
     curve_lines = config['curve_lines']
@@ -696,7 +694,6 @@ def generate_config():
         'melshare_name': melshare_name,
         'melshare_size': melshare_size,
         'curve_names': curve_names,
-        'curve_modes': curve_modes,
         'curve_sizes': curve_sizes,
         'curve_colors': curve_colors,
         'curve_lines': curve_lines,
@@ -713,6 +710,51 @@ def generate_config():
 ##################
 # DIALOG CLASSES
 ##################
+
+class AddMelShareDialog(QtGui.QDialog):
+    def __init__(self, parent=None):
+        super(AddMelShareDialog, self).__init__(parent)
+        self.setWindowTitle('Configure Data')
+        self.layout = QtGui.QGridLayout(self)
+
+        self.name_label = QtGui.QLabel(self)
+        self.name_label.setText("MELShare Name")
+        self.name_label.setFont(bold_font)
+        self.layout.addWidget(self.name_label, 0, 0)
+
+        self.mode_label = QtGui.QLabel(self)
+        self.mode_label.setText("Mode")
+        self.mode_label.setFont(bold_font)
+        self.layout.addWidget(self.mode_label, 0, 1)
+
+        self.name_line_edit = QtGui.QLineEdit(self)
+        self.layout.addWidget(self.name_line_edit, 1, 0)
+
+        self.mode_combo_box = QtGui.QComboBox(self)
+        self.mode_combo_box.addItems(MELSHARE_MODES_OPTIONS)
+        self.layout.addWidget(self.mode_combo_box)
+
+        # OK and Cancel buttons
+        self.buttons = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+            QtCore.Qt.Horizontal, self)
+        self.layout.addWidget(self.buttons, 2, 0, 1, 2)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+    @staticmethod
+    def get_input(parent=None):
+        dialog = AddMelShareDialog(parent)
+        result = dialog.exec_()
+        if result == QtGui.QDialog.Accepted:
+            melshare_name = str(dialog.name_line_edit.text())
+            melshare_mode = str(dialog.mode_combo_box.currentText())
+            return (melshare_name, melshare_mode, True)
+        else:
+            return (None, None, False)
+
+
+
 
 class ConfigureDataDialog(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -753,7 +795,7 @@ class ConfigureDataDialog(QtGui.QDialog):
         layout.addWidget(line_label, 0, 5)
 
         self.name_line_edits = []
-        self.mode_combo_boxes = []
+        self.mode_labels = []
         self.size_spin_boxes = []
         self.color_buttons = []
         self.line_combo_boxes = []
@@ -769,12 +811,10 @@ class ConfigureDataDialog(QtGui.QDialog):
             self.name_line_edits.append(new_line_edit)
             layout.addWidget(new_line_edit, i + 1, 1)
 
-            new_mode_combo_box = QtGui.QComboBox(self)
-            new_mode_combo_box.addItems(curve_mode_options)
-            new_mode_combo_box.setCurrentIndex(
-                curve_mode_options.index(curve_modes[i]))
-            self.mode_combo_boxes.append(new_mode_combo_box)
-            layout.addWidget(new_mode_combo_box, i + 1, 2)
+            new_mode_label = QtGui.QLabel(self)
+            new_mode_label.setText("Read Only")
+            self.mode_labels.append(new_mode_label)
+            layout.addWidget(new_mode_label, i + 1, 2)
 
             new_spin_box = QtGui.QSpinBox(self)
             new_spin_box.setValue(int(curve_sizes[i]))
@@ -826,13 +866,12 @@ class ConfigureDataDialog(QtGui.QDialog):
     # static method to create the dialog and return (date, time, accepted)
     @staticmethod
     def open_dialog(parent=None):
-        global curve_names, curve_modes, curve_sizes, curve_colors, curve_lines
+        global curve_names, curve_sizes, curve_colors, curve_lines
         dialog = ConfigureDataDialog(parent)
         result = dialog.exec_()
         if result == QtGui.QDialog.Accepted:
             for i in range(melshare_size):
                 curve_names[i] = str(dialog.name_line_edits[i].text())
-                curve_modes[i] = str(dialog.mode_combo_boxes[i].currentText())
                 curve_sizes[i] = int(dialog.size_spin_boxes[i].value())
                 color = dialog.color_buttons[i].palette().color(
                     QtGui.QPalette.Background)
@@ -1016,13 +1055,23 @@ def prompt_configure_modules():
 
 
 def prompt_connect_melshare():
-    global melshare_name
+    global melshare_name, MELSHARE_NAMES
     input, ok = QtGui.QInputDialog.getText(
-        widg, 'MELShare', 'Enter the MELShare Name:', QtGui.QLineEdit.Normal, melshare_name)
+        widg, 'MELShare', 'Enter the MELShare Name:', QtGui.QLineEdit.Normal)
     if ok:
         melshare_name = str(input)
+        if melshare_name not in MELSHARE_NAMES:
+            MELSHARE_NAMES.append(str(input))
         reload_all()
 
+def prompt_add_melshare():
+    melshare_name, melshare_mode, ok = AddMelShareDialog.get_input()
+    if ok:
+        if melshare_name not in MELSHARE_NAMES:
+            MELSHARE_NAMES.append(melshare_name)
+            MELSHARE_MODES.append(melshare_mode)
+        print MELSHARE_NAMES, MELSHARE_MODES
+        #reload_all()
 
 def prompt_resize_grid():
     global grid_rows, grid_cols, scope_count
@@ -1106,6 +1155,14 @@ connect_action = QtGui.QAction('Connect &MELShare...', main_window,
                                shortcut='Ctrl+M', statusTip='Connect to a MELShare map', triggered=prompt_connect_melshare)
 edit_menu.addAction(connect_action)
 
+add_action = QtGui.QAction('&Add MELShare...', main_window,
+                               shortcut='Ctrl+A', statusTip='Add a new MELShare map', triggered=prompt_add_melshare)
+edit_menu.addAction(add_action)
+
+remove_action = QtGui.QAction('&Remove MELShare...', main_window,
+                               shortcut='Ctrl+X', statusTip='Remove an existing MELShare map', triggered=prompt_connect_melshare)
+edit_menu.addAction(remove_action)
+
 grid_action = QtGui.QAction('Resize &Grid...', main_window,
                             shortcut='Ctrl+G', statusTip='Resize the scope grid', triggered=prompt_resize_grid)
 edit_menu.addAction(grid_action)
@@ -1133,6 +1190,10 @@ help_menu.addAction(github_action)
 
 def update_menu():
     global config_curves_action, configure_modules_action
+    if len(MELSHARE_NAMES) == 0:
+        remove_action.setDisabled(True)
+    else:
+        remove_action.setDisabled(False)
     if melshare_connected:
         config_curves_action.setDisabled(False)
         configure_modules_action.setDisabled(False)

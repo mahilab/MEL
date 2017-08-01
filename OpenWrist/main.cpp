@@ -19,38 +19,28 @@ public:
 
     MelScopeTest() : Task("scope_test") {};
 
-    mel::share::MelShare map0 = mel::share::MelShare("ow_state");
-    mel::share::MelShare map1 = mel::share::MelShare("map1");
+    mel::share::MelShare cpp2py = mel::share::MelShare("cpp2py");
+    mel::share::MelShare py2cpp = mel::share::MelShare("py2cpp");
 
     std::array<double, 9> state = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    std::array<double, 6> data = { 0, 0, 0, 0, 0, 0.25 };
+    std::array<double, 5> data_r = { 0.25, 0.25, 0.25, 0.25, 0.25 };
+    std::array<double, 5> data_w = { 0, 0, 0, 0, 0 };
 
-    void start() override { }
-    void step() override {
 
-        state[0] = mel::sin_wave(10, 0.25, time());
-        state[1] = state[0];
-        state[2] = state[0];
-
-        state[3] = mel::square_wave(10, 0.25, time());
-        state[4] = state[3];
-        state[5] = state[3];
-
-        state[6] = mel::triangle_wave(10, 0.25, time());
-        state[7] = state[6];
-        state[8] = state[7];
-
-        map1.read(data);
-
-        data[0] = mel::sin_wave(10, data[5], time());
-        data[1] = mel::cos_wave(10, data[5], time());
-        data[2] = mel::square_wave(10, data[5], time());;
-        data[3] = mel::triangle_wave(10, data[5], time());
-        data[4] = mel::sawtooth_wave(10, data[5], time());
-
-        map1.write(data);
-
+    void start() override {
+        py2cpp.write(data_r);
     }
+
+    void step() override {
+        py2cpp.read(data_r);
+        data_w[0] = mel::sin_wave(10, data_r[0], time());
+        data_w[1] = mel::cos_wave(10, data_r[1], time());
+        data_w[2] = mel::square_wave(10, data_r[2], time());;
+        data_w[3] = mel::triangle_wave(10, data_r[3], time());
+        data_w[4] = mel::sawtooth_wave(10, data_r[4], time());
+        cpp2py.write(data_w);
+    }
+
     void stop() override {}
 
 };

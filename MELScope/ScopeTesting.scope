@@ -1,0 +1,24 @@
+curve_colors:
+- [31, 120, 180]
+- [227, 26, 28]
+- [51, 160, 44]
+- [255, 127, 0]
+- [106, 61, 154]
+curve_lines: [Solid, Solid, Solid, Solid, Solid]
+curve_modes: [Read Only, Read Only, Read Only, Read Only, Read Only]
+curve_names: [Sin, Cos, Square, Triangle, Sawtooth]
+curve_sizes: [1, 1, 1, 1, 1]
+grid_cols: 2
+grid_rows: 1
+melshare_name: cpp2py
+melshare_size: 5
+scope_filters:
+- [true, true, true, true, true]
+- [true, true, true, true, true]
+scope_legends: [true, false]
+scope_modes: [Scope, I/O]
+scope_ranges:
+- [-10.0, 10.0]
+- [-10.0, 10.0]
+scope_titles: [Input, Output]
+theme: Dark
