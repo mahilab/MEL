@@ -15,6 +15,10 @@ namespace mel {
         return amplitude * sin(2 * PI * frequency * t);
     }
 
+    double cos_wave(double amplitude, double frequency, double t) {
+        return amplitude * cos(2 * PI * frequency * t);
+    }
+
     double square_wave(double amplitude, double frequency, double t) {
         double sin = sin_wave(1, frequency, t);
         if (sin == 0)

@@ -22,31 +22,34 @@ public:
     mel::share::MelShare map0 = mel::share::MelShare("ow_state");
     mel::share::MelShare map1 = mel::share::MelShare("map1");
 
-    std::array<double, 9> data0 = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    std::array<double, 4> data1 = { 0, 0, 0, 0 };
+    std::array<double, 9> state = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    std::array<double, 6> data = { 0, 0, 0, 0, 0, 0.25 };
 
-    void start() override {}
+    void start() override { }
     void step() override {
 
-        data0[0] = mel::sin_wave(10, 0.25, time());
-        data0[1] = data0[0];
-        data0[2] = data0[0];
+        state[0] = mel::sin_wave(10, 0.25, time());
+        state[1] = state[0];
+        state[2] = state[0];
 
-        data0[3] = mel::square_wave(10, 0.25, time());
-        data0[4] = data0[3];
-        data0[5] = data0[3];
+        state[3] = mel::square_wave(10, 0.25, time());
+        state[4] = state[3];
+        state[5] = state[3];
 
-        data0[6] = mel::triangle_wave(10, 0.25, time());
-        data0[7] = data0[6];
-        data0[8] = data0[7];
+        state[6] = mel::triangle_wave(10, 0.25, time());
+        state[7] = state[6];
+        state[8] = state[7];
 
-        map0.write(data0);
+        map1.read(data);
 
-        data1[0] = mel::sin_wave(10, 0.25, time());
-        data1[1] = mel::square_wave(10, 0.25, time());;
-        data1[2] = mel::triangle_wave(10, 0.25, time());
-        data1[3] = mel::sawtooth_wave(10, 0.25, time());
-        map1.write(data1);
+        data[0] = mel::sin_wave(10, data[5], time());
+        data[1] = mel::cos_wave(10, data[5], time());
+        data[2] = mel::square_wave(10, data[5], time());;
+        data[3] = mel::triangle_wave(10, data[5], time());
+        data[4] = mel::sawtooth_wave(10, data[5], time());
+
+        map1.write(data);
+
     }
     void stop() override {}
 

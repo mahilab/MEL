@@ -138,17 +138,19 @@ melshare = ctypes.WinDLL("MELShare.dll")
 melshare_name = ''
 melshare_size = 0
 double_array = ctypes.c_double * melshare_size
-melshare_buffer = double_array()
+melshare_read_buffer = double_array()
+melshare_write_buffer = double_array()
 melshare_connected = False
 
 def connect_melshare():
-    global melshare_name, melshare_size, melshare_buffer, double_array, melshare_connected
+    global melshare_name, melshare_size, melshare_read_buffer, melshare_write_buffer, double_array, melshare_connected
     result = melshare.get_map_size(melshare_name)
     if result >= 0:
         melshare_size = result
         melshare_connected = True
         double_array = ctypes.c_double * melshare_size
-        melshare_buffer = double_array()
+        melshare_read_buffer = double_array()
+        melshare_write_buffer = double_array()
         status_bar.showMessage('Connected to MELShare <' + melshare_name + '>')
     else:
         melshare_size = 0
@@ -167,14 +169,14 @@ sampled_values_text = []
 
 def sample_data():
     global sampled_times, sampled_data, sampled_values_text, delta_time
-    result = melshare.read_double_map(melshare_name, ctypes.byref(melshare_buffer), melshare_size)
-    sampled_values_text = ['%0.4f' % value for value in melshare_buffer]
+    result = melshare.read_write_double_map(melshare_name, ctypes.byref(melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
+    sampled_values_text = ['%0.4f' % value for value in melshare_read_buffer]
     if result >= 0:
         sampled_times[:-1] = sampled_times[1:] - delta_time
         sampled_times[-1] = 0
         for (data, i) in zip(sampled_data, range(melshare_size)):
             data[:-1] = data[1:]
-            data[-1] = melshare_buffer[i]
+            data[-1] = melshare_read_buffer[i]
         return True
     else:
         return False
@@ -185,9 +187,9 @@ def reset_samples():
     sampled_times = None
     sampled_data = []
     sampled_times = np.zeros(num_samples)
-    melshare.read_double_map(melshare_name, ctypes.byref(melshare_buffer), melshare_size)
+    result = melshare.read_write_double_map(melshare_name, ctypes.byref(melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
     for i in range(melshare_size):
-        sampled_data.append(np.ones(num_samples) * melshare_buffer[i])
+        sampled_data.append(np.ones(num_samples) * melshare_read_buffer[i])
 
 
 
@@ -434,6 +436,7 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
                 elif curve_modes[i] == 'Read Write':
                     rw_color = QtGui.QColor(theme_io_rw_colors[theme][0], theme_io_rw_colors[theme][1], theme_io_rw_colors[theme][2] )
                     new_value.setStyleSheet(' background-color: %s' % rw_color.name() )
+                    new_value.editingFinished.connect(self.write_data_factory(i,new_value))
                 new_value.setAlignment(QtCore.Qt.AlignCenter)
                 new_slider = QtGui.QSlider(self)
                 new_slider.setOrientation(QtCore.Qt.Horizontal)
@@ -465,6 +468,13 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
                         io_value.setText(value_text)
                     elif curve_mode == 'Read Write':
                         pass
+
+    def write_data(self, index, line_edit):
+        global melshare_write_buffer
+        melshare_write_buffer[index] = ctypes.c_double(float(line_edit.text()))
+
+    def write_data_factory(self, index, line_edit):
+        return lambda : self.write_data(index, line_edit)
 
     def rename_scope(self, event=None):
         self.temp_line_edit = QtGui.QLineEdit()
