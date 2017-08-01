@@ -21,20 +21,20 @@ import qdarkstyle
 
 
 # TO DO:
-# curve sizes
 # splitter widget
 # add cbrewer colors to color picker
 # turn scopes on off
 # thread melshare
 # save window size
-# curve scaling (deg2rad)
-# Dark theme
+# curve scaling (eg deg2rad)
 # scope modules to generic modules, add interactive gain modules with sliders
 # open from .scope
 # add scope mode
 # change grid item class structure to be less bulky and titles separate
 # change grid dialog that uses checkboxes
 # each scope has own melshare?
+
+
 
 #######################
 # MEL SCOPE ABOUT INFO
@@ -55,7 +55,7 @@ resolution_scale = screen_resolution.width() / 1920.0
 
 widg = QtGui.QWidget()
 main_window.setCentralWidget(widg)
-main_window.resize(640,640)
+main_window.resize(640, 640)
 widg.setContentsMargins(12, 12, 12, 12)
 grid = QtGui.QGridLayout()  # http://zetcode.com/gui/pyqt4/layoutmanagement/
 grid.setContentsMargins(0, 0, 0, 0)
@@ -64,19 +64,20 @@ widg.setLayout(grid)
 bold_font = QtGui.QFont()
 bold_font.setBold(True)
 
-
 ##############
 # THEME SETUP
 ##############
 
 theme_options = ['Classic', 'Dark']
-theme_stylesheets = {'Classic': '', 'Dark': qdarkstyle.load_stylesheet(pyside=False)}
-theme_scope_bg_colors = {"Classic": [240, 240, 240], "Dark": [49,  54,  59 ]}
-theme_scope_fg_colors = {"Classic": [0,   0,   0  ], "Dark": [240, 240, 240]}
-theme_scope_vb_colors = {"Classic": [240, 240, 240], "Dark": [35,  38,  41 ]}
+theme_stylesheets = {'Classic': '',
+                     'Dark': qdarkstyle.load_stylesheet(pyside=False)}
+theme_scope_bg_colors = {"Classic": [240, 240, 240], "Dark": [49, 54, 59]}
+theme_scope_fg_colors = {"Classic": [0, 0, 0], "Dark": [240, 240, 240]}
+theme_scope_vb_colors = {"Classic": [240, 240, 240], "Dark": [35, 38, 41]}
 theme_io_rw_colors = {"Classic": [204, 232, 255], "Dark": [24, 70, 93]}
 
 theme = 'Dark'
+
 
 def set_theme():
     global app
@@ -113,6 +114,7 @@ elapsed_time = 0
 fps_target = 120
 fps_actual = None
 
+
 def update_time():
     global time_last, time_now, delta_time, elapsed_time
     time_now = time()
@@ -142,6 +144,7 @@ melshare_read_buffer = double_array()
 melshare_write_buffer = double_array()
 melshare_connected = False
 
+
 def connect_melshare():
     global melshare_name, melshare_size, melshare_read_buffer, melshare_write_buffer, double_array, melshare_connected
     result = melshare.get_map_size(melshare_name)
@@ -167,9 +170,11 @@ sampled_times = None
 sampled_data = []
 sampled_values_text = []
 
+
 def sample_data():
     global sampled_times, sampled_data, sampled_values_text, delta_time
-    result = melshare.read_write_double_map(melshare_name, ctypes.byref(melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
+    result = melshare.read_write_double_map(melshare_name, ctypes.byref(
+        melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
     sampled_values_text = ['%0.4f' % value for value in melshare_read_buffer]
     if result >= 0:
         sampled_times[:-1] = sampled_times[1:] - delta_time
@@ -181,16 +186,17 @@ def sample_data():
     else:
         return False
 
+
 def reset_samples():
     global num_samples, sampled_times, sampled_data
     num_samples = int(sample_duration * fps_target * 1.1)
     sampled_times = None
     sampled_data = []
     sampled_times = np.zeros(num_samples)
-    result = melshare.read_write_double_map(melshare_name, ctypes.byref(melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
+    result = melshare.read_write_double_map(melshare_name, ctypes.byref(
+        melshare_read_buffer), melshare_size, ctypes.byref(melshare_write_buffer), melshare_size)
     for i in range(melshare_size):
         sampled_data.append(np.ones(num_samples) * melshare_read_buffer[i])
-
 
 
 ########################
@@ -207,26 +213,27 @@ default_curve_colors = [[31, 120, 180], [227, 26, 28], [51, 160, 44],
                         [253, 191, 111], [202, 178, 214], [255, 255, 153]]
 
 default_curve_line = 'Solid'
-curve_line_options = collections.OrderedDict( [
-    ('Solid'       , QtCore.Qt.SolidLine),
-    ('Dash'        , QtCore.Qt.DashLine),
-    ('Dot'         , QtCore.Qt.DotLine),
-    ('Dash Dot'    , QtCore.Qt.DashDotLine),
-    ('Dash Dot Dot', QtCore.Qt.DashDotDotLine) ] )
+curve_line_options = collections.OrderedDict([
+    ('Solid', QtCore.Qt.SolidLine),
+    ('Dash', QtCore.Qt.DashLine),
+    ('Dot', QtCore.Qt.DotLine),
+    ('Dash Dot', QtCore.Qt.DashDotLine),
+    ('Dash Dot Dot', QtCore.Qt.DashDotDotLine)])
 
 # curve properties
 curve_names = []
-curve_modes =[]
+curve_modes = []
 curve_sizes = []
 curve_colors = []
 curve_lines = []
+
 
 def validate_curve_properties():
     global curve_names, curve_modes, curve_sizes, curve_colors, curve_lines
     # print 'CALL: validate_curve_properties()'
     if melshare_size > len(curve_names):
         for i in range(len(curve_names), melshare_size):
-            curve_names.append('Curve'+str(i))
+            curve_names.append('Curve' + str(i))
     else:
         curve_names = curve_names[:melshare_size]
     if melshare_size > len(curve_modes):
@@ -241,7 +248,8 @@ def validate_curve_properties():
         curve_sizes = curve_sizes[:melshare_size]
     if melshare_size > len(curve_colors):
         for i in range(len(curve_colors), melshare_size):
-            curve_colors.append(default_curve_colors[i % len(default_curve_colors)])
+            curve_colors.append(default_curve_colors[
+                                i % len(default_curve_colors)])
     else:
         curve_colors = curve_colors[:melshare_size]
     if melshare_size > len(curve_lines):
@@ -249,7 +257,6 @@ def validate_curve_properties():
             curve_lines.append(default_curve_line)
     else:
         curve_lines = curve_lines[:melshare_size]
-
 
 
 ######################################
@@ -269,11 +276,12 @@ scope_filters = []
 scope_legends = []
 scope_ranges = []
 
+
 def validate_scope_properties():
     global scope_titles, scope_modes, scope_filters, scope_legends, scope_ranges
     if scope_count > len(scope_titles):
         for i in range(len(scope_titles), scope_count):
-            scope_titles.append('Scope'+str(i))
+            scope_titles.append('Scope' + str(i))
     else:
         scope_titles = scope_titles[:scope_count]
     if scope_count > len(scope_modes):
@@ -299,17 +307,17 @@ def validate_scope_properties():
         scope_legends = scope_legends[:scope_count]
     if scope_count > len(scope_ranges):
         for i in range(len(scope_ranges), scope_count):
-            scope_ranges.append([-1,1])
+            scope_ranges.append([-1, 1])
     else:
         scope_ranges = scope_ranges[:scope_count]
-
 
 
 def refresh_scopes():
     for scope in scope_modules:
         scope.refresh()
 
-class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
+
+class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
     def __init__(self):
         super(ScopeModule, self).__init__()
         # scope title
@@ -335,7 +343,7 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         self.plot_widget.setDownsampling(mode='peak')
         self.axis_bottom.setTicks(self.time_ticks)
         self.axis_bottom.setStyle(tickTextWidth=100)
-        #self.plot_item.setMenuEnabled(False)
+        # self.plot_item.setMenuEnabled(False)
         self.axis_bottom.setZValue(0)
         self.axis_left.setZValue(0)
         # scope module curves and data
@@ -352,7 +360,7 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         self.scope_tab.setLayout(self.layout)
         self.layout.addWidget(self.label, 0, 0, 1, 1)
         self.layout.addWidget(self.plot_widget, 1, 0, 1, 1)
-        self.addTab(self.scope_tab,' Scope ')
+        self.addTab(self.scope_tab, ' Scope ')
         # IO Tab Setup
         self.io_tab = QtGui.QWidget()
         self.io_layout = QtGui.QGridLayout()
@@ -361,9 +369,9 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         self.io_label.mouseDoubleClickEvent = self.rename_io
         self.io_label.setAlignment(QtCore.Qt.AlignCenter)
         self.io_label.setFont(bold_font)
-        self.io_layout.addWidget(self.io_label,0,0,1,3)
+        self.io_layout.addWidget(self.io_label, 0, 0, 1, 3)
         self.io_tab.setLayout(self.io_layout)
-        self.addTab(self.io_tab,' I/O ')
+        self.addTab(self.io_tab, ' I/O ')
         self.io_names = []
         self.io_values = []
         self.io_sliders = []
@@ -396,8 +404,8 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         self.axis_left.setPen(theme_scope_fg_colors[theme])
         self.axis_bottom.setPen(theme_scope_fg_colors[theme])
         if theme == 'Classic':
-            color = QtGui.QColor(240,240,240)
-            self.setStyleSheet(' background-color: %s' % color.name() )
+            color = QtGui.QColor(240, 240, 240)
+            self.setStyleSheet(' background-color: %s' % color.name())
         else:
             self.setStyleSheet('')
          # remove IO items
@@ -420,8 +428,10 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         for i in range(melshare_size):
             if self.filter[i]:
                 # update curve
-                new_pen = pyqtgraph.mkPen(curve_colors[i], style=curve_line_options[curve_lines[i]], width=curve_sizes[i])
-                new_curve = pyqtgraph.PlotCurveItem(pen=new_pen,name=curve_names[i])
+                new_pen = pyqtgraph.mkPen(curve_colors[i], style=curve_line_options[
+                                          curve_lines[i]], width=curve_sizes[i])
+                new_curve = pyqtgraph.PlotCurveItem(
+                    pen=new_pen, name=curve_names[i])
                 self.plot_widget.addItem(new_curve)
                 self.curves.append(new_curve)
                 # update IO
@@ -434,17 +444,20 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
                 if curve_modes[i] == 'Read Only':
                     new_value.setReadOnly(True)
                 elif curve_modes[i] == 'Read Write':
-                    rw_color = QtGui.QColor(theme_io_rw_colors[theme][0], theme_io_rw_colors[theme][1], theme_io_rw_colors[theme][2] )
-                    new_value.setStyleSheet(' background-color: %s' % rw_color.name() )
-                    new_value.editingFinished.connect(self.write_data_factory(i,new_value))
+                    rw_color = QtGui.QColor(theme_io_rw_colors[theme][0], theme_io_rw_colors[
+                                            theme][1], theme_io_rw_colors[theme][2])
+                    new_value.setStyleSheet(
+                        ' background-color: %s' % rw_color.name())
+                    new_value.editingFinished.connect(
+                        self.write_data_factory(i, new_value))
                 new_value.setAlignment(QtCore.Qt.AlignCenter)
                 new_slider = QtGui.QSlider(self)
                 new_slider.setOrientation(QtCore.Qt.Horizontal)
-                self.io_layout.addWidget(new_name,row,0)
-                self.io_layout.addWidget(new_value,row,1)
-                self.io_layout.addWidget(new_slider,row,2)
+                self.io_layout.addWidget(new_name, row, 0)
+                self.io_layout.addWidget(new_value, row, 1)
+                self.io_layout.addWidget(new_slider, row, 2)
                 for i in range(3):
-                    self.io_layout.setColumnStretch(i,1)
+                    self.io_layout.setColumnStretch(i, 1)
                 self.io_names.append(new_name)
                 self.io_values.append(new_value)
                 self.io_sliders.append(new_slider)
@@ -454,7 +467,6 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
                 self.io_names.append(None)
                 self.io_values.append(None)
                 self.io_sliders.append(None)
-
 
     def update(self):
         global curve_modes
@@ -474,7 +486,7 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         melshare_write_buffer[index] = ctypes.c_double(float(line_edit.text()))
 
     def write_data_factory(self, index, line_edit):
-        return lambda : self.write_data(index, line_edit)
+        return lambda: self.write_data(index, line_edit)
 
     def rename_scope(self, event=None):
         self.temp_line_edit = QtGui.QLineEdit()
@@ -523,8 +535,10 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         print 'start', index
         self.temp_line_edit1 = QtGui.QLineEdit()
         self.temp_line_edit1.setText(curve_names[index])
-        self.temp_line_edit1.editingFinished.connect(lambda : self.confirm_data_rename(index))
-        self.temp_line_edit1.focusOutEvent = lambda event: self.confirm_data_rename(index, event)
+        self.temp_line_edit1.editingFinished.connect(
+            lambda: self.confirm_data_rename(index))
+        self.temp_line_edit1.focusOutEvent = lambda event: self.confirm_data_rename(
+            index, event)
         self.io_layout.addWidget(self.temp_line_edit1, index + 1, 0)
         self.temp_line_edit1.selectAll()
         self.temp_line_edit1.setFocus()
@@ -539,10 +553,6 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
         refresh_scopes()
 
 
-
-
-
-
 ###############################
 # GRID VARIABLES / FUNCTIONS
 ##############################
@@ -550,12 +560,14 @@ class ScopeModule(QtGui.QTabWidget): # or QtGui.QGroupBox or QTabWidget
 max_grid_rows = 5
 max_grid_cols = 5
 
-grid_options = [(r+1,c+1) for r in range(max_grid_rows) for c in range(max_grid_cols)]
+grid_options = [(r + 1, c + 1) for r in range(max_grid_rows)
+                for c in range(max_grid_cols)]
 grid_options_display = [str(x[0]) + ' x ' + str(x[1]) for x in grid_options]
 grid_options_dict = dict(zip(grid_options_display, grid_options))
 
 grid_rows = 1
 grid_cols = 1
+
 
 def resize_grid():
     global main_window, widg, grid, grid_rows, grid_cols, scope_count, splitter_widgets
@@ -569,7 +581,7 @@ def resize_grid():
     widg, grid = None, None
     widg = QtGui.QWidget()
     main_window.setCentralWidget(widg)
-    main_window.resize(640,640)
+    main_window.resize(640, 640)
     widg.setContentsMargins(12, 12, 12, 12)
     grid = QtGui.QGridLayout()  # http://zetcode.com/gui/pyqt4/layoutmanagement/
     grid.setContentsMargins(0, 0, 0, 0)
@@ -588,14 +600,14 @@ def resize_grid():
     positions = [(r, c) for r in range(grid_rows)
                  for c in range(grid_cols)]
     for i in range(new_count):
-        scope_modules[i].index = i;
+        scope_modules[i].index = i
         grid.addWidget(scope_modules[i], positions[
                        i][0], positions[i][1], 1, 1)
     # set row/column stretch to ensure same sizes (!!! THIS HAS ISSUES)
     for i in range(grid_rows):
-        grid.setRowStretch(i,1)
+        grid.setRowStretch(i, 1)
     for i in range(grid_cols):
-        grid.setColumnStretch(i,1)
+        grid.setColumnStretch(i, 1)
     # update scope count
     scope_count = new_count
     status_bar.showMessage('Scope grid resized to ' +
@@ -607,6 +619,7 @@ def resize_grid():
 ##################################
 
 filepath = None
+
 
 def open_new_instance():
     CREATE_NO_WINDOW = 0x08000000
@@ -627,7 +640,7 @@ def open():
         reload_all()
         set_theme()
         filename = str(filepath[str(filepath).rfind('/') + 1:])
-        filename = filename[0 : filename.rfind('.')]
+        filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Opened <' + filename + '>')
         main_window.setWindowTitle('MELScope (' + filename + ')')
 
@@ -639,7 +652,7 @@ def save():
         stream = file(filepath, 'w')
         yaml.dump(config, stream)
         filename = str(filepath[str(filepath).rfind('/') + 1:])
-        filename = filename[0 : filename.rfind('.')]
+        filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Saved <' + filename + '>')
         main_window.setWindowTitle('MELScope (' + filename + ')')
     else:
@@ -677,27 +690,24 @@ def deploy_config(config):
     scope_ranges = config['scope_ranges']
 
 
-
 def generate_config():
     config = {
         'theme': theme,
         'melshare_name': melshare_name,
         'melshare_size': melshare_size,
-        'curve_names' : curve_names,
+        'curve_names': curve_names,
         'curve_modes': curve_modes,
-        'curve_sizes' : curve_sizes,
-        'curve_colors' : curve_colors,
-        'curve_lines' : curve_lines,
+        'curve_sizes': curve_sizes,
+        'curve_colors': curve_colors,
+        'curve_lines': curve_lines,
         'grid_rows': grid_rows,
         'grid_cols': grid_cols,
         'scope_titles': scope_titles,
         'scope_modes': scope_modes,
         'scope_filters': scope_filters,
         'scope_legends': scope_legends,
-        'scope_ranges': scope_ranges }
+        'scope_ranges': scope_ranges}
     return config
-
-
 
 
 ##################
@@ -714,33 +724,33 @@ class ConfigureDataDialog(QtGui.QDialog):
         index_label.setText('i')
         index_label.setFont(bold_font)
         index_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(index_label,0,0)
+        layout.addWidget(index_label, 0, 0)
 
         name_label = QtGui.QLabel(self)
         name_label.setText('Name')
         name_label.setFont(bold_font)
-        layout.addWidget(name_label,0,1)
+        layout.addWidget(name_label, 0, 1)
 
         mode_label = QtGui.QLabel(self)
         mode_label.setText('Mode')
         mode_label.setFont(bold_font)
-        layout.addWidget(mode_label,0,2)
+        layout.addWidget(mode_label, 0, 2)
 
         size_label = QtGui.QLabel(self)
         size_label.setText('Weight')
         size_label.setFont(bold_font)
-        layout.addWidget(size_label,0,3)
+        layout.addWidget(size_label, 0, 3)
 
         color_label = QtGui.QLabel(self)
         color_label.setText('Color')
         color_label.setFont(bold_font)
         color_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(color_label,0,4)
+        layout.addWidget(color_label, 0, 4)
 
         line_label = QtGui.QLabel(self)
         line_label.setText('Line Style')
         line_label.setFont(bold_font)
-        layout.addWidget(line_label,0,5)
+        layout.addWidget(line_label, 0, 5)
 
         self.name_line_edits = []
         self.mode_combo_boxes = []
@@ -752,42 +762,46 @@ class ConfigureDataDialog(QtGui.QDialog):
             new_index_label = QtGui.QLabel(self)
             new_index_label.setText(str(i))
             new_index_label.setAlignment(QtCore.Qt.AlignCenter)
-            layout.addWidget(new_index_label,i+1,0)
+            layout.addWidget(new_index_label, i + 1, 0)
 
             new_line_edit = QtGui.QLineEdit(self)
             new_line_edit.setText(curve_names[i])
             self.name_line_edits.append(new_line_edit)
-            layout.addWidget(new_line_edit,i+1,1)
+            layout.addWidget(new_line_edit, i + 1, 1)
 
             new_mode_combo_box = QtGui.QComboBox(self)
             new_mode_combo_box.addItems(curve_mode_options)
-            new_mode_combo_box.setCurrentIndex(curve_mode_options.index(curve_modes[i]))
+            new_mode_combo_box.setCurrentIndex(
+                curve_mode_options.index(curve_modes[i]))
             self.mode_combo_boxes.append(new_mode_combo_box)
-            layout.addWidget(new_mode_combo_box,i+1,2)
+            layout.addWidget(new_mode_combo_box, i + 1, 2)
 
             new_spin_box = QtGui.QSpinBox(self)
             new_spin_box.setValue(int(curve_sizes[i]))
             new_spin_box.setAlignment(QtCore.Qt.AlignCenter)
-            new_spin_box.setRange(1,10)
+            new_spin_box.setRange(1, 10)
             self.size_spin_boxes.append(new_spin_box)
-            layout.addWidget(new_spin_box,i+1,3)
+            layout.addWidget(new_spin_box, i + 1, 3)
 
             c = curve_colors[i]
-            curve_color = QtGui.QColor(c[0],c[1],c[2])
+            curve_color = QtGui.QColor(c[0], c[1], c[2])
 
             new_color_button = QtGui.QPushButton(self)
-            new_color_button.setMaximumHeight(15*resolution_scale)
-            new_color_button.setMaximumWidth(30*resolution_scale)
-            new_color_button.setStyleSheet(' background-color: %s' % curve_color.name() )
-            new_color_button.clicked.connect(self.prompt_color_dialog_factory(i))
+            new_color_button.setMaximumHeight(15 * resolution_scale)
+            new_color_button.setMaximumWidth(30 * resolution_scale)
+            new_color_button.setStyleSheet(
+                ' background-color: %s' % curve_color.name())
+            new_color_button.clicked.connect(
+                self.prompt_color_dialog_factory(i))
             self.color_buttons.append(new_color_button)
-            layout.addWidget(new_color_button,i+1,4)
+            layout.addWidget(new_color_button, i + 1, 4)
 
             new_line_combo_box = QtGui.QComboBox(self)
             new_line_combo_box.addItems(curve_line_options.keys())
-            new_line_combo_box.setCurrentIndex(curve_line_options.keys().index(curve_lines[i]))
+            new_line_combo_box.setCurrentIndex(
+                curve_line_options.keys().index(curve_lines[i]))
             self.line_combo_boxes.append(new_line_combo_box)
-            layout.addWidget(new_line_combo_box,i+1,5)
+            layout.addWidget(new_line_combo_box, i + 1, 5)
 
         # OK and Cancel buttons
         self.buttons = QtGui.QDialogButtonBox(
@@ -799,13 +813,15 @@ class ConfigureDataDialog(QtGui.QDialog):
         self.buttons.rejected.connect(self.reject)
 
     def prompt_color_dialog_factory(self, index):
-        return lambda : self.prompt_color_dialog(index)
+        return lambda: self.prompt_color_dialog(index)
 
     def prompt_color_dialog(self, index):
-        current_color = self.color_buttons[index].palette().color(QtGui.QPalette.Background)
+        current_color = self.color_buttons[
+            index].palette().color(QtGui.QPalette.Background)
         selected_color = QtGui.QColorDialog.getColor(current_color, self)
         if selected_color.isValid():
-            self.color_buttons[index].setStyleSheet("background-color: %s" % selected_color.name())
+            self.color_buttons[index].setStyleSheet(
+                "background-color: %s" % selected_color.name())
 
     # static method to create the dialog and return (date, time, accepted)
     @staticmethod
@@ -818,10 +834,12 @@ class ConfigureDataDialog(QtGui.QDialog):
                 curve_names[i] = str(dialog.name_line_edits[i].text())
                 curve_modes[i] = str(dialog.mode_combo_boxes[i].currentText())
                 curve_sizes[i] = int(dialog.size_spin_boxes[i].value())
-                color = dialog.color_buttons[i].palette().color(QtGui.QPalette.Background)
-                curve_colors[i] = [color.red(),color.green(),color.blue()]
+                color = dialog.color_buttons[i].palette().color(
+                    QtGui.QPalette.Background)
+                curve_colors[i] = [color.red(), color.green(), color.blue()]
                 curve_lines[i] = str(dialog.line_combo_boxes[i].currentText())
             refresh_scopes()
+
 
 class ConfigureModulesDialog(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -833,7 +851,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
         filter_label.setText(melshare_name)
         filter_label.setFont(bold_font)
         filter_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(filter_label,0,6,1,melshare_size)
+        layout.addWidget(filter_label, 0, 6, 1, melshare_size)
 
         range_label = QtGui.QLabel(self)
         range_label.setText('Scope Options')
@@ -845,7 +863,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
         index_label.setText('i')
         index_label.setFont(bold_font)
         index_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(index_label,1,0)
+        layout.addWidget(index_label, 1, 0)
 
         title_label = QtGui.QLabel(self)
         title_label.setText('Module Name')
@@ -855,7 +873,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
         mode_label = QtGui.QLabel(self)
         mode_label.setText('Mode')
         mode_label.setFont(bold_font)
-        layout.addWidget(mode_label,1,2)
+        layout.addWidget(mode_label, 1, 2)
 
         legend_label = QtGui.QLabel(self)
         legend_label.setText('Legend')
@@ -883,7 +901,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
 
         for i in range(melshare_size):
             c = curve_colors[i]
-            curve_color = QtGui.QColor(c[0],c[1],c[2])
+            curve_color = QtGui.QColor(c[0], c[1], c[2])
             new_curve_label = QtGui.QLabel(self)
 
             curve_label_font = QtGui.QFont()
@@ -892,7 +910,8 @@ class ConfigureModulesDialog(QtGui.QDialog):
 
             new_curve_label.setText(str(i))
             new_curve_label.setFont(curve_label_font)
-            new_curve_label.setStyleSheet(' color: white; background-color: %s' % curve_color.name() )
+            new_curve_label.setStyleSheet(
+                ' color: white; background-color: %s' % curve_color.name())
 
             new_curve_label.setAlignment(QtCore.Qt.AlignCenter)
             layout.addWidget(new_curve_label, 1, i + 6)
@@ -902,39 +921,40 @@ class ConfigureModulesDialog(QtGui.QDialog):
             new_index_label = QtGui.QLabel(self)
             new_index_label.setText(str(i))
             new_index_label.setAlignment(QtCore.Qt.AlignCenter)
-            layout.addWidget(new_index_label,i+2,0)
+            layout.addWidget(new_index_label, i + 2, 0)
 
             new_line_edit = QtGui.QLineEdit(self)
             new_line_edit.setText(scope_titles[i])
-            new_line_edit.setMinimumWidth(200*resolution_scale)
+            new_line_edit.setMinimumWidth(200 * resolution_scale)
             self.title_line_edits.append(new_line_edit)
             layout.addWidget(new_line_edit, i + 2, 1)
 
             new_mode_combo_box = QtGui.QComboBox(self)
             new_mode_combo_box.addItems(scope_mode_options)
-            new_mode_combo_box.setCurrentIndex(scope_mode_options.index(scope_modes[i]))
+            new_mode_combo_box.setCurrentIndex(
+                scope_mode_options.index(scope_modes[i]))
             self.mode_combo_boxes.append(new_mode_combo_box)
-            layout.addWidget(new_mode_combo_box,i+2,2)
+            layout.addWidget(new_mode_combo_box, i + 2, 2)
 
-            new_legend_checkbox =  QtGui.QCheckBox(self)
+            new_legend_checkbox = QtGui.QCheckBox(self)
             new_legend_checkbox.setChecked(scope_legends[i])
-            new_legend_checkbox.setFixedWidth(25*resolution_scale)
+            new_legend_checkbox.setFixedWidth(25 * resolution_scale)
             self.legend_checkboxes.append(new_legend_checkbox)
             layout.addWidget(new_legend_checkbox, i + 2, 3)
 
             new_min_line_edit = QtGui.QLineEdit(self)
             new_min_line_edit.setValidator(QtGui.QDoubleValidator(self))
             new_min_line_edit.setText(str(scope_ranges[i][0]))
-            new_min_line_edit.setFixedWidth(50*resolution_scale)
+            new_min_line_edit.setFixedWidth(50 * resolution_scale)
             self.min_line_edits.append(new_min_line_edit)
-            layout.addWidget(new_min_line_edit,i+2,4)
+            layout.addWidget(new_min_line_edit, i + 2, 4)
 
             new_max_line_edit = QtGui.QLineEdit(self)
             new_max_line_edit.setValidator(QtGui.QDoubleValidator(self))
             new_max_line_edit.setText(str(scope_ranges[i][1]))
-            new_max_line_edit.setFixedWidth(50*resolution_scale)
+            new_max_line_edit.setFixedWidth(50 * resolution_scale)
             self.max_line_edits.append(new_max_line_edit)
-            layout.addWidget(new_max_line_edit,i+2,5)
+            layout.addWidget(new_max_line_edit, i + 2, 5)
 
             self.filter_checkboxes.append([])
             for j in range(melshare_size):
@@ -947,7 +967,8 @@ class ConfigureModulesDialog(QtGui.QDialog):
         self.buttons = QtGui.QDialogButtonBox(
             QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
             QtCore.Qt.Horizontal, self)
-        layout.addWidget(self.buttons, len(scope_modules) + 2, 0, 1, melshare_size + 6)
+        layout.addWidget(self.buttons, len(scope_modules) +
+                         2, 0, 1, melshare_size + 6)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
 
@@ -958,18 +979,21 @@ class ConfigureModulesDialog(QtGui.QDialog):
         dialog = ConfigureModulesDialog(parent)
         result = dialog.exec_()
         if result == QtGui.QDialog.Accepted:
-            scope_filters = [[i.isChecked() for i in row] for row in dialog.filter_checkboxes]
+            scope_filters = [[i.isChecked() for i in row]
+                             for row in dialog.filter_checkboxes]
             scope_titles = [str(i.text()) for i in dialog.title_line_edits]
-            scope_modes = [str(i.currentText()) for i in dialog.mode_combo_boxes]
+            scope_modes = [str(i.currentText())
+                           for i in dialog.mode_combo_boxes]
             scope_legends = [i.isChecked() for i in dialog.legend_checkboxes]
             scope_ranges = [list(pair) for pair in
                             zip([float(i.text()) for i in dialog.min_line_edits],
-                                [float(i.text()) for i in dialog.max_line_edits] ) ]
+                                [float(i.text()) for i in dialog.max_line_edits])]
             refresh_scopes()
 
 ###################
 # ACTION FUNCTIONS
 ###################
+
 
 def prompt_configure_data():
     if melshare_connected:
@@ -979,6 +1003,7 @@ def prompt_configure_data():
         msgBox.setText('Connect to a MELShare before configuring!')
         msgBox.setWindowTitle('Configure Data')
         msgBox.exec_()
+
 
 def prompt_configure_modules():
     if melshare_connected:
@@ -993,10 +1018,11 @@ def prompt_configure_modules():
 def prompt_connect_melshare():
     global melshare_name
     input, ok = QtGui.QInputDialog.getText(
-        widg, 'MELShare', 'Enter the MELShare Name:',QtGui.QLineEdit.Normal,melshare_name)
+        widg, 'MELShare', 'Enter the MELShare Name:', QtGui.QLineEdit.Normal, melshare_name)
     if ok:
         melshare_name = str(input)
         reload_all()
+
 
 def prompt_resize_grid():
     global grid_rows, grid_cols, scope_count
@@ -1007,21 +1033,25 @@ def prompt_resize_grid():
         grid_rows, grid_cols = grid_options_dict[str(selection)]
         reload_grid()
 
+
 def about():
     msg = QtGui.QMessageBox()
     msg.setWindowTitle('About')
-    msg.setText('MAHI Lab - Rice University\n'+
-        'Author: Evan Pezent\n'
-        'Email: epezent@rice.edu\n'+
-        'Website: evanpezent.com')
+    msg.setText('MAHI Lab - Rice University\n' +
+                'Author: Evan Pezent\n'
+                'Email: epezent@rice.edu\n' +
+                'Website: evanpezent.com')
     msg.exec_()
+
 
 def open_github():
     webbrowser.open('https://github.com/epezent/MEL')
 
+
 def prompt_change_theme():
     global theme, theme_options
-    selection, ok = QtGui.QInputDialog.getItem(widg, 'Theme', 'Select Theme:', theme_options, theme_options.index(theme), False)
+    selection, ok = QtGui.QInputDialog.getItem(
+        widg, 'Theme', 'Select Theme:', theme_options, theme_options.index(theme), False)
     if ok:
         theme = str(selection)
         set_theme()
@@ -1034,6 +1064,7 @@ def reload_all():
     resize_grid()
     validate_scope_properties()
     refresh_scopes()
+
 
 def reload_grid():
     resize_grid()
@@ -1052,52 +1083,53 @@ pref_menu = menu_bar.addMenu('&Preferences')
 help_menu = menu_bar.addMenu('&Help')
 
 new_action = QtGui.QAction('&New', main_window,
-    shortcut='Ctrl+N', statusTip='Create a new scope', triggered=open_new_instance)
+                           shortcut='Ctrl+N', statusTip='Create a new scope', triggered=open_new_instance)
 file_menu.addAction(new_action)
 
 open_action = QtGui.QAction('&Open...', main_window,
-    shortcut='Ctrl+O', statusTip='Open an existing scope', triggered=open)
+                            shortcut='Ctrl+O', statusTip='Open an existing scope', triggered=open)
 file_menu.addAction(open_action)
 
 save_action = QtGui.QAction('&Save', main_window,
-    shortcut='Ctrl+S', statusTip='Save the current scope', triggered=save)
+                            shortcut='Ctrl+S', statusTip='Save the current scope', triggered=save)
 file_menu.addAction(save_action)
 
 save_as_action = QtGui.QAction('Save &As...', main_window,
-    shortcut='Ctrl+Shift+S', statusTip='Save the current scope under a new name', triggered=save_as)
+                               shortcut='Ctrl+Shift+S', statusTip='Save the current scope under a new name', triggered=save_as)
 file_menu.addAction(save_as_action)
 
 reload_action = QtGui.QAction('&Reload', main_window,
-    shortcut='Ctrl+R', statusTip='Reload the current scope', triggered=reload_all)
+                              shortcut='Ctrl+R', statusTip='Reload the current scope', triggered=reload_all)
 file_menu.addAction(reload_action)
 
 connect_action = QtGui.QAction('Connect &MELShare...', main_window,
-    shortcut='Ctrl+M', statusTip='Connect to a MELShare map', triggered=prompt_connect_melshare)
+                               shortcut='Ctrl+M', statusTip='Connect to a MELShare map', triggered=prompt_connect_melshare)
 edit_menu.addAction(connect_action)
 
 grid_action = QtGui.QAction('Resize &Grid...', main_window,
-    shortcut='Ctrl+G', statusTip='Resize the scope grid', triggered=prompt_resize_grid)
+                            shortcut='Ctrl+G', statusTip='Resize the scope grid', triggered=prompt_resize_grid)
 edit_menu.addAction(grid_action)
 
 config_curves_action = QtGui.QAction('Configure &Data...', main_window,
-    shortcut='Ctrl+D', statusTip='Configure data and curve properties', triggered=prompt_configure_data)
+                                     shortcut='Ctrl+D', statusTip='Configure data and curve properties', triggered=prompt_configure_data)
 edit_menu.addAction(config_curves_action)
 
 configure_modules_action = QtGui.QAction('&Configure Modules(s)...', main_window,
-    shortcut='Ctrl+C', statusTip='Configure scope module(s) properties', triggered=prompt_configure_modules)
+                                         shortcut='Ctrl+C', statusTip='Configure scope module(s) properties', triggered=prompt_configure_modules)
 edit_menu.addAction(configure_modules_action)
 
 theme_action = QtGui.QAction('&Theme...', main_window,
-    shortcut='F10', statusTip='Change the current theme', triggered=prompt_change_theme)
+                             shortcut='F10', statusTip='Change the current theme', triggered=prompt_change_theme)
 pref_menu.addAction(theme_action)
 
 about_action = QtGui.QAction('&About', main_window,
-    shortcut='F11', statusTip='About MELScope', triggered=about)
+                             shortcut='F11', statusTip='About MELScope', triggered=about)
 help_menu.addAction(about_action)
 
 github_action = QtGui.QAction('&GitHub...', main_window,
-    shortcut='F12', statusTip='Open MEL GitHub webpage', triggered=open_github)
+                              shortcut='F12', statusTip='Open MEL GitHub webpage', triggered=open_github)
 help_menu.addAction(github_action)
+
 
 def update_menu():
     global config_curves_action, configure_modules_action
@@ -1115,6 +1147,7 @@ def update_menu():
 set_theme()
 reload_grid()
 
+
 def main_loop():
     global melshare_connected
     update_time()
@@ -1126,7 +1159,8 @@ def main_loop():
                 scope.update()
         else:
             melshare_connected = False
-            status_bar.showMessage('Lost connection to MELShare <' + melshare_name + '>')
+            status_bar.showMessage(
+                'Lost connection to MELShare <' + melshare_name + '>')
 
 # start the main_loop_timer
 main_loop_timer = QtCore.QTimer()
@@ -1138,6 +1172,6 @@ main_window.show()
 
 # start Qt event loop unless running in interactive mode or using pyside.
 if __name__ == '__main__':
-    #multiprocessing.freeze_support()
+    # multiprocessing.freeze_support()
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()
