@@ -105,7 +105,10 @@ namespace mel {
     // GENERIC ENGINEERING FUNCTIONS
     ////////////////////////////////
 
-    double sin_trajectory(double amplitude, double frequency, double time);
+    double sin_wave(double amplitude, double frequency, double t);
+    double square_wave(double amplitude, double frequency, double t);
+    double triangle_wave(double amplitude, double frequency, double t);
+    double sawtooth_wave(double amplitude, double frequency, double t);
     double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
     double saturate(double value, double max, double min);
     double saturate(double value, double abs_max);

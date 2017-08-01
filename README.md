@@ -99,11 +99,11 @@
 
    **NOTE:** PyOpenGL_accelerate may fail to install if you skipped step 2. This is because it must be built and requires the legacy MSVC compiler be installed.
 
-7. Download and the [PyQt4 binaries for Python 2.7 (64-bit)](https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe/download?use_mirror=managedway&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpyqt%2Ffiles%2FPyQt4%2FPyQt-4.11.4%2F&use_mirror=managedway). Run the installer and insure that the Python installation directory is correctly identified as **C:\dev\Python27**
+7. Download and the [PyQt4 binaries for Python 2.7 (64-bit)](https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe/download?use_mirror=managedway&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpyqt%2Ffiles%2FPyQt4%2FPyQt-4.11.4%2F&use_mirror=managedway). Run the installer and ensure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
-8. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and insure that the Python installation directory is correctly identified as **C:\dev\Python27**
+8. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and ensure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
-9. Run the following Python script to test PyQt4 + PyQtGraph. Play around with each test example, particularly the benchmarks, to insure everything is working properly.
+9. Run the following Python script to test PyQt4 + PyQtGraph. Play around with each test example, particularly the benchmarks, to ensure everything is working properly.
 
     ```python
     import pyqtgraph.examples

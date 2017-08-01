@@ -1,0 +1,21 @@
+curve_colors:
+- [31, 120, 180]
+- [227, 26, 28]
+- [51, 160, 44]
+- [255, 127, 0]
+curve_lines: [Solid, Solid, Solid, Solid]
+curve_modes: [Read Only, Read Only, Read Only, Read Only]
+curve_names: [Sin, Sqaure, Triangle, Sawtooth]
+curve_sizes: [3.0, 3.0, 3.0, 3.0]
+grid_cols: 1
+grid_rows: 1
+melshare_name: map1
+melshare_size: 4
+scope_filters:
+- [true, true, true, true]
+scope_legends: [true]
+scope_modes: [Scope]
+scope_ranges:
+- [-10.0, 10.0]
+scope_titles: [Scope0]
+theme: Dark

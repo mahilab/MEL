@@ -5,7 +5,7 @@
 #include "Q8Usb.h"
 #include "Encoder.h"
 #include "OpenWrist.h"
-#include "Cuff.h"
+//#include "Cuff.h"
 #include <functional>
 #include "MelShare.h"
 #include "DataLog.h"
@@ -22,35 +22,43 @@ public:
     mel::share::MelShare map0 = mel::share::MelShare("ow_state");
     mel::share::MelShare map1 = mel::share::MelShare("map1");
 
-    std::array<double, 6> data0 = { 0, 0, 0, 0, 0, 0 };
-    std::array<double, 1> data1 = { 0 };
+    std::array<double, 9> data0 = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    std::array<double, 4> data1 = { 0, 0, 0, 0 };
 
     void start() override {}
     void step() override {
 
-        data0[0] = mel::sin_trajectory(80, 0.25, time());
-        data0[1] = mel::sin_trajectory(60, 0.25, time());
-        data0[2] = mel::sin_trajectory(35, 0.25, time());
+        data0[0] = mel::sin_wave(10, 0.25, time());
+        data0[1] = data0[0];
+        data0[2] = data0[0];
 
-        data0[3] = mel::sin_trajectory(400, 1, time());
+        data0[3] = mel::square_wave(10, 0.25, time());
         data0[4] = data0[3];
         data0[5] = data0[3];
 
+        data0[6] = mel::triangle_wave(10, 0.25, time());
+        data0[7] = data0[6];
+        data0[8] = data0[7];
+
         map0.write(data0);
 
-        data1[0] = data0[1];
+        data1[0] = mel::sin_wave(10, 0.25, time());
+        data1[1] = mel::square_wave(10, 0.25, time());;
+        data1[2] = mel::triangle_wave(10, 0.25, time());
+        data1[3] = mel::sawtooth_wave(10, 0.25, time());
         map1.write(data1);
     }
     void stop() override {}
 
 };
 
+
 class CuffTest : public mel::Task {
 public:
     CuffTest(OpenWrist* open_wrist, mel::Daq* daq) : Task("cuff_test"), ow_(open_wrist), daq_(daq) {}
     mel::Daq* daq_;
     OpenWrist* ow_;
-    Cuff cuff_;
+    //Cuff cuff_;
     int cuff_motor_position_0_ = 0;
     int cuff_motor_position_1_ = 0;
     short int cuff_position_sl_ = 0;
@@ -67,7 +75,7 @@ public:
         ow_->enable();
         std::cout << "Press ENTER to enable CUFF";
         getchar();
-        cuff_.enable();
+        //cuff_.enable();
         std::cout << "Press ENTER to start the controller.";
         getchar();
         daq_->start_watchdog(0.1);
@@ -83,13 +91,13 @@ public:
         double rad_error = radius - user_radius;
 
         double mot_input = mel::RAD2DEG * abs(rad_error) *500;
-        cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
+        //cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
     }
 
     void stop() override {
         ow_->disable();
         daq_->deactivate();
-        cuff_.disable();
+        //cuff_.disable();
     }
 
 };

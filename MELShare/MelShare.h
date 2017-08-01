@@ -147,7 +147,75 @@ namespace mel {
             }
         }
 
-
+        /// Reads the first n = #buffer_size values from mapped region #region into C-style array #read_buffer, and then immediately
+        /// writes n = #write_buffer_size values into #region from #write_buffer. This function should be use instead of sequentially
+        /// calling #read_map and #write_map when used for bidirectional communication because it ensures that that the map will be 
+        /// read and written by the calling process before the other process can read or write. 
+        template <typename Tr, typename Tw>
+        int read_write_map(Tr* read_buffer, const int read_buffer_size,
+            Tw* write_buffer, const int write_buffer_size,
+            const boost::interprocess::mapped_region& region_data,
+            const boost::interprocess::mapped_region& region_size,
+            const std::string& mutex_name)
+        {
+            volatile int* size;
+            volatile Tr* read_data;
+            volatile Tw* write_data;
+            std::wstring w_mutex_name = std::wstring(mutex_name.begin(), mutex_name.end());
+            HANDLE mutex;
+            mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, w_mutex_name.c_str());
+            DWORD dwWaitResult;
+            if (mutex != NULL) {
+                dwWaitResult = WaitForSingleObject(mutex, INFINITE);
+                switch (dwWaitResult) {
+                case WAIT_OBJECT_0:
+                    size = static_cast<int*>(region_size.get_address());
+                    // read map
+                    if (read_buffer_size > 0) {
+                        read_data = static_cast<Tr*>(region_data.get_address());
+                        for (int i = 0; i < min(read_buffer_size, *size); i++) {
+                            read_buffer[i] = read_data[i];
+                        }
+                    }
+                    // write map
+                    if (write_buffer_size > 0) {
+                        write_data = static_cast<Tw*>(region_data.get_address());
+                        *size = write_buffer_size;
+                        for (int i = 0; i < write_buffer_size; i++) {
+                            write_data[i] = write_buffer[i];
+                        }
+                    }
+                    if (!ReleaseMutex(mutex)) {
+                        std::cout << "ERROR: Failed to release mutex <" << mutex_name << ">." << std::endl;
+                        printf("WINDOWS ERROR: %d\n", GetLastError());
+                        return -6;
+                    }
+                    if (!CloseHandle(mutex)) {
+                        std::cout << "ERROR: Failed to close mutex <" << mutex_name << "> handle." << std::endl;
+                        printf("WINDOWS ERROR: %d\n", GetLastError());
+                        return -7;
+                    }
+                    return *size;
+                case WAIT_ABANDONED:
+                    std::cout << "ERROR: Wait on mutex <" << mutex_name << "> abandoned." << std::endl;
+                    printf("WINDOWS ERROR: %d\n", GetLastError());
+                    return -3;
+                case WAIT_TIMEOUT:
+                    std::cout << "ERROR: Wait on mutex <" << mutex_name << "> timed out." << std::endl;
+                    printf("WINDOWS ERROR: %d\n", GetLastError());
+                    return -4;
+                case WAIT_FAILED:
+                    std::cout << "ERROR: Wait on mutex <" << mutex_name << "> failed." << std::endl;
+                    printf("WINDOWS ERROR: %d\n", GetLastError());
+                    return -5;
+                }
+            }
+            else {
+                std::cout << "ERROR: Failed to open mutex <" << mutex_name << ">." << std::endl;
+                printf("WINDOWS ERROR: %d\n", GetLastError());
+                return -2;
+            }
+        }
 
         // base read/write template functions that open a new instance of the shared memory map and read/write from C-style array
 
@@ -181,7 +249,27 @@ namespace mel {
                 boost::interprocess::windows_shared_memory shm_size(boost::interprocess::open_only, name_size.c_str(), boost::interprocess::read_write);
                 boost::interprocess::mapped_region region_data(shm_data, boost::interprocess::read_write);
                 boost::interprocess::mapped_region region_size(shm_size, boost::interprocess::read_write);
-                return write_map(buffer, buffer_size, region_data, region_data, mutex_name);
+                return write_map(buffer, buffer_size, region_data, region_size, mutex_name);
+            }
+            catch (boost::interprocess::interprocess_exception &ex) {
+                std::cout << "ERROR: Failed to open shared memory map <" << name << ">." << std::endl;
+                std::cout << "BOOST ERROR: " << ex.what() << std::endl;
+                return -1;
+            }
+        }
+
+        /// Opens shared memory map #name and reads n = #read_buffer_size values into C-style array #read_buffer, 
+        /// then immediately writes n = #write_buffer_size values from C-style array #write_buffer
+        template <typename Tr, typename Tw>
+        int read_write_map(const std::string& name, Tr* read_buffer, const int read_buffer_size, Tw* write_buffer, const int write_buffer_size) {
+            try {
+                std::string name_size = name + "_size";
+                std::string mutex_name = name + "_mutex";
+                boost::interprocess::windows_shared_memory shm_data(boost::interprocess::open_only, name.c_str(), boost::interprocess::read_write);
+                boost::interprocess::windows_shared_memory shm_size(boost::interprocess::open_only, name_size.c_str(), boost::interprocess::read_write);
+                boost::interprocess::mapped_region region_data(shm_data, boost::interprocess::read_write);
+                boost::interprocess::mapped_region region_size(shm_size, boost::interprocess::read_write);
+                return read_write_map(read_buffer, read_buffer_size, write_buffer, write_buffer_size, region_data, region_size, mutex_name);
             }
             catch (boost::interprocess::interprocess_exception &ex) {
                 std::cout << "ERROR: Failed to open shared memory map <" << name << ">." << std::endl;
@@ -214,6 +302,20 @@ namespace mel {
         template <typename T, std::size_t N>
         int write_map(const std::string& name, std::array<T, N>& buffer) {
             return write_map(name, &buffer[0], buffer.size());
+        }
+
+        /// Opens shared memory map #name and reads n = #read_buffer.size() values into STL vector #read_buffer, 
+        /// then immediately writes n = #write_buffer.size() values from STL vector #write_buffer
+        template <typename Tr, typename Tw>
+        int read_write_map(const std::string& name, std::vector<Tr>& read_buffer, std::vector<Tw>& write_buffer) {
+            return read_write_map(name, &read_buffer[0], read_buffer.size(), &write_buffer[0], write_buffer.size());
+        }
+
+        /// Opens shared memory map #name and reads n = #read_buffer.size() values into STL vector #read_buffer, 
+        /// then immediately writes n = #write_buffer.size() values from STL vector #write_buffer
+        template <typename Tr, std::size_t Nr, typename Tw, std::size_t Nw>
+        int read_write_map(const std::string& name, std::array<Tr, Nr>& read_buffer, std::array<Tw, Nw>& write_buffer) {
+            return read_write_map(name, &read_buffer[0], read_buffer.size(), &write_buffer[0], write_buffer.size());
         }
 
         // wraps memory maps, regions, mutexes, and functions into a convienient class for the C++ interface
@@ -257,6 +359,21 @@ namespace mel {
                 return write(&buffer[0], buffer.size());
             }
 
+            template<typename Tr, typename Tw>
+            int read_write(Tr* read_buffer, int read_buffer_size, Tw* write_buffer, int write_buffer_size) {
+                return read_write_map(read_buffer, read_buffer_size, write_buffer, write_buffer_size, region_data_, region_size_, mutex_name_);
+            }
+
+            template<typename Tr, typename Tw>
+            int read_write(std::vector<Tr>& read_buffer, std::vector<Tw>& write_buffer) {
+                return read_write(&read_buffer[0], read_buffer.size(), &write_buffer[0], write_buffer.size());
+            }
+
+            template <typename Tr, std::size_t Nr, typename Tw, std::size_t Nw>
+            int read_write(std::array<Tr, Nr>& read_buffer, std::array<Tw, Nw>& write_buffer) {
+                return read_write(&read_buffer[0], read_buffer.size(), &write_buffer[0], write_buffer.size());
+            }
+
             int get_size() {
                 int* empty = nullptr;
                 return read_map(empty, 0, region_data_, region_size_, mutex_name_);
@@ -279,34 +396,46 @@ namespace mel {
 
         };
 
-        // C Linkages for Python and C#
+        // C Linkages for Python, C#, etc.
 
         extern "C" {
             MELSHARE_API int get_map_size(char* name);
         }
 
         extern "C" {
-            MELSHARE_API int read_char_map(char* name, char* buffer, int size);
+            MELSHARE_API int read_char_map(char* name, char* buffer, int buffer_size);
         }
 
         extern "C" {
-            MELSHARE_API int read_int_map(char* name, int* buffer, int size);
+            MELSHARE_API int read_int_map(char* name, int* buffer, int buffer_size);
         }
 
         extern "C" {
-            MELSHARE_API int read_double_map(char* name, double* buffer, int size);
+            MELSHARE_API int read_double_map(char* name, double* buffer, int buffer_size);
         }
 
         extern "C" {
-            MELSHARE_API int write_char_map(char* name, char* buffer, int size);
+            MELSHARE_API int write_char_map(char* name, char* buffer, int buffer_size);
         }
 
         extern "C" {
-            MELSHARE_API int write_int_map(char* name, int* buffer, int size);
+            MELSHARE_API int write_int_map(char* name, int* buffer, int buffer_size);
         }
 
         extern "C" {
-            MELSHARE_API int write_double_map(char* name, double* buffer, int size);
+            MELSHARE_API int write_double_map(char* name, double* buffer, int buffer_size);
+        }
+
+        extern "C" {
+            MELSHARE_API int read_write_char_map(char* name, char* read_buffer, int read_buffer_size, char* write_buffer, int write_buffer_size);
+        }
+
+        extern "C" {
+            MELSHARE_API int read_write_int_map(char* name, int* read_buffer, int read_buffer_size, int* write_buffer, int write_buffer_size);
+        }
+
+        extern "C" {
+            MELSHARE_API int read_write_double_map(char* name, double* read_buffer, int read_buffer_size, double* write_buffer, int write_buffer_size);
         }
 
     }
