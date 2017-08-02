@@ -26,6 +26,7 @@
     <ClCompile Include="DataLog.cpp" />
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="Exo.cpp" />
+    <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="Joint.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="AnatomicalJoint.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="DataLog.h" />
+    <ClInclude Include="Integrator.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />

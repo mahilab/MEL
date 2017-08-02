@@ -5,11 +5,13 @@
 #include "Q8Usb.h"
 #include "Encoder.h"
 #include "OpenWrist.h"
-//#include "Cuff.h"
+#include "Cuff.h"
 #include <functional>
 #include "MelShare.h"
 #include "DataLog.h"
 #include <boost/program_options.hpp>
+#include <noise/noise.h>
+#include "Integrator.h"
 
 namespace po = boost::program_options;
 
@@ -21,24 +23,36 @@ public:
 
     mel::share::MelShare cpp2py = mel::share::MelShare("cpp2py");
     mel::share::MelShare py2cpp = mel::share::MelShare("py2cpp");
+    mel::share::MelShare int_map = mel::share::MelShare("int_map");
 
-    std::array<double, 9> state = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     std::array<double, 5> data_r = { 0.25, 0.25, 0.25, 0.25, 0.25 };
     std::array<double, 5> data_w = { 0, 0, 0, 0, 0 };
 
+    std::array<double, 3> data_int = { 0,0,0 };
+
+    Integrator integrator = Integrator(0);
+
+    noise::module::Perlin perlin_module;
 
     void start() override {
         py2cpp.write(data_r);
     }
 
     void step() override {
+
         py2cpp.read(data_r);
         data_w[0] = mel::sin_wave(10, data_r[0], time());
-        data_w[1] = mel::cos_wave(10, data_r[1], time());
+        data_w[1] = 10 * perlin_module.GetValue(time(), 0, 0);
         data_w[2] = mel::square_wave(10, data_r[2], time());;
         data_w[3] = mel::triangle_wave(10, data_r[3], time());
         data_w[4] = mel::sawtooth_wave(10, data_r[4], time());
         cpp2py.write(data_w);
+
+        data_int[0] = 2 * cos(2 * time());
+        data_int[1] = sin(2 * time());
+        data_int[2] = 0;
+        int_map.write(data_int);
+
     }
 
     void stop() override {}
@@ -48,16 +62,16 @@ public:
 
 class CuffTest : public mel::Task {
 public:
+
     CuffTest(OpenWrist* open_wrist, mel::Daq* daq) : Task("cuff_test"), ow_(open_wrist), daq_(daq) {}
     mel::Daq* daq_;
+
     OpenWrist* ow_;
-    //Cuff cuff_;
-    int cuff_motor_position_0_ = 0;
-    int cuff_motor_position_1_ = 0;
-    short int cuff_position_sl_ = 0;
-    short int cuff_position_sq_ = 0;
+    Cuff cuff_;
 
     double radius = 30 * mel::DEG2RAD;
+
+    noise::module::Perlin perlin_module;
 
     void start() override {
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
@@ -68,7 +82,7 @@ public:
         ow_->enable();
         std::cout << "Press ENTER to enable CUFF";
         getchar();
-        //cuff_.enable();
+        cuff_.enable();
         std::cout << "Press ENTER to start the controller.";
         getchar();
         daq_->start_watchdog(0.1);
@@ -83,14 +97,23 @@ public:
         double user_radius = sqrt(pow(ow_->joints_[1]->get_position(), 2) + pow(ow_->joints_[2]->get_position(), 2));
         double rad_error = radius - user_radius;
 
+        double noise0 = 0.5 * perlin_module.GetValue(time(), 0, 0);
+        double noise1 = 0.25 * perlin_module.GetValue(time(), 0, 0);
+
+        ow_->joints_[0]->set_torque(noise0);
+        ow_->joints_[1]->set_torque(noise1);
+
+
         double mot_input = mel::RAD2DEG * abs(rad_error) *500;
-        //cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
+        cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
+
+        daq_->write_all();
     }
 
     void stop() override {
         ow_->disable();
         daq_->deactivate();
-        //cuff_.disable();
+        cuff_.disable();
     }
 
 };
