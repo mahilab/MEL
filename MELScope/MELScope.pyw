@@ -36,7 +36,8 @@ import qdarkstyle
 # optimize calls to sample time and data
 
 
-#######################
+#######################                integral_ += (t - last_t_) * (0.5 * (last_x_ + x));
+
 # MEL SCOPE ABOUT INFO
 #######################
 ver = '1.2'

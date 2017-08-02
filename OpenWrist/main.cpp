@@ -30,7 +30,7 @@ public:
 
     std::array<double, 3> data_int = { 0,0,0 };
 
-    Integrator integrator = Integrator(0);
+    mel::Integrator integrator = mel::Integrator(5, mel::Integrator::Technique::Simpsons);
 
     noise::module::Perlin perlin_module;
 
@@ -48,9 +48,9 @@ public:
         data_w[4] = mel::sawtooth_wave(10, data_r[4], time());
         cpp2py.write(data_w);
 
-        data_int[0] = 2 * cos(2 * time());
-        data_int[1] = sin(2 * time());
-        data_int[2] = 0;
+        data_int[0] = 0.5 * (cos(time()) + 7 * cos(7 * time())); // dx
+        data_int[1] = sin(4 * time()) * cos(3 * time()) + 5; // x, analytical
+        data_int[2] = integrator.integrate(data_int[0], time()); // x, numerical
         int_map.write(data_int);
 
     }
@@ -58,7 +58,6 @@ public:
     void stop() override {}
 
 };
-
 
 class CuffTest : public mel::Task {
 public:
@@ -73,6 +72,28 @@ public:
 
     noise::module::Perlin perlin_module;
 
+    mel::share::MelShare pend = mel::share::MelShare("pend");
+
+    // PENDULUM SIMULATION
+
+    double k = 1000;
+    double b = 1000;
+    double m_c = 1;
+    double m_p = 100;
+    double l = 1;
+    double F = 0;
+    double g = 9.81;
+
+    std::array<double, 4> x = { 0, 0, 0, 0 };
+    std::array<double, 4> xd = { 0, 0, 0, 0 };
+
+    mel::Integrator integrator0 = mel::Integrator(x[0]);
+    mel::Integrator integrator1 = mel::Integrator(x[1]);
+    mel::Integrator integrator2 = mel::Integrator(x[2]);
+    mel::Integrator integrator3 = mel::Integrator(x[3]);
+
+    std::array<mel::Integrator, 4> integrators = { integrator0, integrator1, integrator2, integrator3 };
+
     void start() override {
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
         getchar();
@@ -80,9 +101,10 @@ public:
         std::cout << "Press ENTER to enable OpenWrist.";
         getchar();
         ow_->enable();
-        std::cout << "Press ENTER to enable CUFF";
-        getchar();
-        cuff_.enable();
+        //std::cout << "Press ENTER to enable CUFF";
+        //getchar();
+        //cuff_.enable();
+        daq_->zero_encoders();
         std::cout << "Press ENTER to start the controller.";
         getchar();
         daq_->start_watchdog(0.1);
@@ -97,15 +119,27 @@ public:
         double user_radius = sqrt(pow(ow_->joints_[1]->get_position(), 2) + pow(ow_->joints_[2]->get_position(), 2));
         double rad_error = radius - user_radius;
 
-        double noise0 = 0.5 * perlin_module.GetValue(time(), 0, 0);
-        double noise1 = 0.25 * perlin_module.GetValue(time(), 0, 0);
+        // PENDULUM CALCULATONS
+        F = -k * (ow_->joints_[0]->get_position() - x[0]) - b * (ow_->joints_[0]->get_velocity() - x[1]);
+        xd[0] = x[1];
+        xd[1] = (F / m_p - g*sin(x[2])*cos(x[2]) + l*pow(x[3], 2)*sin(x[2])) / (m_c / m_p + pow(sin(x[2]), 2));
+        xd[2] = x[3];
+        xd[3] = (-F*cos(x[2]) / m_p + (m_c + m_p)*g*sin(x[2]) / m_p - l*pow(x[3], 2)*sin(x[2])*cos(x[2])) / (l*(m_c / m_p + pow(sin(x[2]), 2)));
 
-        ow_->joints_[0]->set_torque(noise0);
-        ow_->joints_[1]->set_torque(noise1);
+        for (int i = 0; i < 4; i++)
+            x[i] = integrators[i].integrate(xd[i], time());
 
+        //double noise0 = 0.5 * perlin_module.GetValue(time(), 0, 0);
+        //double noise1 = 0.25 * perlin_module.GetValue(time(), 0, 0);
+
+        mel::print(x);
+        pend.write(x);
+
+        //ow_->joints_[0]->set_torque(noise0);
+        //ow_->joints_[1]->set_torque(noise1);
 
         double mot_input = mel::RAD2DEG * abs(rad_error) *500;
-        cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
+        //cuff_.set_motor_positions((short int)(-mot_input), (short int)mot_input);
 
         daq_->write_all();
     }
@@ -113,7 +147,7 @@ public:
     void stop() override {
         ow_->disable();
         daq_->deactivate();
-        cuff_.disable();
+        //cuff_.disable();
     }
 
 };
