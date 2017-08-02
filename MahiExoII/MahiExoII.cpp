@@ -8,15 +8,13 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
     params_(parameters),
     qp_(Eigen::VectorXd::Zero(12)),
     qp_0_(Eigen::VectorXd::Zero(12)),
-    //q_par_(Eigen::VectorXd::Zero(3)),
-    //q_ser_(Eigen::VectorXd::Zero(3)),
+    q_par_(Eigen::VectorXd::Zero(3)),
+    q_ser_(Eigen::VectorXd::Zero(3)),
     qp_dot_(Eigen::VectorXd::Zero(12)),
     q_par_dot_(Eigen::VectorXd::Zero(3)),
     q_ser_dot_(Eigen::VectorXd::Zero(3)),
     A_(Eigen::MatrixXd::Zero(3, 12)),
-	//phi_(Eigen::VectorXd::Zero(9)),
     psi_(Eigen::VectorXd::Zero(12)),
-    //phi_d_qp_(Eigen::MatrixXd::Zero(9, 12)),
     psi_d_qp_(Eigen::MatrixXd::Zero(12, 12)),
     rho_(Eigen::MatrixXd::Zero(12,3)),
     rho_sub_(Eigen::MatrixXd::Zero(3,3)),
@@ -52,30 +50,46 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
         joints_.push_back(joint);
     }
-    qp_0_ << mel::PI / 4, mel::PI / 4, mel::PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0, 0, 0.1305;
+    qp_0_ << mel::PI / 4, mel::PI / 4, mel::PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
     selector_mat_.bottomRows(3) = Eigen::MatrixXd::Identity(3, 3);
 
 }
 
+
+void MahiExoII::anatomical_joint_set_points(mel::double_vec& set_points) {
+
+    mel::double_vec torques = { 0,0,0,0,0 };
+
+    torques[0] = mel::pd_controller(35, 0.25, set_points[0], anatomical_joint_positions_[0], 0, anatomical_joint_velocities_[0]);
+    torques[1] = mel::pd_controller( 7, 0.06, set_points[1], anatomical_joint_positions_[1], 0, anatomical_joint_velocities_[1]);
+
+    Eigen::VectorXd q_ser_ref = Eigen::VectorXd::Zero(3);
+    Eigen::VectorXd q_par_ref = Eigen::VectorXd::Zero(3);
+    q_ser_ref << set_points[2], set_points[3], 0.1;
+    inverse_kinematics(q_ser_ref, q_par_ref);
+
+    torques[2] = mel::pd_controller(10, 0.01, q_par_ref[0], joints_[2]->get_position(), 0, joints_[2]->get_velocity());
+    torques[3] = mel::pd_controller(10, 0.01, q_par_ref[1], joints_[3]->get_position(), 0, joints_[3]->get_velocity());
+    torques[4] = mel::pd_controller(10, 0.01, q_par_ref[2], joints_[4]->get_position(), 0, joints_[4]->get_velocity());
+
+    joints_[0]->set_torque(torques[0]);
+    joints_[1]->set_torque(torques[1]);
+    joints_[2]->set_torque(torques[2]);
+    joints_[3]->set_torque(torques[3]);
+    joints_[4]->set_torque(torques[4]);
+
+}
+
+
 void MahiExoII::update_kinematics() {
 
     // update q_par_ (q parallel) with the three prismatic link positions
-    Eigen::VectorXd q_par = Eigen::VectorXd::Zero(3);
-    Eigen::VectorXd q_ser = Eigen::VectorXd::Zero(3);
-    q_par << joints_[2]->get_position(), joints_[3]->get_position(), joints_[4]->get_position();
-    //q_par_ << 0.1305, 0.1305, 0.1305;
-
-    Eigen::VectorXd q_temp = Eigen::VectorXd::Zero(3);
+    //Eigen::VectorXd q_par = Eigen::VectorXd::Zero(3);
+    //Eigen::VectorXd q_ser = Eigen::VectorXd::Zero(3);
+    q_par_ << joints_[2]->get_position(), joints_[3]->get_position(), joints_[4]->get_position();
    
-
     // run forward kinematics solver to update qp_ (q prime), which contains all 12 RPS positions
-    forward_kinematics(q_par, q_ser);
-    //q_ser_ << 0, 0.25, 0.1;
-
-    inverse_kinematics(q_ser, q_temp);
-
-
-    std::cout << (q_ser).transpose() << std::endl;
+    forward_kinematics(q_par_, q_ser_, qp_);
 
     // get positions from first two anatomical joints, which have encoders
     anatomical_joint_positions_[0] = joints_[0]->get_position();
@@ -86,7 +100,9 @@ void MahiExoII::update_kinematics() {
     anatomical_joint_positions_[3] = qp_(7);
 
     // run forward kinematics solver to update qp_dot_ (q prime time derivative), which contains all 12 RPS velocities
-    //forward_kinematics_velocity();
+    // update qs_dot_ (q star time derivative) with the three prismatic link velocities
+    q_par_dot_ << joints_[2]->get_velocity(), joints_[3]->get_velocity(), joints_[4]->get_velocity();
+    forward_kinematics_velocity(q_par_dot_, q_ser_dot_, qp_dot_);
 
     // get velocities from first two anatomical joints, which have encoders
     anatomical_joint_velocities_[0] = joints_[0]->get_velocity();
@@ -108,6 +124,7 @@ double MahiExoII::get_anatomical_joint_velocity(int index) {
 
 mel::double_vec MahiExoII::get_anatomical_joint_positions() {
 
+    /*
     // get positions from first two anatomical joints, which have encoders
     anatomical_joint_positions_[0] = joints_[0]->get_position();
     anatomical_joint_positions_[1] = joints_[1]->get_position();
@@ -115,12 +132,17 @@ mel::double_vec MahiExoII::get_anatomical_joint_positions() {
     // get positions for two wrist anatomical joints from forward kinematics solver
     anatomical_joint_positions_[2] = qp_(6);
     anatomical_joint_positions_[3] = qp_(7);
+    */
 
     return anatomical_joint_positions_;
 }
 
 mel::double_vec MahiExoII::get_anatomical_joint_velocities() {
 
+
+    
+
+    /*
     // get velocities from first two anatomical joints, which have encoders
     anatomical_joint_velocities_[0] = joints_[0]->get_velocity();
     anatomical_joint_velocities_[1] = joints_[1]->get_velocity();
@@ -128,6 +150,7 @@ mel::double_vec MahiExoII::get_anatomical_joint_velocities() {
     // get velocities for two wrist anatomical joints from forward kinematics solver
     anatomical_joint_velocities_[2] = qp_dot_(6);
     anatomical_joint_velocities_[3] = qp_dot_(7);
+    */
 
     return anatomical_joint_velocities_;
 }
@@ -138,12 +161,25 @@ void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
 	joints_[0]->set_torque(new_torques[0]);
 	joints_[1]->set_torque(new_torques[1]);
 
+    mel::uint8_vec select_q = { 3,4,5 }; // indexing of qp                                  
+    // build selection matrix
+    A_ = Eigen::MatrixXd::Zero(3, 12);
+    A_(0, select_q[0]) = 1;
+    A_(1, select_q[1]) = 1;
+    A_(2, select_q[2]) = 1;
+    psi_d_qp_update(qp_);
+    Eigen::MatrixXd rho = psi_d_qp_.fullPivLu().solve(selector_mat_);
+    Eigen::MatrixXd rho_sub = Eigen::MatrixXd::Zero(3, 3);
+    rho_sub.row(0) = rho.row(6);
+    rho_sub.row(1) = rho.row(7);
+    rho_sub.row(2) = rho.row(9);
+
 	// set torques for two wrist anatomical joints
 	Eigen::VectorXd par_torques = Eigen::VectorXd::Zero(3);
 	Eigen::VectorXd ser_torques = Eigen::VectorXd::Zero(3);
 	ser_torques(0) = new_torques[2];
 	ser_torques(1) = new_torques[3];
-	par_torques = rho_sub_.transpose()*ser_torques;
+	par_torques = rho_sub.transpose()*ser_torques;
 	joints_[2]->set_torque(par_torques(0));
 	joints_[3]->set_torque(par_torques(1));
 	joints_[4]->set_torque(par_torques(2));
@@ -176,7 +212,7 @@ void MahiExoII::inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q
 
     Eigen::VectorXd qp = solve_kinematics(select_q, q_ser_in, max_it_, tol_);
 
-    //q_par_out << qp(3), qp(4), qp(5);
+    q_par_out << qp(3), qp(4), qp(5);
 
 }
 
@@ -191,9 +227,54 @@ void MahiExoII::inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q
 }
 
 
+
+void MahiExoII::forward_kinematics_velocity(Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out) {
+
+    mel::uint8_vec select_q = { 3,4,5 }; // indexing of qp_
+
+    // build selection matrix
+    A_ = Eigen::MatrixXd::Zero(3, 12);
+    A_(0, select_q[0]) = 1;
+    A_(1, select_q[1]) = 1;
+    A_(2, select_q[2]) = 1;
+
+    psi_d_qp_update(qp_);
+    Eigen::MatrixXd rho = psi_d_qp_.fullPivLu().solve(selector_mat_);
+    //rho_sub_.row(0) = rho_.row(6);
+    //rho_sub_.row(1) = rho_.row(7);
+    //rho_sub_.row(2) = rho_.row(9);
+
+    Eigen::VectorXd qp_dot = rho*q_par_dot_in;
+
+    q_ser_dot_out << qp_dot(6), qp_dot(7), qp_dot(9);
+
+}
+
+
+void MahiExoII::forward_kinematics_velocity(Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out) {
+
+    mel::uint8_vec select_q = { 3,4,5 }; // indexing of qp_
+
+                                         // build selection matrix
+    A_ = Eigen::MatrixXd::Zero(3, 12);
+    A_(0, select_q[0]) = 1;
+    A_(1, select_q[1]) = 1;
+    A_(2, select_q[2]) = 1;
+
+    psi_d_qp_update(qp_);
+    Eigen::MatrixXd rho = psi_d_qp_.fullPivLu().solve(selector_mat_);
+
+    qp_dot_out = rho*q_par_dot_in;
+
+    q_ser_dot_out << qp_dot_out(6), qp_dot_out(7), qp_dot_out(9);
+
+}
+
+
 Eigen::VectorXd MahiExoII::solve_kinematics(mel::uint8_vec select_q, Eigen::VectorXd& qs, mel::uint32 max_it, double tol) {
     
     // build selection matrix
+    A_ = Eigen::MatrixXd::Zero(3, 12);
     A_(0, select_q[0]) = 1;
     A_(1, select_q[1]) = 1;
     A_(2, select_q[2]) = 1;
@@ -260,7 +341,6 @@ void MahiExoII::psi_update(Eigen::VectorXd& qs, Eigen::VectorXd& qp) {
 }
 
 
-
 Eigen::VectorXd MahiExoII::a_func(Eigen::VectorXd& qp) {
     
     return A_*qp;
@@ -274,19 +354,6 @@ void MahiExoII::psi_d_qp_update(Eigen::VectorXd& qp) {
     psi_d_qp_.block<3, 12>(9, 0) = A_;
 
 }
-/*
-void MahiExoII::forward_kinematics_velocity() {
-
-    // update qs_dot_ (q star time derivative) with the three prismatic link velocities
-    q_par_dot_ << joints_[2]->get_velocity(), joints_[3]->get_velocity(), joints_[4]->get_velocity();
-
-    rho_ = psi_d_qp_.fullPivLu().solve(selector_mat_);
-    rho_sub_.row(0) = rho_.row(6);
-    rho_sub_.row(1) = rho_.row(7);
-    rho_sub_.row(2) = rho_.row(11);
-    qp_dot_ = rho_*q_par_dot_;
-
-}*/
 
 Eigen::VectorXd MahiExoII::phi_func(Eigen::VectorXd& qp) {
     

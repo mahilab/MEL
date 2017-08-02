@@ -148,15 +148,27 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Fault.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main_testing.cpp" />
+    <ClCompile Include="MotorNM.cpp" />
+    <ClCompile Include="MyStateMachine.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataTypes.h" />
+    <ClInclude Include="Fault.h" />
     <ClInclude Include="MahiExoII.h" />
+    <ClInclude Include="MotorNM.h" />
+    <ClInclude Include="MyStateMachine.h" />
+    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
