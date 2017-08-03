@@ -9,39 +9,28 @@ CURVE_COLORS:
   - [166, 206, 227]
   - [251, 154, 153]
   - [178, 223, 138]
-  - [253, 191, 111]
-  - [202, 178, 214]
-  - [255, 255, 153]
 CURVE_LINES:
-  ow_state: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid,
-    Solid, Solid]
+  ow_state: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
 CURVE_SIZES:
-  ow_state: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  ow_state: [1, 1, 1, 1, 1, 1, 1, 1, 1]
 DATA_NAMES:
   ow_state: [Joint 0 Position, Joint 1 Position, Joint 2 Position, Joint 0 Velocity,
-    Joint 1 Velocity, Joint 2 Velocity, Kp 0, Kd 0, Kp 1, Kd 1, Kp 2, Kp 2]
+    Joint 1 Velocity, Joint 2 Velocity, Command Torque 0, Command Torque 1, Command
+      Torque 2]
 GRID_COLS: 4
 GRID_ROWS: 2
 MELSHARE_MODES: {ow_state: Read Only}
 MELSHARE_NAMES: [ow_state]
-MELSHARE_SIZES: {ow_state: 12}
+MELSHARE_SIZES: {ow_state: 9}
 SCOPE_FILTERS:
-- ow_state: [true, false, false, false, false, false, false, false, false, false,
-    false, false]
-- ow_state: [false, true, false, false, false, false, false, false, false, false,
-    false, false]
-- ow_state: [false, false, true, false, false, false, false, false, false, false,
-    false, false]
-- ow_state: [true, true, true, true, true, true, false, false, false, false, false,
-    false]
-- ow_state: [false, false, false, true, false, false, false, false, false, false,
-    false, false]
-- ow_state: [false, false, false, false, true, false, false, false, false, false,
-    false, false]
-- ow_state: [false, false, false, false, false, true, false, false, false, false,
-    false, false]
-- ow_state: [false, false, false, false, false, false, true, true, true, true, true,
-    true]
+- ow_state: [true, false, false, false, false, false, false, false, false]
+- ow_state: [false, true, false, false, false, false, false, false, false]
+- ow_state: [false, false, true, false, false, false, false, false, false]
+- ow_state: [true, true, true, true, true, true, false, false, false]
+- ow_state: [false, false, false, true, false, false, false, false, false]
+- ow_state: [false, false, false, false, true, false, false, false, false]
+- ow_state: [false, false, false, false, false, true, false, false, false]
+- ow_state: [false, false, false, false, false, false, true, true, true]
 SCOPE_LEGENDS: [false, false, false, false, false, false, false, false]
 SCOPE_MODES: [Scope, Scope, Scope, I/O, Scope, Scope, Scope, I/O]
 SCOPE_RANGES:

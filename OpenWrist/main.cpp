@@ -12,6 +12,7 @@
 #include <boost/program_options.hpp>
 #include <noise/noise.h>
 #include "Integrator.h"
+#include "PendulumSimulation.h"
 
 namespace po = boost::program_options;
 
@@ -177,7 +178,8 @@ int main(int argc, char * argv[]) {
         ("transparency_mode", "puts OpenWrist in gravity and friction compensated state")
         ("testing","various testing")
         ("test", "quick tests")
-        ("cuff_test", "Cuff testing biatch");
+        ("cuff_test", "Cuff testing biatch")
+        ("pendulum", "pendulum simulation");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
@@ -249,11 +251,18 @@ int main(int argc, char * argv[]) {
         controller.execute();
     }
 
+    if (var_map.count("pendulum")) {
+        mel::Clock clock(1000, true);
+        mel::Controller controller(clock);
+        mel::Task* task = new PendulumSimulation(&open_wrist, q8);
+        controller.queue_task(task);
+        controller.execute();
+        return 0;
+    }
+
 
     // clean up
     delete q8;
 
     return 0;
 }
-
-

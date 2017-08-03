@@ -47,5 +47,8 @@
     <ClInclude Include="Cuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PendulumSimulation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
