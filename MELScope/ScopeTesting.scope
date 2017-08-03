@@ -1,32 +1,39 @@
 CURVE_COLORS:
   cpp2py:
-  - &id001 [31, 120, 180]
-  - &id002 [227, 26, 28]
-  - &id003 [51, 160, 44]
-  - &id004 [255, 127, 0]
-  - &id005 [106, 61, 154]
+  - [170, 255, 0]
+  - [0, 255, 127]
+  - [51, 160, 44]
+  - [0, 85, 0]
+  - [85, 255, 255]
   py2cpp:
-  - *id001
-  - *id002
-  - *id003
-  - *id004
-  - *id005
+  - [177, 89, 40]
+  - [166, 206, 227]
+  - [251, 154, 153]
+  - [178, 223, 138]
+  - [253, 191, 111]
 CURVE_LINES:
   cpp2py: [Solid, Solid, Solid, Solid, Solid]
   py2cpp: [Solid, Solid, Solid, Solid, Solid]
+CURVE_SIZES:
+  cpp2py: [1, 1, 1, 1, 1]
+  py2cpp: [1, 1, 1, 1, 1]
 DATA_NAMES:
-  cpp2py: [cpp2py_data_0, cpp2py_data_1, cpp2py_data_2, cpp2py_data_3, cpp2py_data_4]
-  py2cpp: [py2cpp_data_0, py2cpp_data_1, py2cpp_data_2, py2cpp_data_3, py2cpp_data_4]
+  cpp2py: [SinWave, PerlinNoise, SquareWave, TriangleWave, SawtoothWave]
+  py2cpp: [out0, out1, out2, out3, out4]
 GRID_COLS: 2
 GRID_ROWS: 1
 MELSHARE_MODES: {cpp2py: Read Only, py2cpp: Write Only}
 MELSHARE_NAMES: [cpp2py, py2cpp]
 MELSHARE_SIZES: {cpp2py: 5, py2cpp: 5}
-SCOPE_FILTERS: []
-SCOPE_LEGENDS: [true, false]
+SCOPE_FILTERS:
+- cpp2py: [true, true, true, true, true]
+  py2cpp: [false, false, false, false, false]
+- cpp2py: [false, false, false, false, false]
+  py2cpp: [true, true, true, true, true]
+SCOPE_LEGENDS: [false, false]
 SCOPE_MODES: [Scope, I/O]
 SCOPE_RANGES:
 - [-10.0, 10.0]
 - [-1.0, 1.0]
-SCOPE_TITLES: [scope_0, scope_1]
+SCOPE_TITLES: [MyScope, MyIO]
 theme: Dark
