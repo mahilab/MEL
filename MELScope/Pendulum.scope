@@ -1,0 +1,29 @@
+CURVE_COLORS:
+  pendulum:
+  - [31, 120, 180]
+  - [227, 26, 28]
+  - [51, 160, 44]
+  - [255, 127, 0]
+CURVE_LINES:
+  pendulum: [Solid, Solid, Solid, Solid]
+CURVE_SIZES:
+  pendulum: [1, 1, 1, 1]
+DATA_NAMES:
+  pendulum: [Q0, Q1, Tau0, Tau1]
+GRID_COLS: 3
+GRID_ROWS: 1
+MELSHARE_MODES: {pendulum: Read Only}
+MELSHARE_NAMES: [pendulum]
+MELSHARE_SIZES: {pendulum: 4}
+SCOPE_FILTERS:
+- pendulum: [true, true, false, false]
+- pendulum: [false, false, true, true]
+- pendulum: [true, true, true, true]
+SCOPE_LEGENDS: [false, false, false]
+SCOPE_MODES: [Scope, Scope, I/O]
+SCOPE_RANGES:
+- [-5.0, 5.0]
+- [-1.0, 1.0]
+- [-1.0, 1.0]
+SCOPE_TITLES: [scope_0, scope_1, scope_2]
+theme: Dark
