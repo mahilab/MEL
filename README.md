@@ -124,18 +124,17 @@
 
 3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing "install" and select "Package Control: Install Package" when it appears, then type the names of the following packages and press Enter to install them.
 
-    - [Anaconda](https://packagecontrol.io/packages/Anaconda) (required)
-    - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (required)
-    - [SublimeLiner-pyflakes](https://packagecontrol.io/packages/SublimeLinter-pyflakes) (required)
+    - [Anaconda](https://packagecontrol.io/packages/Anaconda) (**required**)
+    - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (**required**)
+    - [SublimeLiner-pyflakes](https://packagecontrol.io/packages/SublimeLinter-pyflakes) (**required**)
     - [Terminal](https://packagecontrol.io/packages/Terminal) (recommended)
     - [SideBarEnhancements](https://packagecontrol.io/packages/SideBarEnhancements) (recommended)
     - [SyncedSideBar](https://packagecontrol.io/packages/SyncedSideBar) (recommended)
     - [Git](https://packagecontrol.io/packages/Git) (recommended)
     - [GitGutter](https://packagecontrol.io/packages/GitGutter) (recommended)
 
-4. Once Anaconda, SublimeLinter, and SublimeLinter-pyflakes are installed, add the following settings:
+4. Once Anaconda, SublimeLinter, and SublimeLinter-pyflakes are installed, navitage to Preferences >> Package Settings >> Anaconda >> Settings - User and add the following settings:
 
-    - Preferences >> Package Settings >> Anaconda >> Settings - User
     ```json
     {
       "anaconda_linting": false,
@@ -144,7 +143,7 @@
       "complete_parameters": true,
       "auto_formatting_timeout": 5
     }
-  ```
+    ```
 
 5. Open any *.py Python file in Sublime. Navigate to Preferences >> Settings - Syntax Specific. Paste the following into Python.sublime-settings:
 
