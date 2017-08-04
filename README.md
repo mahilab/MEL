@@ -11,6 +11,11 @@
 ## Table of Contents
 
 1.[Installation (Windows 64-bit)](#installation-windows-64-bit)
+  a. [Visual Studio 2017](#visual-studio-2017---visual-c)
+  b. [C++ Libraries](#c-libraries-boost-eigen-quarc)
+  c. [Git/GitHub](#git--github-installation)
+  d. [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
+  e. [Sublime Text 3](#sublime-text-3-optional)
 
 ## Installation (Windows 64-bit)
 
@@ -65,7 +70,9 @@
 
 3. Clone the repository. Navigate to the local path in Windows Explorer and verify that the repository has been cloned.
 
-###   Python 2.7 + NumPy + PyQt4 + PyQtGraph
+###   Python 2.7 + NumPy + PyQt4 + PyQtGraph (Optional)
+
+**Note:** The MELScope application is written entirely in Python using PyQt4 for GUIs and PyQtGraph for plotting. If you plan to use MELScope or want to develop your own GUIs for MEL, follow theses steps.
 
 1. Download [Python 2.7.13 (64-bit) Installer](https://www.python.org/downloads/release/python-2713/)
 
