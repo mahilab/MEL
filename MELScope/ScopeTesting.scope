@@ -1,10 +1,10 @@
 CURVE_COLORS:
   cpp2py:
-  - [170, 255, 0]
-  - [0, 255, 127]
-  - [51, 160, 44]
+  - [170, 0, 0]
+  - [86, 255, 14]
+  - [85, 85, 255]
   - [0, 85, 0]
-  - [85, 255, 255]
+  - [255, 170, 127]
   py2cpp:
   - [177, 89, 40]
   - [166, 206, 227]
@@ -15,11 +15,11 @@ CURVE_LINES:
   cpp2py: [Solid, Solid, Solid, Solid, Solid]
   py2cpp: [Solid, Solid, Solid, Solid, Solid]
 CURVE_SIZES:
-  cpp2py: [1, 1, 1, 1, 1]
+  cpp2py: [1, 2, 1, 1, 1]
   py2cpp: [1, 1, 1, 1, 1]
 DATA_NAMES:
   cpp2py: [SinWave, PerlinNoise, SquareWave, TriangleWave, SawtoothWave]
-  py2cpp: [out0, out1, out2, out3, out4]
+  py2cpp: [SinWave, PerlinNoise, SquareWave, TriangleWave, SawtoothWave]
 GRID_COLS: 2
 GRID_ROWS: 1
 MELSHARE_MODES: {cpp2py: Read Only, py2cpp: Write Only}

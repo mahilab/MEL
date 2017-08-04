@@ -12,7 +12,7 @@
 #include <boost/program_options.hpp>
 #include <noise/noise.h>
 #include "Integrator.h"
-#include "PendulumSimulation.h"
+//#include "PendulumSimulation.h"
 
 namespace po = boost::program_options;
 
@@ -45,6 +45,7 @@ public:
     void step() override {
 
         py2cpp.read(data_r);
+
         data_w[0] = mel::sin_wave(10, data_r[0], time());
         data_w[1] = data_r[1] * perlin_module.GetValue(time(), 0, 0);
         data_w[2] = mel::square_wave(10, data_r[2], time());;
@@ -254,8 +255,8 @@ int main(int argc, char * argv[]) {
     if (var_map.count("pendulum")) {
         mel::Clock clock(1000, true);
         mel::Controller controller(clock);
-        mel::Task* task = new PendulumSimulation(&open_wrist, q8);
-        controller.queue_task(task);
+        //mel::Task* task = new PendulumSimulation(&open_wrist, q8);
+        //controller.queue_task(task);
         controller.execute();
         return 0;
     }

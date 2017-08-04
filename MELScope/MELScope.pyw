@@ -1,10 +1,10 @@
-################################################
+#==============================================================================
 # MEL Scope
 # Evan Pezent (epezent@rice.edu, evanpezent.com)
 # Mechatronics and Haptic Interfaces (MAHI) Lab
 # Rice University
 # 06/2017 -
-################################################
+#==============================================================================
 
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.ptime import time
@@ -31,31 +31,31 @@ import qdarkstyle
 # add scope mode
 # change grid item class structure to be less bulky and titles separate
 # change grid dialog that uses checkboxes
-# each scope has own melshare?
 # optimize calls to sample time and data
 # manage MELShare(s) dialog
+# changing colros when paused deletes data
 
-#######################                integral_ += (t - last_t_) * (0.5 * (last_x_ + x));
 
+#==============================================================================
 # MEL SCOPE ABOUT INFO
-#######################
-ver = '1.3'
+#==============================================================================
+ver = '1.0'
 
-########################################
+#==============================================================================
 # PYQT APP / MAIN WINDOW / LAYOUT SETUP
-#########################################
+#==============================================================================
 
 app = QtGui.QApplication([])
 
 main_window = QtGui.QMainWindow()
 main_window.setWindowTitle('MELScope (untitled)')
+#main_window.setFixedSize(400,400)
 
 screen_resolution = app.desktop().screenGeometry()
 resolution_scale = screen_resolution.width() / 1920.0
 
 widg = QtGui.QWidget()
 main_window.setCentralWidget(widg)
-main_window.resize(640, 640)
 widg.setContentsMargins(12, 12, 12, 12)
 grid = QtGui.QGridLayout()  # http://zetcode.com/gui/pyqt4/layoutmanagement/
 grid.setContentsMargins(0, 0, 0, 0)
@@ -63,6 +63,9 @@ widg.setLayout(grid)
 
 bold_font = QtGui.QFont()
 bold_font.setBold(True)
+
+WIDTH = 400
+HEIGHT = 400
 
 #==============================================================================
 # THEME SETUP
@@ -74,7 +77,8 @@ THEME_STYLESHEETS = {'Classic': '',
 THEME_SCOPE_BG_COLORS = {"Classic": [240, 240, 240], "Dark": [49, 54, 59]}
 THEME_SCOPE_FB_COLORS = {"Classic": [0, 0, 0], "Dark": [240, 240, 240]}
 THEME_SCOPE_VB_COLORS = {"Classic": [240, 240, 240], "Dark": [35, 38, 41]}
-THEME_SCOPE_RW_COLORS = {"Classic": [204, 232, 255], "Dark": [24, 70, 93]}
+THEME_SCOPE_IO_CONFIRMED_COLORS = {"Classic": [204, 232, 255], "Dark": [24, 70, 93]}
+THEME_SCOPE_IO_CHANGING_COLORS = {'Classic': [144, 200, 246], 'Dark': [191, 54, 12]}
 
 theme = 'Dark'
 
@@ -85,6 +89,7 @@ def set_theme():
     pyqtgraph.setConfigOption('foreground', THEME_SCOPE_FB_COLORS[theme])
     refresh_scopes()
 
+SCROLL_MODE = 'FIXED' # ROLLING / FIXED
 
 #==============================================================================
 # STATUS BAR SETUP
@@ -98,7 +103,6 @@ sample_rate_label = QtGui.QLabel()
 sample_rate_label.setText('0')
 sample_rate_label.setAlignment(QtCore.Qt.AlignRight)
 sample_rate_label.setFixedWidth(50)
-
 
 fps_label = QtGui.QLabel()
 fps_label.setText('0')
@@ -125,6 +129,7 @@ DELTA_TIME_FPS = 0
 TIME_LAST_SR = time()
 TIME_NOW_SR = time()
 DELTA_TIME_SR = 0
+ELAPSED_TIME_SR = 0
 
 FPS_TARGET = 60
 FPS_ACTUAL = None
@@ -138,9 +143,10 @@ def update_render_time():
     TIME_LAST_FPS = TIME_NOW_FPS
 
 def update_sample_time():
-    global TIME_LAST_SR, TIME_NOW_SR, DELTA_TIME_SR
+    global TIME_LAST_SR, TIME_NOW_SR, DELTA_TIME_SR, ELAPSED_TIME_SR
     TIME_NOW_SR = time()
     DELTA_TIME_SR = TIME_NOW_SR - TIME_LAST_SR
+    ELAPSED_TIME_SR += DELTA_TIME_SR
     TIME_LAST_SR = TIME_NOW_SR
 
 def update_FPS():
@@ -175,9 +181,12 @@ MELSHARE_SIZES = {}
 MELSHARE_CONNECTIONS = {}
 MELSHARE_DOUBLE_ARRAYS  = {}
 MELSHARE_BUFFERS =  {}
-MELSHARE_SAMPLED_TIMES = {}
 MELSHARE_SAMPLED_DATA = {}
-MELSHARE_SAMPLED_DATA_TEXT = {}
+MELSHARE_BUFFERS_TEXT = {}
+
+MELSHARE_SAMPLED_TIMES = None
+
+WRITE_FLAG = False
 
 def add_melshare(name, mode):
     if name not in MELSHARE_NAMES:
@@ -189,18 +198,20 @@ def add_melshare(name, mode):
             MELSHARE_CONNECTIONS[name] = True
             MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * result
             MELSHARE_BUFFERS[name] = MELSHARE_DOUBLE_ARRAYS[name]()
+            read_melshare(name)
+            MELSHARE_BUFFERS_TEXT[name] = ['%0.4f' % value for value in MELSHARE_BUFFERS[name]]
         else:
             MELSHARE_SIZES[name] = 0
             MELSHARE_CONNECTIONS[name] = False
             MELSHARE_DOUBLE_ARRAYS[name] = None
             MELSHARE_BUFFERS[name] = None
-        MELSHARE_SAMPLED_TIMES[name] = None
+            MELSHARE_BUFFERS_TEXT[name] = None
         MELSHARE_SAMPLED_DATA[name] = None
-        MELSHARE_SAMPLED_DATA_TEXT[name] = None
         DATA_NAMES[name] = []
         CURVE_SIZES[name] = []
         CURVE_COLORS[name] = []
         CURVE_LINES[name] = []
+        reload_melshares()
 
 def reconnect_melshare(name):
     # print 'CALL: reconnect_melshare()'
@@ -211,13 +222,14 @@ def reconnect_melshare(name):
             MELSHARE_CONNECTIONS[name] = True
             MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * result
             MELSHARE_BUFFERS[name] = MELSHARE_DOUBLE_ARRAYS[name]()
+            read_melshare(name)
+            MELSHARE_BUFFERS_TEXT[name] = ['%0.4f' % value for value in MELSHARE_BUFFERS[name]]
         else:
             MELSHARE_CONNECTIONS[name] = False
-            MELSHARE_DOUBLE_ARRAYS[name] = None
-            MELSHARE_BUFFERS[name] = None
-        MELSHARE_SAMPLED_TIMES[name] = None
+            MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * MELSHARE_SIZES[name]
+            MELSHARE_BUFFERS[name] =  MELSHARE_DOUBLE_ARRAYS[name]()
+            MELSHARE_BUFFERS_TEXT[name] = ['0.00'] * MELSHARE_SIZES[name]
         MELSHARE_SAMPLED_DATA[name] = None
-        MELSHARE_SAMPLED_DATA_TEXT[name] = None
     # print_melshare_info()
 
 def purge_melshare_dicts(name):
@@ -226,9 +238,8 @@ def purge_melshare_dicts(name):
     del MELSHARE_CONNECTIONS[name]
     del MELSHARE_DOUBLE_ARRAYS[name]
     del MELSHARE_BUFFERS[name]
-    del MELSHARE_SAMPLED_TIMES[name]
     del MELSHARE_SAMPLED_DATA[name]
-    del MELSHARE_SAMPLED_DATA_TEXT[name]
+    del MELSHARE_BUFFERS_TEXT[name]
     del DATA_NAMES[name]
     del CURVE_SIZES[name]
     del CURVE_COLORS[name]
@@ -239,6 +250,7 @@ def remove_melshare(name):
     if name in MELSHARE_NAMES:
         purge_melshare_dicts(name)
         MELSHARE_NAMES.remove(name)
+        reload_melshares()
     # print_melshare_info()
 
 def remove_all_melshares():
@@ -258,13 +270,21 @@ def write_melshare(name):
         return MELSHARE_DLL.write_double_map(name,
         ctypes.byref(MELSHARE_BUFFERS[name]), MELSHARE_SIZES[name])
 
-def melshares_connected():
-    if len(MELSHARE_CONNECTIONS) == 0:
+def all_melshares_connected():
+    if len(MELSHARE_NAMES) == 0:
         return False
-    for connection in MELSHARE_CONNECTIONS:
-        if connection is False:
+    for name in MELSHARE_NAMES:
+        if MELSHARE_CONNECTIONS[name] is False:
             return False
     return True
+
+def any_melshares_connected():
+    if len(MELSHARE_NAMES) == 0:
+        return False
+    for name in MELSHARE_CONNECTIONS:
+        if MELSHARE_CONNECTIONS[name] is True:
+            return True
+    return False
 
 def print_melshare_info():
     print '    MELSHARE_NAMES:        ', MELSHARE_NAMES
@@ -277,22 +297,28 @@ def print_melshare_info():
 SAMPLE_DURATION = 10
 NUM_SAMPLES = int(SAMPLE_DURATION * SAMPLE_TARGET * 1.1)
 
+def save_melshare_times():
+    global MELSHARE_SAMPLED_TIMES
+    if SCROLL_MODE == 'FIXED':
+        MELSHARE_SAMPLED_TIMES[:-1] = MELSHARE_SAMPLED_TIMES[1:] - DELTA_TIME_SR
+        MELSHARE_SAMPLED_TIMES[-1] = 0
+    elif SCROLL_MODE == 'ROLLING':
+        MELSHARE_SAMPLED_TIMES[:-1] = MELSHARE_SAMPLED_TIMES[1:]
+        MELSHARE_SAMPLED_TIMES[-1] = ELAPSED_TIME_SR
 
 def save_melshare_data(name):
-    global MELSHARE_BUFFERS, MELSHARE_SAMPLED_DATA_TEXT, MELSHARE_SAMPLED_TIMES, MELSHARE_SAMPLED_DATA, MELSHARE_SIZES, DELTA_TIME_SR
-    MELSHARE_SAMPLED_DATA_TEXT[name] = ['%0.4f' % value for value in MELSHARE_BUFFERS[name]]
-    MELSHARE_SAMPLED_TIMES[name][:-1] = MELSHARE_SAMPLED_TIMES[name][1:] - DELTA_TIME_SR
-    MELSHARE_SAMPLED_TIMES[name][-1] = 0
+    global MELSHARE_BUFFERS, MELSHARE_BUFFERS_TEXT, MELSHARE_SAMPLED_DATA, MELSHARE_SIZES, DELTA_TIME_SR
+    MELSHARE_BUFFERS_TEXT[name] = ['%0.4f' % value for value in MELSHARE_BUFFERS[name]]
     for (data, i) in zip(MELSHARE_SAMPLED_DATA[name], range(MELSHARE_SIZES[name])):
         data[:-1] = data[1:]
         data[-1] = MELSHARE_BUFFERS[name][i]
 
-def reset_melshare_data(name):
-    # print "CALL: reset_melshare_data()"
+def reset_melshare_sampling(name):
+    # print "CALL: reset_melshare_sampling()"
     global NUM_SAMPLES, MELSHARE_SAMPLED_TIMES, MELSHARE_SAMPLED_DATA
-    MELSHARE_SAMPLED_TIMES[name] = None
+    MELSHARE_SAMPLED_TIMES = None
     MELSHARE_SAMPLED_DATA[name] = []
-    MELSHARE_SAMPLED_TIMES[name] = np.zeros(NUM_SAMPLES)
+    MELSHARE_SAMPLED_TIMES = np.zeros(NUM_SAMPLES)
     read_melshare(name)
     for i in range(MELSHARE_SIZES[name]):
         MELSHARE_SAMPLED_DATA[name].append(np.ones(NUM_SAMPLES) * MELSHARE_BUFFERS[name][i])
@@ -442,10 +468,11 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.view_box = self.plot_item.getViewBox()
         # configure plot settings
         self.plot_widget.setRange(xRange=[-SAMPLE_DURATION, 0], yRange=[-1, 1])
-        self.plot_widget.setLimits(xMin=-SAMPLE_DURATION, xMax=0)
+        if SCROLL_MODE == 'FIXED':
+            self.plot_widget.setLimits(xMin=-SAMPLE_DURATION, xMax=0)
+            self.axis_bottom.setTicks(self.time_ticks)
         self.plot_widget.showGrid(x=True, y=True)
         self.plot_widget.setDownsampling(mode='peak')
-        self.axis_bottom.setTicks(self.time_ticks)
         self.axis_bottom.setStyle(tickTextWidth=100)
         # self.plot_item.setMenuEnabled(False)
         self.axis_bottom.setZValue(0)
@@ -482,8 +509,10 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.io_sliders = {}
         # filter
         self.filter = {}
+        self.initial_read = True
         # on tab changed
         self.currentChanged.connect(self.on_tab_changed)
+        self.reset_write_only = True
 
     def on_tab_changed(self):
         global SCOPE_MODES
@@ -498,7 +527,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         if self.plot_item.legend is not None:
             if self.plot_item.legend.scene() is not None:
                 self.plot_item.legend.scene().removeItem(self.plot_item.legend)
-        if SCOPE_LEGENDS[self.index]:
+        if SCOPE_LEGENDS[self.index] is True:
             self.plot_item.addLegend()
         # set title
         self.title = SCOPE_TITLES[self.index]
@@ -534,6 +563,8 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                 if slider is not None:
                     self.io_layout.removeWidget(slider)
                     slider.deleteLater()
+        # reset write only flag
+        self.reset_write_only = True
         # rebuild
         self.curves = {}
         self.io_names, self.io_values, self.io_sliders = {}, {}, {}
@@ -544,7 +575,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
             self.io_values[name] = []
             self.io_sliders[name] = []
             for i in range(MELSHARE_SIZES[name]):
-                if self.filter[name][i]:
+                if self.filter[name][i] is True:
                     # update curve
                     new_pen = pyqtgraph.mkPen(CURVE_COLORS[name][i], style=CURVE_LINE_OPTIONS[
                                               CURVE_LINES[name][i]], width=CURVE_SIZES[name][i])
@@ -557,17 +588,16 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     new_name.setText(DATA_NAMES[name][i])
                     new_name.mouseDoubleClickEvent = self.rename_data_factory(name, i)
                     new_value = QtGui.QLineEdit(self)
-                    new_value.setText('0.00')
+                    new_value.setText('0.0000')
                     new_value.setValidator(QtGui.QDoubleValidator())
                     if MELSHARE_MODES[name] == 'Read Only':
                         new_value.setReadOnly(True)
                     elif MELSHARE_MODES[name] == 'Write Only':
-                        rw_color = QtGui.QColor(THEME_SCOPE_RW_COLORS[theme][0], THEME_SCOPE_RW_COLORS[
-                                                theme][1], THEME_SCOPE_RW_COLORS[theme][2])
-                        new_value.setStyleSheet(
-                            ' background-color: %s' % rw_color.name())
-                        new_value.editingFinished.connect(
-                            self.write_data_factory(name, i, new_value))
+                        io_color = QtGui.QColor(THEME_SCOPE_IO_CONFIRMED_COLORS[theme][0], THEME_SCOPE_IO_CONFIRMED_COLORS[
+                                                theme][1], THEME_SCOPE_IO_CONFIRMED_COLORS[theme][2])
+                        new_value.setStyleSheet('background-color: %s' % io_color.name())
+                        new_value.returnPressed.connect(self.confirm_io_factory(name, i, new_value))
+                        new_value.textEdited.connect(self.change_io_factory(new_value))
                     new_value.setAlignment(QtCore.Qt.AlignCenter)
                     new_slider = QtGui.QSlider(self)
                     new_slider.setOrientation(QtCore.Qt.Horizontal)
@@ -587,21 +617,37 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     self.io_sliders[name].append(None)
 
     def update(self):
+        if SCROLL_MODE == 'ROLLING':
+            self.plot_widget.setLimits(xMin=ELAPSED_TIME_SR-SAMPLE_DURATION, xMax=ELAPSED_TIME_SR)
         for name in MELSHARE_NAMES:
             if MELSHARE_CONNECTIONS[name]:
-                for curve, io_value, filter, data, value_text in zip(self.curves[name], self.io_values[name], self.filter[name], MELSHARE_SAMPLED_DATA[name], MELSHARE_SAMPLED_DATA_TEXT[name]):
+                for curve, io_value, filter, data, value_text in zip(self.curves[name], self.io_values[name], self.filter[name], MELSHARE_SAMPLED_DATA[name], MELSHARE_BUFFERS_TEXT[name]):
                     if filter:
                         if SCOPE_MODES[self.index] == 'Scope':
-                            curve.setData(MELSHARE_SAMPLED_TIMES[name], data)
+                            curve.setData(MELSHARE_SAMPLED_TIMES, data)
                         elif SCOPE_MODES[self.index] == 'I/O':
-                            io_value.setText(value_text)
+                            if MELSHARE_MODES[name] == 'Read Only' or self.reset_write_only:
+                                io_value.setText(value_text)
+        self.reset_write_only = False
 
 
-    def write_data(self, name, index, line_edit):
+    def confirm_io(self, name, index, line_edit):
+        global WRITE_FLAG
         MELSHARE_BUFFERS[name][index] = ctypes.c_double(float(line_edit.text()))
+        io_color = QtGui.QColor(THEME_SCOPE_IO_CONFIRMED_COLORS[theme][0], THEME_SCOPE_IO_CONFIRMED_COLORS[theme][1], THEME_SCOPE_IO_CONFIRMED_COLORS[theme][2])
+        line_edit.setText('%0.4f' % MELSHARE_BUFFERS[name][index])
+        line_edit.setStyleSheet('background-color: %s' % io_color.name())
+        WRITE_FLAG = True
 
-    def write_data_factory(self, name, index, line_edit):
-        return lambda: self.write_data(name, index, line_edit)
+    def confirm_io_factory(self, name, index, line_edit):
+        return lambda: self.confirm_io(name, index, line_edit)
+
+    def change_io(self, line_edit):
+        io_color = QtGui.QColor(THEME_SCOPE_IO_CHANGING_COLORS[theme][0], THEME_SCOPE_IO_CHANGING_COLORS[theme][1], THEME_SCOPE_IO_CHANGING_COLORS[theme][2])
+        line_edit.setStyleSheet('background-color: %s' % io_color.name())
+
+    def change_io_factory(self, line_edit):
+        return lambda: self.change_io(line_edit)
 
     def rename_scope(self, event=None):
         self.temp_line_edit = QtGui.QLineEdit()
@@ -702,7 +748,8 @@ def resize_grid():
     if new_count > SCOPE_COUNT:
         add = new_count - SCOPE_COUNT
         for i in range(add):
-            SCOPE_MODULES.append(ScopeModule())
+            new_module = ScopeModule()
+            SCOPE_MODULES.append(new_module)
     # or remove old scopes
     elif new_count < SCOPE_COUNT:
         remove = SCOPE_COUNT - new_count
@@ -713,8 +760,7 @@ def resize_grid():
                  for c in range(GRID_COLS)]
     for i in range(new_count):
         SCOPE_MODULES[i].index = i
-        grid.addWidget(SCOPE_MODULES[i], positions[
-                       i][0], positions[i][1], 1, 1)
+        grid.addWidget(SCOPE_MODULES[i], positions[i][0], positions[i][1], 1, 1)
     # set row/column stretch to ensure same sizes (!!! THIS HAS ISSUES)
     for i in range(GRID_ROWS):
         grid.setRowStretch(i, 1)
@@ -749,10 +795,7 @@ def open():
         deploy_config(config)
         resize_grid()
         set_theme()
-        for name in MELSHARE_NAMES:
-            reconnect_melshare(name)
-            if MELSHARE_CONNECTIONS[name]:
-                reset_melshare_data(name)
+        reload_all()
         filename = str(FILEPATH[str(FILEPATH).rfind('/') + 1:])
         filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Opened <' + filename + '>')
@@ -927,6 +970,7 @@ class ConfigureDataDialog(QtGui.QDialog):
             self.size_spin_boxes[name] = []
             self.color_buttons[name] = []
             self.line_combo_boxes[name] = []
+
             for i in range(MELSHARE_SIZES[name]):
                 row += 1
                 new_index_label = QtGui.QLabel(self)
@@ -1171,8 +1215,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
                 for j in range(MELSHARE_SIZES[name]):
                     SCOPE_FILTERS[i][name][j] = self.filter_checkboxes[i][name][j].isChecked()
         SCOPE_TITLES = [str(i.text()) for i in self.title_line_edits]
-        SCOPE_MODES = [str(i.currentText())
-                       for i in self.mode_combo_boxes]
+        SCOPE_MODES = [str(i.currentText()) for i in self.mode_combo_boxes]
         SCOPE_LEGENDS = [i.isChecked() for i in self.legend_checkboxes]
         SCOPE_RANGES = [list(pair) for pair in
                         zip([float(i.text()) for i in self.min_line_edits],
@@ -1223,8 +1266,7 @@ class AboutDialog(QtGui.QDialog):
         layout.addWidget(email_lh, 3, 0)
 
         email_rh = QtGui.QLabel(self)
-        email_rh.setText("<a href='mailto:someone@somewhere.com'>epezent@rice.edu</a>")
-        email_rh.setOpenExternalLinks(True)
+        email_rh.setText("epezent@rice.edu")
         layout.addWidget(email_rh, 3, 1)
 
         website_lh = QtGui.QLabel(self)
@@ -1234,8 +1276,6 @@ class AboutDialog(QtGui.QDialog):
 
         website_rh = QtGui.QLabel(self)
         website_rh.setText("www.evanpezent.com")
-        website_rh.setText("<a href=\"http://evanpezent.com/\">evanpezent.com</a>");
-        website_rh.setOpenExternalLinks(True)
         layout.addWidget(website_rh, 4, 1)
 
     @staticmethod
@@ -1250,7 +1290,7 @@ class AboutDialog(QtGui.QDialog):
 #==============================================================================
 
 def prompt_configure_data():
-    if melshares_connected():
+    if all_melshares_connected():
         ConfigureDataDialog.open_dialog()
     else:
         msgBox = QtGui.QMessageBox(main_window)
@@ -1268,13 +1308,11 @@ def prompt_add_melshare():
     melshare_name, melshare_mode, ok = AddMelShareDialog.get_input()
     if ok:
         add_melshare(melshare_name, melshare_mode)
-        reload_all()
 
 def prompt_remove_melshare():
     selection, ok = QtGui.QInputDialog.getItem(widg, 'Remove MELShare', 'Select MELShare:', MELSHARE_NAMES,0,False)
     if ok:
         remove_melshare(str(selection))
-        reload_all()
 
 def prompt_resize_grid():
     global GRID_ROWS, GRID_COLS, SCOPE_COUNT
@@ -1307,12 +1345,21 @@ def prompt_change_theme():
 def reload_all():
     for name in MELSHARE_NAMES:
         reconnect_melshare(name)
-        reset_melshare_data(name)
+        reset_melshare_sampling(name)
+        reset_melshare_sampling(name)
         validate_curve_properties(name)
     resize_grid()
     validate_scope_properties()
     refresh_scopes()
 
+def reload_melshares():
+    for name in MELSHARE_NAMES:
+        reconnect_melshare(name)
+        reset_melshare_sampling(name)
+        reset_melshare_sampling(name)
+        validate_curve_properties(name)
+    validate_scope_properties()
+    refresh_scopes()
 
 def reload_grid():
     resize_grid()
@@ -1361,7 +1408,7 @@ save_as_action = QtGui.QAction('Save &As...', main_window,
 file_menu.addAction(save_as_action)
 
 reload_action = QtGui.QAction('&Reload', main_window,
-                              shortcut='R', statusTip='Reload the MELScope', triggered=reload_all)
+                              shortcut='R', statusTip='Reload the MELScope', triggered=reload_melshares)
 action_menu.addAction(reload_action)
 
 pause_action = QtGui.QAction('&Pause', main_window,
@@ -1407,7 +1454,7 @@ def update_menu():
         remove_action.setDisabled(True)
     else:
         remove_action.setDisabled(False)
-    if melshares_connected():
+    if all_melshares_connected():
         config_curves_action.setDisabled(False)
         #configure_modules_action.setDisabled(False)
     else:
@@ -1423,16 +1470,28 @@ reload_grid()
 status_bar.showMessage('Welcome to MELScope!')
 
 def sample_loop():
+    global WRITE_FLAG
     update_sample_time()
     update_sample_rate()
     lost = []
+    if any_melshares_connected():
+        save_melshare_times()
     for name in MELSHARE_NAMES:
         if MELSHARE_CONNECTIONS[name]:
-            if read_melshare(name) > 0:
-                save_melshare_data(name)
-            else:
-                lost.append(name)
-                MELSHARE_CONNECTIONS[name] = False;
+            if MELSHARE_MODES[name] == 'Read Only':
+                if read_melshare(name) > 0:
+                    save_melshare_data(name)
+                else:
+                    lost.append(name)
+                    MELSHARE_CONNECTIONS[name] = False;
+            elif MELSHARE_MODES[name] == 'Write Only':
+                if WRITE_FLAG is True:
+                        if write_melshare(name) > 0:
+                            save_melshare_data(name)
+                        else:
+                            lost.append(name)
+                            MELSHARE_CONNECTIONS[name] = False;
+    WRITE_FLAG = False
     if lost:
         msg = 'Lost connection to MELShare(s): '
         for name in lost:
