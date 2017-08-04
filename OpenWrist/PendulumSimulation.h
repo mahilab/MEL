@@ -4,6 +4,7 @@
 #include "Integrator.h"
 #include <array>
 #include "util.h"
+#include "OpenWrist.h"
 
 class PendulumSimulation : public mel::Task {
 
@@ -14,32 +15,36 @@ class PendulumSimulation : public mel::Task {
      mel::Daq* daq_;
      OpenWrist* ow_;
 
-     mel::share::MelShare pendulum = mel::share::MelShare("pendulum");
-
-
      // PENDULUM PARAMETERS
-     std::array<double, 2> M = { 0.05, 0.5 };
-     std::array<double, 2> L = { 0.25, 0.25 };
-     std::array<double, 2> B = { 0.005,0.005 };
-     std::array<double, 2> Fk = { 0.005,0.005 };
+
+     double g = 9.81;
+
+     std::array<double, 2> M = { 0.05, 0.375 }; // [kg]
+     std::array<double, 2> L = { 0.25, 0.25 }; // [m]
+     std::array<double, 2> B = { 0.005,0.005 }; // [N-s/m]
+     std::array<double, 2> Fk = { 0.005,0.005 }; // [Nm]
 
      std::array<double, 2> Qdd = { 0,0 };
      std::array<double, 2> Qd = { 0,0 };
      std::array<double, 2> Q = { -PI/2 ,0 };
      std::array<double, 2> Tau = { 0, 0 };
 
-     std::array<double, 4> full_state = { 0,0,0,0 };
-
-     double g = 9.81;
-
      std::array<mel::Integrator, 2> Qdd2Qd = { mel::Integrator(Qd[0]), mel::Integrator(Qd[1]) };
      std::array<mel::Integrator, 2> Qd2Q = { mel::Integrator(Q[0]), mel::Integrator(Q[1]) };
 
      // PENDULUM COUPLING FORCES
-     double K_player = 10;
-     double B_player = 0.5;        
+     double K_player = 12;
+     double B_player = 0.6;   
+
+     // MELShare(s)
+     mel::share::MelShare pendulum_out = mel::share::MelShare("pendulum_out");
+     mel::share::MelShare pendulum_in = mel::share::MelShare("pendulum_in");
+
+     std::array<double, 4> pendulum_out_data = { 0,0,0,0 };
+     std::array<double, 10> pendulum_in_data = { M[0],M[1],L[0],L[1],B[0],B[1],Fk[0],Fk[1],K_player,B_player };
 
     void start() override {
+        pendulum_in.write(pendulum_in_data);
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
         getchar();
         daq_->activate();
@@ -54,11 +59,21 @@ class PendulumSimulation : public mel::Task {
     }
 
     void step() override {
-
+        // read and reload DAQ
         daq_->reload_watchdog();
         daq_->read_all();
-
-
+        // read and unpack pendulum_in MELShare
+        pendulum_in.read(pendulum_in_data);
+        M[0] = pendulum_in_data[0];
+        M[1] = pendulum_in_data[1];
+        L[0] = pendulum_in_data[2];
+        L[1] = pendulum_in_data[3];
+        B[0] = pendulum_in_data[4];
+        B[1] = pendulum_in_data[5];
+        Fk[0] = pendulum_in_data[6];
+        Fk[1] = pendulum_in_data[7];
+        K_player = pendulum_in_data[8];
+        B_player = pendulum_in_data[9];
 
         Tau[0] = K_player * (ow_->joints_[0]->get_position() - PI/2 - Q[0]) + B_player * (ow_->joints_[0]->get_velocity() - Qd[0]);
 
@@ -75,14 +90,13 @@ class PendulumSimulation : public mel::Task {
         Q[0] = Qd2Q[0].integrate(Qd[0], time());
         Q[1] = Qd2Q[1].integrate(Qd[1], time());
 
-        full_state[0] = Q[0];
-        full_state[1] = Q[1];
-        full_state[2] = Tau[0];
-        full_state[3] = Tau[1];
+        pendulum_out_data[0] = Q[0];
+        pendulum_out_data[1] = Q[1];
+        pendulum_out_data[2] = Tau[0];
+        pendulum_out_data[3] = Tau[1];
 
         ow_->update_state_map();
-        pendulum.write(full_state);
-
+        pendulum_out.write(pendulum_out_data);
         daq_->write_all();
     }
 
