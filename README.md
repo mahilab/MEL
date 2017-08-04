@@ -10,12 +10,24 @@
 
 ## Table of Contents
 
-1.[Installation (Windows 64-bit)](#installation-windows-64-bit)
+1. [Git/GitHub](#git--github-installation)
+2.[Installation (Windows 64-bit)](#installation-windows-64-bit)
   * [Visual Studio 2017 - Visual C++](#visual-studio-2017---visual-c)
   * [Required C++ Libraries](#required-c-libraries-boost-eigen-quarc)
-  * [Git/GitHub](#git--github-installation)
   * [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
   * [Sublime Text 3 (Optional)](#sublime-text-3-optional)
+
+##   Git / GitHub Setup
+
+1. Download and install [GitHub Desktop](https://desktop.github.com/). Login using your GitHub account once installation is complete.
+
+2. Choose **Clone a repository**
+
+3. Enter the MEL URL: **https://github.com/epezent/MEL**
+
+4. Set the local path to **C:\whatever\you\like\MEL**
+
+3. Clone the repository. Navigate to the local path in Windows Explorer and verify that the repository has been cloned.
 
 ## Installation (Windows 64-bit)
 
@@ -57,18 +69,6 @@
     - Copy the *include* and *lib* folders to a new directory *C:\dev\quarc*
     - From *C:\dev\quarc\lib* you can delete all folders EXCEPT *windows* and *win64*
     - If you don't have Quarc installed, you can get the folders from another MAHI lab member who does
-
-###   Git / GitHub Installation
-
-1. Download and install [GitHub Desktop](https://desktop.github.com/). Login using your GitHub account once installation is complete.
-
-2. Choose **Clone a repository**
-
-3. Enter the MEL URL: **https://github.com/epezent/MEL**
-
-4. Set the local path to **C:\whatever\you\like\MEL**
-
-3. Clone the repository. Navigate to the local path in Windows Explorer and verify that the repository has been cloned.
 
 ###   Python 2.7 + NumPy + PyQt4 + PyQtGraph (Optional)
 
