@@ -35,7 +35,7 @@ public:
     double get_anatomical_joint_position(int index);
     double get_anatomical_joint_velocity(int index);
 
-    
+    bool reached_anatomical_joint_position_target(double target_position);
 
     // inherited virtual functions from Exo class to be implemented
     mel::double_vec get_anatomical_joint_positions() override;
