@@ -11,11 +11,11 @@
 ## Table of Contents
 
 1.[Installation (Windows 64-bit)](#installation-windows-64-bit)
-  a. [Visual Studio 2017](#visual-studio-2017---visual-c)
-  b. [C++ Libraries](#c-libraries-boost-eigen-quarc)
-  c. [Git/GitHub](#git--github-installation)
-  d. [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
-  e. [Sublime Text 3](#sublime-text-3-optional)
+  * [Visual Studio 2017](#visual-studio-2017---visual-c)
+  * [C++ Libraries](#c-libraries-boost-eigen-quarc)
+  * [Git/GitHub](#git--github-installation)
+  * [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
+  * [Sublime Text 3](#sublime-text-3-optional)
 
 ## Installation (Windows 64-bit)
 
