@@ -71,7 +71,7 @@
 
 2. Run the installer and set the installation location to **C:\dev\Python27**. Ensure that the "Add python.exe to path" option is set to "Will be installed on local hard drive"
 
-3. Download and install the [Microsoft Visual C++ Compilter for Python 2.7](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
+3. Download and install the [Microsoft Visual C++ Compiler for Python 2.7](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
 4. Go to the [Unofficial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/) page. Download the latest binaries for **NumPy**, **SciPy**, and **MatPlotLib**. Make sure you select the correct build (i.e. listings ending with -cp27-cp27m-win\_amd64.whl). At the time of writing, the latest versions were:
 
@@ -100,7 +100,7 @@
 
 7. Download and the [PyQt4 binaries for Python 2.7 (64-bit)](https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe/download?use_mirror=managedway&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpyqt%2Ffiles%2FPyQt4%2FPyQt-4.11.4%2F&use_mirror=managedway). Run the installer and ensure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
-8. Download the [PyQtGraph (64-bit) Installer](http://www.pyqtgraph.org/). Run the installer and ensure that the Python installation directory is correctly identified as **C:\dev\Python27**
+8. Download the [PyQtGraph (x86-64) Installer](http://www.pyqtgraph.org/). Run the installer and ensure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
 9. Run the following Python script to test PyQt4 + PyQtGraph. Play around with each test example, particularly the benchmarks, to ensure everything is working properly.
 
@@ -120,7 +120,7 @@
 
 2. Install [Package Control](https://packagecontrol.io/installation) for Sublime Text 3
 
-3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing **"install"** and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them.
+3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing **"install"** and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them
 
     - [Anaconda](https://packagecontrol.io/packages/Anaconda) (**required**)
     - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (**required**)
@@ -160,7 +160,7 @@
 
 6. Right-click in the Python file and choose **SublimeLiner >> TogglerLiner...** from the context menu. Make sure pyflakes is enabled
 
-7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). A personal favorite of Evan's is the great [Facebook Material Theme](https://packagecontrol.io/packages/Facebook%20Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed.
+7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). A personal favorite of Evan's is the great [Facebook Material Theme](https://packagecontrol.io/packages/Facebook%20Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed
 
 
 
