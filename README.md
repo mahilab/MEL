@@ -67,8 +67,6 @@
 
 ###   Python 2.7 + NumPy + PyQt4 + PyQtGraph
 
-
-
 1. Download [Python 2.7.13 (64-bit) Installer](https://www.python.org/downloads/release/python-2713/)
 
 2. Run the installer and set the installation location to **C:\dev\Python27**. Ensure that the "Add python.exe to path" option is set to "Will be installed on local hard drive"
@@ -122,7 +120,7 @@
 
 2. Install [Package Control](https://packagecontrol.io/installation) for Sublime Text 3
 
-3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing "install" and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them.
+3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing **"install"** and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them.
 
     - [Anaconda](https://packagecontrol.io/packages/Anaconda) (**required**)
     - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (**required**)
@@ -160,7 +158,7 @@
     }
     ```
 
-6. Right-click in the Python file and choose SublimeLiner >> TogglerLiner... from the context menu. Make sure pyflakes is enabled
+6. Right-click in the Python file and choose **SublimeLiner >> TogglerLiner...** from the context menu. Make sure pyflakes is enabled
 
 7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). A personal favorite of Evan's is the great [Facebook Material Theme](https://packagecontrol.io/packages/Facebook%20Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed.
 
