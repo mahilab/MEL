@@ -114,6 +114,56 @@
 **NOTE:** The newer Python 3.6 and PyQt5 have been tested and were found to be less stable and slower than the more mature Python 2.7 + PyQt4 pairing when used with PyQtGraph. You may choose to install Python 3.6 and PyQt5 (or any combination of the two, really) but note that the installation procedure will differ slightly (specifically when downloading wheels/binaries and building PyOpenGl_accelerate).
 
 
+### Sublime Text 3 (Optional)
+
+**Note:** You can optionally install Sublime Text 3 to write Python. Following these directions will turn Sublime into a very awesome, lightweight Python IDE!
+
+1. Download [Sublime Text 3](https://www.sublimetext.com/)
+
+2. Install [Package Control](https://packagecontrol.io/installation) for Sublime Text 3
+
+3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing "install" and select "Package Control: Install Package" when it appears, then type the names of the following packages and press Enter to install them.
+
+  - [Anaconda](https://packagecontrol.io/packages/Anaconda) (required)
+  - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (required)
+  - [SublimeLiner-pyflakes](https://packagecontrol.io/packages/SublimeLinter-pyflakes) (required)
+  - [Terminal](https://packagecontrol.io/packages/Terminal) (recommended)
+  - [SideBarEnhancements](https://packagecontrol.io/packages/SideBarEnhancements) (recommended)
+  - [SyncedSideBar](https://packagecontrol.io/packages/SyncedSideBar) (recommended)
+  - [Git](https://packagecontrol.io/packages/Git) (recommended)
+  - [GitGutter](https://packagecontrol.io/packages/GitGutter) (recommended)
+
+4. Once Anaconda, SublimeLinter, and SublimeLinter-pyflakes are installed, add the following settings:
+
+  - Preferences >> Package Settings >> Anaconda >> Settings - User
+  '''json
+  {
+    "anaconda_linting": false,
+    "swallow_startup_errors": true,
+    "hide_snippets_on_completion": true,
+    "complete_parameters": true,
+    "auto_formatting_timeout": 5
+  }
+  '''
+
+5. Open any *.py Python file in Sublime. Navigate to Preferences >> Settings - Syntax Specific. Paste the following into Python.sublime-settings:
+
+  '''json
+  {
+    "draw_white_space": "all",
+    "auto_indent": true,
+    "rulers": [79],
+    "smart_indent": true,
+    "trim_automatic_white_space": true,
+    "use_tab_stops": true,
+    "word_wrap": false,
+    "wrap_width": 80
+}
+'''
+
+6. Right-click in the Python file and choose SublimeLiner >> TogglerLiner... from the context menu. Make sure pyflakes is enabled
+
+7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). A personal favorite of Evan's is the great [Facebook Material Theme](https://packagecontrol.io/packages/Facebook%20Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed.
 
 
 
