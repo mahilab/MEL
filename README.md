@@ -122,7 +122,7 @@
 
 2. Install [Package Control](https://packagecontrol.io/installation) for Sublime Text 3
 
-3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing "install" and select "Package Control: Install Package" when it appears, then type the names of the following packages and press Enter to install them.
+3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing "install" and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them.
 
     - [Anaconda](https://packagecontrol.io/packages/Anaconda) (**required**)
     - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (**required**)
@@ -133,7 +133,7 @@
     - [Git](https://packagecontrol.io/packages/Git) (recommended)
     - [GitGutter](https://packagecontrol.io/packages/GitGutter) (recommended)
 
-4. Once Anaconda, SublimeLinter, and SublimeLinter-pyflakes are installed, navitage to Preferences >> Package Settings >> Anaconda >> Settings - User and add the following settings:
+4. Once Anaconda, SublimeLinter, and SublimeLinter-pyflakes are installed, navitage to **Preferences >> Package Settings >> Anaconda >> Settings - User** and add the following settings:
 
     ```json
     {
@@ -145,7 +145,7 @@
     }
     ```
 
-5. Open any *.py Python file in Sublime. Navigate to Preferences >> Settings - Syntax Specific. Paste the following into Python.sublime-settings:
+5. Open any *.py Python file in Sublime. Navigate to **Preferences >> Settings - Syntax Specific** and add the following into Python.sublime-settings:
 
     ```json
     {
@@ -158,7 +158,7 @@
       "word_wrap": false,
       "wrap_width": 80
     }
-  ```
+    ```
 
 6. Right-click in the Python file and choose SublimeLiner >> TogglerLiner... from the context menu. Make sure pyflakes is enabled
 
