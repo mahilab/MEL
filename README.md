@@ -160,7 +160,7 @@
 
 6. Right-click in the Python file and choose **SublimeLiner >> TogglerLiner...** from the context menu. Make sure pyflakes is enabled
 
-7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). A personal favorite of Evan's is the great [Facebook Material Theme](https://packagecontrol.io/packages/Facebook%20Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed
+7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). A personal favorite of Evan's is the great [Material Theme](https://packagecontrol.io/packages/Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed
 
 
 
