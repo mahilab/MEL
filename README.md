@@ -11,11 +11,11 @@
 ## Table of Contents
 
 1.[Installation (Windows 64-bit)](#installation-windows-64-bit)
-  * [Visual Studio 2017](#visual-studio-2017---visual-c)
-  * [C++ Libraries](#c-libraries-boost-eigen-quarc)
+  * [Visual Studio 2017 - Visual C++](#visual-studio-2017---visual-c)
+  * [Required C++ Libraries](#required-c-libraries-boost-eigen-quarc)
   * [Git/GitHub](#git--github-installation)
   * [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
-  * [Sublime Text 3](#sublime-text-3-optional)
+  * [Sublime Text 3 (Optional)](#sublime-text-3-optional)
 
 ## Installation (Windows 64-bit)
 
@@ -40,7 +40,7 @@
 
 3. Start and complete the VS2017 installation
 
-###   C++ Libraries (Boost, Eigen, Quarc)
+###   Required C++ Libraries (Boost, Eigen, Quarc)
 
 1. Download and run [Boost 1.64.0 - MSVC 14.1 (64-bit)](https://sourceforge.net/projects/boost/files/boost-binaries/1.64.0/boost_1_64_0-msvc-14.1-64.exe/download)
 
