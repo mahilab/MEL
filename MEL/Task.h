@@ -16,6 +16,7 @@ namespace mel {
     protected:
 
         friend class Controller;  // give friendship to Controller so start(), step(), stop(), pause(), resume() and clock_ can be accessed       
+        
 
         // PURE VIRTUAL FUNCTIONS TO BE OVERRIDEN BY DERIVED CONTROLLERS
 

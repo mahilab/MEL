@@ -32,6 +32,7 @@
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
     <ClCompile Include="Robot.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +41,7 @@
     <ClInclude Include="Clock.h" />
     <ClInclude Include="DataLog.h" />
     <ClInclude Include="Integrator.h" />
+    <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />
