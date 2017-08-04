@@ -131,7 +131,7 @@
 
     - [Anaconda](https://packagecontrol.io/packages/Anaconda) (**required**)
     - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (**required**)
-    - [SublimeLiner-pyflakes](https://packagecontrol.io/packages/SublimeLinter-pyflakes) (**required**)
+    - [SublimeLinter-pyflakes](https://packagecontrol.io/packages/SublimeLinter-pyflakes) (**required**)
     - [Terminal](https://packagecontrol.io/packages/Terminal) (recommended)
     - [SideBarEnhancements](https://packagecontrol.io/packages/SideBarEnhancements) (recommended)
     - [SyncedSideBar](https://packagecontrol.io/packages/SyncedSideBar) (recommended)
@@ -166,7 +166,7 @@
     }
     ```
 
-6. Right-click in the Python file and choose **SublimeLiner >> TogglerLiner...** from the context menu. Make sure **pyflakes** is enabled
+6. Right-click in the Python file and choose **SublimeLiner >> Toggle Linter...** from the context menu. Make sure **pyflakes** is enabled
 
 7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). Evan's personal favorite is [Material Theme](https://packagecontrol.io/packages/Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed
 
