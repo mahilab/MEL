@@ -136,7 +136,7 @@
 4. Once Anaconda, SublimeLinter, and SublimeLinter-pyflakes are installed, add the following settings:
 
   - Preferences >> Package Settings >> Anaconda >> Settings - User
-  '''json
+  ```json
   {
     "anaconda_linting": false,
     "swallow_startup_errors": true,
@@ -144,11 +144,11 @@
     "complete_parameters": true,
     "auto_formatting_timeout": 5
   }
-  '''
+  ```
 
 5. Open any *.py Python file in Sublime. Navigate to Preferences >> Settings - Syntax Specific. Paste the following into Python.sublime-settings:
 
-  '''json
+  ```json
   {
     "draw_white_space": "all",
     "auto_indent": true,
@@ -158,8 +158,8 @@
     "use_tab_stops": true,
     "word_wrap": false,
     "wrap_width": 80
-}
-'''
+  }
+  ```
 
 6. Right-click in the Python file and choose SublimeLiner >> TogglerLiner... from the context menu. Make sure pyflakes is enabled
 
