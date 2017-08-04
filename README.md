@@ -11,7 +11,7 @@
 ## Table of Contents
 
 1. [Git/GitHub](#git--github-installation)
-2.[Installation (Windows 64-bit)](#installation-windows-64-bit)
+2. [Installation (Windows 64-bit)](#installation-windows-64-bit)
   * [Visual Studio 2017 - Visual C++](#visual-studio-2017---visual-c)
   * [Required C++ Libraries](#required-c-libraries-boost-eigen-quarc)
   * [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
