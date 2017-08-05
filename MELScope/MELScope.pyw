@@ -20,7 +20,7 @@ import collections
 import qdarkstyle
 
 # TO DO:
-# splitter widget/
+# splitter widget
 # add cbrewer colors to color picker
 # turn scopes on off
 # thread melshare

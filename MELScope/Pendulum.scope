@@ -1,29 +1,43 @@
 CURVE_COLORS:
-  pendulum:
+  pendulum_in:
+  - [106, 61, 154]
+  - [177, 89, 40]
+  - [166, 206, 227]
+  - [251, 154, 153]
+  - [178, 223, 138]
+  - [253, 191, 111]
+  - [202, 178, 214]
+  - [255, 255, 153]
+  - [141, 211, 199]
+  - [255, 255, 179]
+  pendulum_out:
   - [31, 120, 180]
   - [227, 26, 28]
   - [51, 160, 44]
   - [255, 127, 0]
 CURVE_LINES:
-  pendulum: [Solid, Solid, Solid, Solid]
+  pendulum_in: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
+  pendulum_out: [Solid, Solid, Solid, Solid]
 CURVE_SIZES:
-  pendulum: [1, 1, 1, 1]
+  pendulum_in: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  pendulum_out: [1, 1, 1, 1]
 DATA_NAMES:
-  pendulum: [Q0, Q1, Tau0, Tau1]
-GRID_COLS: 3
+  pendulum_in: [M0, M1, L0, L1, B0, B1, Fk0, Fk1, K_player, B_player]
+  pendulum_out: [Q0, Q1, Tau0, Tau1]
+GRID_COLS: 2
 GRID_ROWS: 1
-MELSHARE_MODES: {pendulum: Read Only}
-MELSHARE_NAMES: [pendulum]
-MELSHARE_SIZES: {pendulum: 4}
+MELSHARE_MODES: {pendulum_in: Write Only, pendulum_out: Read Only}
+MELSHARE_NAMES: [pendulum_out, pendulum_in]
+MELSHARE_SIZES: {pendulum_in: 10, pendulum_out: 4}
 SCOPE_FILTERS:
-- pendulum: [true, true, false, false]
-- pendulum: [false, false, true, true]
-- pendulum: [true, true, true, true]
-SCOPE_LEGENDS: [false, false, false]
-SCOPE_MODES: [Scope, Scope, I/O]
+- pendulum_in: [false, false, false, false, false, false, false, false, false, false]
+  pendulum_out: [true, true, true, true]
+- pendulum_in: [true, true, true, true, true, true, true, true, true, true]
+  pendulum_out: [false, false, false, false]
+SCOPE_LEGENDS: [false, false]
+SCOPE_MODES: [Scope, I/O]
 SCOPE_RANGES:
-- [-5.0, 5.0]
 - [-1.0, 1.0]
 - [-1.0, 1.0]
-SCOPE_TITLES: [scope_0, scope_1, scope_2]
+SCOPE_TITLES: [scope_0, scope_1]
 theme: Dark
