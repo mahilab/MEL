@@ -1,6 +1,6 @@
 #==============================================================================
 # MEL Scope
-# Evan Pezent (epezent@rice.edu, evanpezent.com)
+# Evan Pezent | epezent@rice.edu | evanpezent.com
 # Mechatronics and Haptic Interfaces (MAHI) Lab
 # Rice University
 # 06/2017 -

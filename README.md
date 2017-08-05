@@ -31,7 +31,7 @@
 
 ## Installation (Windows 64-bit)
 
-**IMPORTANT:** In order for you experience installing MEL to go as smoothly as possible, it is important that you install all items exactly where specified. If you choose to install items in locations other than **C:\dev**, you will break dependency location references in the MEL Visual Studio Solution and will have to update them yourself.
+**IMPORTANT:** It is important that you install all items **exactly** where specified. If you choose to install items in locations other than **C:\dev**, you will break dependency location references in the MEL Visual Studio Solution and will have to update them yourself.
 
 ###  Visual Studio 2017 - Visual C++
 
@@ -72,7 +72,7 @@
 
 ###   Python 2.7 + NumPy + PyQt4 + PyQtGraph (Optional)
 
-**Note:** The MELScope application is written entirely in Python using PyQt4 for GUIs and PyQtGraph for plotting. If you plan to use MELScope or want to develop your own GUIs for MEL, follow theses steps.
+**Note:** The MELScope application is written entirely in Python using PyQt4 for GUIs and PyQtGraph for plotting widgets. If you plan to use MELScope or want to develop your own GUIs for MEL programs, follow theses steps to install the Python environment.
 
 1. Download [Python 2.7.13 (64-bit) Installer](https://www.python.org/downloads/release/python-2713/)
 
@@ -80,7 +80,7 @@
 
 3. Download and install the [Microsoft Visual C++ Compiler for Python 2.7](https://www.microsoft.com/en-us/download/details.aspx?id=44266)
 
-4. Go to the [Unofficial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/) page. Download the latest binaries for **NumPy**, **SciPy**, and **MatPlotLib**. Make sure you select the correct build (i.e. listings ending with -cp27-cp27m-win\_amd64.whl). At the time of writing, the latest versions were:
+4. Go to the [Unofficial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/) page. Download the latest binaries for **NumPy**, **SciPy**, and **MatPlotLib**. Make sure you select the correct build (i.e. listings ending with **-cp27-cp27m-win\_amd64.whl**). At the time of writing, the latest versions were:
 
     - numpy-1.13.1+mkl-cp27-cp27m-win_amd64.whl
     - scipy-0.19.1-cp27-cp27m-win_amd64
@@ -103,7 +103,7 @@
    pip install iPython
    ```
 
-   **NOTE:** PyOpenGL_accelerate may fail to install if you skipped step 2. This is because it must be built and requires the legacy MSVC compiler be installed.
+   **NOTE:** PyOpenGL_accelerate may fail to install if you skipped step 2. This is because it must be built from source and requires the legacy MSVC compiler be installed.
 
 7. Download and the [PyQt4 binaries for Python 2.7 (64-bit)](https://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.4/PyQt4-4.11.4-gpl-Py2.7-Qt4.8.7-x64.exe/download?use_mirror=managedway&r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpyqt%2Ffiles%2FPyQt4%2FPyQt-4.11.4%2F&use_mirror=managedway). Run the installer and ensure that the Python installation directory is correctly identified as **C:\dev\Python27**
 
@@ -127,7 +127,7 @@
 
 2. Install [Package Control](https://packagecontrol.io/installation) for Sublime Text 3
 
-3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing **"install"** and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them
+3. Once Package Control is installed, press Ctrl+Shft+P in Sublime to open the Command Palette. Begin typing **"install"** and select **"Package Control: Install Package"** when it appears, then type the names of the following packages and press Enter to install them.
 
     - [Anaconda](https://packagecontrol.io/packages/Anaconda) (**required**)
     - [SublimeLinter](https://packagecontrol.io/packages/SublimeLinter) (**required**)
@@ -155,7 +155,6 @@
 
     ```json
     {
-      "draw_white_space": "all",
       "auto_indent": true,
       "rulers": [79],
       "smart_indent": true,
@@ -166,9 +165,9 @@
     }
     ```
 
-6. Right-click in the Python file and choose **SublimeLiner >> Toggle Linter...** from the context menu. Make sure **pyflakes** is enabled
+6. Right-click in the Python file and choose **SublimeLiner >> Toggle Linter...** from the context menu. Make sure **pyflakes** is enabled.
 
-7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). Evan's personal favorite is [Material Theme](https://packagecontrol.io/packages/Material%20Theme) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed
+7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). Evan's personal favorites are [Material Theme](https://packagecontrol.io/packages/Material%20Theme) and [Spacegray](https://packagecontrol.io/packages/Theme%20-%20Spacegray) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed on top.
 
 
 
