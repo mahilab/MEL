@@ -12,6 +12,9 @@ namespace mel {
         Exo();
         Exo(std::string name);
 
+        // virtual destructor
+        virtual ~Exo() {};
+
         // components
         //std::vector<AnatomicalJoint*> anatomical_joints_; // anatomical joints
 

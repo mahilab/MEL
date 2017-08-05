@@ -25,6 +25,8 @@ namespace mel {
             channel_vec encoder_channels,
             channel_vec encrate_channels);
 
+        virtual ~Daq() {};
+
         ////////////////////////////////////
         // GENERIC DAQ MEMBERS AND FUNCTIONS
         ////////////////////////////////////

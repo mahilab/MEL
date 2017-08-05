@@ -32,7 +32,10 @@
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
     <ClCompile Include="Robot.cpp" />
-    <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="StateMachine.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -41,7 +44,10 @@
     <ClInclude Include="Clock.h" />
     <ClInclude Include="DataLog.h" />
     <ClInclude Include="Integrator.h" />
-    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="StateMachine.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Task.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Daq.h" />

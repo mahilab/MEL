@@ -74,13 +74,12 @@ namespace mel {
         std::vector<Task*> step_tasks_;  ///< vector of step Tasks
         std::vector<Task*> stop_tasks_;  ///< vector of stop Tasks
 
-        static bool stop_;   ///< static boolean that will stop all Controllers (if multiple instances) when set to true
-        static bool pause_;  ///< static boolean that will pause all Controllers (if multiple instances) when set to true
+        static bool ctrl_c_;   ///< static boolean that will stop State Machine when set to true
+
 
         // SIGNAL HANDLING
 
         static void ctrl_c_handler(int signum);      ///< signal handler that will set stop_ to true when CTRL+C is pressed at the terminal window
-        static void ctrl_break_handler(int signum);  ///< signal handler that will set pause_ to true when CTRL+BREAK is pressed at the terminal window
 
     private:
 
@@ -98,7 +97,7 @@ namespace mel {
 
         void set_current_state(int new_state) { current_state_ = new_state; }
 
-
+        virtual void ctrl_c_task() {};
         
 
     };

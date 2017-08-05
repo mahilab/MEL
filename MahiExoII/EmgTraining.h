@@ -7,8 +7,6 @@ class EmgTrainingData : public mel::EventData {
 
 public:
 
-    
-
 };
 
 class EmgTraining : public mel::StateMachine {
@@ -50,5 +48,7 @@ private:
         };
         return &STATE_MAP[0];
     }
+
+    void ctrl_c_task() override;
 
 };

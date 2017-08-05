@@ -54,6 +54,10 @@ namespace mel {
         strcpy(options_str_, options_.build().c_str());
     }
 
+    Q8Usb::~Q8Usb() {
+        deactivate();
+    }
+
     int Q8Usb::activate() {
         if (!active_) {
             t_error result;

@@ -94,6 +94,8 @@ namespace mel {
             channel_vec enc_channels,
             Options options = Options());
 
+        ~Q8Usb();
+
     private:
 
         Options options_;

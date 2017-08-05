@@ -2,8 +2,7 @@
 
 namespace mel {
 
-    bool StateMachine::stop_ = false;
-    bool StateMachine::pause_ = false;
+    bool StateMachine::ctrl_c_ = false;
 
     StateMachine::StateMachine(Clock& clock, int num_states, int initial_state) :
         clock_(clock),
@@ -16,7 +15,6 @@ namespace mel {
     {
         // register signal SIGINT and SIGBREAK with ctrl_c_handler */
         signal(SIGINT, ctrl_c_handler);
-        signal(SIGBREAK, ctrl_c_handler);
     }
 
     void StateMachine::event(int new_state, const EventData* data) {
@@ -45,7 +43,8 @@ namespace mel {
         clock_.start();
 
         // run the state machine
-        while (!stop_ && clock_.time() <= stop_time_) {
+        while (!ctrl_c_ && clock_.time() <= stop_time_) {
+
 
             if (event_generated_) {
 
@@ -75,7 +74,6 @@ namespace mel {
             state->invoke_state_action(this, data_temp);
 
             // If event data was used, then delete it
-
             if (data_temp)
             {
                 delete data_temp;
@@ -86,20 +84,22 @@ namespace mel {
             clock_.wait();
         }
 
-
         // stop the Clock (saves the DataLog)
         clock_.stop();
 
-        // reset stop_
-        stop_ = false;
+        if (ctrl_c_) {
+
+            // run exit task
+            ctrl_c_task();
+
+            // reset stop_
+            ctrl_c_ = false;
+        }
     }
 
     void StateMachine::ctrl_c_handler(int signum) {
-        stop_ = true;
+        ctrl_c_ = true;
     }
 
-    void StateMachine::ctrl_break_handler(int signum) {
-        pause_ = !pause_;
-    }
 
 }

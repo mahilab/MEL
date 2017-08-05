@@ -41,9 +41,10 @@ int main(int argc, char * argv[]) {
     mel::channel_vec enc_channels = { 0, 1, 2, 3, 4 };
 
     mel::Q8Usb::Options options;
-    for (auto it = do_channels.begin(); it != do_channels.end(); ++it) {
-        options.do_initial_signals_[it - do_channels.begin()] = 1;
-        options.do_final_signals_[it - do_channels.begin()] = 1;
+    for (int i = 0; i < 8; i++) {
+        options.do_initial_signals_[i] = 1;
+        options.do_final_signals_[i] = 1;
+        options.do_expire_signals_[i] = 1;
     }
 
     mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
@@ -65,6 +66,7 @@ int main(int argc, char * argv[]) {
     if (var_map.count("zero")) {
         q8->activate();
         q8->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
+        q8->deactivate();
         return 0;
     }
 
@@ -72,7 +74,10 @@ int main(int argc, char * argv[]) {
 
     EmgTraining sm = EmgTraining(clock,q8,mahiexoii);
 
-    sm.execute();
+    sm.execute(5);
+
+    delete q8;
 
     return 0;
+
 }

@@ -61,7 +61,7 @@ public:
 
         //traj_[0] = setpoints_[0] + mel::sin_trajectory(5 * mel::DEG2RAD, 0.25, time());
         //traj_[1] = setpoints_[1] + mel::sin_trajectory(5 * mel::DEG2RAD, 0.25, time());
-        traj_[2] = setpoints_[2] + mel::sin_trajectory(10 * mel::DEG2RAD, 0.25, time());
+        traj_[2] = setpoints_[2] + mel::sin_wave(10 * mel::DEG2RAD, 0.25, time());
         //traj_[3] = setpoints_[3] + mel::sin_trajectory(10 * mel::DEG2RAD, 0.25, time());
 
         torques_[0] = mel::pd_controller(35, 0.25, traj_[0], exo_.get_anatomical_joint_position(0), 0, exo_.get_anatomical_joint_velocity(0));
@@ -90,6 +90,20 @@ public:
     }
 };
 
+class TroysTask : public mel::Task {
+
+    TroysTask(mel::Daq* daq) : Task("troys_task"), daq_(daq) {}
+
+    mel::Daq* daq_;
+
+    void start() override {
+         
+    }
+    void step() override {}
+    void stop() override {}
+
+};
+
 int main(int argc, char * argv[]) {
 
 
@@ -97,7 +111,8 @@ int main(int argc, char * argv[]) {
     po::options_description desc("Available Options");
     desc.add_options()
         ("help", "produces help message")
-        ("zero", "zeros encoder counts on startup");
+        ("zero", "zeros encoder counts on startup")
+        ("troy", "testing force sensor");
 
     po::variables_map var_map;
     po::store(po::parse_command_line(argc, argv, desc), var_map);
@@ -143,6 +158,13 @@ int main(int argc, char * argv[]) {
         q8->activate();
         q8->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
         return 0;
+    }
+
+    if (var_map.count("troy")) {
+        mel::Clock troys_clock(1000);
+        mel::Controller troys_controller(troys_clock);
+
+        troys_controller.queue_task();
     }
 
 

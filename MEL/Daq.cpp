@@ -34,6 +34,7 @@ namespace mel {
         enc_rates = double_vec(encrate_channels_count_, 0.0);
     }
 
+
     voltage_vec Daq::get_analog_voltages() {
         return ai_voltages_;
     }
