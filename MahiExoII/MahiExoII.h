@@ -34,7 +34,7 @@ public:
     void update_kinematics();
     
 
-    bool reached_anatomical_joint_position_target(double target_position);
+    //bool reached_anatomical_joint_position_target(double target_position);
 
     
 
@@ -70,7 +70,7 @@ private:
     const double tol_ = 1e-12;
 
 
-    
+    // kinematics functions
     void forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out);
     void forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out);
     void inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out);

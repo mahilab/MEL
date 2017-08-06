@@ -41,6 +41,8 @@ void EmgTraining::ST_To_Neutral(const mel::NoEventData* data) {
 
     exo_->update_kinematics();
 
+    mel::print(exo_->get_anatomical_joint_velocities());
+
 
 }
 
@@ -68,7 +70,7 @@ void EmgTraining::ST_Stop(const mel::NoEventData* data) {
 }
 
 void EmgTraining::ctrl_c_task() {
-    std::cout << "You pressed Ctrl+C" << std::endl;
+    std::cout << "Program aborted" << std::endl;
     q8_emg_->deactivate();
     q8_ati_->deactivate();
 }

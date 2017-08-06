@@ -49,9 +49,15 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
             params_.eta_[i]);
 
         joints_.push_back(joint);
+
+        anatomical_joint_positions_.push_back(0);
+        anatomical_joint_velocities_.push_back(0);
+        anatomical_joint_torques_.push_back(0);
     }
     qp_0_ << mel::PI / 4, mel::PI / 4, mel::PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
     selector_mat_.bottomRows(3) = Eigen::MatrixXd::Identity(3, 3);
+
+    
 
 }
 
@@ -84,20 +90,19 @@ void MahiExoII::anatomical_joint_set_points(mel::double_vec& set_points) {
 void MahiExoII::update_kinematics() {
 
     // update q_par_ (q parallel) with the three prismatic link positions
-    //Eigen::VectorXd q_par = Eigen::VectorXd::Zero(3);
-    //Eigen::VectorXd q_ser = Eigen::VectorXd::Zero(3);
     q_par_ << joints_[2]->get_position(), joints_[3]->get_position(), joints_[4]->get_position();
    
     // run forward kinematics solver to update qp_ (q prime), which contains all 12 RPS positions
     forward_kinematics(q_par_, q_ser_, qp_);
 
     // get positions from first two anatomical joints, which have encoders
-    anatomical_joint_positions_[0] = joints_[0]->get_position();
-    anatomical_joint_positions_[1] = joints_[1]->get_position();
+    anatomical_joint_positions_[0] = joints_[0]->get_position(); // elbow flexion/extension
+    anatomical_joint_positions_[1] = joints_[1]->get_position(); // forearm pronation/supination
 
-    // get positions for two wrist anatomical joints from forward kinematics solver
-    anatomical_joint_positions_[2] = qp_(6);
-    anatomical_joint_positions_[3] = qp_(7);
+    // get positions from forward kinematics solver for three wrist anatomical joints 
+    anatomical_joint_positions_[2] = qp_(6); // wrist flexion/extension
+    anatomical_joint_positions_[3] = qp_(7); // wrist radial/ulnar deviation
+    anatomical_joint_positions_[4] = qp_(9); // arm translation
 
     // run forward kinematics solver to update qp_dot_ (q prime time derivative), which contains all 12 RPS velocities
     // update qs_dot_ (q star time derivative) with the three prismatic link velocities
@@ -105,12 +110,13 @@ void MahiExoII::update_kinematics() {
     forward_kinematics_velocity(q_par_dot_, q_ser_dot_, qp_dot_);
 
     // get velocities from first two anatomical joints, which have encoders
-    anatomical_joint_velocities_[0] = joints_[0]->get_velocity();
-    anatomical_joint_velocities_[1] = joints_[1]->get_velocity();
+    anatomical_joint_velocities_[0] = joints_[0]->get_velocity(); // elbow flexion/extension
+    anatomical_joint_velocities_[1] = joints_[1]->get_velocity(); // forearm pronation/supination
 
-    // get velocities for two wrist anatomical joints from forward kinematics solver
-    anatomical_joint_velocities_[2] = qp_dot_(6);
-    anatomical_joint_velocities_[3] = qp_dot_(7);
+    // get velocities from forward kinematics solver for three wrist anatomical joints 
+    anatomical_joint_velocities_[2] = qp_dot_(6); // wrist flexion/extension
+    anatomical_joint_velocities_[3] = qp_dot_(7); // wrist radial/ulnar deviation
+    anatomical_joint_velocities_[4] = qp_dot_(9); // arm translation
 
 }
 
