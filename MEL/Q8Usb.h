@@ -151,6 +151,8 @@ namespace mel {
 
         static void print_quarc_error(int result);
         static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
+
+
         
 
     };

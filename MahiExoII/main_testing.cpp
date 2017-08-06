@@ -2,6 +2,7 @@
 #include <csignal>
 #include "Q8Usb.h"
 #include "util.h"
+#include "mahiexoii_util.h"
 #include "MahiExoII.h"
 #include "Controller.h"
 #include "Task.h"
@@ -30,14 +31,20 @@ int main(int argc, char * argv[]) {
         return -1;
     }
 
-
+    
+    mel::uint32 id_emg = 0;
+    mel::uint32 id_ati = 1;
+    if (!check_digital_loopback(0, 7)) {
+        mel::print("Warning: Digital loopback not connected to Q8Usb 0");
+        id_emg = 1;
+        id_ati = 0;
+    }
+    
     //  create a Q8Usb object
-    mel::uint32 id = 0;
-
     mel::channel_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
     mel::channel_vec  ao_channels = { 0, 1, 2, 3, 4 };
-    mel::channel_vec  di_channels = {};
-    mel::channel_vec  do_channels = { 0, 1, 2, 3, 4 };
+    mel::channel_vec  di_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    mel::channel_vec  do_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
     mel::channel_vec enc_channels = { 0, 1, 2, 3, 4 };
 
     mel::Q8Usb::Options options;
@@ -47,36 +54,48 @@ int main(int argc, char * argv[]) {
         options.do_expire_signals_[i] = 1;
     }
 
-    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+    mel::Daq* q8_emg = new mel::Q8Usb(id_emg, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
+    
+    //  create a second Q8Usb object
+    ai_channels = { 0, 1, 2, 3, 4, 5 };
+    ao_channels = {};
+    di_channels = {};
+    do_channels = {};
+    enc_channels = {};
+
+    mel::Daq* q8_ati = new mel::Q8Usb(id_ati, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+
+    /*
 
     // create and configure a MahiExoII object
     mel::double_vec amp_gains = { 1.8, 1.8, 0.184, 0.184, 0.184 };
     MahiExoII::Config config;
     for (int i = 0; i < 5; i++) {
-        config.enable_[i] = q8->do_(i);
-        config.command_[i] = q8->ao_(i);
-        config.encoder_[i] = q8->encoder_(i);
-        config.encrate_[i] = q8->encrate_(i);
+        config.enable_[i] = q8_emg->do_(i);
+        config.command_[i] = q8_emg->ao_(i);
+        config.encoder_[i] = q8_emg->encoder_(i);
+        config.encrate_[i] = q8_emg->encrate_(i);
         config.amp_gains_[i] = amp_gains[i];
     }
     MahiExoII* mahiexoii = new MahiExoII(config);
 
     // manual zero joint positions
     if (var_map.count("zero")) {
-        q8->activate();
-        q8->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
-        q8->deactivate();
+        q8_emg->activate();
+        q8_emg->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
+        q8_emg->deactivate();
         return 0;
     }
 
+    // create clock
     mel::Clock clock(1000, false);
 
-    EmgTraining sm = EmgTraining(clock,q8,mahiexoii);
+    EmgTraining sm = EmgTraining(clock,q8_emg,q8_ati,mahiexoii);
 
-    sm.execute(5);
+    sm.execute();
 
-    delete q8;
+    */
 
     return 0;
 

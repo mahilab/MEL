@@ -42,6 +42,7 @@
     <ClInclude Include="AnatomicalJoint.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="DataLog.h" />
+    <ClInclude Include="ForceSensor.h" />
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="StateMachine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

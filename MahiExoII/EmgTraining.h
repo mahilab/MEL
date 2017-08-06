@@ -13,13 +13,17 @@ class EmgTraining : public mel::StateMachine {
 
 public:
 
-    EmgTraining(mel::Clock& clock, mel::Daq* daq, MahiExoII* exo);
+    EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoII* exo);
 
 
 private:
 
-    mel::Daq* daq_;
+    mel::Daq* q8_emg_;
+    mel::Daq* q8_ati_;
     MahiExoII* exo_;
+    Eigen::VectorXd raw_force_;
+    Eigen::MatrixXd calib_mat_;
+    Eigen::VectorXd calib_force_;
 
     enum States {
         ST_INIT,

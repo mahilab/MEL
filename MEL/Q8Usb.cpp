@@ -405,6 +405,8 @@ namespace mel {
         return vel_channels;
     }
 
+   
+
 
     std::string Q8Usb::Options::build() {
         std::string options = "";
