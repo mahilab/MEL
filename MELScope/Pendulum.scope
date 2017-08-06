@@ -1,5 +1,5 @@
 CURVE_COLORS:
-  pendulum_in:
+  pendulum_props:
   - [106, 61, 154]
   - [177, 89, 40]
   - [166, 206, 227]
@@ -10,30 +10,30 @@ CURVE_COLORS:
   - [255, 255, 153]
   - [141, 211, 199]
   - [255, 255, 179]
-  pendulum_out:
+  pendulum_state:
   - [31, 120, 180]
   - [227, 26, 28]
   - [51, 160, 44]
   - [255, 127, 0]
 CURVE_LINES:
-  pendulum_in: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
-  pendulum_out: [Solid, Solid, Solid, Solid]
+  pendulum_props: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
+  pendulum_state: [Solid, Solid, Solid, Solid]
 CURVE_SIZES:
-  pendulum_in: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  pendulum_out: [1, 1, 1, 1]
+  pendulum_props: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  pendulum_state: [1, 1, 1, 1]
 DATA_NAMES:
-  pendulum_in: [M0, M1, L0, L1, B0, B1, Fk0, Fk1, K_player, B_player]
-  pendulum_out: [Q0, Q1, Tau0, Tau1]
+  pendulum_props: [M0, M1, L0, L1, B0, B1, Fk0, Fk1, K_player, B_player]
+  pendulum_state: [Q0, Q1, Tau0, Tau1]
 GRID_COLS: 2
 GRID_ROWS: 1
-MELSHARE_MODES: {pendulum_in: Write Only, pendulum_out: Read Only}
-MELSHARE_NAMES: [pendulum_out, pendulum_in]
-MELSHARE_SIZES: {pendulum_in: 10, pendulum_out: 4}
+MELSHARE_MODES: {pendulum_props: Write Only, pendulum_state: Read Only}
+MELSHARE_NAMES: [pendulum_state, pendulum_props]
+MELSHARE_SIZES: {pendulum_props: 10, pendulum_state: 4}
 SCOPE_FILTERS:
-- pendulum_in: [false, false, false, false, false, false, false, false, false, false]
-  pendulum_out: [true, true, true, true]
-- pendulum_in: [true, true, true, true, true, true, true, true, true, true]
-  pendulum_out: [false, false, false, false]
+- pendulum_props: [false, false, false, false, false, false, false, false, false, false]
+  pendulum_state: [true, true, true, true]
+- pendulum_props: [true, true, true, true, true, true, true, true, true, true]
+  pendulum_state: [false, false, false, false]
 SCOPE_LEGENDS: [false, false]
 SCOPE_MODES: [Scope, I/O]
 SCOPE_RANGES:

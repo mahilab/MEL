@@ -37,14 +37,14 @@ class PendulumSimulation : public mel::Task {
      double B_player = 0.6;   
 
      // MELShare(s)
-     mel::share::MelShare pendulum_out = mel::share::MelShare("pendulum_out");
-     mel::share::MelShare pendulum_in = mel::share::MelShare("pendulum_in");
+     mel::share::MelShare state_data = mel::share::MelShare("pendulum_state");
+     mel::share::MelShare props_data = mel::share::MelShare("pendulum_props");
 
-     std::array<double, 4> pendulum_out_data = { 0,0,0,0 };
+     std::array<double, 4>  pendulum_out_data = { 0,0,0,0 };
      std::array<double, 10> pendulum_in_data = { M[0],M[1],L[0],L[1],B[0],B[1],Fk[0],Fk[1],K_player,B_player };
 
     void start() override {
-        pendulum_in.write(pendulum_in_data);
+        props_data.write(pendulum_in_data);
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
         getchar();
         daq_->activate();
@@ -63,7 +63,7 @@ class PendulumSimulation : public mel::Task {
         daq_->reload_watchdog();
         daq_->read_all();
         // read and unpack pendulum_in MELShare
-        pendulum_in.read(pendulum_in_data);
+        props_data.read(pendulum_in_data);
         M[0] = pendulum_in_data[0];
         M[1] = pendulum_in_data[1];
         L[0] = pendulum_in_data[2];
@@ -96,7 +96,7 @@ class PendulumSimulation : public mel::Task {
         pendulum_out_data[3] = Tau[1];
 
         ow_->update_state_map();
-        pendulum_out.write(pendulum_out_data);
+        state_data.write(pendulum_out_data);
         daq_->write_all();
     }
 
