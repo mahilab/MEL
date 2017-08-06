@@ -66,7 +66,6 @@ int main(int argc, char * argv[]) {
 
     mel::Daq* q8_ati = new mel::Q8Usb(id_ati, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
 
-    /*
 
     // create and configure a MahiExoII object
     mel::double_vec amp_gains = { 1.8, 1.8, 0.184, 0.184, 0.184 };
@@ -95,7 +94,6 @@ int main(int argc, char * argv[]) {
 
     sm.execute();
 
-    */
 
     return 0;
 

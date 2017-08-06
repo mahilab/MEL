@@ -29,12 +29,23 @@ void EmgTraining::ST_Init(const mel::NoEventData* data) {
     getchar();
     q8_emg_->start_watchdog(0.1);
     std::cout << "Starting the controller ... " << std::endl;
-    event(ST_NEUTRAL);
+    event(ST_TO_NEUTRAL);
 
 }
 
-void EmgTraining::ST_Neutral(const mel::NoEventData* data) {
+void EmgTraining::ST_To_Neutral(const mel::NoEventData* data) {
     
+    q8_emg_->reload_watchdog();
+
+    q8_emg_->read_all();
+
+    exo_->update_kinematics();
+
+
+}
+
+void EmgTraining::ST_Hold_Neutral(const mel::NoEventData* data) {
+
     q8_emg_->reload_watchdog();
 
     q8_ati_->read_analogs();

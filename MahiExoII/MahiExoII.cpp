@@ -113,47 +113,8 @@ void MahiExoII::update_kinematics() {
     anatomical_joint_velocities_[3] = qp_dot_(7);
 
 }
-    
-double MahiExoII::get_anatomical_joint_position(int index) {
-    return anatomical_joint_positions_[index];
-}
-
-double MahiExoII::get_anatomical_joint_velocity(int index) {
-    return anatomical_joint_velocities_[index];
-}
-
-mel::double_vec MahiExoII::get_anatomical_joint_positions() {
-
-    /*
-    // get positions from first two anatomical joints, which have encoders
-    anatomical_joint_positions_[0] = joints_[0]->get_position();
-    anatomical_joint_positions_[1] = joints_[1]->get_position();
-
-    // get positions for two wrist anatomical joints from forward kinematics solver
-    anatomical_joint_positions_[2] = qp_(6);
-    anatomical_joint_positions_[3] = qp_(7);
-    */
-
-    return anatomical_joint_positions_;
-}
-
-mel::double_vec MahiExoII::get_anatomical_joint_velocities() {
 
 
-    
-
-    /*
-    // get velocities from first two anatomical joints, which have encoders
-    anatomical_joint_velocities_[0] = joints_[0]->get_velocity();
-    anatomical_joint_velocities_[1] = joints_[1]->get_velocity();
-
-    // get velocities for two wrist anatomical joints from forward kinematics solver
-    anatomical_joint_velocities_[2] = qp_dot_(6);
-    anatomical_joint_velocities_[3] = qp_dot_(7);
-    */
-
-    return anatomical_joint_velocities_;
-}
 
 void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
 

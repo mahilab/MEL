@@ -32,16 +32,13 @@ public:
 
     void anatomical_joint_set_points(mel::double_vec& set_points);
     void update_kinematics();
-    double get_anatomical_joint_position(int index);
-    double get_anatomical_joint_velocity(int index);
+    
 
     bool reached_anatomical_joint_position_target(double target_position);
 
     
 
     // inherited virtual functions from Exo class to be implemented
-    mel::double_vec get_anatomical_joint_positions() override;
-    mel::double_vec get_anatomical_joint_velocities() override;
     void set_anatomical_joint_torques(mel::double_vec new_torques) override;
 
 private:

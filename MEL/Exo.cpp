@@ -22,9 +22,16 @@ namespace mel {
         return anatomical_joint_positions_;
     }
 
+    double Exo::get_anatomical_joint_position(int index) {
+        return anatomical_joint_positions_[index];
+    }
+
     double_vec Exo::get_anatomical_joint_velocities() {
         return anatomical_joint_velocities_;
     }
 
+    double Exo::get_anatomical_joint_velocity(int index) {
+        return anatomical_joint_velocities_[index];
+    }
 
 }

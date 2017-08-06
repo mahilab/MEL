@@ -27,7 +27,8 @@ private:
 
     enum States {
         ST_INIT,
-        ST_NEUTRAL,
+        ST_TO_NEUTRAL,
+        ST_HOLD_NEUTRAL,
         ST_STOP,
         ST_NUM_STATES
     };
@@ -36,8 +37,11 @@ private:
     void ST_Init(const mel::NoEventData*);
     mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Init> Init;
 
-    void ST_Neutral(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Neutral> Neutral;
+    void ST_To_Neutral(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_To_Neutral> To_Neutral;
+
+    void ST_Hold_Neutral(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Hold_Neutral> Hold_Neutral;
 
     void ST_Stop(const mel::NoEventData*);
     mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Stop> Stop;
@@ -47,7 +51,8 @@ private:
     virtual const mel::StateMapRow* get_state_map() {
         static const mel::StateMapRow STATE_MAP[] = {
             &Init,
-            &Neutral,
+            &To_Neutral,
+            &Hold_Neutral,
             &Stop,
         };
         return &STATE_MAP[0];
