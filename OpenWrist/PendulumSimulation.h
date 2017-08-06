@@ -26,7 +26,7 @@ class PendulumSimulation : public mel::Task {
 
      std::array<double, 2> Qdd = { 0,0 };
      std::array<double, 2> Qd = { 0,0 };
-     std::array<double, 2> Q = { -PI/2 ,0 };
+     std::array<double, 2> Q = { -PI/2  ,0 };
      std::array<double, 2> Tau = { 0, 0 };
 
      std::array<mel::Integrator, 2> Qdd2Qd = { mel::Integrator(Qd[0]), mel::Integrator(Qd[1]) };
