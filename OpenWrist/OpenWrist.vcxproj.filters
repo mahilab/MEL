@@ -47,7 +47,10 @@
     <ClInclude Include="Cuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PendulumSimulation.h">
+    <ClInclude Include="PendulumGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Spinlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

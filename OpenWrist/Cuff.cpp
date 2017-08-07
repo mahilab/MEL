@@ -1,5 +1,6 @@
 #include "Cuff.h"
-
+#include <chrono>
+#include <thread>
 
 int Cuff::enable() {
 	
@@ -50,6 +51,7 @@ int Cuff::enable() {
 
 int Cuff::disable() {
     set_motor_positions(0, 0);
+    commActivate(&comm_settings_t_, CUFF_ID, 0);
     boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     return 1;
 }
@@ -116,102 +118,140 @@ int Cuff::port_selection() {
     }
 }
 
-void Cuff::pretensioning(short int* motpos) {
+void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* scaling_factor) {
 	struct timespec req, elaptime;
-	boost::chrono::system_clock::time_point tstart, tend;
-	boost::chrono::nanoseconds elapsed_time;
-	int elapsed_time_ns;
+	std::chrono::high_resolution_clock::time_point tstart, tend;
+    std::chrono::nanoseconds elapsed_time;
+	int elapsed_time_us;
 	int tv_usec, tv_sec;
-	short int currents[2];
+	//short int currents[2];
 	short int stepmot;
 
-	motpos[0] = 0;
-	motpos[1] = 0;
+    short int act_mot_pos_0, act_mot_pos_1, act_mot_cur_0, act_mot_cur_1;
 
-	tstart = boost::chrono::system_clock::now();
+	motpos_zero[0] = 0;
+	motpos_zero[1] = 0;
+
+	tstart = std::chrono::high_resolution_clock::now();
 
 	for (int i = 0; i < 80; i++) {
 
-		commGetCurrents(&comm_settings_t_, CUFF_ID, currents);
+		//commGetCurrents(&comm_settings_t_, CUFF_ID, currents);
+        get_motor_currents(act_mot_cur_0, act_mot_cur_1);
+		motpos_zero[0] = motpos_zero[0] - (5 * (50 - act_mot_cur_0));
+		motpos_zero[1] = motpos_zero[1] + (5 * (50 + act_mot_cur_1));
+		std::cout << act_mot_cur_0 << '\t' << act_mot_cur_1 << '\t' << motpos_zero[0] << '\t' << motpos_zero[1] << '\n';
 
-		motpos[0] = motpos[0] - (10 * (50 - currents[0]));
-		motpos[1] = motpos[1] + (10 * (50 + currents[1]));
-		std::cout << currents[0] << '\t' << currents[1] << '\t' << motpos[0] << '\t' << motpos[1] << '\n';
+		//commSetInputs(&comm_settings_t_, CUFF_ID, motpos_zero);
+        set_motor_positions(motpos_zero[0], motpos_zero[1]);
 
-		commSetInputs(&comm_settings_t_, CUFF_ID, motpos);
+		tend = std::chrono::high_resolution_clock::now();
+		elapsed_time = std::chrono::high_resolution_clock::now() - tstart;
 
-		tend = boost::chrono::system_clock::now();
-		elapsed_time = boost::chrono::system_clock::now() - tstart;
+		elapsed_time_us = (int)((double)elapsed_time.count())/1000;
 
-		elapsed_time_ns = ((double)elapsed_time.count());
-
-		if (elapsed_time_ns > 50000) {
+/*		if (elapsed_time_ns > 50000) { // 0.05 ms
 			int nsec = (int)((((elapsed_time_ns) / 1000.0) + 50000.0) / 1000000.0) + 1;
-			elapsed_time_ns -= 1000000000 * nsec;
+			elapsed_time_ns -= 1000000 * nsec;
 			tv_sec = nsec;
 		}
 		if (((double)elapsed_time.count()) / 1000.0 < 1050000) {
 			int nsec = (int)(-(((elapsed_time_ns) / 1000.0) + 50000.0) / 1000000.0);
-			elapsed_time_ns += 1000000000 * nsec;
+			elapsed_time_ns += 1000000 * nsec;
 			tv_sec -= nsec;
 		}
 
-		elapsed_time_ns = elapsed_time_ns + tv_sec - (elapsed_time_ns - 50000) * 1000;
+		elapsed_time_ns = elapsed_time_ns + tv_sec - (elapsed_time_ns - 50000) * 1000;*/
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(elapsed_time_ns / 1000000));
-		tstart = boost::chrono::system_clock::now();
+		std::this_thread::sleep_for(std::chrono::microseconds (50000 - elapsed_time_us));
+		tstart = std::chrono::high_resolution_clock::now();
 	}
 
-	boost::this_thread::sleep(boost::posix_time::milliseconds(25));
+	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
 	stepmot = 0;
-	tstart = boost::chrono::system_clock::now();
+	tstart = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < 80; i++) {
 
 		stepmot = stepmot + 15;
 		if (stepmot < 1200) {
 
-			motpos[0] = motpos[0] + 15;
-			motpos[1] = motpos[1] - 15;
+			motpos_zero[0] = motpos_zero[0] + 15;
+			motpos_zero[1] = motpos_zero[1] - 15;
 
-			commSetInputs(&comm_settings_t_, CUFF_ID, motpos);
+			//commSetInputs(&comm_settings_t_, CUFF_ID, motpos_zero);
+            set_motor_positions(motpos_zero[0], motpos_zero[1]);
 		}
 
-		tend = boost::chrono::system_clock::now();
-		elapsed_time = boost::chrono::system_clock::now() - tstart;
+        tend = std::chrono::high_resolution_clock::now();
+        elapsed_time = std::chrono::high_resolution_clock::now() - tstart;
 
-		elapsed_time_ns = ((double)elapsed_time.count());
+        elapsed_time_us = (int)((double)elapsed_time.count()) / 1000;
 
-		if (elapsed_time_ns > 50000) {
-			int nsec = (int)((((elapsed_time_ns) / 1000.0) + 50000.0) / 1000000.0) + 1;
-			elapsed_time_ns -= 1000000000 * nsec;
-			tv_sec = nsec;
-		}
-		if (((double)elapsed_time.count()) / 1000.0 < 1050000) {
-			int nsec = (int)(-(((elapsed_time_ns) / 1000.0) + 50000.0) / 1000000.0);
-			elapsed_time_ns += 1000000000 * nsec;
-			tv_sec -= nsec;
-		}
+        /*		if (elapsed_time_ns > 50000) { // 0.05 ms
+        int nsec = (int)((((elapsed_time_ns) / 1000.0) + 50000.0) / 1000000.0) + 1;
+        elapsed_time_ns -= 1000000 * nsec;
+        tv_sec = nsec;
+        }
+        if (((double)elapsed_time.count()) / 1000.0 < 1050000) {
+        int nsec = (int)(-(((elapsed_time_ns) / 1000.0) + 50000.0) / 1000000.0);
+        elapsed_time_ns += 1000000 * nsec;
+        tv_sec -= nsec;
+        }
 
-		elapsed_time_ns = elapsed_time_ns + tv_sec - (elapsed_time_ns - 50000) * 1000;
+        elapsed_time_ns = elapsed_time_ns + tv_sec - (elapsed_time_ns - 50000) * 1000;*/
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(elapsed_time_ns / 1000000));
-		tstart = boost::chrono::system_clock::now();
+        std::this_thread::sleep_for(std::chrono::microseconds(50000 - elapsed_time_us));
+        tstart = std::chrono::high_resolution_clock::now();
 	}
+
+    short int motpos[2];
+    motpos[0] = motpos_zero[0] - 20000;
+    motpos[1] = motpos_zero[1] + 20000;
+    //commSetInputs(&comm_settings_t_, CUFF_ID, motpos);
+    set_motor_positions(motpos[0], motpos[1]);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //short int CUFF_realmotpos[2];
+    //commGetMeasurements(&comm_settings_t_, CUFF_ID, CUFF_realmotpos);
+    int MAX_VAL_CAR_0 = 570;
+    int MAX_VAL_CAR_1 = 570;
+    get_motor_currents(act_mot_pos_0, act_mot_pos_1);
+    scaling_factor[0] = abs((act_mot_pos_0 - motpos_zero[0]) / MAX_VAL_CAR_0);
+    scaling_factor[1] = abs((act_mot_pos_1 - motpos_zero[1]) / MAX_VAL_CAR_1);
+    //commSetInputs(&comm_settings_t_, CUFF_ID, motpos_zero);
+    set_motor_positions(motpos_zero[0], motpos_zero[1]);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    motpos_zero[0] = motpos_zero[0] - (0.1138*pow(force_newtons, 3) - 5.204*pow(force_newtons, 2) + 89.22*force_newtons + 0) * scaling_factor[0];
+    motpos_zero[1] = motpos_zero[1] + (0.1138*pow(force_newtons, 3) - 5.204*pow(force_newtons, 2) + 89.22*force_newtons + 0) * scaling_factor[1];
+    set_motor_positions(motpos_zero[0], motpos_zero[1]);
 }
 
 int Cuff::io_thread_func() {
 	while (io_loop_) {
-		// boost::mutex::scoped_lock lock(io_mutex_);
+		boost::mutex::scoped_lock lock(io_mutex_);
 		commSetInputs(&comm_settings_t_, CUFF_ID, reference_motor_positions_);
 		commGetMeasurements(&comm_settings_t_, CUFF_ID, actual_motor_positions_);
 		commGetCurrents(&comm_settings_t_, CUFF_ID, actual_motor_currents_);
-		//std::cout << "Mot0: " << actual_motor_positions_[0] << ",   Mot1: " << actual_motor_positions_[1] << ",   Ref0: " << reference_motor_positions_[0] << ",   Ref1:" << reference_motor_positions_[1] << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
     return 1;
 }
 
 void Cuff::set_motor_positions(short int motor_position_0, short int motor_position_1) {
+    boost::mutex::scoped_lock lock(io_mutex_);
     reference_motor_positions_[0] = motor_position_0;
     reference_motor_positions_[1] = motor_position_1;
+}
+
+void Cuff::get_motor_positions(short int& motor_position_0, short int& motor_position_1) {
+    boost::mutex::scoped_lock lock(io_mutex_);
+    motor_position_0 = actual_motor_currents_[0];
+    motor_position_1 = actual_motor_currents_[1];
+}
+
+void Cuff::get_motor_currents(short int& motor_current_0, short int& motor_current_1) {
+    boost::mutex::scoped_lock lock(io_mutex_);
+    motor_current_0 = actual_motor_currents_[0];
+    motor_current_1 = actual_motor_currents_[1];
 }
