@@ -14,6 +14,7 @@
 #include "qbmove_communications.h"
 #include "definitions.h"
 #include "commands.h"
+#include "Spinlock.h"
 
 #define CUFF_ID 1
 
@@ -36,6 +37,7 @@ private:
 	short int actual_motor_currents_[2];
 
 	comm_settings comm_settings_t_;
+    Spinlock spinlock;
 	boost::mutex io_mutex_;
     boost::thread io_thread_;
     int io_thread_func();

@@ -252,14 +252,14 @@ int main(int argc, char * argv[]) {
         controller.execute();
     }
 
-    //if (var_map.count("pendulum")) {
+    if (var_map.count("pendulum")) {
         mel::Clock clock(1000);
         mel::Controller controller(clock);
         mel::Task* task = new PendulumGame(&open_wrist, q8);
         controller.queue_task(task);
         controller.execute();
         return 0;
-    //}
+    }
 
 
     // clean up
