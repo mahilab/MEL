@@ -4,6 +4,7 @@
 #include <Eigen\Dense>
 #include <Eigen\LU>
 #include <array>
+#include "MelShare.h"
 
 
 class MahiExoII : public mel::Exo {
@@ -30,7 +31,7 @@ public:
     const Config config_;
     const Params params_;
 
-    void anatomical_joint_set_points(mel::double_vec& set_points);
+    //void anatomical_joint_set_points(mel::double_vec& set_points);
     void update_kinematics();
     
 
@@ -85,7 +86,14 @@ private:
     Eigen::MatrixXd phi_d_qp_func(Eigen::VectorXd& qp);
     
     
-	
+    // MahiExoII MELSHARE STATE MAP
+
+    mel::share::MelShare state_map_ = mel::share::MelShare("MEII_state");
+    void update_state_map();
+    mel::double_vec state_ = mel::double_vec(15, 0);
+
+    //const Config config_;
+    //const Params params_;
     
     
     

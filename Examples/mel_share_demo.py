@@ -46,7 +46,7 @@ print "Wrote:"
 my_chars = CharArray3('x','y','z')
 result = mel_share.write_char_map("map0", my_chars, 3)
 print "map0:    ",
-if (result != 1): print 'ERROR:', result
+if (result  < 0): print 'ERROR:', result
 for value in my_chars:
     print value,
 print ' '
