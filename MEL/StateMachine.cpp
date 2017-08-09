@@ -11,7 +11,8 @@ namespace mel {
         current_state_(initial_state),
         new_state_(initial_state),
         event_generated_(false),
-        event_data_(nullptr)
+        event_data_(nullptr),
+        stop_(false)
     {
         // register signal SIGINT and SIGBREAK with ctrl_c_handler */
         signal(SIGINT, ctrl_c_handler);
@@ -26,9 +27,7 @@ namespace mel {
         event_data_ = data;
         event_generated_ = true;
         new_state_ = new_state;
-
-    }
-    
+    }  
 
 
     void StateMachine::execute(uint32 stop_time_seconds) {
@@ -43,7 +42,7 @@ namespace mel {
         clock_.start();
 
         // run the state machine
-        while (!ctrl_c_ && clock_.time() <= stop_time_) {
+        while (!ctrl_c_ && !stop_ && clock_.time() <= stop_time_) {
 
 
             if (event_generated_) {
@@ -92,8 +91,9 @@ namespace mel {
             // run exit task
             ctrl_c_task();
 
-            // reset stop_
+            // reset ctrl_c_ and stop_
             ctrl_c_ = false;
+            stop_ = false;
         }
     }
 

@@ -15,7 +15,6 @@ public:
 
     EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoII* exo);
 
-
 private:
 
     mel::Daq* q8_emg_;

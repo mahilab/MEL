@@ -76,6 +76,7 @@ namespace mel {
 
         static bool ctrl_c_;   ///< static boolean that will stop State Machine when set to true
 
+        bool stop_;
 
         // SIGNAL HANDLING
 
@@ -89,7 +90,7 @@ namespace mel {
 
         int new_state_;
 
-        bool event_generated_;
+        bool event_generated_;        
 
         const EventData* event_data_;
 
@@ -97,8 +98,7 @@ namespace mel {
 
         void set_current_state(int new_state) { current_state_ = new_state; }
 
-        virtual void ctrl_c_task() {};
-        
+        virtual void ctrl_c_task() {};        
 
     };
 

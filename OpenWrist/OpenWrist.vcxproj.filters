@@ -16,18 +16,33 @@
     <Filter Include="CUFF">
       <UniqueIdentifier>{0e370fab-c724-4371-81ea-2bffa33c0d32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{29ff72c6-4665-4756-b665-157a4afe2529}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenWrist.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qbmove_communications.cpp">
       <Filter>CUFF</Filter>
     </ClCompile>
     <ClCompile Include="Cuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="main_haptic_guidance.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Pendulum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HGCondition0.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HapticGuidance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,10 +62,19 @@
     <ClInclude Include="Cuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PendulumGame.h">
+    <ClInclude Include="Spinlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Spinlock.h">
+    <ClInclude Include="Pendulum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HGCondition0.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GuiFlag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HapticGuidance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

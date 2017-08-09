@@ -27,10 +27,11 @@ namespace mel {
         }
 
         void start();
+        void reset();
         void wait();
         void stop();
-        void pause();
-        void resume();
+        //void pause();
+        //void resume();
 
     private:
 
@@ -52,7 +53,7 @@ namespace mel {
         const double NS2S = 1.0 / 1000000000.0;
 
         bool stop_ = false;
-        bool pause_ = false;
+        //bool pause_ = false;
 
         // CLOCK DATA LOGGING
 

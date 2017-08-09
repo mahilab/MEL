@@ -4,7 +4,7 @@
 
 #define NUM_OF_MOTORS 2
 #define NUM_OF_EMGS 2
-#define PI 3.14159265359
+//#define PI 3.14159265359
 
 #define DEFAULT_RESOLUTION 1
 #define DEFAULT_INF_LIMIT -15000
