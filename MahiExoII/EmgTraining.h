@@ -2,6 +2,8 @@
 #include "StateMachine.h"
 #include "Q8Usb.h"
 #include "MahiExoII.h"
+#include "util.h"
+#include "mahiexoii_util.h"
 
 class EmgTrainingData : public mel::EventData {
 
@@ -17,14 +19,7 @@ public:
 
 
 private:
-
-    mel::Daq* q8_emg_;
-    mel::Daq* q8_ati_;
-    MahiExoII* exo_;
-    Eigen::VectorXd raw_force_;
-    Eigen::MatrixXd calib_mat_;
-    Eigen::VectorXd calib_force_;
-
+    
     enum States {
         ST_INIT,
         ST_TO_NEUTRAL,
@@ -59,5 +54,28 @@ private:
     }
 
     void ctrl_c_task() override;
+
+
+    mel::Daq* q8_emg_;
+    mel::Daq* q8_ati_;
+    MahiExoII* exo_;
+
+
+    Eigen::VectorXd raw_force_;
+    Eigen::MatrixXd calib_mat_;
+    Eigen::VectorXd calib_force_;
+
+
+    mel::double_vec set_points_;
+    mel::double_vec kp_;
+    mel::double_vec kd_;
+    mel::double_vec init_pos_;
+    mel::double_vec goal_pos_;
+    double init_time_;
+    mel::double_vec speed_;
+    mel::double_vec x_ref_;
+    mel::double_vec new_torques_;
+    mel::int8_vec backdrive_;
+
 
 };

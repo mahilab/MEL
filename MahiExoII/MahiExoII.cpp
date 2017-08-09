@@ -50,10 +50,15 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
         joints_.push_back(joint);
 
+        
+    }
+
+    for (int i = 0; i < 5; i++) {
         anatomical_joint_positions_.push_back(0);
         anatomical_joint_velocities_.push_back(0);
         anatomical_joint_torques_.push_back(0);
     }
+
     qp_0_ << mel::PI / 4, mel::PI / 4, mel::PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
     selector_mat_.bottomRows(3) = Eigen::MatrixXd::Identity(3, 3);
 
@@ -61,7 +66,7 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
 }
 
-
+/*
 void MahiExoII::anatomical_joint_set_points(mel::double_vec& set_points) {
 
     mel::double_vec torques = { 0,0,0,0,0 };
@@ -85,7 +90,7 @@ void MahiExoII::anatomical_joint_set_points(mel::double_vec& set_points) {
     joints_[4]->set_torque(torques[4]);
 
 }
-
+*/
 
 void MahiExoII::update_kinematics() {
 
@@ -146,6 +151,7 @@ void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
 	Eigen::VectorXd ser_torques = Eigen::VectorXd::Zero(3);
 	ser_torques(0) = new_torques[2];
 	ser_torques(1) = new_torques[3];
+    ser_torques(2) = new_torques[4];
 	par_torques = rho_sub.transpose()*ser_torques;
 	joints_[2]->set_torque(par_torques(0));
 	joints_[3]->set_torque(par_torques(1));
@@ -364,4 +370,23 @@ Eigen::MatrixXd MahiExoII::phi_d_qp_func(Eigen::VectorXd& qp) {
 
     return phi_d_qp;
 
+}
+
+void MahiExoII::update_state_map() {
+    state_[0] = joints_[0]->get_position();
+    state_[1] = joints_[1]->get_position();
+    state_[2] = joints_[2]->get_position();
+    state_[3] = joints_[3]->get_position();
+    state_[4] = joints_[4]->get_position();
+    state_[5] = joints_[0]->get_velocity();
+    state_[6] = joints_[1]->get_velocity();
+    state_[7] = joints_[2]->get_velocity();
+    state_[8] = joints_[3]->get_velocity();
+    state_[9] = joints_[4]->get_velocity();
+    state_[10] = joints_[0]->get_torque();
+    state_[11] = joints_[1]->get_torque();
+    state_[12] = joints_[2]->get_torque();
+    state_[13] = joints_[3]->get_torque();
+    state_[14] = joints_[4]->get_torque();
+    state_map_.write(state_);
 }
