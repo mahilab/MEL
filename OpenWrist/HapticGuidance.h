@@ -67,10 +67,13 @@ private:
     Pendulum pendulum;
 
     // TRAJECTORY
-    mel::share::MelShare trajectory = mel::share::MelShare("trajectory");
+    mel::share::MelShare trajectory_x = mel::share::MelShare("trajectory_x", 54*4); 
+    mel::share::MelShare trajectory_y = mel::share::MelShare("trajectory_y", 54*4);
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");
-    std::array<double, 20> trajectory_data = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+    std::array<int, 54> trajectory_x_data;
+    std::array<int, 54> trajectory_y_data;
     std::array<int, 2> exp_pos_data = { 0, 0 };
-    void dumb_solution(std::array<int, 2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix);
+    void fucking_smart_solution(std::array<int, 2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix);
+    double find_error_angle(double actual_angle, std::array<int, 2> intersection_pix, double length_m);
 
 };

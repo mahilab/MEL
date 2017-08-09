@@ -20,14 +20,14 @@ void HapticGuidance::ST_Start(const mel::NoEventData*) {
     ow_->enable();
     daq_->zero_encoders();
     gui_flag_.reset_flag(0);
-    //std::cout << "Waiting to enable CUFF" << std::endl;
-    //gui_flag_.wait_for_flag(3);
-    //cuff_.enable();
-    //gui_flag_.reset_flag(0);
-    //std::cout << "Waiting to pretension CUFF" << std::endl;
-    //gui_flag_.wait_for_flag(4);
-    //cuff_.pretensioning(2, offset, scaling_factor);
-    //gui_flag_.reset_flag(0);
+    std::cout << "Waiting to enable CUFF" << std::endl;
+    gui_flag_.wait_for_flag(3);
+    cuff_.enable();
+    gui_flag_.reset_flag(0);
+    std::cout << "Waiting to pretension CUFF" << std::endl;
+    gui_flag_.wait_for_flag(4);
+    cuff_.pretensioning(4, offset, scaling_factor);
+    gui_flag_.reset_flag(0);
     std::cout << "Waiting to start the controller." << std::endl;
     gui_flag_.wait_for_flag(5);
     daq_->start_watchdog(0.1);
@@ -42,17 +42,27 @@ void HapticGuidance::ST_Step(const mel::NoEventData*) {
     daq_->read_all();
 
     // compute trajectory
-    for (int i = 0; i < 20; i++) {
-        trajectory_data[i] = 0.3 * -sin(2 * mel::PI*.1*(clock_.time() + 1.0 / 20.0 * i)) * cos(2 * mel::PI*.2*(clock_.time() + 1.0 / 20.0 * i));
+    for (int i = 0; i < 54; i++) {
+        trajectory_y_data[i] = 540 - i * 20;
+        trajectory_x_data[i] = (int)(300.0 * -sin(2.0*mel::PI*0.1*(clock_.time() + (double)i * 20.0 / 1080.0)) *cos(2.0*mel::PI*0.2*(clock_.time() + (double)i * 20.0 / 1080.0)));
     }
-    trajectory.write(trajectory_data);
+
+    // sent trajectory to Unity
+    trajectory_x.write(trajectory_x_data);
+    trajectory_y.write(trajectory_y_data);
 
     // solve for expert position
-    dumb_solution(exp_pos_data, clock_.time(), 0.3, 0.1, 0.2, 0.45, 450.0);
+    fucking_smart_solution(exp_pos_data, clock_.time(), 0.3, 0.1, 0.2, 0.45, 450.0);
     exp_pos.write(exp_pos_data);
+
+    // compute anglular error
+    double error = find_error_angle(ow_->joints_[0]->get_position(), exp_pos_data, 0.45);
 
     // step the pendulum simuation
     pendulum.step_simulation(clock_.time(), ow_->joints_[0]->get_position(), ow_->joints_[0]->get_velocity());
+
+    // set CUFF positions
+    cuff_.set_motor_positions((short int)(-error * 20000 + offset[0]), (short int)(-error * 20000 + offset[1]), true);
 
     // set OpenWrist joint torques
     ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + 0.5*ow_->compute_friction_compensation(0) - pendulum.Tau[0]);
@@ -75,15 +85,18 @@ void HapticGuidance::ST_Stop(const mel::NoEventData*) {
     cuff_.disable();
     daq_->deactivate();
     stop_ = true;
+    mel::print("state machine stopped");
 }
 
 void HapticGuidance::ctrl_c_task() {
     ow_->disable();
     cuff_.disable();
     daq_->deactivate();
+    stop_ = true;
+    mel::print("ctrl+c pressed");
 }
 
-void HapticGuidance::dumb_solution(std::array<int,2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix) {
+void HapticGuidance::fucking_smart_solution(std::array<int,2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix) {
     double traj_point;
     std::array<double,540> check_array;
     double min = 1000;
@@ -91,9 +104,9 @@ void HapticGuidance::dumb_solution(std::array<int,2>& coordinates_pix, double ti
     double traj_point_min;
     for (int i = 540 - (int)joint_pos_y_pix; i < 540; i++) {
         //                 0.3      * -sin(2  *mel::PI*    .1   *(clock_.time() + 1.0 / 20.0 * i)) *cos(2  *mel::PI*     .2    *(clock_.time() + 1.0 / 20.0 * i));
-        traj_point = amplitude_sc_m * -sin(2.0*mel::PI*freq_sine*(time + (double)i / 1080.0  )) *cos(2.0*mel::PI*freq_cosine*(time + (double)i / 1080.0    ));
-        check_array[i] = abs(length_m - sqrt(pow(traj_point, 2) + pow(((double)i / 1000.0) - (540.0 - joint_pos_y_pix), 2)));
-        mel::print(check_array[i]);
+        traj_point = amplitude_sc_m * -sin(2.0*mel::PI*freq_sine*(time + (double)i    / 1080.0  )) *cos(2.0*mel::PI*freq_cosine*(time          + (double)i / 1080.0    ));
+        check_array[i] = abs(length_m - sqrt(pow(traj_point, 2) + pow(((double)i / 1000.0) - (540.0 - joint_pos_y_pix)/1000, 2)));
+        //mel::print(check_array[i]);
         if (check_array[i] < min) {
             min = check_array[i];
             pos_min = i;
@@ -106,7 +119,7 @@ void HapticGuidance::dumb_solution(std::array<int,2>& coordinates_pix, double ti
 }
 
 
-double find_error_angle(double actual_angle, int* intersection_pix, double length_m) {
-    double correct_angle = asin(intersection_pix[0] / (length_m * 1000));
+double HapticGuidance::find_error_angle(double actual_angle, std::array<int,2> intersection_pix, double length_m) {
+    double correct_angle = asin((double)intersection_pix[0] / (length_m * 1000.0));
     return (actual_angle - correct_angle);
 }

@@ -39,9 +39,6 @@
     <ClCompile Include="Pendulum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HGCondition0.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HapticGuidance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,9 +63,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pendulum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HGCondition0.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GuiFlag.h">
