@@ -6,7 +6,7 @@ int Cuff::enable() {
 	
 	int result = 0;
 
-	std::cout << "Initializing CUFF ...";
+	std::cout << "Enabling CUFF ...";
 
 	short int currents[2];
 	short int realmotpos[2];
@@ -50,10 +50,12 @@ int Cuff::enable() {
 }
 
 int Cuff::disable() {
+    std::cout << "Disabling CUFF ... ";
     set_motor_positions(0, 0, false);
     commActivate(&comm_settings_t_, CUFF_ID, 0);
     boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     io_loop_ = false;
+    std::cout << "Done" << std::endl;
     return 1;
 }
 
@@ -120,6 +122,7 @@ int Cuff::port_selection() {
 }
 
 void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* scaling_factor) {
+    std::cout << "Pretensioning CUFF ... ";
     short int stepmot, act_mot_pos_0, act_mot_pos_1, act_mot_cur_0, act_mot_cur_1;
 	std::chrono::high_resolution_clock::time_point tstart, tend;
     std::chrono::nanoseconds elapsed_time;
@@ -176,6 +179,7 @@ void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* s
     motpos_zero[0] = motpos_zero[0] - (0.1138*pow(force_newtons, 3) - 5.204*pow(force_newtons, 2) + 89.22*force_newtons + 0) * scaling_factor[0];
     motpos_zero[1] = motpos_zero[1] + (0.1138*pow(force_newtons, 3) - 5.204*pow(force_newtons, 2) + 89.22*force_newtons + 0) * scaling_factor[1];
     set_motor_positions(motpos_zero[0], motpos_zero[1], false);
+    std::cout << "Done" << std::endl;
 }
 
 int Cuff::io_thread_func() {

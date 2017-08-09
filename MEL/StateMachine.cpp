@@ -4,9 +4,7 @@ namespace mel {
 
     bool StateMachine::ctrl_c_ = false;
 
-    StateMachine::StateMachine(Clock& clock, int num_states, int initial_state) :
-        clock_(clock),
-        stop_time_(-1),
+    StateMachine::StateMachine(int num_states, int initial_state) :
         NUM_STATES(num_states),
         current_state_(initial_state),
         new_state_(initial_state),
@@ -30,19 +28,14 @@ namespace mel {
     }  
 
 
-    void StateMachine::execute(uint32 stop_time_seconds) {
+    void StateMachine::execute() {
 
         const EventData* data_temp = nullptr;
 
         const StateMapRow* state_map = get_state_map();
 
-        stop_time_ = stop_time_seconds;
-
-        // start the Clock
-        clock_.start();
-
         // run the state machine
-        while (!ctrl_c_ && !stop_ && clock_.time() <= stop_time_) {
+        while (!ctrl_c_ && !stop_) { //&& clock_.time() <= stop_time_) {
 
 
             if (event_generated_) {
@@ -79,12 +72,7 @@ namespace mel {
                 data_temp = nullptr;
             }
 
-            // wait for the next clock tick
-            clock_.wait();
         }
-
-        // stop the Clock (saves the DataLog)
-        clock_.stop();
 
         if (ctrl_c_) {
 

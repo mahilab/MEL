@@ -50,8 +50,7 @@ namespace mel {
 
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
-        StateMachine(Clock& clock, int num_states, int initial_state = 0);
-
+        StateMachine(int num_states, int initial_state = 0);
 
         // PUBLIC FUNCTIONS
 
@@ -59,20 +58,14 @@ namespace mel {
 
         int get_num_states() { return NUM_STATES; }
 
-        void execute(uint32 stop_time_seconds = -1);
+        //void execute(uint32 stop_time_seconds = -1);
+        void execute();
 
     protected:
 
         void event(int new_state, const EventData* data = nullptr);
 
-        // TIME KEEPING
-
-        Clock& clock_;     ///< the clock bound to the Controller
-        uint32 stop_time_; ///< the time at which the Controller will end the stepping loop (-1 = inf)
-
-        std::vector<Task*> start_tasks_; ///< vector of start Tasks
-        std::vector<Task*> step_tasks_;  ///< vector of step Tasks
-        std::vector<Task*> stop_tasks_;  ///< vector of stop Tasks
+        // FLAGS
 
         static bool ctrl_c_;   ///< static boolean that will stop State Machine when set to true
 

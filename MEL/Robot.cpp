@@ -33,15 +33,19 @@ namespace mel {
     }
 
     void Robot::enable() {
+        mel::print("Enabling Robot <" + name_ + "> ... ", false);
         for (auto it = joints_.begin(); it != joints_.end(); ++it) {
             (*it)->enable();
         }
+        mel::print("Done");
     }
 
     void Robot::disable() {
+        mel::print("Disabling Robot <" + name_ + "> ... ", false);
         for (auto it = joints_.begin(); it != joints_.end(); ++it) {
             (*it)->disable();
         }
+        mel::print("Done");
     }
 
 }

@@ -19,7 +19,14 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("help", "produces help message")
         ("calibrate", "calibrate OpenWrist zero position")
-        ("condition0", "pendulum simulation");
+        ("run", "run the haptic guidance experiment")
+        ("input-mode", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
+        ("subject-num", boost::program_options::value<int>(), "the subject number 1-40")
+        ("condition", boost::program_options::value<int>(), "0 = OW w/ PN, 1 = OW+CUFF w/ PN, 2 = OW+CUFF w/ HG, 3 = OW+MEII w/ HG")
+        ("task", boost::program_options::value<int>(), "0 = familirization, 1 = evaluation, 2 = training, 3 = break, 4 = generalization")
+        ("task-num", boost::program_options::value<int>(), "the task number")
+        ("trial-num", boost::program_options::value<int>(), "the trial number within the task number");
+
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
@@ -27,7 +34,7 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("help")) {
         mel::print(desc);
-        return -1;
+        return 0;
     }
 
     //  create a Q8Usb object
@@ -68,11 +75,24 @@ int main(int argc, char * argv[]) {
     // create GUI flag
     GuiFlag gui_flag("gui_flag", 0);
 
-    if (var_map.count("condition0")) {
-        mel::Clock clock(1000, true);
-        HapticGuidance haptic_guidance(clock, &open_wrist, q8, gui_flag);
+    // run the experiment
+    if (var_map.count("run")) {
+        if (var_map.count("subject-num") && var_map.count("condition") && var_map.count("task") && var_map.count("task-num") && var_map.count("trial-num")) {
+
+        int input_mode = 0;
+        if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 1)
+            input_mode = 1;
+
+        mel::Clock clock(1000);
+        HapticGuidance haptic_guidance(clock, &open_wrist, q8, gui_flag, var_map["subject-num"].as<int>(), var_map["condition"].as<int>(), input_mode);
         haptic_guidance.execute();
+
         return 0;
+        }
+        else {
+            mel::print("The 'run' command was supplied but either 'subject-num', 'condition', 'task', 'task-num', or 'trial-num' were not. Try again.");
+        }
     }
+
 
 }
