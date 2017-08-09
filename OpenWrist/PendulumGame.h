@@ -5,15 +5,21 @@
 #include <array>
 #include "util.h"
 #include "OpenWrist.h"
+#include "Cuff.h"
 
-class PendulumSimulation : public mel::Task {
+class PendulumGame : public mel::Task {
 
  public:
 
-     PendulumSimulation(OpenWrist* open_wrist, mel::Daq* daq) : Task("pendulum"), ow_(open_wrist), daq_(daq) {}
+     PendulumGame(OpenWrist* open_wrist, mel::Daq* daq) : Task("pendulum"), ow_(open_wrist), daq_(daq) {}
 
      mel::Daq* daq_;
      OpenWrist* ow_;
+     Cuff cuff_;
+
+     // CUFF STUFF
+     short int offset[2];
+     short int scaling_factor[2];
 
      // PENDULUM PARAMETERS
 
@@ -50,8 +56,14 @@ class PendulumSimulation : public mel::Task {
         daq_->activate();
         std::cout << "Press ENTER to enable OpenWrist.";
         getchar();
-        ow_->enable();
+        //ow_->enable();
         daq_->zero_encoders();
+        std::cout << "Press ENTER to enable CUFF";
+        getchar();
+        cuff_.enable();
+        std::cout << "Press ENTER to pretension CUFF" << std::endl;
+        getchar();
+        cuff_.pretensioning(2, offset, scaling_factor);
         std::cout << "Press ENTER to start the controller.";
         getchar();
         daq_->start_watchdog(0.1);
@@ -97,11 +109,12 @@ class PendulumSimulation : public mel::Task {
 
         ow_->update_state_map();
         state_data.write(pendulum_out_data);
-        daq_->write_all();
+        //daq_->write_all();
     }
 
     void stop() override {
         ow_->disable();
+        cuff_.disable();
         daq_->deactivate();
     }
 

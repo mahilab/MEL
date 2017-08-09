@@ -14,6 +14,7 @@
 #include "qbmove_communications.h"
 #include "definitions.h"
 #include "commands.h"
+#include "Spinlock.h"
 
 #define CUFF_ID 1
 
@@ -24,7 +25,10 @@ public:
 	int enable();
     int disable();
 	void set_motor_positions(short int motor_position_0, short int motor_position_1);
-	void pretensioning(short int*);
+    void get_motor_positions(short int& motor_position_0, short int& motor_position_1);
+    void get_motor_currents(short int& motor_current_0, short int& motor_current_1);
+
+	void pretensioning(int force_newtons, short int* motpos_zero, short int* scaling_factor);
 
 private:
 
@@ -33,6 +37,7 @@ private:
 	short int actual_motor_currents_[2];
 
 	comm_settings comm_settings_t_;
+    Spinlock spinlock;
 	boost::mutex io_mutex_;
     boost::thread io_thread_;
     int io_thread_func();
