@@ -220,8 +220,8 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         }
 
         // sent trajectory to Unity
-        trajectory_x.write(trajectory_x_data);
-        trajectory_y.write(trajectory_y_data);
+        trajectory_x_.write(trajectory_x_data);
+        trajectory_y_.write(trajectory_y_data);
 
         // solve for expert position
         estimate_expert_position(exp_pos_data, clock_.time(), 0.3, 0.1, 0.2, 0.45, 450.0);
@@ -231,7 +231,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         double error = find_error_angle(ow_->joints_[0]->get_position(), exp_pos_data, 0.45);
 
         // step the pendulum simuation
-        pendulum.step_simulation(clock_.time(), ow_->joints_[0]->get_position(), ow_->joints_[0]->get_velocity());
+        pendulum_.step_simulation(clock_.time(), ow_->joints_[0]->get_position(), ow_->joints_[0]->get_velocity());
 
         // set CUFF positions
         if (CONDITION_ == 1) {
@@ -243,7 +243,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 
 
         // set OpenWrist joint torques
-        ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + 0.75 * ow_->compute_friction_compensation(0) - pendulum.Tau[0]);
+        ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + 0.75 * ow_->compute_friction_compensation(0) - pendulum_.Tau[0]);
         ow_->joints_[1]->set_torque(mel::pd_controller(40, 1.0, 0, ow_->joints_[1]->get_position(), 0, ow_->joints_[1]->get_velocity()));
         //ow_->joints_[2]->set_torque(ow_->compute_friction_compensation(2) * 0.5);
 

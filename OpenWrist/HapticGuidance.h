@@ -160,7 +160,7 @@ private:
 
     std::string DIRECTORY_;
 
-    // FLAGS
+    // GUI FLAGS
     GuiFlag& gui_flag_;
 
     // HARDWARE CLOCK
@@ -179,13 +179,13 @@ private:
     short int scaling_factor[2];
 
     // PENDULUM 
-    Pendulum pendulum;
+    Pendulum pendulum_;
 
     // TRAJECTORY VARIABLES
     double sin_freq_ = 0.1;
     double cos_freq_ = 0.2;
-    mel::share::MelShare trajectory_x = mel::share::MelShare("trajectory_x", 54*4); 
-    mel::share::MelShare trajectory_y = mel::share::MelShare("trajectory_y", 54*4);
+    mel::share::MelShare trajectory_x_ = mel::share::MelShare("trajectory_x", 54*4); 
+    mel::share::MelShare trajectory_y_ = mel::share::MelShare("trajectory_y", 54*4);
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");
     std::array<int, 54> trajectory_x_data;
     std::array<int, 54> trajectory_y_data;
@@ -193,7 +193,9 @@ private:
     void estimate_expert_position(std::array<int, 2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix);
     double find_error_angle(double actual_angle, std::array<int, 2> intersection_pix, double length_m);
 
-    // Unity GameManager
+    void update_trajectory_and_expert();
+
+    // UNITY GAMEMANAGER
     mel::share::MelShare unity_ = mel::share::MelShare("unity");
     // [ background, pendulum on/off , trajectory region on/off , trajectory center on/off, expert on/off, radius on/off , stars on/off ]
     std::array<int, 7> unity_data_ = { 1,1,1,1,1,1,1 };
