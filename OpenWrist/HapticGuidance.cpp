@@ -1,19 +1,27 @@
 #include "HapticGuidance.h"
 
-HapticGuidance::HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Daq* daq, GuiFlag& gui_flag, int subject_number, int condition, int input_mode) : 
+HapticGuidance::HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Daq* daq, GuiFlag& gui_flag, int input_mode,
+    int subject_number, int condition, int task, int task_block, int trial_num):
     StateMachine(7), 
     clock_(clock),
     ow_(open_wrist), 
     daq_(daq), 
     gui_flag_(gui_flag),
+    INPUT_MODE_(input_mode),
     SUBJECT_NUMBER_(subject_number),
     CONDITION_(condition),
-    INPUT_MODE_(input_mode)
+    current_task_((Tasks)task),
+    current_task_block_(task_block),
+    current_trial_num_(trial_num)
 {
     if (subject_number < 10)
         DIRECTORY_ = "S0" + std::to_string(subject_number);
     else
         DIRECTORY_ = "S" + std::to_string(subject_number);
+
+    perlin_module_.SetOctaveCount(1.0);
+    perlin_module_.SetFrequency(1.0);
+    perlin_module_.SetPersistence(0.1);
 }
 
 void HapticGuidance::wait_for_continue_input() {
@@ -22,6 +30,7 @@ void HapticGuidance::wait_for_continue_input() {
     }
     else if (INPUT_MODE_ = 1) {
         gui_flag_.wait_for_flag(1);
+        mel::print("");
     }
 }
 
@@ -30,46 +39,139 @@ void HapticGuidance::allow_continue_input() {
         gui_flag_.reset_flag(0);
 }
 
+HapticGuidance::States HapticGuidance::get_start_state() {
+    if (current_task_ > 0) {
+        block_counter_[FAMILIARIZATION] = 1;
+        if (current_task_block_ > BREAK_AFTER_TRAINING_BLOCK_) {
+            block_counter_[BREAK] = 1;
+        }      
+        if (current_task_ == EVALUATION) {
+            block_counter_[EVALUATION] = current_task_block_;
+            block_counter_[TRAINING] = current_task_block_;
+            return ST_EVALUATION;
+        }
+        else if (current_task_ == TRAINING) {
+            block_counter_[EVALUATION] = current_task_block_ + 1;
+            block_counter_[TRAINING] = current_task_block_;
+            return ST_TRAINING;
+        }
+        else if (current_task_ == BREAK) {
+            block_counter_[BREAK] = 0;
+            block_counter_[EVALUATION] = BREAK_AFTER_TRAINING_BLOCK_ + 1;
+            block_counter_[TRAINING] = BREAK_AFTER_TRAINING_BLOCK_ + 1;
+            return ST_BREAK;
+        }
+        else if (current_task_ == GENERALIZATION) {
+            block_counter_[BREAK] = 1;
+            block_counter_[EVALUATION] = NUM_BLOCKS_[EVALUATION];
+            block_counter_[TRAINING] = NUM_BLOCKS_[TRAINING];
+            return ST_GENERALIZATION;
+        }         
+    }
+    else {
+        return ST_FAMILIARIZATION;
+    }
+}
+
+
+HapticGuidance::States HapticGuidance::get_next_state() {
+    current_trial_num_ += 1;
+    if (current_trial_num_ == NUM_TRIALS_[current_task_])
+    {
+        current_trial_num_ = 0;
+        block_counter_[current_task_] += 1; 
+        if (current_task_ == FAMILIARIZATION) {
+            current_task_ = EVALUATION;
+            return ST_EVALUATION;
+        }
+        else if (current_task_ == EVALUATION) {
+            if (block_counter_[EVALUATION] == NUM_BLOCKS_[EVALUATION]) {
+                current_task_ = GENERALIZATION;
+                return ST_GENERALIZATION;
+            }
+            else {
+                current_task_ = TRAINING;
+                return ST_TRAINING;
+            }
+        }
+        else if (current_task_ == TRAINING) {
+            if (block_counter_[TRAINING] == BREAK_AFTER_TRAINING_BLOCK_ + 1) {
+                current_task_ = BREAK;
+                return ST_BREAK;
+            }
+            else {
+                current_task_ = EVALUATION;
+                return ST_EVALUATION;
+            }
+        }    
+        else if (current_task_ == BREAK) {
+            current_task_ = EVALUATION;
+            return ST_EVALUATION;
+        }
+        else if (current_task_ == GENERALIZATION)
+        {
+            return ST_STOP;
+        }
+    }
+    else {
+        if (current_task_ == FAMILIARIZATION)
+            return ST_EVALUATION;
+        else if (current_task_ == EVALUATION)
+            return ST_EVALUATION;
+        else if (current_task_ == TRAINING)
+            return ST_TRAINING;
+        else if (current_task_ == GENERALIZATION)
+            return ST_GENERALIZATION;
+    }
+}
+
 void HapticGuidance::sf_init(const mel::NoEventData*) {
     
     // Enable DAQ and OpenWrist
-    std::cout << "Waiting to activate Daq <" << daq_->name_ << ">." << std::endl;
+    std::cout << "Waiting for user input to activate Daq <" << daq_->name_ << ">." << std::endl;
     wait_for_continue_input();
     daq_->activate();
     allow_continue_input();
-    std::cout << "Waiting to enable OpenWrist." << std::endl;
+    std::cout << "Waiting for user input to enable OpenWrist." << std::endl;
     wait_for_continue_input();
     ow_->enable();
     allow_continue_input();
 
-    if (CONDITION_ == 1 || CONDITION_ == 2) {
-        std::cout << "Waiting to enable CUFF" << std::endl;
+    if (CONDITION_ == 0) {
+        mel::print("Waiting for user input to skip enabling guidance device");
+        wait_for_continue_input();
+        allow_continue_input();
+    }
+    else if (CONDITION_ == 1 || CONDITION_ == 2) {
+        std::cout << "Waiting for user input to enable and pretension CUFF" << std::endl;
         wait_for_continue_input();
         cuff_.enable();
+        cuff_.pretensioning(3, offset, scaling_factor);
         allow_continue_input();
-        std::cout << "Waiting to pretension CUFF" << std::endl;
+    } 
+    else if (CONDITION_ == 3) {
+        std::cout << "Waiting user input to enable MahiExo-II" << std::endl;
         wait_for_continue_input();
-        cuff_.pretensioning(4, offset, scaling_factor);
+        // TODO: Enable MEII
         allow_continue_input();
-    }
-
-    if (CONDITION_ == 3) {
-
     }
     
-    std::cout << "Waiting to start the controller." << std::endl;
+    std::cout << "Waiting for user input to start the experiment." << std::endl;
     wait_for_continue_input();
-    allow_continue_input();
-    std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
-    event(ST_FAMILIARIZATION);
+    //allow_continue_input();
+    std::cout << "Starting the experiment. Press CTRL+C to stop." << std::endl;
+    event(get_start_state());
+   
 }
 
 void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 
-    mel::print("Running <Familiarization>.");
+    // generate trial name and display in command
+    std::string trial_name = "familiarization_" + std::to_string(block_counter_[FAMILIARIZATION] + 1) + "_" + std::to_string(current_trial_num_ + 1);
+    mel::print("Running <" + trial_name + ">");
 
     // create a new data log
-    mel::DataLog log("familiarization");
+    mel::DataLog log(trial_name);
     log.add_col("Time [s]");
     std::vector<double> log_data = std::vector<double>(1, 0);
 
@@ -77,7 +179,8 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
     clock_.reset();
     clock_.start();
 
-    while (clock_.time() < FAMILIARIZATION_LENGTH && !ctrl_c_ && !stop_) {
+    // enter the control loop
+    while (clock_.time() < LENGTH_TRIALS_[FAMILIARIZATION] && !ctrl_c_ && !stop_) {
 
         // read and reload DAQ
         daq_->reload_watchdog();
@@ -104,7 +207,13 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         pendulum.step_simulation(clock_.time(), ow_->joints_[0]->get_position(), ow_->joints_[0]->get_velocity());
 
         // set CUFF positions
-        cuff_.set_motor_positions((short int)(-error * 20000 + offset[0]), (short int)(-error * 20000 + offset[1]), true);
+        if (CONDITION_ == 1) {
+            double noise = perlin_module_.GetValue(clock_.time(), 0.0, 0.0);
+            cuff_.set_motor_positions((short int)(noise * 8400.0) + offset[0], (short int)(noise * 8400.0) + offset[1], true);
+        }
+        else if (CONDITION_ == 2)
+            cuff_.set_motor_positions((short int)(-error * 20000 + offset[0]), (short int)(-error * 20000 + offset[1]), true);
+
 
         // set OpenWrist joint torques
         ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + 0.5*ow_->compute_friction_compensation(0) - pendulum.Tau[0]);
@@ -118,8 +227,10 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         daq_->write_all();
 
         // check for terminate signal
-        if (gui_flag_.check_flag(2))
+        if (gui_flag_.check_flag(2)) {
+            stop_ = true;
             break;
+        }
 
         // log data
         log_data = { clock_.time() };
@@ -133,20 +244,23 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
     clock_.stop();
     // save the log
     log.save_data(DIRECTORY_ + "\\familiariztion");
-    mel::print("Completed <Familiarization>. Waiting for user input to continue.");
+    mel::print("Completed <" + trial_name + ">. Waiting for user input to continue.");
     // wait for user input to continue
-    wait_for_continue_input();
     allow_continue_input();
+    wait_for_continue_input();
     // transition to the next state
-    event(ST_EVALUATION);
+    event(get_next_state());
+
 }
 
 void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
    
-    mel::print("Starting <Evaluation>");
+    // generate trial name and display in command
+    std::string trial_name = "evaluation_" + std::to_string(block_counter_[EVALUATION] + 1) + "_" + std::to_string(current_trial_num_ + 1);
+    mel::print("Running <" + trial_name + ">");
 
     // create a new data log
-    mel::DataLog log("evaluation_");
+    mel::DataLog log(trial_name);
     log.add_col("Time [s]");
     std::vector<double> log_data = std::vector<double>(1, 0);
 
@@ -154,7 +268,14 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
     clock_.reset();
     clock_.start();
 
-    while (clock_.time() < EVALUATION_LENGTH && !ctrl_c_ && !stop_) {
+    // enter the control loop
+    while (clock_.time() < LENGTH_TRIALS_[EVALUATION] && !ctrl_c_ && !stop_) {
+
+        // check for terminate signal
+        if (gui_flag_.check_flag(2)) {
+            stop_ = true;
+            break;
+        }
 
         // log data
         log_data = { clock_.time() };
@@ -169,24 +290,152 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
     // save the log
     log.save_data(DIRECTORY_ + "\\evaluation");
 
-    mel::print("Completed <Evaluation>. Waiting for user input to continue.");
+    mel::print("Completed <" + trial_name + ">. Waiting for user input to continue.");
     // wait for user input to continue
-    wait_for_continue_input();
     allow_continue_input();
+    wait_for_continue_input();
     // transition to the next state
-    event(ST_STOP);
+    event(get_next_state());
+
 }
 
 void HapticGuidance::sf_training(const mel::NoEventData*) {
+    // generate trial name and display in command
+    std::string trial_name = "training_" + std::to_string(block_counter_[TRAINING] + 1) + "_" + std::to_string(current_trial_num_ + 1);
+    mel::print("Running <" + trial_name + ">");
+
+    // create a new data log
+    mel::DataLog log(trial_name);
+    log.add_col("Time [s]");
+    std::vector<double> log_data = std::vector<double>(1, 0);
+
+    // reset and start the hardware clock
+    clock_.reset();
+    clock_.start();
+
+    // enter the control loop
+    while (clock_.time() < LENGTH_TRIALS_[TRAINING] && !ctrl_c_ && !stop_) {
+
+        // check for terminate signal
+        if (gui_flag_.check_flag(2)) {
+            stop_ = true;
+            break;
+        }
+
+        // log data
+        log_data = { clock_.time() };
+        log.add_row(log_data);
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
+
+    // stop the clock
+    clock_.stop();
+    // save the log
+    log.save_data(DIRECTORY_ + "\\training");
+
+    mel::print("Completed <" + trial_name + ">. Waiting for user input to continue.");
+    // wait for user input to continue
+    allow_continue_input();
+    wait_for_continue_input();
+    // transition to the next state
+    event(get_next_state());
 
 }
 
 
 void HapticGuidance::sf_break(const mel::NoEventData*) {
 
+    // generate trial name and display in command
+    std::string trial_name = "break_" + std::to_string(block_counter_[BREAK] + 1) + "_" + std::to_string(current_trial_num_ + 1);
+    mel::print("Running <" + trial_name + ">");
+
+    // create a new data log
+    mel::DataLog log(trial_name);
+    log.add_col("Time [s]");
+    std::vector<double> log_data = std::vector<double>(1, 0);
+
+    // reset and start the hardware clock
+    clock_.reset();
+    clock_.start();
+
+    // enter the control loop
+    while (clock_.time() < LENGTH_TRIALS_[BREAK] && !ctrl_c_ && !stop_) {
+
+        // check for terminate signal
+        if (gui_flag_.check_flag(2)) {
+            stop_ = true;
+            break;
+        }
+
+        // log data
+        log_data = { clock_.time() };
+        log.add_row(log_data);
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
+
+    // stop the clock
+    clock_.stop();
+    // save the log
+    log.save_data(DIRECTORY_ + "\\break");
+
+    mel::print("Completed <" + trial_name + ">. Waiting for user input to continue.");
+    // wait for user input to continue
+    allow_continue_input();
+    wait_for_continue_input();
+    // transition to the next state
+    event(get_next_state());
+
+
 }
 
 void HapticGuidance::sf_generalization(const mel::NoEventData*) {
+    
+    // generate trial name and display in command
+    std::string trial_name = "generalization_" + std::to_string(block_counter_[GENERALIZATION] + 1) + "_" + std::to_string(current_trial_num_ + 1);
+    mel::print("Running <" + trial_name + ">");
+
+    // create a new data log
+    mel::DataLog log(trial_name);
+    log.add_col("Time [s]");
+    std::vector<double> log_data = std::vector<double>(1, 0);
+
+    // reset and start the hardware clock
+    clock_.reset();
+    clock_.start();
+
+    // enter the control loop
+    while (clock_.time() < LENGTH_TRIALS_[EVALUATION] && !ctrl_c_ && !stop_) {
+
+        // check for terminate signal
+        if (gui_flag_.check_flag(2)) {
+            stop_ = true;
+            break;
+        }
+
+        // log data
+        log_data = { clock_.time() };
+        log.add_row(log_data);
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
+
+    // stop the clock
+    clock_.stop();
+    // save the log
+    log.save_data(DIRECTORY_ + "\\generalization");
+
+    mel::print("Completed <" + trial_name + ">. Waiting for user input to continue.");
+    // wait for user input to continue
+    allow_continue_input();
+    wait_for_continue_input();
+    // transition to the next state
+    event(get_next_state());
+
 
 }
 
@@ -230,3 +479,4 @@ double HapticGuidance::find_error_angle(double actual_angle, std::array<int,2> i
     double correct_angle = asin((double)intersection_pix[0] / (length_m * 1000.0));
     return (actual_angle - correct_angle);
 }
+

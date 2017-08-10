@@ -41,7 +41,6 @@ namespace mel {
     void DataLog::save_data(std::string directory) {
         std::cout << "Saving DataLog <" << name_ << "> to directory <" << directory << "> ... ";
         std::string filename = directory + "\\" + name_ + "_" + get_current_date_time() + ".csv";
-        mel::print(filename);
         boost::filesystem::path dir(directory.c_str());
         boost::filesystem::create_directories(dir);
         std::ofstream data_log;

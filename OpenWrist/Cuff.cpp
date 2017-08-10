@@ -46,6 +46,7 @@ int Cuff::enable() {
 	io_loop_ = true;
     io_thread_ = boost::thread(&Cuff::io_thread_func,this);
 	std::cout << "Done" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	return 1;
 }
 

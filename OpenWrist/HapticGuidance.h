@@ -4,6 +4,7 @@
 #include "Cuff.h"
 #include "Pendulum.h"
 #include "GuiFlag.h"
+#include <noise/noise.h>
 
 //----------------------------------------------------------------------------
 // Hatpic guidance experiements with OpenWrist, CUFF, and MahiExo-II 
@@ -42,7 +43,8 @@ class HapticGuidance : public mel::StateMachine {
 
 public:
 
-    HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Daq* daq, GuiFlag& gui_flag, int subject_number, int condition, int input_mode);
+    HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Daq* daq, GuiFlag& gui_flag, int input_mode, 
+        int subject_number, int condition, int task, int task_block, int trial_num);
 
 private:
 
@@ -109,18 +111,40 @@ private:
     // HAPTIC GUIDANCE EXPERIMENT SETUP
     //-------------------------------------------------------------------------
 
+    // SUBJECT/CONDITION
     int SUBJECT_NUMBER_;
     int CONDITION_;
-    int NUM_FAMILIARIZATION_TRIALS_ = 1;
-    int NUM_EVALUATION_TRIALS_ = 3;
-    int NUM_TRAINING_TRIALS_ = 12;
-    int NUM_GENERALIZATION_TRIALS = 12;
 
-    double FAMILIARIZATION_LENGTH = 5.0;
-    double EVALUATION_LENGTH = 5.0;
-    double TRAINING_LENGTH = 20.0;
-    double BREAK_LENGTH = 300.0;
-    double GENERALIZATION_LENGTH = 20.0;
+    enum Tasks {
+        FAMILIARIZATION = 0,
+        EVALUATION = 1,
+        TRAINING = 2,
+        BREAK = 3,
+        GENERALIZATION = 4
+    };
+
+    // NUMBER OF BLOCKS PER TASK 
+    // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
+    std::array<int, 5> NUM_BLOCKS_ = { 1, 7, 6, 1, 1 };
+
+    // NUMBER OF TRIALS PER BLOCK PER TASK
+    // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
+    std::array<int, 5> NUM_TRIALS_ = { 1, 3, 12, 1, 12 };
+
+    // LENGTH IN SECONDS OF EACH TRIAL
+    // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
+    std::array<double, 5> LENGTH_TRIALS_ = { 100000, 0.01, 0.01, 0.01, 0.01 };
+
+    int BREAK_AFTER_TRAINING_BLOCK_ = 2;
+
+    // CURRENT TASK/BLOCK/TRIAL
+    std::array<int, 5> block_counter_ = { 0, 0, 0, 0, 0 };
+    Tasks current_task_;
+    int current_task_block_;
+    int current_trial_num_;
+
+    States get_start_state();
+    States get_next_state();   
 
     std::string DIRECTORY_;
 
@@ -151,5 +175,8 @@ private:
     std::array<int, 2> exp_pos_data = { 0, 0 };
     void estimate_expert_position(std::array<int, 2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix);
     double find_error_angle(double actual_angle, std::array<int, 2> intersection_pix, double length_m);
+
+    // PERLIN NOISE MODULES
+    noise::module::Perlin perlin_module_;
 
 };

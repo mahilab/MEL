@@ -8,7 +8,7 @@ class GuiFlag {
 private:
 
     mel::share::MelShare flag_;
-    std::array<double, 1> flag_value_;
+    std::array<int, 1> flag_value_;
 
 public:
 
