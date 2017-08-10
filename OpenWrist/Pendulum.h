@@ -15,10 +15,10 @@ public:
 
     // PENDULUM PARAMETERS
     double g = 9.81;
-    std::array<double, 2> M = { 0.05, 0.25 };   // [kg]
-    std::array<double, 2> L = { 0.45, 0.25 };   // [m]
-    std::array<double, 2> B = { 0.005,0.005 };  // [N-s/m]
-    std::array<double, 2> Fk = { 0.005,0.005 }; // [Nm]
+    std::array<double, 2> M = { 0.01, 0.125 };   // [kg]
+    std::array<double, 2> L = { 0.45, 0.375 };   // [m]
+    std::array<double, 2> B = { 0.0025,0.0025 };  // [N-s/m]
+    std::array<double, 2> Fk = { 0.001,0.001 }; // [Nm]
 
     // PENDULUM COUPLING FORCES
     double K_player = 12;
@@ -41,7 +41,7 @@ private:
     mel::share::MelShare state = mel::share::MelShare("pendulum_state");
 
     // MELSHARE DATA
-    std::array<double, 10> props_data = { M[0],M[1],L[0],L[1],B[0],B[1],Fk[0],Fk[1],K_player,B_player };
-    std::array<double, 8>  state_data = { Qdd[0], Qdd[1], Qd[0], Qd[1], Q[0], Q[1], Tau[0], Tau[1] };
+    std::array<double, 10> props_data;
+    std::array<double, 8>  state_data; 
 
 };

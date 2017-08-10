@@ -1,7 +1,10 @@
 #include "Pendulum.h"
 
 Pendulum::Pendulum() {
+    props_data = { M[0],M[1],L[0],L[1],B[0],B[1],Fk[0],Fk[1],K_player,B_player };
+    state_data = { Qdd[0], Qdd[1], Qd[0], Qd[1], Q[0], Q[1], Tau[0], Tau[1] };
     props.write(props_data);
+    state.write(state_data);
 }
 
 void Pendulum::step_simulation(double time, double position_ref, double velocity_ref) {

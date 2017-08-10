@@ -141,7 +141,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH TRIAL TYPE
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 0.01, 0.01, 0.01, 0.01, 0.01 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 10000, 0.01, 0.01, 0.01, 0.01 };
 
     int BREAK_AFTER_TRAINING_BLOCK_ = 2;
 
@@ -172,6 +172,9 @@ private:
     Cuff cuff_;
 
     // CUFF PARAMETERS
+    short int CUFF_NORMAL_FORCE_ = 5;
+    short int CUFF_NOISE_GAIN_ = 8400;
+    short int CUFF_GUIDANCE_GAIN_ = 12000;
     short int offset[2];
     short int scaling_factor[2];
 
@@ -179,6 +182,8 @@ private:
     Pendulum pendulum;
 
     // TRAJECTORY VARIABLES
+    double sin_freq_ = 0.1;
+    double cos_freq_ = 0.2;
     mel::share::MelShare trajectory_x = mel::share::MelShare("trajectory_x", 54*4); 
     mel::share::MelShare trajectory_y = mel::share::MelShare("trajectory_y", 54*4);
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");
@@ -187,6 +192,11 @@ private:
     std::array<int, 2> exp_pos_data = { 0, 0 };
     void estimate_expert_position(std::array<int, 2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix);
     double find_error_angle(double actual_angle, std::array<int, 2> intersection_pix, double length_m);
+
+    // Unity GameManager
+    mel::share::MelShare unity_ = mel::share::MelShare("unity");
+    // [ background, pendulum on/off , trajectory region on/off , trajectory center on/off, expert on/off, radius on/off , stars on/off ]
+    std::array<int, 7> unity_data_ = { 1,1,1,1,1,1,1 };
 
     // PERLIN NOISE MODULES
     noise::module::Perlin perlin_module_;

@@ -108,9 +108,9 @@ int main(int argc, char * argv[]) {
         start_commands.read(start_commands_data);
         subject_num = start_commands_data[0];
         condition = start_commands_data[1];
-        task = start_commands_data[2];
-        task_block = start_commands_data[3];
-        trial_num = start_commands_data[4];
+        task = start_commands_data[2] + 1;
+        task_block = start_commands_data[3] + 1;
+        trial_num = start_commands_data[4] + 1;
     }
     else {
         mel::print("Not enough input parameters were provided to run the experiment.");

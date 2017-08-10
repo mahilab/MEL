@@ -20,9 +20,6 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Da
         DIRECTORY_ = "S" + std::to_string(subject_number);
 
     generate_experiment_states();
-    mel::print(experiment_states_.size());
-    for (int i = 0; i < experiment_states_.size(); i++)
-        mel::print(experiment_states_[i]);
 
     perlin_module_.SetOctaveCount(1.0);
     perlin_module_.SetFrequency(1.0);
@@ -171,7 +168,7 @@ void HapticGuidance::sf_init(const mel::NoEventData*) {
         std::cout << "Waiting for user input to enable and pretension CUFF" << std::endl;
         wait_for_continue_input();
         cuff_.enable();
-        cuff_.pretensioning(3, offset, scaling_factor);
+        cuff_.pretensioning(CUFF_NORMAL_FORCE_, offset, scaling_factor);
         allow_continue_input();
     } 
     else if (CONDITION_ == 3) {
@@ -199,6 +196,11 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
     mel::DataLog log(trial_name);
     log.add_col("Time [s]");
     std::vector<double> log_data = std::vector<double>(1, 0);
+
+    // show/hide Unity elements
+    // [ background, pendulum on/off , trajectory region on/off , trajectory center on/off, expert on/off, radius on/off , stars on/off ]
+    unity_data_ = { 1, 1, 1, 0, 0, 0, 1 };
+    unity_.write(unity_data_);
 
     // reset and start the hardware clock
     clock_.reset();
@@ -234,15 +236,15 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         // set CUFF positions
         if (CONDITION_ == 1) {
             double noise = perlin_module_.GetValue(clock_.time(), 0.0, 0.0);
-            cuff_.set_motor_positions((short int)(noise * 8400.0) + offset[0], (short int)(noise * 8400.0) + offset[1], true);
+            cuff_.set_motor_positions((short int)(noise * CUFF_NOISE_GAIN_) + offset[0], (short int)(noise * CUFF_NOISE_GAIN_) + offset[1], true);
         }
         else if (CONDITION_ == 2)
-            cuff_.set_motor_positions((short int)(-error * 20000 + offset[0]), (short int)(-error * 20000 + offset[1]), true);
+            cuff_.set_motor_positions((short int)(-error * CUFF_GUIDANCE_GAIN_ + offset[0]), (short int)(-error * CUFF_GUIDANCE_GAIN_ + offset[1]), true);
 
 
         // set OpenWrist joint torques
-        ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + 0.5*ow_->compute_friction_compensation(0) - pendulum.Tau[0]);
-        ow_->joints_[1]->set_torque(ow_->compute_gravity_compensation(1) + 0.5*ow_->compute_friction_compensation(1));
+        ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + 0.75 * ow_->compute_friction_compensation(0) - pendulum.Tau[0]);
+        ow_->joints_[1]->set_torque(mel::pd_controller(40, 1.0, 0, ow_->joints_[1]->get_position(), 0, ow_->joints_[1]->get_velocity()));
         //ow_->joints_[2]->set_torque(ow_->compute_friction_compensation(2) * 0.5);
 
         // update OpenWrist state
@@ -275,7 +277,6 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
     wait_for_continue_input();
     // transition to the next state
     event(get_next_state());
-
 }
 
 void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
@@ -321,7 +322,6 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
     wait_for_continue_input();
     // transition to the next state
     event(get_next_state());
-
 }
 
 void HapticGuidance::sf_training(const mel::NoEventData*) {
