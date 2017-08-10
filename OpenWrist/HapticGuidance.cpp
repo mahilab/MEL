@@ -10,7 +10,7 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Da
     INPUT_MODE_(input_mode),
     SUBJECT_NUMBER_(subject_number),
     CONDITION_(condition),
-    current_task_((Tasks)task),
+    current_task_((Blocks)task),
     current_task_block_(task_block),
     current_trial_num_(trial_num)
 {
@@ -18,6 +18,11 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Da
         DIRECTORY_ = "S0" + std::to_string(subject_number);
     else
         DIRECTORY_ = "S" + std::to_string(subject_number);
+
+    generate_experiment_states();
+    mel::print(experiment_states_.size());
+    for (int i = 0; i < experiment_states_.size(); i++)
+        mel::print(experiment_states_[i]);
 
     perlin_module_.SetOctaveCount(1.0);
     perlin_module_.SetFrequency(1.0);
@@ -71,6 +76,26 @@ HapticGuidance::States HapticGuidance::get_start_state() {
     else {
         return ST_FAMILIARIZATION;
     }
+}
+
+void HapticGuidance::generate_experiment_states() {
+    for (auto it = BLOCK_ORDER_.begin(); it != BLOCK_ORDER_.end(); ++it) {
+        States new_state;
+        if (*it == FAMILIARIZATION)
+            new_state = ST_FAMILIARIZATION;
+        else if (*it == EVALUATION)
+            new_state = ST_EVALUATION;
+        else if (*it == TRAINING)
+            new_state = ST_TRAINING;
+        else if (*it == BREAK)
+            new_state = ST_BREAK;
+        else if (*it == GENERALIZATION)
+            new_state = ST_GENERALIZATION;
+        for (int i = 0; i < NUM_TRIALS_[*it]; i++) {
+            experiment_states_.push_back(new_state);
+        }
+    }
+    experiment_states_.push_back(ST_STOP);
 }
 
 

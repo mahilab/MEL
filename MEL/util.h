@@ -70,7 +70,8 @@ namespace mel {
     // PRINTING FUNCTIONS
     /////////////////////
 
-    /// Prints anything that works with std::cout
+    /// Prints anything that works with std::cout. 
+    /// end_line = true will print a new line after printing value
     template <typename T>
     void print(T value, bool end_line = true) {
         std::cout << value;

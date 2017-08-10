@@ -90,7 +90,16 @@ int main(int argc, char * argv[]) {
         task = var_map["task"].as<int>();
         task_block = var_map["task-block"].as<int>();
         trial_num = var_map["trial-num"].as<int>();
-    } else if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 1) {
+    }
+    else if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 0 && var_map.count("subject-num") && var_map.count("condition")) {
+        input_mode = 0;
+        subject_num = var_map["subject-num"].as<int>();
+        condition = var_map["condition"].as<int>();
+        task = 1;
+        task_block = 1;
+        trial_num = 1;
+    }
+    else if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 1) {
         system("start GUI.pyw &");
         input_mode = 1;
         mel::print("Wait for input from GUI");
@@ -118,7 +127,7 @@ int main(int argc, char * argv[]) {
         mel::print("Trial Number:   " + std::to_string(trial_num));
 
         mel::Clock clock(1000);
-        HapticGuidance haptic_guidance(clock, &open_wrist, q8, gui_flag, input_mode, subject_num, condition, task, task_block, trial_num);
+        HapticGuidance haptic_guidance(clock, &open_wrist, q8, gui_flag, input_mode, subject_num, condition, task - 1, task_block - 1, trial_num - 1);
         haptic_guidance.execute();
         return 0;
     }

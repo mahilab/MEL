@@ -115,7 +115,7 @@ private:
     int SUBJECT_NUMBER_;
     int CONDITION_;
 
-    enum Tasks {
+    enum Blocks {
         FAMILIARIZATION = 0,
         EVALUATION = 1,
         TRAINING = 2,
@@ -127,24 +127,36 @@ private:
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
     std::array<int, 5> NUM_BLOCKS_ = { 1, 7, 6, 1, 1 };
 
-    // NUMBER OF TRIALS PER BLOCK PER TASK
+    std::vector<Blocks> BLOCK_ORDER_ = {
+        FAMILIARIZATION,
+        EVALUATION, TRAINING, EVALUATION, TRAINING, EVALUATION, TRAINING,
+        BREAK,
+        EVALUATION, TRAINING, EVALUATION, TRAINING, EVALUATION, TRAINING,
+        EVALUATION, GENERALIZATION 
+    };
+
+    // NUMBER OF TRIALS PER BLOCK TYPE
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
     std::array<int, 5> NUM_TRIALS_ = { 1, 3, 12, 1, 12 };
 
-    // LENGTH IN SECONDS OF EACH TRIAL
+    // LENGTH IN SECONDS OF EACH TRIAL TYPE
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 100000, 0.01, 0.01, 0.01, 0.01 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 0.01, 0.01, 0.01, 0.01, 0.01 };
 
     int BREAK_AFTER_TRAINING_BLOCK_ = 2;
 
     // CURRENT TASK/BLOCK/TRIAL
     std::array<int, 5> block_counter_ = { 0, 0, 0, 0, 0 };
-    Tasks current_task_;
+    Blocks current_task_;
     int current_task_block_;
     int current_trial_num_;
 
     States get_start_state();
     States get_next_state();   
+
+    std::vector<States> experiment_states_;
+
+    void generate_experiment_states();
 
     std::string DIRECTORY_;
 
