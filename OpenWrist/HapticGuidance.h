@@ -100,8 +100,6 @@ private:
         return &STATE_MAP[0];
     }
 
-    void ctrl_c_task() override;
-
     // INPUT CONTROL
     int INPUT_MODE_;
     void wait_for_continue_input();
@@ -126,7 +124,7 @@ private:
 
     // EXPERIMENT BLOCK ORDER (SET MANUALLY)
     std::vector<BlockType> BLOCK_ORDER_ = {
-        FAMILIARIZATION,
+        FAMILIARIZATION, FAMILIARIZATION, FAMILIARIZATION,
         EVALUATION, TRAINING, 
         EVALUATION, TRAINING, 
         EVALUATION, TRAINING,
@@ -149,7 +147,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 10000, 0.01, 0.01, 0.01, 0.01 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 10, 10, 10, 10, 10 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment_();

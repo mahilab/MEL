@@ -28,6 +28,7 @@ namespace mel {
 
         void start();
         void reset();
+        void restart();
         void wait();
         void stop();
         //void pause();
@@ -52,8 +53,7 @@ namespace mel {
 
         const double NS2S = 1.0 / 1000000000.0;
 
-        bool stop_ = false;
-        //bool pause_ = false;
+        bool stop_ = true;
 
         // CLOCK DATA LOGGING
 
