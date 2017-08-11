@@ -1,7 +1,7 @@
 #pragma once
 #include "StateMachine.h"
 #include "Q8Usb.h"
-#include "MahiExoII.h"
+#include "MahiExoIIFrc.h"
 #include "util.h"
 #include "mahiexoii_util.h"
 #include "MelShare.h"
@@ -17,7 +17,7 @@ class EmgTraining : public mel::StateMachine {
 
 public:
 
-    EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoII* exo);
+    EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIFrc* meii);
 
 private:
     
@@ -59,14 +59,14 @@ private:
     // HARDWARE
     mel::Daq* q8_emg_;
     mel::Daq* q8_ati_;
-    MahiExoII* exo_;
+    MahiExoIIFrc* meii_;
 
     // HARDWARE CLOCK
     mel::Clock clock_;
 
 
     Eigen::VectorXd raw_force_;
-    Eigen::MatrixXd calib_mat_;
+    //Eigen::MatrixXd calib_mat_;
     Eigen::VectorXd calib_force_;
 
 

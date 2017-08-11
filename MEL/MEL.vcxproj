@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actuator.cpp" />
+    <ClCompile Include="AtiMini45.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Daq.cpp" />
@@ -43,6 +44,7 @@
   <ItemGroup>
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="AnatomicalJoint.h" />
+    <ClInclude Include="AtiMini45.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="DataLog.h" />
     <ClInclude Include="Filter.h" />

@@ -38,6 +38,22 @@ namespace mel {
         return -2 * amplitude / PI * atan(cos(PI * frequency * t) / sin(PI * frequency * t));
     }
 
+    double_vec mat_vec_multiply(double_mat A, double_vec b) {
+        double_vec c(A.size(),0);
+        if (A[0].size() == b.size()) {
+            for (int i = 0; i < A.size(); ++i) {
+                for (int j = 0; j < A[i].size(); ++j) {
+                    c[i] += A[i][j] * b[j];
+                }
+            }
+        }
+        else {
+            print("FATAL ERROR: inner dimensions must match");
+        }
+        return c;
+    }
+
+
     double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd) {
         return kp * (x_ref - x) + kd * (xd_ref - xd);
     }

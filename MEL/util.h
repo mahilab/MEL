@@ -40,6 +40,7 @@ namespace mel {
     typedef std::vector<int32>  int32_vec;
     typedef std::vector<uint32> uint32_vec;
     typedef std::vector<double> double_vec;
+    typedef std::vector<std::vector<double>> double_mat;
 
     // TYPDEF MEL TYPES BASED ON DAQ MANUFACTUERER
 
@@ -124,7 +125,7 @@ namespace mel {
     double saturate(double value, double max, double min);
     double saturate(double value, double abs_max);
 
-
+    double_vec mat_vec_multiply(double_mat A, double_vec b);
 
     /////////////////////////
     // USEFUL CLASSES & TYPES
