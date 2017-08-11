@@ -33,6 +33,8 @@ namespace mel {
 
         const StateMapRow* state_map = get_state_map();
 
+        event_generated_ = true;
+
         // run the state machine
         while (event_generated_) {
 

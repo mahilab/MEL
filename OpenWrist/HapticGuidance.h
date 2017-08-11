@@ -11,10 +11,10 @@
 //----------------------------------------------------------------------------
 // Evan Pezent, Simone Fanni, Josh Bradely (August 2017 - October 2017)
 //----------------------------------------------------------------------------
-// Condition 0: OpenWrist P/S w/ Perlin Noise Forces                  x10 subj
-// Condition 1: OpenWrist P/S + CUFF w/ Perlin Noise Forces           x10 subj
-// Condition 2: OpenWrist P/S + CUFF w/ Haptic Guidance Forces        x10 subj
-// Condition 3: OpenWrist P/S + MahiExo-II w/ Haptic Guidance Forces  x10 subj
+// Condition 1: OpenWrist P/S w/ Perlin Noise Forces                  x10 subj
+// Condition 2: OpenWrist P/S + CUFF w/ Perlin Noise Forces           x10 subj
+// Condition 3: OpenWrist P/S + CUFF w/ Haptic Guidance Forces        x10 subj
+// Condition 4: OpenWrist P/S + MahiExo-II w/ Haptic Guidance Forces  x10 subj
 //----------------------------------------------------------------------------
 // State Machine Flow (per subject+condition)
 //----------------------------------------------------------------------------
@@ -43,8 +43,8 @@ class HapticGuidance : public mel::StateMachine {
 
 public:
 
-    HapticGuidance(mel::Clock& clock, OpenWrist* open_wrist, mel::Daq* daq, GuiFlag& gui_flag, int input_mode, 
-        int subject_number, int condition, int task, int task_block, int trial_num);
+    HapticGuidance(mel::Clock& clock, mel::Daq* daq, OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
+        int subject_number, int condition, std::string start_trial = "F1-1");
 
 private:
 
@@ -54,47 +54,47 @@ private:
 
     // STATES
     enum States {
-        ST_INIT,
+        ST_START,
         ST_FAMILIARIZATION,
         ST_EVALUATION,
         ST_TRAINING,
         ST_BREAK,
         ST_GENERALIZATION,
+        ST_TRANSITION,
         ST_STOP,
         ST_NUM_STATES
     };
 
-    // STATE FUNCTIONS AND STATE ACTIONS
-    void sf_init(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_init> sa_init;
-
+    // STATE FUNCTIONS
+    void sf_start(const mel::NoEventData*);
     void sf_familiarization(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_familiarization> sa_familiarization;
-
     void sf_evaluation(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_evaluation> sa_evaluation;
-
     void sf_training(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_training> sa_training;
-
     void sf_break(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_break> sa_break;
-
     void sf_generalization(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_generalization> sa_generlization;
-
+    void sf_transition(const mel::NoEventData*);
     void sf_stop(const mel::NoEventData*);
-    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_stop> sa_stop;
 
+    // STATE ACTIONS
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_start> sa_start;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_familiarization> sa_familiarization;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_evaluation> sa_evaluation;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_training> sa_training;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_break> sa_break;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_generalization> sa_generlization;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_transition> sa_transition;
+    mel::StateAction<HapticGuidance, mel::NoEventData, &HapticGuidance::sf_stop> sa_stop;
+    
     // STATE MAP
     virtual const mel::StateMapRow* get_state_map() {
         static const mel::StateMapRow STATE_MAP[] = {
-            &sa_init,
+            &sa_start,
             &sa_familiarization,
             &sa_evaluation,
             &sa_training,
             &sa_break,
             &sa_generlization,
+            &sa_transition,
             &sa_stop,
         };
         return &STATE_MAP[0];
@@ -108,14 +108,15 @@ private:
     void allow_continue_input();
 
     //-------------------------------------------------------------------------
-    // HAPTIC GUIDANCE EXPERIMENT SETUP
+    // EXPERIMENT SETUP
     //-------------------------------------------------------------------------
 
     // SUBJECT/CONDITION
     int SUBJECT_NUMBER_;
     int CONDITION_;
 
-    enum Blocks {
+    // BLOCK TYPES
+    enum BlockType {
         FAMILIARIZATION = 0,
         EVALUATION = 1,
         TRAINING = 2,
@@ -123,42 +124,46 @@ private:
         GENERALIZATION = 4
     };
 
-    // NUMBER OF BLOCKS PER TASK 
-    // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<int, 5> NUM_BLOCKS_ = { 1, 7, 6, 1, 1 };
-
-    std::vector<Blocks> BLOCK_ORDER_ = {
+    // EXPERIMENT BLOCK ORDER (SET MANUALLY)
+    std::vector<BlockType> BLOCK_ORDER_ = {
         FAMILIARIZATION,
-        EVALUATION, TRAINING, EVALUATION, TRAINING, EVALUATION, TRAINING,
+        EVALUATION, TRAINING, 
+        EVALUATION, TRAINING, 
+        EVALUATION, TRAINING,
         BREAK,
-        EVALUATION, TRAINING, EVALUATION, TRAINING, EVALUATION, TRAINING,
+        EVALUATION, TRAINING, 
+        EVALUATION, TRAINING, 
+        EVALUATION, TRAINING,
         EVALUATION, GENERALIZATION 
     };
 
-    // NUMBER OF TRIALS PER BLOCK TYPE
+    std::array<std::string, 5> BLOCK_TAGS_ = { "F", "E", "T", "B", "G" };
+
+    // NUMBER OF BLOCKS PER BLOCK TYPE (SET DURING CONSTRUCTION)
+    // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
+    std::array<int, 5> NUM_BLOCKS_ = { 0,0,0,0,0 };
+
+    // NUMBER OF TRIALS PER BLOCK TYPE PER BLOCK NUMBER (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
     std::array<int, 5> NUM_TRIALS_ = { 1, 3, 12, 1, 12 };
 
-    // LENGTH IN SECONDS OF EACH TRIAL TYPE
+    // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
     std::array<double, 5> LENGTH_TRIALS_ = { 10000, 0.01, 0.01, 0.01, 0.01 };
 
-    int BREAK_AFTER_TRAINING_BLOCK_ = 2;
+    // EXPERIMENT TRIAL ORDERING
+    void build_experiment_();
+    int current_trial_index_ = 0;
+    std::vector<BlockType> TRIALS_ORDER_;
+    std::vector<std::string> TRIALS_NAMES_;
+    BlockType get_next_trial();
 
-    // CURRENT TASK/BLOCK/TRIAL
-    std::array<int, 5> block_counter_ = { 0, 0, 0, 0, 0 };
-    Blocks current_task_;
-    int current_task_block_;
-    int current_trial_num_;
-
-    States get_start_state();
-    States get_next_state();   
-
-    std::vector<States> experiment_states_;
-
-    void generate_experiment_states();
-
+    // SUBJECT DIRECTORY
     std::string DIRECTORY_;
+
+    //-------------------------------------------------------------------------
+    // EXPERIMENT COMPONENTS
+    //-------------------------------------------------------------------------
 
     // GUI FLAGS
     GuiFlag& gui_flag_;
@@ -168,8 +173,8 @@ private:
 
     // HARDWARE
     mel::Daq* daq_;
-    OpenWrist* ow_;
-    Cuff cuff_;
+    OpenWrist& open_wrist_;
+    Cuff& cuff_;
 
     // CUFF PARAMETERS
     short int CUFF_NORMAL_FORCE_ = 5;

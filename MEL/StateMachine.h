@@ -58,7 +58,6 @@ namespace mel {
 
         int get_num_states() { return NUM_STATES; }
 
-        //void execute(uint32 stop_time_seconds = -1);
         void execute();
 
     protected:

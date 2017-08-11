@@ -21,12 +21,9 @@ int main(int argc, char * argv[]) {
         ("calibrate", "calibrate OpenWrist zero position")
         ("run", "run the haptic guidance experiment")
         ("input-mode", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
-        ("subject-num", boost::program_options::value<int>(), "the subject number 1-40")
-        ("condition", boost::program_options::value<int>(), "0 = OW w/ PN, 1 = OW+CUFF w/ PN, 2 = OW+CUFF w/ HG, 3 = OW+MEII w/ HG")
-        ("task", boost::program_options::value<int>(), "0 = familirization, 1 = evaluation, 2 = training, 3 = break, 4 = generalization")
-        ("task-block", boost::program_options::value<int>(), "the task block number")
-        ("trial-num", boost::program_options::value<int>(), "the trial number within the task number");
-
+        ("subject-num", boost::program_options::value<int>(), "the subject number, 1-40")
+        ("condition", boost::program_options::value<int>(), "1 = OW w/ PN, 2 = OW+CUFF w/ PN, 3 = OW+CUFF w/ HG, 4 = OW+MEII w/ HG")
+        ("start-trial", boost::program_options::value<std::string>(), "the trial to start at, e.g. F1-1, T3-5, G2-12, etc");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
@@ -66,6 +63,9 @@ int main(int argc, char * argv[]) {
 
     OpenWrist open_wrist(config);
 
+    // create and configure CUFF object
+    Cuff cuff;
+
     // perform calibrate command if requested by user
     if (var_map.count("calibrate")) {
         open_wrist.calibrate(q8);
@@ -79,25 +79,22 @@ int main(int argc, char * argv[]) {
     mel::share::MelShare start_commands("start_commands");
     std::array<int, 5> start_commands_data;
 
-    int subject_num, condition, task, task_block, trial_num;
+    int subject, condition;
+    std::string start_trial;
 
     // check input mode
     int input_mode;
-    if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 0 && var_map.count("subject-num") && var_map.count("condition") && var_map.count("task") && var_map.count("task-block") && var_map.count("trial-num")) {
+    if (var_map.count("subject-num") && var_map.count("condition") && var_map.count("start-trial")) {
         input_mode = 0;
-        subject_num = var_map["subject-num"].as<int>();
+        subject = var_map["subject-num"].as<int>();
         condition = var_map["condition"].as<int>();
-        task = var_map["task"].as<int>();
-        task_block = var_map["task-block"].as<int>();
-        trial_num = var_map["trial-num"].as<int>();
+        start_trial = var_map["start-trial"].as<std::string>();
     }
-    else if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 0 && var_map.count("subject-num") && var_map.count("condition")) {
+    else if (var_map.count("subject-num") && var_map.count("condition")) {
         input_mode = 0;
-        subject_num = var_map["subject-num"].as<int>();
+        subject = var_map["subject-num"].as<int>();
         condition = var_map["condition"].as<int>();
-        task = 1;
-        task_block = 1;
-        trial_num = 1;
+        start_trial = "F1-1";
     }
     else if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 1) {
         system("start GUI.pyw &");
@@ -106,11 +103,9 @@ int main(int argc, char * argv[]) {
         gui_flag.wait_for_flag(1);
         gui_flag.reset_flag(0);
         start_commands.read(start_commands_data);
-        subject_num = start_commands_data[0];
+        subject = start_commands_data[0];
         condition = start_commands_data[1];
-        task = start_commands_data[2] + 1;
-        task_block = start_commands_data[3] + 1;
-        trial_num = start_commands_data[4] + 1;
+        start_trial = "F1-1"; // TODO
     }
     else {
         mel::print("Not enough input parameters were provided to run the experiment.");
@@ -119,18 +114,15 @@ int main(int argc, char * argv[]) {
 
     // run the experiment
     if (var_map.count("run")) {
-        mel::print("Running Experiment with Inputs:");
-        mel::print("Subject Number: " + std::to_string(subject_num));
+        mel::print("");
+        mel::print("RUNNING EXPERIMENT WITH THE FOLLOWING INPUTS:");
+        mel::print("Subject Number: " + std::to_string(subject));
         mel::print("Condition:      " + std::to_string(condition));
-        mel::print("Task:           " + std::to_string(task));
-        mel::print("Task Block:     " + std::to_string(task_block));
-        mel::print("Trial Number:   " + std::to_string(trial_num));
+        mel::print("Start Trial:    " + start_trial);
 
         mel::Clock clock(1000);
-        HapticGuidance haptic_guidance(clock, &open_wrist, q8, gui_flag, input_mode, subject_num, condition, task - 1, task_block - 1, trial_num - 1);
+        HapticGuidance haptic_guidance(clock, q8, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
         haptic_guidance.execute();
         return 0;
     }
-
-    mel::print("Ending OpenWrist.exe");
 }
