@@ -16,7 +16,6 @@ public:
         std::array<mel::Daq::Ao, 5>      command_;   // analog output channels that command motors
         std::array<mel::Daq::Encoder, 5> encoder_;   // encoder channels that measure motor positions
         std::array<mel::Daq::EncRate, 5> encrate_;   // encoder channels that measure motor velocities
-        std::array<double, 5>            amp_gains_; // motor aplifier gains 
     };
 
     struct Params {
@@ -24,6 +23,7 @@ public:
         std::array<mel::uint32, 5> encoder_res_ = { 2048, 2048, 2048, 2048, 2048 };           // encoder resolutions    [counts / rev]
         std::array<double, 5>      kt_ = { 0.127, 0.0603, 0.175, 0.175, 0.175 };        // motor torque constants [N-m/A]
         std::array<double, 5>      current_limits_ = { 6.0, 3.17, 0.626, 0.626, 0.626 };          // motor current limits   [A]
+        std::array<double, 5>            amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; // motor aplifier gains [A/V]
     };
 
     MahiExoII(Config configuration, Params parameters = Params());

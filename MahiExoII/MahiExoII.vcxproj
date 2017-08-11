@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="EmgTraining.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
+    <ClCompile Include="MahiExoIIFrc.cpp" />
     <ClCompile Include="mahiexoii_util.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="EmgTraining.h" />
     <ClInclude Include="MahiExoII.h" />
+    <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="mahiexoii_util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

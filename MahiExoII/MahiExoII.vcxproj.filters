@@ -30,6 +30,9 @@
     <ClCompile Include="mahiexoii_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MahiExoIIFrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MahiExoII.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mahiexoii_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MahiExoIIFrc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

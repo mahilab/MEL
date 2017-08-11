@@ -80,7 +80,7 @@ void EmgTraining::sf_to_neutral(const mel::NoEventData* data) {
 
 
     // enter the control loop
-    while (true) {
+    while (!ctrl_c_) {
 
         q8_emg_->reload_watchdog();
 
@@ -124,7 +124,7 @@ void EmgTraining::sf_hold_neutral(const mel::NoEventData* data) {
 
 
     // enter the control loop
-    while (true) {
+    while (!ctrl_c_) {
 
 
         q8_emg_->reload_watchdog();
