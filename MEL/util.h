@@ -118,6 +118,8 @@ namespace mel {
     double saturate(double value, double max, double min);
     double saturate(double value, double abs_max);
 
+
+
     /////////////////////////
     // USEFUL CLASSES & TYPES
     /////////////////////////

@@ -4,6 +4,8 @@
 #include "MahiExoII.h"
 #include "util.h"
 #include "mahiexoii_util.h"
+#include "MelShare.h"
+#include "Filter.h"
 
 class EmgTrainingData : public mel::EventData {
 
@@ -16,7 +18,9 @@ class EmgTraining : public mel::StateMachine {
 public:
 
     EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoII* exo);
+    
 
+    
 
 private:
     
@@ -77,5 +81,14 @@ private:
     mel::double_vec new_torques_;
     mel::int8_vec backdrive_;
 
+    mel::Filter lpf_;
+    mel::Filter multi_lpf_;
+
+    // MELShare(s)
+    mel::share::MelShare pos_data_ = mel::share::MelShare("MEII_pos");
+    mel::double_vec data_p_;
+    mel::share::MelShare ati_data_ = mel::share::MelShare("MEII_ati");
+    mel::double_vec force_share_;
+    mel::double_vec force_filt_;
 
 };
