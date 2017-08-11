@@ -18,9 +18,6 @@ class EmgTraining : public mel::StateMachine {
 public:
 
     EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoII* exo);
-    
-
-    
 
 private:
     
@@ -33,36 +30,39 @@ private:
     };
 
     // Define the state machine state functions with event data type
-    void ST_Init(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Init> Init;
+    void sf_init(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_init> sa_init;
 
-    void ST_To_Neutral(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_To_Neutral> To_Neutral;
+    void sf_to_neutral(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_to_neutral> sa_to_neutral;
 
-    void ST_Hold_Neutral(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Hold_Neutral> Hold_Neutral;
+    void sf_hold_neutral(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_hold_neutral> sa_hold_neutral;
 
-    void ST_Stop(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::ST_Stop> Stop;
+    void sf_stop(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_stop> sa_stop;
 
     // State map to define state object order. Each state map entry defines a
     // state object.
     virtual const mel::StateMapRow* get_state_map() {
         static const mel::StateMapRow STATE_MAP[] = {
-            &Init,
-            &To_Neutral,
-            &Hold_Neutral,
-            &Stop,
+            &sa_init,
+            &sa_to_neutral,
+            &sa_hold_neutral,
+            &sa_stop,
         };
         return &STATE_MAP[0];
     }
 
     void ctrl_c_task() override;
 
-
+    // HARDWARE
     mel::Daq* q8_emg_;
     mel::Daq* q8_ati_;
     MahiExoII* exo_;
+
+    // HARDWARE CLOCK
+    mel::Clock clock_;
 
 
     Eigen::VectorXd raw_force_;
@@ -81,6 +81,7 @@ private:
     mel::double_vec new_torques_;
     mel::int8_vec backdrive_;
 
+    // FILTERING
     mel::Filter lpf_;
     mel::Filter multi_lpf_;
 

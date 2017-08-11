@@ -158,6 +158,7 @@ int main(int argc, char * argv[]) {
     // create clock
     mel::Clock clock(1000, false);
 
+
     EmgTraining sm = EmgTraining(clock,q8_emg,q8_ati,mahiexoii);
 
     sm.execute();

@@ -69,7 +69,6 @@ namespace mel {
 
         static bool ctrl_c_;   ///< static boolean that will stop State Machine when set to true
 
-        bool stop_;
 
         // SIGNAL HANDLING
 

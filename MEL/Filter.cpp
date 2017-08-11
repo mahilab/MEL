@@ -12,34 +12,29 @@ namespace mel {
 
     Filter::Filter(int length, int order, double_vec b, double_vec a) :
         length_(length),
-        n_(order)
+        n_(order),
+        a_(a),
+        b_(b),
+        y_(double_vec(length,0))
     {
-        for (auto i = 0; i < n_ + 1; ++i) {
-            a_.push_back(a[i]);
-            b_.push_back(b[i]);
-        }
 
-        for (auto j = 0; j < length_; ++j) {
+        for (int j = 0; j < length_; ++j) {
             filter_implementations_.push_back(new FilterImplementation(order,b,a));
-            y_.push_back(0);
         }
     }
 
     Filter::FilterImplementation::FilterImplementation(int order, double_vec b, double_vec a) :
-        n_(order)
-    {
-        for (auto i = 0; i < order + 1; ++i) {
-            a_.push_back(a[i]);
-            b_.push_back(b[i]);
-            s_.push_back(0);
-        }
-    }
+        n_(order),
+        a_(a),
+        b_(b),
+        s_(double_vec(order-1,0))
+    { }
 
 
     double Filter::FilterImplementation::filter(double x) {
 
         y_ = (s_[0] + b_[0] * x) / a_[0];
-        for (auto i = 0; i < n_; ++i) {
+        for (int i = 0; i < n_; ++i) {
             s_[i] = s_[i+1] + b_[i+1] * x - a_[i+1] * y_;
         }
         s_[n_-1] = b_[n_] * x - a_[n_] * y_;
@@ -66,7 +61,7 @@ namespace mel {
             return { 1 };
         }
 
-        for (auto j = 0; j < length_; ++j) {
+        for (int j = 0; j < length_; ++j) {
             y_[j] = filter_implementations_[j]->filter(x[j]);
         }
 
