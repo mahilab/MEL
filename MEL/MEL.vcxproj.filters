@@ -69,6 +69,9 @@
     <ClCompile Include="ForceSensor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AtiMini45.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actuator.h">
@@ -132,6 +135,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AtiMini45.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
