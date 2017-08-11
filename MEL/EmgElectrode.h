@@ -24,7 +24,7 @@ namespace mel {
 
         // PRIVATE VARIABLES
         
-        Daq::Ai ai_channel_; // the DAQ analog input chanel bound to this electrode
+        Daq::Ai ai_channel_; // the DAQ analog input channel bound to this electrode
 
         double voltage_;
 

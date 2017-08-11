@@ -4,6 +4,7 @@
 #include "util.h"
 #include "mahiexoii_util.h"
 #include "MahiExoII.h"
+#include "MahiExoIIFrc.h"
 #include "Controller.h"
 #include "Task.h"
 #include <boost/program_options.hpp>
@@ -116,7 +117,7 @@ int main(int argc, char * argv[]) {
     mel::channel_vec enc_channels = { 0, 1, 2, 3, 4 };
 
     mel::Q8Usb::Options options;
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; ++i) {
         options.do_initial_signals_[i] = 1;
         options.do_final_signals_[i] = 1;
         options.do_expire_signals_[i] = 1;
@@ -136,16 +137,25 @@ int main(int argc, char * argv[]) {
 
 
     // create and configure a MahiExoII object
-    mel::double_vec amp_gains = { 1.8, 1.8, 0.184, 0.184, 0.184 };
-    MahiExoII::Config config;
-    for (int i = 0; i < 5; i++) {
+    /*MahiExoII::Config config;
+    for (int i = 0; i < 5; ++i) {
         config.enable_[i] = q8_emg->do_(i);
         config.command_[i] = q8_emg->ao_(i);
         config.encoder_[i] = q8_emg->encoder_(i);
         config.encrate_[i] = q8_emg->encrate_(i);
-        config.amp_gains_[i] = amp_gains[i];
     }
-    MahiExoII* mahiexoii = new MahiExoII(config);
+    MahiExoII* meii = new MahiExoII(config);*/
+    MahiExoIIFrc::Config config;
+    for (int i = 0; i < 5; ++i) {
+        config.enable_[i] = q8_emg->do_(i);
+        config.command_[i] = q8_emg->ao_(i);
+        config.encoder_[i] = q8_emg->encoder_(i);
+        config.encrate_[i] = q8_emg->encrate_(i);
+    }
+    for (int i = 0; i < 6; ++i) {
+        config.wrist_force_sensor_[i] = q8_ati->ai_(i);
+    }
+    MahiExoIIFrc* meii = new MahiExoIIFrc(config);
 
     // manual zero joint positions
     if (var_map.count("zero")) {
@@ -159,7 +169,7 @@ int main(int argc, char * argv[]) {
     mel::Clock clock(1000, false);
 
 
-    EmgTraining sm = EmgTraining(clock,q8_emg,q8_ati,mahiexoii);
+    EmgTraining sm = EmgTraining(clock,q8_emg,q8_ati,meii);
 
     sm.execute();
 

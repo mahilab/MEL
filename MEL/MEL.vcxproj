@@ -28,6 +28,7 @@
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="Exo.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="ForceSensor.cpp" />
     <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
