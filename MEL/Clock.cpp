@@ -16,8 +16,16 @@ namespace mel {
         }
     }
 
-    void Clock::start() {
-        
+    void Clock::start() {     
+        stop_ = false;
+        reset();
+        if (enable_logging_) {
+            std::vector<double> row = { static_cast<double>(tick_count_) , elapsed_ideal_ , elapsed_actual_.count() * NS2S , elapsed_exe_.count() * NS2S , elapsed_wait_.count() * NS2S , elapsed_tick_.count() * NS2S };
+            log_.add_row(row);
+        }
+    }
+
+    void Clock::reset() {
         tick_count_ = 0;
         start_ = std::chrono::high_resolution_clock::now();
         start_tick_ = start_;
@@ -27,10 +35,6 @@ namespace mel {
         elapsed_exe_ = std::chrono::nanoseconds(0);
         elapsed_wait_ = std::chrono::nanoseconds(0);
         elapsed_ideal_ = 0;
-        if (enable_logging_) {
-            std::vector<double> row = { static_cast<double>(tick_count_) , elapsed_ideal_ , elapsed_actual_.count() * NS2S , elapsed_exe_.count() * NS2S , elapsed_wait_.count() * NS2S , elapsed_tick_.count() * NS2S };
-            log_.add_row(row);
-        }
     }
 
     void Clock::wait() {

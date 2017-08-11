@@ -6,7 +6,7 @@ int Cuff::enable() {
 	
 	int result = 0;
 
-	std::cout << "Initializing CUFF ...";
+	std::cout << "Enabling CUFF ...";
 
 	short int currents[2];
 	short int realmotpos[2];
@@ -46,14 +46,17 @@ int Cuff::enable() {
 	io_loop_ = true;
     io_thread_ = boost::thread(&Cuff::io_thread_func,this);
 	std::cout << "Done" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	return 1;
 }
 
 int Cuff::disable() {
-    set_motor_positions(0, 0);
+    std::cout << "Disabling CUFF ... ";
+    set_motor_positions(0, 0, false);
     commActivate(&comm_settings_t_, CUFF_ID, 0);
     boost::this_thread::sleep(boost::posix_time::milliseconds(100));
     io_loop_ = false;
+    std::cout << "Done" << std::endl;
     return 1;
 }
 
@@ -120,6 +123,7 @@ int Cuff::port_selection() {
 }
 
 void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* scaling_factor) {
+    std::cout << "Pretensioning CUFF ... ";
     short int stepmot, act_mot_pos_0, act_mot_pos_1, act_mot_cur_0, act_mot_cur_1;
 	std::chrono::high_resolution_clock::time_point tstart, tend;
     std::chrono::nanoseconds elapsed_time;
@@ -137,7 +141,7 @@ void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* s
 		motpos_zero[0] = motpos_zero[0] - (10 * (50 - act_mot_cur_0));
 		motpos_zero[1] = motpos_zero[1] + (10 * (50 + act_mot_cur_1));
         //std::cout << act_mot_cur_0 << '\t' << act_mot_cur_1 << '\t' << motpos_zero[0] << '\t' << motpos_zero[1] << '\n';
-        set_motor_positions(motpos_zero[0], motpos_zero[1]);
+        set_motor_positions(motpos_zero[0], motpos_zero[1], false);
 		tend = std::chrono::high_resolution_clock::now();
 		elapsed_time = std::chrono::high_resolution_clock::now() - tstart;
 		elapsed_time_us = (int)((double)elapsed_time.count())/1000;
@@ -153,7 +157,7 @@ void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* s
 		if (stepmot < 1200) {
 			motpos_zero[0] = motpos_zero[0] + 15;
 			motpos_zero[1] = motpos_zero[1] - 15;
-            set_motor_positions(motpos_zero[0], motpos_zero[1]);
+            set_motor_positions(motpos_zero[0], motpos_zero[1], false);
 		}
         tend = std::chrono::high_resolution_clock::now();
         elapsed_time = std::chrono::high_resolution_clock::now() - tstart;
@@ -165,17 +169,18 @@ void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* s
     short int motpos[2];
     motpos[0] = motpos_zero[0] - 20000;
     motpos[1] = motpos_zero[1] + 20000;
-    set_motor_positions(motpos[0], motpos[1]);
+    set_motor_positions(motpos[0], motpos[1], false);
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     get_motor_currents(act_mot_pos_0, act_mot_pos_1);
     scaling_factor[0] = abs((act_mot_pos_0 - motpos_zero[0]) / MAX_VAL_CAR_0);
     scaling_factor[1] = abs((act_mot_pos_1 - motpos_zero[1]) / MAX_VAL_CAR_1);
-    set_motor_positions(motpos_zero[0], motpos_zero[1]);
+    set_motor_positions(motpos_zero[0], motpos_zero[1], false);
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     motpos_zero[0] = motpos_zero[0] - (0.1138*pow(force_newtons, 3) - 5.204*pow(force_newtons, 2) + 89.22*force_newtons + 0) * scaling_factor[0];
     motpos_zero[1] = motpos_zero[1] + (0.1138*pow(force_newtons, 3) - 5.204*pow(force_newtons, 2) + 89.22*force_newtons + 0) * scaling_factor[1];
-    set_motor_positions(motpos_zero[0], motpos_zero[1]);
+    set_motor_positions(motpos_zero[0], motpos_zero[1], false);
+    std::cout << "Done" << std::endl;
 }
 
 int Cuff::io_thread_func() {
@@ -189,11 +194,13 @@ int Cuff::io_thread_func() {
     return 1;
 }
 
-void Cuff::set_motor_positions(short int motor_position_0, short int motor_position_1) {
-    spinlock.lock();
+void Cuff::set_motor_positions(short int motor_position_0, short int motor_position_1, bool immediate) {
+    if (!immediate)
+        spinlock.lock();
     reference_motor_positions_[0] = motor_position_0;
     reference_motor_positions_[1] = motor_position_1;
-    spinlock.unlock();
+    if (!immediate)
+        spinlock.unlock();
 }
 
 void Cuff::get_motor_positions(short int& motor_position_0, short int& motor_position_1) {

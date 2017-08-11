@@ -24,7 +24,7 @@ public:
 
 	int enable();
     int disable();
-	void set_motor_positions(short int motor_position_0, short int motor_position_1);
+	void set_motor_positions(short int motor_position_0, short int motor_position_1, bool immediate);
     void get_motor_positions(short int& motor_position_0, short int& motor_position_1);
     void get_motor_currents(short int& motor_current_0, short int& motor_current_1);
 

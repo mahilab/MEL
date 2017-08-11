@@ -70,37 +70,43 @@ namespace mel {
     // PRINTING FUNCTIONS
     /////////////////////
 
-    /// Prints anything that works with std::cout
+    /// Prints anything that works with std::cout. 
+    /// end_line = true will print a new line after printing value
     template <typename T>
-    void print(T value) {
-        std::cout << value << std::endl;
+    void print(T value, bool end_line = true) {
+        std::cout << value;
+        if (end_line)
+            std::cout << std::endl;
     }
 
     /// Prints STL vector
     template <typename T> 
-    void print(std::vector<T> vector) {
+    void print(std::vector<T> vector, bool end_line = true) {
         for (auto it = vector.begin(); it != vector.end(); ++it) {
             std::cout << *it << " ";
         }
-        std::cout << std::endl;
+        if (end_line)
+            std::cout << std::endl;
     }
 
     /// Prints STL array
     template <typename T, size_t N>
-    void print(std::array<T, N> array) {
+    void print(std::array<T, N> array, bool end_line = true) {
         for (auto it = array.begin(); it != array.end(); ++it) {
             std::cout << *it << " ";
         }
-        std::cout << std::endl;
+        if (end_line)
+            std::cout << std::endl;
     }
 
     /// Prints C-style array
     template <typename T>
-    void print(T* array, size_t size) {
+    void print(T* array, size_t size, bool end_line = true) {
         for (int i = 0; i < size; i++) {
             std::cout << array[i] << " ";
         }
-        std::cout << std::endl;
+        if (end_line)
+            std::cout << std::endl;
     }
 
     ////////////////////////////////

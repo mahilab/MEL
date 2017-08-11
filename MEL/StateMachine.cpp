@@ -4,14 +4,13 @@ namespace mel {
 
     bool StateMachine::ctrl_c_ = false;
 
-    StateMachine::StateMachine(Clock& clock, int num_states, int initial_state) :
-        clock_(clock),
-        stop_time_(-1),
+    StateMachine::StateMachine(int num_states, int initial_state) :
         NUM_STATES(num_states),
         current_state_(initial_state),
         new_state_(initial_state),
         event_generated_(false),
-        event_data_(nullptr)
+        event_data_(nullptr),
+        stop_(false)
     {
         // register signal SIGINT and SIGBREAK with ctrl_c_handler */
         signal(SIGINT, ctrl_c_handler);
@@ -26,24 +25,17 @@ namespace mel {
         event_data_ = data;
         event_generated_ = true;
         new_state_ = new_state;
-
-    }
-    
+    }  
 
 
-    void StateMachine::execute(uint32 stop_time_seconds) {
+    void StateMachine::execute() {
 
         const EventData* data_temp = nullptr;
 
         const StateMapRow* state_map = get_state_map();
 
-        stop_time_ = stop_time_seconds;
-
-        // start the Clock
-        clock_.start();
-
         // run the state machine
-        while (!ctrl_c_ && clock_.time() <= stop_time_) {
+        while (!ctrl_c_ && !stop_) { //&& clock_.time() <= stop_time_) {
 
 
             if (event_generated_) {
@@ -80,20 +72,16 @@ namespace mel {
                 data_temp = nullptr;
             }
 
-            // wait for the next clock tick
-            clock_.wait();
         }
-
-        // stop the Clock (saves the DataLog)
-        clock_.stop();
 
         if (ctrl_c_) {
 
             // run exit task
             ctrl_c_task();
 
-            // reset stop_
+            // reset ctrl_c_ and stop_
             ctrl_c_ = false;
+            stop_ = false;
         }
     }
 

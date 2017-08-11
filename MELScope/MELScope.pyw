@@ -412,7 +412,7 @@ def validate_scope_properties():
         for i in range(len(SCOPE_FILTERS), SCOPE_COUNT):
             new_filter = {}
             for name in MELSHARE_NAMES:
-                new_melshare_filter = [True for j in range(MELSHARE_SIZES[name])]
+                new_melshare_filter = [True if len(MELSHARE_NAMES) <= 1 else False for j in range(MELSHARE_SIZES[name])]
                 new_filter[name] = new_melshare_filter
             SCOPE_FILTERS.append(new_filter)
     else:
@@ -423,7 +423,7 @@ def validate_scope_properties():
                 filter[name] = []
             if MELSHARE_SIZES[name] > len(filter[name]):
                 for i in range(len(filter[name]), MELSHARE_SIZES[name]):
-                    filter[name].append(True)
+                    filter[name].append(True if len(MELSHARE_NAMES) <= 1 else False)
             else:
                 filter[name] = filter[name][:MELSHARE_SIZES[name]]
         for key, value in filter.items():
@@ -500,13 +500,13 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.io_label.mouseDoubleClickEvent = self.rename_io
         self.io_label.setAlignment(QtCore.Qt.AlignCenter)
         self.io_label.setFont(bold_font)
-        self.io_layout.addWidget(self.io_label, 0, 0, 1, 3)
+        self.io_layout.addWidget(self.io_label, 0, 0, 1, 2)
         self.io_tab.setLayout(self.io_layout)
         self.addTab(self.io_tab, ' I/O ')
 
         self.io_names = {}
         self.io_values = {}
-        self.io_sliders = {}
+        #self.io_sliders = {}
         # filter
         self.filter = {}
         self.initial_read = True
@@ -558,22 +558,16 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                 if spinbox is not None:
                     self.io_layout.removeWidget(spinbox)
                     spinbox.deleteLater()
-        for key in self.io_sliders:
-            for slider in self.io_sliders[key]:
-                if slider is not None:
-                    self.io_layout.removeWidget(slider)
-                    slider.deleteLater()
         # reset write only flag
         self.reset_write_only = True
         # rebuild
         self.curves = {}
-        self.io_names, self.io_values, self.io_sliders = {}, {}, {}
+        self.io_names, self.io_values = {}, {}
         row = 1
         for name in MELSHARE_NAMES:
             self.curves[name] = []
             self.io_names[name] = []
             self.io_values[name] = []
-            self.io_sliders[name] = []
             for i in range(MELSHARE_SIZES[name]):
                 if self.filter[name][i] is True:
                     # update curve
@@ -586,7 +580,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     # update IO
                     new_name = QtGui.QLabel(self)
                     new_name.setText(DATA_NAMES[name][i])
-                    new_name.mouseDoubleClickEvent = self.rename_data_factory(name, i)
+                    #new_name.mouseDoubleClickEvent = self.rename_data_factory(name, i)
                     new_value = QtGui.QLineEdit(self)
                     new_value.setText('0.0000')
                     new_value.setValidator(QtGui.QDoubleValidator())
@@ -599,22 +593,17 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                         new_value.returnPressed.connect(self.confirm_io_factory(name, i, new_value))
                         new_value.textEdited.connect(self.change_io_factory(new_value))
                     new_value.setAlignment(QtCore.Qt.AlignCenter)
-                    new_slider = QtGui.QSlider(self)
-                    new_slider.setOrientation(QtCore.Qt.Horizontal)
                     self.io_layout.addWidget(new_name, row, 0)
                     self.io_layout.addWidget(new_value, row, 1)
-                    self.io_layout.addWidget(new_slider, row, 2)
-                    for i in range(3):
+                    for i in range(2):
                         self.io_layout.setColumnStretch(i, 1)
                     self.io_names[name].append(new_name)
                     self.io_values[name].append(new_value)
-                    self.io_sliders[name].append(new_slider)
                     row += 1
                 else:
                     self.curves[name].append(None)
                     self.io_names[name].append(None)
                     self.io_values[name].append(None)
-                    self.io_sliders[name].append(None)
 
     def update(self):
         if SCROLL_MODE == 'ROLLING':
