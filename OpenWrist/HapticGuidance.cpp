@@ -1,4 +1,5 @@
 #include "HapticGuidance.h"
+#include "Input.h"
 
 HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
     int subject_number, int condition, std::string start_trial):
@@ -33,7 +34,7 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& o
 
 void HapticGuidance::wait_for_continue_input() {
     if (INPUT_MODE_ == 0) {
-        getchar();
+        Input::wait_for_key_press(Input::Key::Space);
     }
     else if (INPUT_MODE_ = 1) {
         gui_flag_.wait_for_flag(1);
@@ -97,7 +98,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
     update_unity(true, true, true, true, true, true, true);
 
     // enter the control loop
-    while (clock_.time() < LENGTH_TRIALS_[FAMILIARIZATION] && !ctrl_c_ && !gui_flag_.check_flag(2)) {
+    while (clock_.time() < LENGTH_TRIALS_[FAMILIARIZATION] && !Input::is_key_pressed(Input::Escape) && !gui_flag_.check_flag(2)) {
 
         // update trajectory
         update_trajectory(clock_.time());
@@ -163,7 +164,7 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
     update_unity(true, true, true, false, false, false, true);
    
     // enter the control loop
-    while (clock_.time() < LENGTH_TRIALS_[EVALUATION] && !ctrl_c_ && !gui_flag_.check_flag(2)) {
+    while (clock_.time() < LENGTH_TRIALS_[EVALUATION] && !Input::is_key_pressed(Input::Escape) && !gui_flag_.check_flag(2)) {
 
         // update trajectory
         update_trajectory(clock_.time());
@@ -198,7 +199,7 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
     update_unity(true, true, true, false, false, false, true);
 
     // enter the control loop
-    while (clock_.time() < LENGTH_TRIALS_[TRAINING] && !ctrl_c_ && !gui_flag_.check_flag(2)) {
+    while (clock_.time() < LENGTH_TRIALS_[TRAINING] && !Input::is_key_pressed(Input::Escape) && !gui_flag_.check_flag(2)) {
 
         // update trajectory
         update_trajectory(clock_.time());
@@ -233,7 +234,7 @@ void HapticGuidance::sf_break(const mel::NoEventData*) {
     update_unity(true, false, false, false, false, false, true);
 
     // enter the control loop
-    while (clock_.time() < LENGTH_TRIALS_[BREAK] && !ctrl_c_ && !gui_flag_.check_flag(2)) {
+    while (clock_.time() < LENGTH_TRIALS_[BREAK] && !Input::is_key_pressed(Input::Escape) && !gui_flag_.check_flag(2)) {
 
         if (CONDITION_ > 0) {
             // read and reload DAQ
@@ -262,7 +263,7 @@ void HapticGuidance::sf_generalization(const mel::NoEventData*) {
     update_unity(true, true, true, false, false, false, true);
     
     // enter the control loop
-    while (clock_.time() < LENGTH_TRIALS_[EVALUATION] && !ctrl_c_ && !gui_flag_.check_flag(2)) {
+    while (clock_.time() < LENGTH_TRIALS_[EVALUATION] && !Input::is_key_pressed(Input::Escape) && !gui_flag_.check_flag(2)) {
 
         // update trajectory
         update_trajectory(clock_.time());
@@ -314,8 +315,8 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
     current_trial_index_ += 1;
 
     // start a new tiral if there is one
-    if (current_trial_index_ < TRIALS_TAG_NAMES_.size() && !ctrl_c_) {
-        mel::print("Next trial: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Waiting for user input to begin.");
+    if (current_trial_index_ < TRIALS_TAG_NAMES_.size() && !Input::is_key_pressed(Input::Key::Escape)) {
+        mel::print("Next trial: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Space to begin.");
         wait_for_continue_input();   
 
         // resume hardware
@@ -325,10 +326,10 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         }
 
         // print message
-        mel::print("Starting trial <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Ctrl+C to terminate the trial.");
+        mel::print("Starting trial <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Escape to terminate the experiment.");
 
         // restart the clock
-        clock_.restart();
+        clock_.start();
 
         // transition to the next state
         if (TRIALS_BLOCK_TYPES_[current_trial_index_] == FAMILIARIZATION)
@@ -351,7 +352,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 // STOP STATE FUNCTION
 //-----------------------------------------------------------------------------
 void HapticGuidance::sf_stop(const mel::NoEventData*) {
-    if (current_trial_index_ < TRIALS_TAG_NAMES_.size() || ctrl_c_) {
+    if (current_trial_index_ < TRIALS_TAG_NAMES_.size()) {
         mel::print("\nExperiment terminated during trial " + mel::namify(TRIALS_TAG_NAMES_[current_trial_index_ - 1]) + ". Disabling hardware.");
     } 
     else

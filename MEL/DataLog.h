@@ -12,7 +12,7 @@ namespace mel {
         /// Default constructor
         DataLog();
         /// Prefered constructor
-        DataLog(std::string name, size_t num_rows = 1000000);
+        DataLog(std::string name, bool autosave = true, size_t num_rows = 1000000);
         ~DataLog();
 
         std::string name_; ///< DataLog name
@@ -38,6 +38,7 @@ namespace mel {
         uint32 row_index_;
 
         bool log_saved_;
+        bool autosave_;
     };
 
 }

@@ -64,9 +64,6 @@ namespace mel {
         for (auto it = stop_tasks_.begin(); it != stop_tasks_.end(); ++it)
             (*it)->stop();
 
-        // stop the Clock (saves the DataLog)
-        clock_.stop();
-
         // reset stop_
         stop_ = false;
     }

@@ -8,17 +8,18 @@ namespace mel {
     DataLog::DataLog() :
         DataLog("no_name",1000000) {}
 
-    DataLog::DataLog(std::string name, size_t max_rows) :
+    DataLog::DataLog(std::string name, bool autosave, size_t max_rows) :
         name_(name),
         max_rows_(max_rows),
         num_cols_(0),
         row_index_(0),
-        log_saved_(true)
+        log_saved_(true),
+        autosave_(autosave)
     {
     }
 
     DataLog::~DataLog() {
-        if (!log_saved_) {
+        if (!log_saved_ && autosave_) {
             save_data(name_, "data_backups", true);
         }
     }

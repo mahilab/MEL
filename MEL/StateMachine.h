@@ -1,8 +1,4 @@
 #pragma once
-#include <chrono>
-#include <csignal>
-#include "Task.h"
-#include "Clock.h"
 #include "util.h"
 
 namespace mel {
@@ -66,13 +62,6 @@ namespace mel {
 
         // FLAGS
 
-        static bool ctrl_c_;   ///< static boolean that will stop State Machine when set to true
-
-
-        // SIGNAL HANDLING
-
-        static void ctrl_c_handler(int signum);      ///< signal handler that will set stop_ to true when CTRL+C is pressed at the terminal window
-
     private:
 
         const int NUM_STATES;
@@ -89,7 +78,6 @@ namespace mel {
 
         void set_current_state(int new_state) { current_state_ = new_state; }
 
-        virtual void ctrl_c_task() {};        
 
     };
 

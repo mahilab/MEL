@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    bool StateMachine::ctrl_c_ = false;
+
 
     StateMachine::StateMachine(int num_states, int initial_state) :
         NUM_STATES(num_states),
@@ -11,8 +11,7 @@ namespace mel {
         event_generated_(false),
         event_data_(nullptr)
     {
-        // register signal SIGINT and SIGBREAK with ctrl_c_handler */
-        signal(SIGINT, ctrl_c_handler);
+
     }
 
     void StateMachine::event(int new_state, const EventData* data) {
@@ -72,10 +71,5 @@ namespace mel {
 
 
     }
-
-    void StateMachine::ctrl_c_handler(int signum) {
-        ctrl_c_ = true;
-    }
-
 
 }

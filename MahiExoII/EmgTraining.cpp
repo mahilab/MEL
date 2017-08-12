@@ -76,7 +76,7 @@ void EmgTraining::sf_to_neutral(const mel::NoEventData* data) {
     
     // reset and start the hardware clock
     clock_.reset();
-    clock_.start();
+    clock_.resume();
 
 
     // enter the control loop
@@ -120,7 +120,7 @@ void EmgTraining::sf_hold_neutral(const mel::NoEventData* data) {
 
     // reset and start the hardware clock
     clock_.reset();
-    clock_.start();
+    clock_.resume();
 
 
     // enter the control loop

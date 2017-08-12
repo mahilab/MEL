@@ -84,7 +84,7 @@ std::array<double,3> OpenWrist::compute_gravity_compensation() {
 
 void OpenWrist::calibrate(mel::Daq* daq) {
     // make a new Clock and Controller
-    mel::Clock clock(1000, true);
+    mel::Clock clock(1000);
     mel::Controller controller(clock);
     // queue Tasks for the Controller to execute
     mel::Task* task = new Calibration(this, daq);
@@ -191,7 +191,7 @@ void OpenWrist::Calibration::stop() {
 
 void OpenWrist::transparency_mode(mel::Daq* daq) {
     // make a new Clock and Controller
-    mel::Clock clock(1000, true);
+    mel::Clock clock(1000);
     mel::Controller controller(clock);
     // queue Tasks for the Controller to execute
     mel::Task* task = new TransparencyMode(this, daq);

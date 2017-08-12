@@ -22,7 +22,7 @@ bool check_digital_loopback(mel::uint32 daq_id, mel::channel digital_channel) {
     q8_temp->activate();
     q8_temp->start_watchdog(0.1);
 
-    clock.start();
+    clock.resume();
 
     for (auto i = 0; i < 11; i++) {
 

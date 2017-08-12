@@ -113,9 +113,7 @@ namespace mel {
     }
 
     /// Formats string name in between angle brackets for MEL printing puproses
-    std::string namify(std::string name) {
-        return "<" + name + ">";
-    }
+    std::string namify(std::string name);
 
     //-------------------------------------------------------------------------
     // MATH FUNCTIONS

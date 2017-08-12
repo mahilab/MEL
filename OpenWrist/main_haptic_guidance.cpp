@@ -1,6 +1,4 @@
 #include <iostream>
-#include "Task.h"
-#include "Controller.h"
 #include "Clock.h"
 #include "Q8Usb.h"
 #include "OpenWrist.h"
@@ -12,7 +10,14 @@
 #include "GuiFlag.h"
 #include "HapticGuidance.h"
 
+void ctrl_c_handler(int signum) {
+
+}
+
 int main(int argc, char * argv[]) {
+
+    // register Ctrl+C handler
+    signal(SIGINT, ctrl_c_handler);
 
     // set up program options 
     boost::program_options::options_description desc("Available Options");

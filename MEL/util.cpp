@@ -12,6 +12,10 @@ namespace mel {
         return buf;
     }
 
+    std::string namify(std::string name) {
+        return "<" + name + ">";
+    }
+
     double sin_wave(double amplitude, double frequency, double t) {
         return amplitude * sin(2 * PI * frequency * t);
     }

@@ -30,6 +30,7 @@
     <ClCompile Include="Exo.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="ForceSensor.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="Filter.h" />
     <ClInclude Include="ForceSensor.h" />
     <ClInclude Include="Integrator.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="StateMachine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
