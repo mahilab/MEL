@@ -19,13 +19,14 @@ namespace mel {
 
     DataLog::~DataLog() {
         if (!log_saved_) {
-            save_data("backups");
+            save_data(name_, "data_backups", true);
         }
     }
 
     DataLog& DataLog::add_col(std::string column_name) {
         column_names_.push_back(column_name);
         data_.push_back(std::vector<double>(max_rows_, 0));
+        log_saved_ = false;
         num_cols_ += 1;
         return *this;
     }
@@ -38,18 +39,17 @@ namespace mel {
         row_index_ += 1;
     }
 
-    void DataLog::save_data(std::string directory) {
-        std::cout << "Saving DataLog <" << name_ << "> to directory <" << directory << "> ... ";
-        std::string filename = directory + "\\" + name_ + "_" + get_current_date_time() + ".csv";
+    void DataLog::save_data(std::string filename, std::string directory, bool timestamp) {
+        std::string full_filename = directory + "\\" + filename + "_" + get_ymdhms() + ".csv";
         boost::filesystem::path dir(directory.c_str());
         boost::filesystem::create_directories(dir);
         std::ofstream data_log;
-        data_log.open(filename, std::ofstream::out | std::ofstream::trunc);
+        std::cout << "Saving DataLog <" << name_ << "> to <" << full_filename << "> ... ";
+        data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
         for (auto it = column_names_.begin(); it != column_names_.end(); ++it) {
             data_log << *it << ",";
         }
         data_log << std::endl;
-
         for (int i = 0; i < row_index_; i++) {
             for (int j = 0; j < num_cols_; j++) {
                 data_log << data_[j][i] << ",";
@@ -57,8 +57,20 @@ namespace mel {
             data_log << std::endl;
         }
         log_saved_ = true;
+        data_log.close();
         std::cout << "Done" << std::endl;
     }
 
+    void DataLog::clear_data() {
+        data_ = std::vector<std::vector<double>>();
+        for (int i = 0; i < column_names_.size(); ++i)
+            data_.push_back(std::vector<double>(max_rows_, 0));
+        log_saved_ = true;
+        row_index_ = 0;
+    }
 
+    void DataLog::save_and_clear_data(std::string filename, std::string directory, bool timestamp) {
+        save_data(filename, directory, timestamp);
+        clear_data();
+    }
 }

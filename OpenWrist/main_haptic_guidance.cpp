@@ -114,12 +114,10 @@ int main(int argc, char * argv[]) {
 
     // run the experiment
     if (var_map.count("run")) {
-        mel::print("");
-        mel::print("RUNNING EXPERIMENT WITH THE FOLLOWING INPUTS:");
+        mel::print("\nRUNNING EXPERIMENT WITH THE FOLLOWING INPUTS:");
         mel::print("Subject Number: " + std::to_string(subject));
         mel::print("Condition:      " + std::to_string(condition));
-        mel::print("Start Trial:    " + start_trial);
-        mel::print("");
+        mel::print("Start Trial:    " + start_trial + "\n");
 
         mel::Clock clock(1000);
         HapticGuidance haptic_guidance(clock, q8, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);

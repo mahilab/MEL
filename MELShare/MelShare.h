@@ -12,7 +12,9 @@
 #	define MELSHARE_API __declspec(dllimport)
 #endif
 
-// error codes
+//-----------------------------------------------------------------------------
+// ERROR CODES
+//-----------------------------------------------------------------------------
 // >0 = successful read/write, return value is current map size
 //  0   map size is zero
 // -1 = failed to open shared memory map
@@ -22,6 +24,7 @@
 // -5 = wait on mutex failed
 // -6 = failed to release mutex
 // -7 = failed to close mutex handle
+//-----------------------------------------------------------------------------
 
 // TODO: There seems to be a bug where if a class has a MelShare member, and an instance of that class
 // is passed by value, then the mutex for the MelShare ceases to function properly. This issue needs to be
@@ -31,7 +34,9 @@ namespace mel {
 
     namespace share {
 
-        // base read/write template functions from which all others are derived
+        //---------------------------------------------------------------------
+        // BASE READ/WRITE FUNCTIONS (FORM BASIS OF ALL OTHER FUNCTIONS)
+        //---------------------------------------------------------------------
 
         /// Reads the first n = #buffer_size values from mapped region #region into C-style array #buffer. 
         /// If the size of the buffer is greater than the size of the data in the map, extra buffer indices will be ignored.
@@ -217,7 +222,9 @@ namespace mel {
             }
         }
 
-        // base read/write template functions that open a new instance of the shared memory map and read/write from C-style array
+        //---------------------------------------------------------------------
+        // TEMPLATED READ/WRITE FUNCTIONS THAT REOPEN AN EXISTING MELSHARE MAP
+        //---------------------------------------------------------------------
 
         /// Opens shared memory map #name and reads n = #buffer_size values into C-style array #buffer
         template <typename T>
@@ -278,7 +285,9 @@ namespace mel {
             }
         }
 
-        // base read/write template functions that open a new instance of the shared memory map and accept a STL vector or array
+        //---------------------------------------------------------------------
+        // TEMPLATED READ/WRITE FUNCTIONS FOR STL CONTAINERS
+        //---------------------------------------------------------------------
 
         /// Opens shared memory map #name and reads n = buffer.size() values into STL vector #buffer
         template <typename T>
@@ -318,7 +327,9 @@ namespace mel {
             return read_write_map(name, &read_buffer[0], read_buffer.size(), &write_buffer[0], write_buffer.size());
         }
 
-        // wraps memory maps, regions, mutexes, and functions into a convienient class for the C++ interface
+        //------------------------------------------------------------------
+        // MELSHARE CLASS WRAPS READ/WRITE INTO THE C++ INTERFACE
+        //------------------------------------------------------------------
 
         class MELSHARE_API MelShare {
 
@@ -396,7 +407,9 @@ namespace mel {
 
         };
 
-        // C Linkages for Python, C#, etc.
+        //---------------------------------------------------------------------
+        // EXPLIT C FUNCTIONS FOR THE EXPORTED DLL
+        //---------------------------------------------------------------------
 
         extern "C" {
             MELSHARE_API int get_map_size(char* name);
@@ -408,6 +421,10 @@ namespace mel {
 
         extern "C" {
             MELSHARE_API int read_int_map(char* name, int* buffer, int buffer_size);
+        }
+
+        extern "C" {
+            MELSHARE_API int read_float_map(char* name, float* buffer, int buffer_size);
         }
 
         extern "C" {
@@ -423,6 +440,10 @@ namespace mel {
         }
 
         extern "C" {
+            MELSHARE_API int write_float_map(char* name, float* buffer, int buffer_size);
+        }
+
+        extern "C" {
             MELSHARE_API int write_double_map(char* name, double* buffer, int buffer_size);
         }
 
@@ -432,6 +453,10 @@ namespace mel {
 
         extern "C" {
             MELSHARE_API int read_write_int_map(char* name, int* read_buffer, int read_buffer_size, int* write_buffer, int write_buffer_size);
+        }
+
+        extern "C" {
+            MELSHARE_API int read_write_float_map(char* name, float* read_buffer, int read_buffer_size, float* write_buffer, int write_buffer_size);
         }
 
         extern "C" {

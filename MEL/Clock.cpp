@@ -77,7 +77,7 @@ namespace mel {
     void Clock::stop() {
         stop_ = true;
         if (enable_logging_)
-            log_.save_data("clock_logs");
+            log_.save_data("clock","clock_logs","true");
     }
 
 }

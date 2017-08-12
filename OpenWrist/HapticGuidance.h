@@ -43,7 +43,7 @@ class HapticGuidance : public mel::StateMachine {
 
 public:
 
-    HapticGuidance(mel::Clock& clock, mel::Daq* daq, OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
+    HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
         int subject_number, int condition, std::string start_trial = "F1-1");
 
 private:
@@ -122,6 +122,9 @@ private:
         GENERALIZATION = 4
     };
 
+    std::array<std::string, 5> BLOCK_NAMES_ = { "FAMILIARIZATION", "EVALUATION", "TRAINING", "BREAK", "GENERALIZATION" };
+    std::array<std::string, 5> BLOCK_TAGS_ = { "F", "E", "T", "B", "G" };
+
     // EXPERIMENT BLOCK ORDER (SET MANUALLY)
     std::vector<BlockType> BLOCK_ORDER_ = {
         FAMILIARIZATION,
@@ -135,8 +138,6 @@ private:
         EVALUATION, GENERALIZATION 
     };
 
-    std::array<std::string, 5> BLOCK_TAGS_ = { "F", "E", "T", "B", "G" };
-
     // NUMBER OF BLOCKS PER BLOCK TYPE (SET DURING CONSTRUCTION)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
     std::array<int, 5> NUM_BLOCKS_ = { 0,0,0,0,0 };
@@ -147,14 +148,14 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 10, 10, 10, 10, 10 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 5, 2, 1, 10, 2 };
 
     // EXPERIMENT TRIAL ORDERING
-    void build_experiment_();
+    void build_experiment();
     int current_trial_index_ = 0;
-    std::vector<BlockType> TRIALS_ORDER_;
-    std::vector<std::string> TRIALS_NAMES_;
-    BlockType get_next_trial();
+    std::vector<BlockType> TRIALS_BLOCK_TYPES_;
+    std::vector<std::string> TRIALS_BLOCK_NAMES_;
+    std::vector<std::string> TRIALS_TAG_NAMES_;
 
     // SUBJECT DIRECTORY
     std::string DIRECTORY_;
@@ -166,11 +167,15 @@ private:
     // GUI FLAGS
     GuiFlag& gui_flag_;
 
+    // DATA LOG
+    mel::DataLog log_ = mel::DataLog("hg_log");
+    std::vector<double> log_data_;
+
     // HARDWARE CLOCK
     mel::Clock clock_;
 
     // HARDWARE
-    mel::Daq* daq_;
+    mel::Daq* ow_daq_;
     OpenWrist& open_wrist_;
     Cuff& cuff_;
 
@@ -185,6 +190,8 @@ private:
     Pendulum pendulum_;
 
     // TRAJECTORY VARIABLES
+    double amplitude_ = 300;
+    double length_ = 450;
     double sin_freq_ = 0.1;
     double cos_freq_ = 0.2;
     mel::share::MelShare trajectory_x_ = mel::share::MelShare("trajectory_x", 54*4); 
@@ -192,16 +199,16 @@ private:
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");
     std::array<int, 54> trajectory_x_data;
     std::array<int, 54> trajectory_y_data;
-    std::array<int, 2> exp_pos_data = { 0, 0 };
-    void estimate_expert_position(std::array<int, 2>& coordinates_pix, double time, double amplitude_sc_m, double freq_sine, double freq_cosine, double length_m, double joint_pos_y_pix);
-    double find_error_angle(double actual_angle, std::array<int, 2> intersection_pix, double length_m);
-
-    void update_trajectory_and_expert();
+    std::array<int, 2> expert_position_ = { 0, 0 };
+    void update_trajectory(double time);
+    void update_expert(double time);
+    double compute_trajectory_error(double joint_angle);
 
     // UNITY GAMEMANAGER
     mel::share::MelShare unity_ = mel::share::MelShare("unity");
-    // [ background, pendulum on/off , trajectory region on/off , trajectory center on/off, expert on/off, radius on/off , stars on/off ]
+    // [ background on/off, pendulum on/off , trajectory region on/off , trajectory center on/off, expert on/off, radius on/off , stars on/off ]
     std::array<int, 7> unity_data_ = { 1,1,1,1,1,1,1 };
+    void update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars);
 
     // PERLIN NOISE MODULES
     noise::module::Perlin perlin_module_;

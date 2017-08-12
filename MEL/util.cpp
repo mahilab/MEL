@@ -3,7 +3,7 @@
 
 namespace mel {
 
-    const std::string get_current_date_time() {
+    const std::string get_ymdhms() {
         time_t     now = time(0);
         struct tm  tstruct;
         char       buf[80];
