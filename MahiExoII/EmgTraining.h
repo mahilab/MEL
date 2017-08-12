@@ -54,8 +54,6 @@ private:
         return &STATE_MAP[0];
     }
 
-    void ctrl_c_task() override;
-
     // HARDWARE
     mel::Daq* q8_emg_;
     mel::Daq* q8_ati_;

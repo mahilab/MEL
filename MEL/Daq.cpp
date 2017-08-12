@@ -1,4 +1,6 @@
 #include "Daq.h"
+#include <algorithm>
+#include <iostream>
 
 namespace mel {
 
@@ -9,7 +11,7 @@ namespace mel {
         channel_vec do_channels,
         channel_vec encoder_channels,
         channel_vec encrate_channels) :
-        name_(name),
+        Device(name),
         // sort channel numbers from smallest to largest and delete duplicates and save
         ai_channel_nums_(sort_and_reduce_channels(ai_channels)),
         ao_channel_nums_(sort_and_reduce_channels(ao_channels)),

@@ -33,6 +33,7 @@ namespace mel {
     }
 
     void Robot::enable() {
+        enabled_ = true;
         mel::print("Enabling Robot <" + name_ + "> ... ", false);
         for (auto it = joints_.begin(); it != joints_.end(); ++it) {
             (*it)->enable();
@@ -41,6 +42,7 @@ namespace mel {
     }
 
     void Robot::disable() {
+        enabled_ = false;
         mel::print("Disabling Robot <" + name_ + "> ... ", false);
         for (auto it = joints_.begin(); it != joints_.end(); ++it) {
             (*it)->disable();

@@ -1,40 +1,43 @@
 #pragma once
-#include <string>
+#include "Device.h"
 #include <iostream>
 
 namespace mel {
 
-    class PositionSensor {
+    class PositionSensor : public Device {
 
     public:
 
+        //---------------------------------------------------------------------
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
 
         PositionSensor();
         PositionSensor(std::string name, bool velocity_enabled);
 
+        //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------
 
-        virtual void enable() {}
-        virtual void disable() {}
-
+        /// This function should return the position of the PositionSensor
         virtual double get_position() = 0;
+        /// This function should return the velocity of the PositionSensor
         virtual double get_velocity();
-
-        // PUBLIC VARIABLES
-
-        std::string name_;
 
     protected:
 
+        //---------------------------------------------------------------------
         // PROTECTED VARIABLES
+        //---------------------------------------------------------------------
 
-        bool velocity_enabled_; // whether or not this PositionSensor enables velocity measurement
+        bool velocity_enabled_; ///< whether or not this PositionSensor enables velocity measurement
 
+        //---------------------------------------------------------------------
         // STATE VARIABLES
+        //---------------------------------------------------------------------
 
-        double position_; // stores the PositionSensor position since the last call to get_position()
-        double velocity_; // stores the PositionSensor velocity since the last call to get_velocity()
+        double position_; ///< stores the PositionSensor position since the last call to get_position()
+        double velocity_; ///< stores the PositionSensor velocity since the last call to get_velocity()
 
     };
 }

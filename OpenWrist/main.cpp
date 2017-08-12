@@ -106,7 +106,7 @@ public:
     void start() override {
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
         getchar();
-        daq_->activate();
+        daq_->enable();
         std::cout << "Press ENTER to enable OpenWrist.";
         getchar();
         ow_->enable();
@@ -155,7 +155,7 @@ public:
 
     void stop() override {
         ow_->disable();
-        daq_->deactivate();
+        daq_->disable();
         //cuff_.disable();
     }
 

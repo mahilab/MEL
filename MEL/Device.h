@@ -1,28 +1,37 @@
 #pragma once
-#include "Device.h"
-#include "Daq.h"
+#include <string>
 
 namespace mel {
 
-    class Actuator : public Device {        
+    class Device {
 
     public:
 
-        enum class EnableMode { None, Low, High };
-
         //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        // CONSTRUCTOR / DESTRUCTOR
         //---------------------------------------------------------------------
 
-        Actuator();
-        Actuator(std::string name, EnableMode enable_mode);
+        Device(std::string name) : name_(name), enabled_(false) {}
+        virtual ~Device() {}
 
         //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
         //---------------------------------------------------------------------
 
-        /// This function should set the desired torque to be generated at the Actuator
-        virtual void set_torque(double actuator_torque) = 0;
+        /// This function should enable the Device and set enaled_ = true
+        virtual void enable() {
+            enabled_ = true;
+        }
+        /// This function should disable the Devie and set enabled_ = false
+        virtual void disable() {
+            enabled_ = false;
+        }
+
+        //---------------------------------------------------------------------
+        // PUBLIC VARIABLES
+        //---------------------------------------------------------------------
+
+        std::string name_; ///< The Device name
 
     protected:
 
@@ -30,13 +39,8 @@ namespace mel {
         // PROTECTED VARIABLES
         //---------------------------------------------------------------------
 
-        EnableMode enable_mode_; ///< the enable mode of the actuator (None, Low, or High)
-
-        //---------------------------------------------------------------------
-        // STATE VARIABLES
-        //---------------------------------------------------------------------
-
-        double torque_; ///< stores the Actuator torque since the last call to set_torque()
+        bool enabled_ = false; ///< The Device enable status
 
     };
+
 }

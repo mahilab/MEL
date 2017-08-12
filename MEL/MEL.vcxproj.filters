@@ -107,9 +107,6 @@
     <ClInclude Include="Exo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AnatomicalJoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PositionSensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -144,6 +141,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

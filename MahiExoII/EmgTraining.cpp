@@ -35,10 +35,10 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
 
     std::cout << "Press ENTER to activate Daq <" << q8_emg_->name_ << ">" << std::endl;
     getchar();
-    q8_emg_->activate();
+    q8_emg_->enable();
     std::cout << "Press ENTER to activate Daq <" << q8_ati_->name_ << ">" << std::endl;
     getchar();
-    q8_ati_->activate();
+    q8_ati_->enable();
     //std::cout << "Press ENTER to enable MahiExoII" << std::endl;
     //getchar();
     //meii_->enable();
@@ -75,8 +75,7 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
 void EmgTraining::sf_to_neutral(const mel::NoEventData* data) {
     
     // reset and start the hardware clock
-    clock_.reset();
-    clock_.resume();
+    clock_.start();
 
 
     // enter the control loop
@@ -119,8 +118,7 @@ void EmgTraining::sf_hold_neutral(const mel::NoEventData* data) {
 
 
     // reset and start the hardware clock
-    clock_.reset();
-    clock_.resume();
+    clock_.start();
 
 
     // enter the control loop
@@ -159,8 +157,10 @@ void EmgTraining::sf_stop(const mel::NoEventData* data) {
     
 }
 
+/*
 void EmgTraining::ctrl_c_task() {
     std::cout << "Program aborted" << std::endl;
-    q8_emg_->deactivate();
-    q8_ati_->deactivate();
+    q8_emg_->disable();
+    q8_ati_->disable();
 }
+*/

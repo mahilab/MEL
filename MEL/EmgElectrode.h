@@ -1,28 +1,31 @@
 #pragma once
-#include <string>
+#include "Device.h"
 #include "Daq.h"
 
 namespace mel {
 
-    class EmgElectrode {
+    class EmgElectrode : public Device {
 
     public:
 
+        //---------------------------------------------------------------------
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
 
         EmgElectrode();
         EmgElectrode(std::string name, Daq::Ai ai_channel);
 
+        //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------
+
         double get_voltage();
-
-        // PUBLIC VARIABLES
-
-        std::string name_;
 
     private:
 
+        //---------------------------------------------------------------------
         // PRIVATE VARIABLES
+        //---------------------------------------------------------------------
         
         Daq::Ai ai_channel_; // the DAQ analog input channel bound to this electrode
 

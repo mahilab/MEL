@@ -57,8 +57,39 @@ namespace mel {
         current_(0.0),
         limited_current_(0.0),
         current_sense_(0.0)
-
     { }
+
+    void Motor::enable() {
+        enabled_ = true;
+        if (enable_mode_ == EnableMode::High) {
+            do_channel_.set_signal(1);
+            do_channel_.daq_->write_digitals();
+        }
+        else if (enable_mode_ == EnableMode::Low) {
+            do_channel_.set_signal(0);
+            do_channel_.daq_->write_digitals();
+        }
+        else {
+            std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
+        }
+    }
+
+    void Motor::disable() {
+        enabled_ = false;
+        if (enable_mode_ == EnableMode::High) {
+            ao_channel_.set_voltage(0);
+            do_channel_.set_signal(0);
+            do_channel_.daq_->write_all();
+        }
+        else if (enable_mode_ == EnableMode::Low) {
+            ao_channel_.set_voltage(0);
+            do_channel_.set_signal(1);
+            do_channel_.daq_->write_all();
+        }
+        else {
+            std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
+        }
+    }
 
     void Motor::set_torque(double new_torque) {
         torque_ = new_torque;
@@ -90,39 +121,6 @@ namespace mel {
         }
         std::cout << "WARNING: Motor <" << name_ << "> was not constructed to enable current measurement. Returning 0." << std::endl;
         return 0.0;
-    }
-
-    void Motor::enable() {
-        enabled_ = true;
-        if (enable_mode_ == EnableMode::High) {
-            do_channel_.set_signal(1);
-            do_channel_.daq_->write_digitals();
-        }
-        else if (enable_mode_ == EnableMode::Low) {
-            do_channel_.set_signal(0);
-            do_channel_.daq_->write_digitals();
-        }
-        else {
-            std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
-       }          
-    }
-
-    void Motor::disable() {
-        enabled_ = false;
-        if (enable_mode_ == EnableMode::High) {
-            ao_channel_.set_voltage(0);
-            do_channel_.set_signal(0);            
-            do_channel_.daq_->write_all();
-        }
-        else if (enable_mode_ == EnableMode::Low) {
-            ao_channel_.set_voltage(0);
-            do_channel_.set_signal(1);
-            do_channel_.daq_->write_all();
-        }
-        else {
-            std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
-        }
-    }
-    
+    }    
 
 }

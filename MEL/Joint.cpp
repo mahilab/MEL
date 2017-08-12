@@ -4,7 +4,7 @@
 namespace mel {
 
     Joint::Joint() :
-        name_("no_name"),
+        Device("joint"),
         position_sensor_(nullptr),
         actuator_(nullptr),
         position_sensor_transmission_(0.0),
@@ -15,7 +15,7 @@ namespace mel {
     { }
 
     Joint::Joint(std::string name, PositionSensor* position_sensor, double position_sensor_transmission, Actuator* actuator, double actuator_transmission) :
-        name_(name),
+        Device(name),
         position_sensor_(position_sensor),
         actuator_(actuator),
         position_sensor_transmission_(position_sensor_transmission),
@@ -45,11 +45,13 @@ namespace mel {
     }
 
     void Joint::enable() {
+        enabled_ = true;
         position_sensor_->enable();
         actuator_->enable();
     }
 
     void Joint::disable() {
+        enabled_ = false;
         position_sensor_->disable();
         actuator_->disable();
     }

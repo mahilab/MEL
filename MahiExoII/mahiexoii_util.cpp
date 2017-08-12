@@ -13,16 +13,16 @@ bool check_digital_loopback(mel::uint32 daq_id, mel::channel digital_channel) {
     mel::Daq* q8_temp = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
 
     // create clock
-    mel::Clock clock(100, false);
+    mel::Clock clock(100);
 
     mel::dsignal di_signal = 0;
     mel::dsignal do_signal = 0;
     bool is_connected = true;
 
-    q8_temp->activate();
+    q8_temp->enable();
     q8_temp->start_watchdog(0.1);
 
-    clock.resume();
+    clock.start();
 
     for (auto i = 0; i < 11; i++) {
 
@@ -42,8 +42,6 @@ bool check_digital_loopback(mel::uint32 daq_id, mel::channel digital_channel) {
 
         clock.wait();
     }
-
-    clock.stop();
 
     delete q8_temp;
     q8_temp = nullptr;

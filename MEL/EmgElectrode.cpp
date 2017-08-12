@@ -3,12 +3,12 @@
 namespace mel {
 
     EmgElectrode::EmgElectrode() :
-        name_("no_name"),
+        Device("emg_electrode"),
         voltage_(0.0)
     { }
 
     EmgElectrode::EmgElectrode(std::string name, Daq::Ai ai_channel) :
-        name_(name),
+        Device(name),
         ai_channel_(ai_channel),
         voltage_(0.0)
     { }

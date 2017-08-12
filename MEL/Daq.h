@@ -1,21 +1,16 @@
 #pragma once
-#include <cstdio>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <algorithm>
 #include "util.h"
-#include <boost/filesystem.hpp>
+#include "Device.h"
 
 namespace mel {
 
-    class Daq {
+    class Daq : public Device {
 
     public:
         
-        /////////////////////////////////
+        //---------------------------------------------------------------------
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        /////////////////////////////////
+        //---------------------------------------------------------------------
 
         Daq(std::string name,
             channel_vec ai_channels,
@@ -27,9 +22,9 @@ namespace mel {
 
         virtual ~Daq() {};
 
-        ////////////////////////////////////
+        //---------------------------------------------------------------------
         // GENERIC DAQ MEMBERS AND FUNCTIONS
-        ////////////////////////////////////
+        //---------------------------------------------------------------------
 
     public:
 
@@ -41,12 +36,10 @@ namespace mel {
             Channel(Daq* daq, channel channel_number) : daq_(daq), channel_number_(channel_number) {}
         };
 
-        const std::string name_;
-
-        /// This function should activate the specific DAQ by opening a communication line, declaring channels, setting ranges, etc.
-        virtual int activate() = 0;
-        /// This function should deactivate the specific DAQ by running any shutdown procedures and closing the commication line.
-        virtual int deactivate() = 0;
+        /// This function should enable the specific DAQ by opening a communication line, declaring channels, setting ranges, etc.
+        virtual void enable() override = 0;
+        /// This function should disable the specific DAQ by running any shutdown procedures and closing the commication line.
+        virtual void disable() override = 0;
         /// This function should stop and/or clear the watchdog and reset the DAQ outputs to their initial values.
         virtual void reset() {
             mel::print("WARNING: DAQ <" + name_ + "> does not implement reset()");
@@ -72,19 +65,16 @@ namespace mel {
             mel::print("WARNING: DAQ <" + name_ + "> does not implement stop_watchdog()");
         }
 
-
     protected:
-
-        bool              active_ = false;       ///< bool indicating whether the DAQ is currently active
 
         /// Returns index of a channel number in a channel numbers vector.
         channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);
         /// Sorts and reduces a channel numbers vector such as {3, 1, 1, 2} to {1, 2, 3}.
         channel_vec sort_and_reduce_channels(channel_vec channels);
 
-        /////////////////////////////////////
+        //---------------------------------------------------------------------
         // ANALOG INPUT MEMBERS AND FUNCTIONS
-        /////////////////////////////////////
+        //---------------------------------------------------------------------
 
     public:
 
@@ -117,9 +107,9 @@ namespace mel {
         voltage_vec       ai_min_voltages_;    ///< vector of minimum input voltages allowed by the board 
         voltage_vec       ai_max_voltages_;    ///< vector of maximum input voltages allowed by the board 
 
-        //////////////////////////////////////
+        //---------------------------------------------------------------------
         // ANALOG OUTPUT MEMBERS AND FUNCTIONS
-        //////////////////////////////////////
+        //---------------------------------------------------------------------
 
     public:
 
@@ -156,9 +146,9 @@ namespace mel {
         voltage_vec       ao_final_voltages_;    ///< vector of voltages analog outputs will go to when the program finishes 
         voltage_vec       ao_expire_voltages_;   ///< vector of voltages analog outputs will go to if the watchdog expires 
 
-        //////////////////////////////////////
+        //---------------------------------------------------------------------
         // DIGITAL INPUT MEMBERS AND FUNCTIONS
-        //////////////////////////////////////
+        //---------------------------------------------------------------------
 
     public:
 
@@ -182,9 +172,9 @@ namespace mel {
         const channel_vec di_channel_nums_;    ///< vector of digital input channels numbers being used 
         const size_t      di_channels_count_;  ///< vector of digital input channels being used 
 
-        ////////////////////////////////////////
+        //---------------------------------------------------------------------
         // DIGITAL OUTPUT MEMBERS AND FUNCTIONS
-        ///////////////////////////////////////
+        //---------------------------------------------------------------------
 
     public:
 
@@ -217,9 +207,9 @@ namespace mel {
         dsignal_vec do_final_signals_;         ///< vector of signals digital outputs will go to when the program finishes 
         dsignal_vec do_expire_signals_;        ///< vector of signals digital outputs will go to if the watchdog expires
 
-        ////////////////////////////////
+        //---------------------------------------------------------------------
         // ENCODER MEMBERS AND FUNCTIONS
-        ////////////////////////////////
+        //---------------------------------------------------------------------
 
     public:
 

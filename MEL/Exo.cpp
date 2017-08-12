@@ -10,8 +10,6 @@ namespace mel {
         Robot(name)
     { }
 
-
-
     double_vec Exo::get_anatomical_joint_positions() {
         return anatomical_joint_positions_;
     }

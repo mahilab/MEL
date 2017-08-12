@@ -3,6 +3,7 @@
 #include <tchar.h>
 #include "hil.h"
 #include "quanser_messages.h"
+#include <functional>
 
 namespace mel {
 
@@ -55,11 +56,11 @@ namespace mel {
     }
 
     Q8Usb::~Q8Usb() {
-        deactivate();
+        disable();
     }
 
-    int Q8Usb::activate() {
-        if (!active_) {
+    void Q8Usb::enable() {
+        if (!enabled_) {
             t_error result;
             // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)            
             for (int attempt = 0; attempt < 10; attempt++) {
@@ -87,10 +88,10 @@ namespace mel {
             // If all attempts were unsuccessful, display message and terminate the application.
             if (result != 0) {
                 std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to activate." << std::endl;
-                return 0;
+                return;
             }
 
-            active_ = true;
+            enabled_ = true;
 
             // Configure Q8 USB (Functions called in same order as Simulink compiled code)
             std::cout << "Q8 USB " << id_ << ": Configuring ... ";
@@ -98,7 +99,7 @@ namespace mel {
             if (result < 0) {
                 std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
-                return 0;
+                return;
             }                
 
             // stop and clear watchdog
@@ -127,13 +128,13 @@ namespace mel {
             // hil_watchdog_set_pwm_expiration_state
 
             std::cout << "Done" << std::endl;
-            return 1;
+            return;
         }
-        return 0;
+        return;
     }
 
-    int Q8Usb::deactivate() {
-        if (active_) {
+    void Q8Usb::disable() {
+        if (enabled_) {
             t_error result;
 
             // Stop all tasks and monitors (possibly unnecessary)
@@ -158,17 +159,17 @@ namespace mel {
             if (result != 0) {
                 std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
-                return 0;
+                return;
             }
-            active_ = false;
+            enabled_ = false;
             std::cout << "Done" << std::endl;
-            return 1;
+            return;
         }
-        return 0;
+        return;
     }
 
     void Q8Usb::reset() {
-        if (active_) {
+        if (enabled_) {
             stop_watchdog();
             ao_voltages_ = ao_initial_voltages_;
             do_signals_ = do_initial_signals_;
@@ -177,7 +178,7 @@ namespace mel {
     }
 
     void Q8Usb::zero_encoders() {
-        if (active_ && encoder_channels_count_ > 0) {
+        if (enabled_ && encoder_channels_count_ > 0) {
             std::cout << "Q8 USB " << id_ << ": Zeroing encoder counts ... ";
             int32_vec enc_zero_counts(encoder_channels_count_, 0);
             t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &enc_zero_counts[0]);
@@ -191,7 +192,7 @@ namespace mel {
     }
 
     void Q8Usb::offset_encoders(int32_vec offset_counts) {
-        if (active_ && encoder_channels_count_ > 0) {
+        if (enabled_ && encoder_channels_count_ > 0) {
             std::cout << "Q8 USB " << id_ << ": Offsetting encoder counts ... ";
             offset_counts.resize(encoder_channels_count_, 0);
             t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &offset_counts[0]);
@@ -205,7 +206,7 @@ namespace mel {
     }
 
     void Q8Usb::read_analogs() {
-        if (active_ && ai_channels_count_ > 0) {
+        if (enabled_ && ai_channels_count_ > 0) {
             t_error result = hil_read_analog(q8_usb_, &ai_channel_nums_[0], static_cast<uint32>(ai_channels_count_), &ai_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
@@ -216,7 +217,7 @@ namespace mel {
     }
 
     void Q8Usb::read_digitals() {
-        if (active_ && di_channels_count_ > 0) {
+        if (enabled_ && di_channels_count_ > 0) {
             t_error result = hil_read_digital(q8_usb_, &di_channel_nums_[0], static_cast<uint32>(di_channels_count_), &di_signals_[0]);
             if (result < 0)
                 print_quarc_error(result);
@@ -227,7 +228,7 @@ namespace mel {
     }
 
     void Q8Usb::read_encoders() {
-        if (active_ && encoder_channels_count_ > 0) {
+        if (enabled_ && encoder_channels_count_ > 0) {
             t_error result = hil_read_encoder(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &enc_counts_[0]);
             if (result < 0)
                 print_quarc_error(result);
@@ -238,7 +239,7 @@ namespace mel {
     }
 
     void Q8Usb::read_encrates() {
-        if (active_ && encrate_channels_count_ > 0) {
+        if (enabled_ && encrate_channels_count_ > 0) {
             t_error result = hil_read_other(q8_usb_, &encrate_channel_nums_[0], static_cast<uint32>(encrate_channels_count_), &enc_rates[0]);
             if (result < 0)
                 print_quarc_error(result);
@@ -249,7 +250,7 @@ namespace mel {
     }
 
     void Q8Usb::read_all() {
-        if (active_) {
+        if (enabled_) {
             t_error result = hil_read(q8_usb_,
                 ai_channels_count_ > 0 ? &ai_channel_nums_[0] : NULL, static_cast<uint32>(ai_channels_count_),
                 encoder_channels_count_ > 0 ? &encoder_channel_nums_[0] : NULL, static_cast<uint32>(encoder_channels_count_),
@@ -268,7 +269,7 @@ namespace mel {
     }
 
     void Q8Usb::write_analogs() {
-        if (active_ && ao_channels_count_ > 0) {
+        if (enabled_ && ao_channels_count_ > 0) {
             t_error result = hil_write_analog(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(ao_channels_count_), &ao_voltages_[0]);
             if (result < 0)
                 print_quarc_error(result);
@@ -279,7 +280,7 @@ namespace mel {
     }
 
     void Q8Usb::write_digitals() {
-        if (active_ && do_channels_count_ > 0) {
+        if (enabled_ && do_channels_count_ > 0) {
             t_error result = hil_write_digital(q8_usb_, &do_channel_nums_[0], static_cast<uint32>(do_channels_count_), &do_signals_[0]);
             if (result < 0)
                 print_quarc_error(result);
@@ -290,7 +291,7 @@ namespace mel {
     }
 
     void Q8Usb::write_all() {
-        if (active_) {
+        if (enabled_) {
             t_error result = hil_write(q8_usb_,
                 ao_channels_count_ > 0 ? &ao_channel_nums_[0] : NULL, static_cast<uint32>(ao_channels_count_),
                 NULL, 0,
@@ -309,7 +310,7 @@ namespace mel {
     }
 
     void Q8Usb::reload_watchdog() { // TO DO: CHECK STATUS OF WATCHDOG
-        if (active_) {
+        if (enabled_) {
             t_error result = hil_watchdog_reload(q8_usb_);
             if (result < 0)
                 print_quarc_error(result);
@@ -320,7 +321,7 @@ namespace mel {
     }
 
     void Q8Usb::start_watchdog(double watchdog_timeout) {
-        if (active_) {
+        if (enabled_) {
             t_error result = hil_watchdog_start(q8_usb_, watchdog_timeout);
             if (result < 0)
                 print_quarc_error(result);

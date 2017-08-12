@@ -3,13 +3,13 @@
 namespace mel {
 
     ForceSensor::ForceSensor() :
-        name_("no_name"),
+        Device("force_sensor"),
         num_channels_(1),
         voltages_({ 0 })
     { }
 
     ForceSensor::ForceSensor(std::string name, std::vector<Daq::Ai> ai_channels) :
-        name_(name),
+        Device(name),
         num_channels_(ai_channels.size()),
         voltages_(double_vec(ai_channels.size(),0))
     {

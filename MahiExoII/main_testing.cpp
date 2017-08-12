@@ -159,14 +159,14 @@ int main(int argc, char * argv[]) {
 
     // manual zero joint positions
     if (var_map.count("zero")) {
-        q8_emg->activate();
+        q8_emg->enable();
         q8_emg->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
-        q8_emg->deactivate();
+        q8_emg->disable();
         return 0;
     }
 
     // create clock
-    mel::Clock clock(1000, false);
+    mel::Clock clock(1000);
 
 
     EmgTraining sm = EmgTraining(clock,q8_emg,q8_ati,meii);

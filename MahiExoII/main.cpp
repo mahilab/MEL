@@ -82,7 +82,7 @@ public:
     void start() override {
         std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">" << std::endl;
         getchar();
-        daq_->activate();
+        daq_->enable();
         std::cout << "Press ENTER to enable MahiExoII" << std::endl;
         getchar();
         exo_.enable();
@@ -137,7 +137,7 @@ public:
     void stop() override {
         std::cout << "Stopping MyController" << std::endl;
 
-        daq_->deactivate();
+        daq_->disable();
     }
     void pause() override {
         std::cout << "Pausing MyController" << std::endl;
@@ -214,7 +214,7 @@ int main(int argc, char * argv[]) {
 
     // manual zero joint positions
     if (var_map.count("zero")) {
-        q8->activate();
+        q8->enable();
         q8->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
         return 0;
     }

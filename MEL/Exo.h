@@ -1,6 +1,5 @@
 #pragma once
 #include "Robot.h"
-#include "AnatomicalJoint.h"
 
 namespace mel {
 
@@ -8,18 +7,17 @@ namespace mel {
 
     public:
 
-        // constructor
+        //---------------------------------------------------------------------
+        // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
+
         Exo();
         Exo(std::string name);
-
-        // virtual destructor
         virtual ~Exo() {};
 
-        // components
-        //std::vector<AnatomicalJoint*> anatomical_joints_; // anatomical joints
-
-        // getters and setters of state variables
-        
+        //---------------------------------------------------------------------
+        // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------        
         
         virtual double_vec get_anatomical_joint_positions();
         virtual double get_anatomical_joint_position(int index);
@@ -29,6 +27,10 @@ namespace mel {
 
 
     protected:
+
+        //---------------------------------------------------------------------
+        // PROTECTED VARIABLES
+        //--------------------------------------------------------------------- 
 
         double_vec anatomical_joint_positions_;
         double_vec anatomical_joint_velocities_;

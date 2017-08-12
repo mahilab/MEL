@@ -2,7 +2,6 @@
 #include <array>
 #include "Daq.h"
 
-
 typedef struct tag_card *    t_card;
 
 namespace mel {
@@ -94,7 +93,7 @@ namespace mel {
             channel_vec enc_channels,
             Options options = Options());
 
-        ~Q8Usb();
+        ~Q8Usb() override;
 
     private:
 
@@ -108,8 +107,8 @@ namespace mel {
     public:
 
         // inhereted virtual functions from Daq class to be overriden
-        int activate() override;
-        int deactivate() override;
+        void enable() override;
+        void disable() override;
         void reset() override;
 
         void zero_encoders() override;

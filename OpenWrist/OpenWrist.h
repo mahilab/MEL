@@ -6,6 +6,8 @@
 #include "Task.h"
 #include "Controller.h" 
 #include "Clock.h"
+#include "Encoder.h"
+#include "Motor.h"
 
 class OpenWrist : public mel::Exo {
 
@@ -32,6 +34,7 @@ public:
     };
 
     OpenWrist(Config configuration, Params parameters = Params());
+    ~OpenWrist() override;
 
     ///////////////////
     // PUBLIC FUNCTIONS

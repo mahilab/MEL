@@ -5,7 +5,8 @@
 #include <Eigen\LU>
 #include <array>
 #include "MelShare.h"
-
+#include "Motor.h"
+#include "Encoder.h"
 
 class MahiExoII : public mel::Exo {
 

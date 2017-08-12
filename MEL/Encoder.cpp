@@ -28,10 +28,6 @@ namespace mel {
         rate_(0.0)
     { }
 
-   // Encoder& Encoder::operator= (const Encoder &rhs) {
-
-    //}
-
 
     double Encoder::get_position() {
         count_ = encoder_channel_.get_count();

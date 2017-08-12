@@ -68,7 +68,7 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
     if (CONDITION_ > 0) {
         mel::print("Waiting for user input to activate Daq <" + ow_daq_->name_ + ">.");
         wait_for_continue_input();
-        ow_daq_->activate();
+        ow_daq_->enable();
         allow_continue_input();
     }
     
@@ -316,7 +316,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
     // start a new tiral if there is one
     if (current_trial_index_ < TRIALS_TAG_NAMES_.size() && !Input::is_key_pressed(Input::Key::Escape)) {
-        mel::print("Next trial: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Space to begin.");
+        mel::print("\nNext trial: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Space to begin.");
         wait_for_continue_input();   
 
         // resume hardware
@@ -357,7 +357,7 @@ void HapticGuidance::sf_stop(const mel::NoEventData*) {
     } 
     else
         mel::print("\nExperiment completed. Disabling hardware.");
-    ow_daq_->deactivate();
+    ow_daq_->disable();
 }
 
 //-----------------------------------------------------------------------------

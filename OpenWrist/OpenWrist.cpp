@@ -15,7 +15,6 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
             config_.encrate_[i]);
 
         position_sensors_.push_back(encoder);
-
         mel::Actuator* motor = new mel::Motor("motor_" + num,
             params_.kt_[i],
             params_.current_limits_[i],
@@ -34,6 +33,10 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
 
         joints_.push_back(joint);        
     }
+}
+
+OpenWrist::~OpenWrist() {
+    disable();
 }
 
 void OpenWrist::update_state_map() {
@@ -98,7 +101,7 @@ void OpenWrist::calibrate(mel::Daq* daq) {
 void OpenWrist::Calibration::start() {
     std::cout << "Press ENTER to activate Daq <" << daq->name_ << ">.";
     getchar();
-    daq->activate();
+    daq->enable();
     daq->zero_encoders();
     std::cout << "Press ENTER to enable OpenWrist.";
     getchar();
@@ -186,7 +189,7 @@ void OpenWrist::Calibration::step() {
 void OpenWrist::Calibration::stop() {
     ow->disable();
     daq->zero_encoders();
-    daq->deactivate();
+    daq->disable();
 }
 
 void OpenWrist::transparency_mode(mel::Daq* daq) {
@@ -205,7 +208,7 @@ void OpenWrist::transparency_mode(mel::Daq* daq) {
 void OpenWrist::TransparencyMode::start() {
     std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
     getchar();
-    daq_->activate();
+    daq_->enable();
     std::cout << "Press ENTER to enable OpenWrist.";
     getchar();
     ow_->enable();
@@ -227,6 +230,6 @@ void OpenWrist::TransparencyMode::step() {
 
 void OpenWrist::TransparencyMode::stop() {
     ow_->disable();
-    daq_->deactivate();
+    daq_->disable();
 }
 

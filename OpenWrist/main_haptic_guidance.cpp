@@ -122,11 +122,13 @@ int main(int argc, char * argv[]) {
         mel::print("\nRUNNING EXPERIMENT WITH THE FOLLOWING INPUTS:");
         mel::print("Subject Number: " + std::to_string(subject));
         mel::print("Condition:      " + std::to_string(condition));
-        mel::print("Start Trial:    " + start_trial + "\n");
+        mel::print("Start Trial:    " + start_trial);
 
         mel::Clock clock(1000);
         HapticGuidance haptic_guidance(clock, q8, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
         haptic_guidance.execute();
         return 0;
     }
+
+    delete q8;
 }

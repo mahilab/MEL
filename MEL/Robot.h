@@ -1,11 +1,9 @@
 #pragma once
+#include "Device.h"
 #include "Joint.h"
 #include "Actuator.h"
-#include "Motor.h"
 #include "PositionSensor.h"
-#include "Encoder.h"
 #include "util.h"
-#include <vector>
 
 
 namespace mel {
@@ -15,24 +13,30 @@ namespace mel {
     /// Detailed description goes here.
     ///
 
-    class Robot {
+    class Robot : public Device {
 
     public:
 
+        //---------------------------------------------------------------------
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
 
         /// Default constructor.
-        Robot() : name_("no_name") {}
+        Robot() : Device("robot") {}
         /// Prefered constructor.
-        Robot(std::string name) : name_(name) {}
+        Robot(std::string name) : Device(name) {}
 
+        virtual ~Robot() {}
+
+        //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------
 
         /// Virtual function to enable all robot members.
-        virtual void enable();
+        virtual void enable() override;
 
         /// Virtual function to disable all robot members.
-        virtual void disable();
+        virtual void disable() override;
 
         /// Get the most recently read robot joint positions.
         double_vec get_joint_positions();
@@ -43,32 +47,23 @@ namespace mel {
         /// Set the desired actuator torques.
         void set_joint_torques(double_vec new_torques);
 
+        //---------------------------------------------------------------------
         // PUBLIC VARIABLES
-
-        std::string name_;
-
-        /// Vector of RobotJoint pointers.
-        std::vector<Joint*> joints_;
-
-        /// Vector of PositionSensor pointers.
-        std::vector<PositionSensor*> position_sensors_;
-
-        /// Vector of Actuator pointers.
-        std::vector<Actuator*> actuators_;
+        //---------------------------------------------------------------------
         
+        std::vector<Joint*> joints_; ///< Vector of RobotJoint pointers.        
+        std::vector<PositionSensor*> position_sensors_; ///< Vector of PositionSensor pointers.        
+        std::vector<Actuator*> actuators_; ///< Vector of Actuator pointers.     
 
     protected:
 
+        //---------------------------------------------------------------------
         // STATE VARIABLES
-
-        /// Stores the robot joint positions since the last call of get_robot_joint_positions(). 
-        double_vec joint_positions_;
+        //---------------------------------------------------------------------
         
-        /// Stores the robot joint velocities since the last call of get_robot_joint_velocities().
-        double_vec joint_velocities_;
-        
-        /// Does this need to exist?
-        double_vec joint_torques_;
+        double_vec joint_positions_; ///< Stores the robot joint positions since the last call of get_robot_joint_positions().      
+        double_vec joint_velocities_; ///< Stores the robot joint velocities since the last call of get_robot_joint_velocities().
+        double_vec joint_torques_; ///< Does this need to exist?
 
     };
 }
