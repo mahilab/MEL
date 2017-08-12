@@ -26,6 +26,8 @@ namespace mel {
         // PUBLIC VARIABLES
 
         const std::string name_;
+        bool enabled_; // whether or not the Actuator has been enabled
+
 
     protected:
 

@@ -132,6 +132,50 @@ namespace mel {
         return 0;
     }
 
+    int Q8Usb::deactivate() {
+        if (active_) {
+            t_error result;
+
+            // Stop all tasks and monitors (possibly unnecessary)
+            hil_task_stop_all(q8_usb_);
+            hil_monitor_stop_all(q8_usb_);
+
+            // set and write final voltages and states
+            ao_voltages_ = ao_final_voltages_;
+            do_signals_ = do_final_signals_;
+            write_all();
+
+            // Delete all tasks and monitors (possibly unnecessary)
+            hil_task_delete_all(q8_usb_);
+            hil_monitor_delete_all(q8_usb_);
+
+            // Stop and Clear Watchdog
+            stop_watchdog();
+
+            // Close Q8 USB
+            std::cout << "Q8 USB " << id_ << ": Deactivating ... ";
+            result = hil_close(q8_usb_);
+            if (result != 0) {
+                std::cout << "Failed" << std::endl;
+                print_quarc_error(result);
+                return 0;
+            }
+            active_ = false;
+            std::cout << "Done" << std::endl;
+            return 1;
+        }
+        return 0;
+    }
+
+    void Q8Usb::reset() {
+        if (active_) {
+            stop_watchdog();
+            ao_voltages_ = ao_initial_voltages_;
+            do_signals_ = do_initial_signals_;
+            write_all();
+        }
+    }
+
     void Q8Usb::zero_encoders() {
         if (active_ && encoder_channels_count_ > 0) {
             std::cout << "Q8 USB " << id_ << ": Zeroing encoder counts ... ";
@@ -158,41 +202,6 @@ namespace mel {
             }
             std::cout << "Done" << std::endl;
         }
-    }
-
-    int Q8Usb::deactivate() {
-        if (active_) {
-            t_error result;
-
-            // Stop all tasks and monitors (possibly unnecessary)
-            hil_task_stop_all(q8_usb_);
-            hil_monitor_stop_all(q8_usb_);
-
-            // set and write final voltages and states
-            ao_voltages_ = ao_final_voltages_;
-            do_signals_  = do_final_signals_;
-            write_all();            
-
-            // Delete all tasks and monitors (possibly unnecessary)
-            hil_task_delete_all(q8_usb_);
-            hil_monitor_delete_all(q8_usb_);
-
-            // Stop and Clear Watchdog
-            stop_watchdog();
-
-            // Close Q8 USB
-            std::cout << "Q8 USB " << id_ << ": Deactivating ... ";
-            result = hil_close(q8_usb_);
-            if (result != 0) {
-                std::cout << "Failed" << std::endl;
-                print_quarc_error(result);
-                return 0;
-            }
-            active_ = false;
-            std::cout << "Done" << std::endl;
-            return 1;
-        }
-        return 0;
     }
 
     void Q8Usb::read_analogs() {

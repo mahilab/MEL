@@ -110,6 +110,7 @@ namespace mel {
         // inhereted virtual functions from Daq class to be overriden
         int activate() override;
         int deactivate() override;
+        void reset() override;
 
         void zero_encoders() override;
         void offset_encoders(int32_vec offset_counts) override;

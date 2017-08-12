@@ -47,21 +47,31 @@ namespace mel {
         virtual int activate() = 0;
         /// This function should deactivate the specific DAQ by running any shutdown procedures and closing the commication line.
         virtual int deactivate() = 0;
+        /// This function should stop and/or clear the watchdog and reset the DAQ outputs to their initial values.
+        virtual void reset() {
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement reset()");
+        }
         /// This function should read from all DAQ input channels simultenously and save the values to the corresponding data vectors.
         virtual void read_all() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_all()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement read_all()");
+        }
         /// This function should write to all DAQ output channels simultaenously from the corresponding data vectors.
         virtual void write_all() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_all()" << std::endl; }        
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement write_all()");
+        }
         /// This function should start the watchdog timer if the DAQ supports one.
         virtual void start_watchdog(double watchdog_timeout) {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement start_watchdog()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement start_watchdog()");
+        }
         /// This function should reload the watchdog timer if the DAQ supports one.
         virtual void reload_watchdog() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement reload_watchdog()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement reload_watchdog()");
+        }
         /// This function should stop and/or clear the watchdog timer if the DAQ supports one.
         virtual void stop_watchdog() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement stop_watchdog()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement stop_watchdog()");
+        }
+
 
     protected:
 
@@ -80,7 +90,8 @@ namespace mel {
 
         /// This function should read all analog input channels and save the values to #ai_voltages_ .
         virtual void read_analogs() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_analogs()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement read_analogs()");
+        }
         /// Returns a vector of the most recent analog input vloltages (a copy of #ai_voltages_).
         voltage_vec get_analog_voltages();
         /// Returns the most recent analog input voltage from a given channel number.
@@ -113,7 +124,8 @@ namespace mel {
     public:
 
         virtual void write_analogs() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_analogs()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement write_analogs()");
+        }
         virtual void set_analog_voltages(voltage_vec new_voltages);
         virtual void set_analog_voltage(channel channel_number, voltage new_voltage);        
         virtual void set_ao_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) { 
@@ -151,7 +163,8 @@ namespace mel {
     public:
 
         virtual void read_digitals() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_digitals()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement read_digitals()");
+        }
         virtual dsignal_vec get_digital_signals();
         virtual dsignal get_digital_signal(channel channel_number);
 
@@ -176,7 +189,8 @@ namespace mel {
     public:
 
         virtual void write_digitals() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement write_digitals()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement write_digitals()");
+        }
         virtual void set_digital_signals(dsignal_vec new_signals);
         virtual void set_digital_signal(channel channel_number, dsignal new_signal);
         virtual void set_do_initial_signals(dsignal_vec initial_signals) { 
@@ -210,13 +224,17 @@ namespace mel {
     public:
 
         virtual void read_encoders() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encoders()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement read_encoders()");
+        }
         virtual void read_encrates() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement read_encrates()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement read_encrates()");
+        }
         virtual void zero_encoders() {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement zero_encoders()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement zero_encoders()");
+        }
         virtual void offset_encoders(int32_vec offset_counts) {
-            std::cout << "WARNING: DAQ <" << name_ << "> does not implement offset_encoders()" << std::endl; }
+            mel::print("WARNING: DAQ <" + name_ + "> does not implement offset_encoders()");
+        }
         virtual int32_vec get_encoder_counts();
         virtual int32 get_encoder_count(channel channel_number);
         virtual double_vec get_encoder_rates();

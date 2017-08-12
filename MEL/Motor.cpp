@@ -7,7 +7,6 @@ namespace mel {
         kt_(0.0),
         current_limit_(0.0),
         amp_gain_(0.0),
-        is_enable_(false),
         has_current_sense_(false),
         ao_channel_(Daq::Ao()),
         do_channel_(Daq::Do()),
@@ -22,7 +21,6 @@ namespace mel {
         kt_(kt),
         current_limit_(current_limit),
         amp_gain_(amp_gain),
-        is_enable_(false),
         has_current_sense_(false),
         ao_channel_(ao_channel),
         do_channel_(Daq::Do()),
@@ -37,7 +35,6 @@ namespace mel {
         kt_(kt),
         current_limit_(current_limit),
         amp_gain_(amp_gain),
-        is_enable_(false),
         has_current_sense_(false),
         ao_channel_(ao_channel),
         do_channel_(do_channel),
@@ -53,7 +50,6 @@ namespace mel {
         kt_(kt),
         current_limit_(current_limit),
         amp_gain_(amp_gain),
-        is_enable_(false),
         has_current_sense_(true),
         ao_channel_(ao_channel),
         do_channel_(do_channel),
@@ -85,7 +81,6 @@ namespace mel {
         else {
             return new_current;
         }
-
     }
 
     double Motor::get_current_sense() {
@@ -98,13 +93,12 @@ namespace mel {
     }
 
     void Motor::enable() {
+        enabled_ = true;
         if (enable_mode_ == EnableMode::High) {
-            is_enable_ = true;
             do_channel_.set_signal(1);
             do_channel_.daq_->write_digitals();
         }
         else if (enable_mode_ == EnableMode::Low) {
-            is_enable_ = true;
             do_channel_.set_signal(0);
             do_channel_.daq_->write_digitals();
         }
@@ -114,23 +108,21 @@ namespace mel {
     }
 
     void Motor::disable() {
+        enabled_ = false;
         if (enable_mode_ == EnableMode::High) {
-            is_enable_ = false;
-            do_channel_.set_signal(0);
-            do_channel_.daq_->write_digitals();
+            ao_channel_.set_voltage(0);
+            do_channel_.set_signal(0);            
+            do_channel_.daq_->write_all();
         }
         else if (enable_mode_ == EnableMode::Low) {
-            is_enable_ = false;
+            ao_channel_.set_voltage(0);
             do_channel_.set_signal(1);
-            do_channel_.daq_->write_digitals();
+            do_channel_.daq_->write_all();
         }
         else {
             std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
         }
     }
-
-
-
     
 
 }

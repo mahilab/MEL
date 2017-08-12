@@ -5,13 +5,15 @@ namespace mel {
     Actuator::Actuator() :
         name_("no_name"),
         torque_(0.0),
-        enable_mode_(EnableMode::None)
+        enable_mode_(EnableMode::None),
+        enabled_(false)
     { }
 
     Actuator::Actuator(std::string name, EnableMode enable_mode) :
         name_(name),
         torque_(0.0),
-        enable_mode_(enable_mode)
+        enable_mode_(enable_mode),
+        enabled_(false)
     { }
 
     void Actuator::enable() {
