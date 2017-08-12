@@ -412,9 +412,7 @@ namespace mel {
         uint32_vec vel_channels = enc_channels;
         std::transform(vel_channels.begin(), vel_channels.end(), vel_channels.begin(), bind2nd(std::plus<uint32>(), 14000));
         return vel_channels;
-    }
-
-   
+    }  
 
 
     std::string Q8Usb::Options::build() {

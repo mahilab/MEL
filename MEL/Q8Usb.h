@@ -28,7 +28,7 @@ namespace mel {
             std::array<dsignal, 8> do_initial_signals_         = {   0,   0,   0,   0,   0,   0,   0,   0 };
             std::array<dsignal, 8> do_final_signals_           = {   0,   0,   0,   0,   0,   0,   0,   0 };
             std::array<dsignal, 8> do_expire_signals_          = {   0,   0,   0,   0,   0,   0,   0,   0 };
-            std::array<uint32, 8>  encoder_quadrature_factors_ = {   4,   4,   4,   4,   4,   4,   4,   4 };
+            std::array<uint32,  8> encoder_quadrature_factors_ = {   4,   4,   4,   4,   4,   4,   4,   4 };
 
             enum class UpdateRate { Default = 0, Normal_1kHz = 1, Fast_8kHz = 2 };
             enum class EncDir { Default = 0, Reversed = 1 };
