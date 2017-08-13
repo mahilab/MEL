@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin</OutDir>
-    <IntDir>$(SolutionDir)\build</IntDir>
+    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir)\build\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="EmgTraining.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
+    <ClCompile Include="MahiExoIIEmg.cpp" />
     <ClCompile Include="MahiExoIIFrc.cpp" />
     <ClCompile Include="mahiexoii_util.cpp" />
     <ClCompile Include="main.cpp">
@@ -169,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="EmgTraining.h" />
     <ClInclude Include="MahiExoII.h" />
+    <ClInclude Include="MahiExoIIEmg.h" />
     <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="mahiexoii_util.h" />
   </ItemGroup>

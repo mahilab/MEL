@@ -5,6 +5,7 @@
 #include "mahiexoii_util.h"
 #include "MahiExoII.h"
 #include "MahiExoIIFrc.h"
+#include "MahiExoIIEmg.h"
 #include "Controller.h"
 #include "Task.h"
 #include <boost/program_options.hpp>
@@ -145,7 +146,7 @@ int main(int argc, char * argv[]) {
         config.encrate_[i] = q8_emg->encrate_(i);
     }
     MahiExoII* meii = new MahiExoII(config);*/
-    MahiExoIIFrc::Config config;
+    /*MahiExoIIFrc::Config config;
     for (int i = 0; i < 5; ++i) {
         config.enable_[i] = q8_emg->do_(i);
         config.command_[i] = q8_emg->ao_(i);
@@ -155,7 +156,19 @@ int main(int argc, char * argv[]) {
     for (int i = 0; i < 6; ++i) {
         config.wrist_force_sensor_[i] = q8_ati->ai_(i);
     }
-    MahiExoIIFrc* meii = new MahiExoIIFrc(config);
+    MahiExoIIFrc* meii = new MahiExoIIFrc(config);*/
+    MahiExoIIEmg::Config config;
+    for (int i = 0; i < 5; ++i) {
+        config.enable_[i] = q8_emg->do_(i);
+        config.command_[i] = q8_emg->ao_(i);
+        config.encoder_[i] = q8_emg->encoder_(i);
+        config.encrate_[i] = q8_emg->encrate_(i);
+    }
+    for (int i = 0; i < 8; ++i) {
+        config.emg_[i] = q8_emg->ai_(i);
+    }
+    MahiExoIIEmg* meii = new MahiExoIIEmg(config);
+
 
     // manual zero joint positions
     if (var_map.count("zero")) {

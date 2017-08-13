@@ -1,47 +1,51 @@
 #include "EmgTraining.h"
+#include "Input.h"
 
 
-EmgTraining::EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIFrc* meii) :
+
+EmgTraining::EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmg* meii) :
     StateMachine(4),
+    clock_(clock),
     q8_emg_(q8_emg),
     q8_ati_(q8_ati),
-    meii_(meii),
-    clock_(clock),
-    raw_force_(Eigen::VectorXd::Zero(6)),
-    //calib_mat_(Eigen::MatrixXd::Zero(6,6)),
-    calib_force_(Eigen::VectorXd::Zero(6)),
-    set_points_({ 0,0,0,0,0 }),
-    kp_({ 35, 7, 25, 30, 3500 }),
-    kd_({ 0.25, 0.06, 0.05, 0.08, 5 }),
-    init_pos_({ 0,0,0,0,0 }),
-    goal_pos_({ 0,0,0,0,0 }),
-    init_time_(0),
-    speed_({ 0.25, 0.25, 0.125, 0.125, 0.0125}),
-    x_ref_({ 0,0,0,0,0 }),
-    new_torques_({ 0,0,0,0,0 }),
-    backdrive_({ 0,0,0,0,0 }),
-    data_p_({ 0, 0, 0, 0, 0 }),
-    lpf_(mel::Filter(4, { 0.009735570656078, -0.032135367809242, 0.045449986329302, -0.032135367809242, 0.009735570656078 }, { 1.000000000000000, -3.572942808701423, 4.807914652718555, -2.886325158284144, 0.652003706289986 })),
-    multi_lpf_(mel::Filter(6, 4, { 0.009735570656078, -0.032135367809242, 0.045449986329302, -0.032135367809242, 0.009735570656078 }, { 1.000000000000000, -3.572942808701423, 4.807914652718555, -2.886325158284144, 0.652003706289986 })),
-    force_share_({ 0, 0, 0, 0, 0, 0}),
-    force_filt_({ 0, 0, 0, 0, 0, 0 })
+    meii_(meii)
+{ 
+}
 
-{
-    //calib_mat_ << 0.45676, 0.37263, 2.84454, -95.32922, -1.60986, 93.56974, -10.00557, 107.83272, 2.80461, -54.50607, 2.67834, -55.04209, 133.67479, 5.88886, 131.55424, 5.44438, 134.55104, 5.69414, -0.02942, 0.74195, -2.11485, -0.48201, 2.19007, -0.27703, 2.49045, 0.12279, -1.26019, 0.59413, -1.30218, -0.70275, 0.07348, -1.36804, 0.08441, -1.41171, 0.05780, -1.37930;
+bool EmgTraining::check_stop() {
+    return mel::Input::is_key_pressed(mel::Input::Escape) || (mel::Input::is_key_pressed(mel::Input::LControl) && mel::Input::is_key_pressed(mel::Input::C));
 }
 
 void EmgTraining::sf_init(const mel::NoEventData* data) {
 
-
-    std::cout << "Press ENTER to activate Daq <" << q8_emg_->name_ << ">" << std::endl;
-    getchar();
+    // enable MEII EMG DAQ
+    mel::print("\nPress Enter to enable MEII EMG Daq <" + q8_emg_->name_ + ">.");
+    mel::Input::wait_for_key_press(mel::Input::Key::Return);
     q8_emg_->enable();
-    std::cout << "Press ENTER to activate Daq <" << q8_ati_->name_ << ">" << std::endl;
-    getchar();
+    if (!q8_emg_->is_enabled()) {
+        event(ST_STOP);
+        return;
+    }
+
+    // enable MEII ATI DAQ
+    mel::print("\nPress Enter to enable MEII ATI Daq <" + q8_ati_->name_ + ">.");
+    mel::Input::wait_for_key_press(mel::Input::Key::Return);
     q8_ati_->enable();
-    //std::cout << "Press ENTER to enable MahiExoII" << std::endl;
-    //getchar();
-    //meii_->enable();
+    if (!q8_ati_->is_enabled()) {
+        event(ST_STOP);
+        return;
+    }
+
+    // enable MEII
+    /*mel::print("\nPress Enter to enable MEII.");
+    mel::Input::wait_for_key_press(mel::Input::Key::Return);
+    meii_->enable();
+    if (!meii_->is_enabled()) {
+        event(ST_STOP);
+        return;
+    }*/
+
+    
     std::cout << "Press Enter to start the controller" << std::endl;
     getchar();
     q8_emg_->start_watchdog(0.1);
@@ -130,8 +134,6 @@ void EmgTraining::sf_hold_neutral(const mel::NoEventData* data) {
         q8_emg_->read_all();
         q8_ati_->read_all();
 
-
-
         /*std::vector<double> v = q8_ati_->get_analog_voltages();
         double* ptr = &v[0];
         Eigen::Map<Eigen::VectorXd> raw_force(ptr, 6);
@@ -142,8 +144,10 @@ void EmgTraining::sf_hold_neutral(const mel::NoEventData* data) {
         force_share_.resize(calib_force_.size());
         Eigen::VectorXd::Map(&force_share_[0], calib_force_.size()) = calib_force_;*/
 
-        force_share_ = meii_->wrist_force_sensor_->get_forces();
-        mel::print(force_share_);
+        //force_share_ = meii_->wrist_force_sensor_->get_forces();
+        //mel::print(force_share_);
+
+        mel::print(meii_->get_emg_voltages());
 
         //force_filt_ = multi_lpf_.filter(force_share_);
 
