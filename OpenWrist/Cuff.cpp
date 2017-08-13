@@ -1,24 +1,34 @@
 #include "Cuff.h"
+#include "definitions.h"
+#include "commands.h"
 #include <chrono>
-#include <thread>
 
-int Cuff::enable() {
-	
-	int result = 0;
+#define CUFF_ID 1
+
+Cuff::Cuff() : Device("cuff") {}
+Cuff::Cuff(std::string name) : Device(name) {}
+
+Cuff::~Cuff() {
+    if (enabled_)
+        disable();
+}
+
+
+void Cuff::enable() {
 
 	std::cout << "Enabling CUFF ...";
 
 	short int currents[2];
 	short int realmotpos[2];
 	
-	/* attempt to open port*/
+	// attempt to open port
 	for (int attempt = 0; attempt < 10; attempt++) {
 		int opened = open_port();
 		if (opened)
 			break;
 		else if (attempt == 9) {
 			std::cout << "Failed. Could not open port." << std::endl;
-			return 0;
+            enabled_ = false;
 		}
 	}
 
@@ -26,13 +36,13 @@ int Cuff::enable() {
 	char activated = 0;
 	for (int attempt = 0; attempt < 10; attempt++) {
 		commActivate(&comm_settings_t_, CUFF_ID, 1);
-		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		commGetActivate(&comm_settings_t_, CUFF_ID, &activated);
 		if (activated)
 			break;
 		else if (attempt == 9){
 			std::cout << "Failed. Could not activate communications." << std::endl;
-			return 0;
+            enabled_ = false;
 		}
 	}
 
@@ -43,21 +53,22 @@ int Cuff::enable() {
 	commSetInputs(&comm_settings_t_, CUFF_ID, motpos_zero);
 
 	// start IO thread 
-	io_loop_ = true;
-    io_thread_ = boost::thread(&Cuff::io_thread_func,this);
+	io_stop_flag_ = true;
+    io_thread_ = std::thread(&Cuff::io_thread_func,this);
 	std::cout << "Done" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	return 1;
+    enabled_ = true;
 }
 
-int Cuff::disable() {
+void Cuff::disable() {
     std::cout << "Disabling CUFF ... ";
     set_motor_positions(0, 0, false);
     commActivate(&comm_settings_t_, CUFF_ID, 0);
-    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-    io_loop_ = false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    io_stop_flag_ = false;
+    io_thread_.join();
     std::cout << "Done" << std::endl;
-    return 1;
+    enabled_ = false;
 }
 
 int Cuff::open_port() {
@@ -71,8 +82,7 @@ int Cuff::open_port() {
 		puts("Couldn't connect to the serial port.");
 		return 0;
 	}
-	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	return 1;
 }
 
@@ -184,7 +194,7 @@ void Cuff::pretensioning(int force_newtons, short int* motpos_zero, short int* s
 }
 
 int Cuff::io_thread_func() {
-	while (io_loop_) {
+	while (io_stop_flag_) {
         spinlock.lock();
 		commSetInputs(&comm_settings_t_, CUFF_ID, reference_motor_positions_);
 		commGetMeasurements(&comm_settings_t_, CUFF_ID, actual_motor_positions_);

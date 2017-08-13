@@ -1,29 +1,19 @@
 #pragma once
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
-#include <iostream>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <iostream>
-#include <cmath>
-#include <assert.h>
-#include <fstream>
+#include <thread>
 #include "qbmove_communications.h"
-#include "definitions.h"
-#include "commands.h"
 #include "Spinlock.h"
+#include "Device.h"
 
-#define CUFF_ID 1
-
-class Cuff {
+class Cuff : public mel::Device {
 
 public:
 
-	int enable();
-    int disable();
+    Cuff();
+    Cuff(std::string name);
+    ~Cuff() override;
+
+	void enable() override;
+    void disable() override;
 	void set_motor_positions(short int motor_position_0, short int motor_position_1, bool immediate);
     void get_motor_positions(short int& motor_position_0, short int& motor_position_1);
     void get_motor_currents(short int& motor_current_0, short int& motor_current_1);
@@ -38,13 +28,12 @@ private:
 
 	comm_settings comm_settings_t_;
     Spinlock spinlock;
-	boost::mutex io_mutex_;
-    boost::thread io_thread_;
+    std::thread io_thread_;
     int io_thread_func();
 
 	int open_port();
     int port_selection();
 
-	volatile bool io_loop_;
+	volatile std::atomic_bool io_stop_flag_;
 
 };

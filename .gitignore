@@ -32,7 +32,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-build/
+[Bb]uild/
 cmake-build-release/
 cmake-build-debug/
 

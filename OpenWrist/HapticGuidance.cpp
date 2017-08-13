@@ -14,9 +14,9 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& o
     CONDITION_(condition)
 {
     if (subject_number < 10)
-        DIRECTORY_ = "S0" + std::to_string(subject_number);
+        DIRECTORY_ = "S0" + std::to_string(subject_number) + "_C" + std::to_string(condition);
     else
-        DIRECTORY_ = "S" + std::to_string(subject_number);
+        DIRECTORY_ = "S" + std::to_string(subject_number) + "_C" + std::to_string(condition);
 
     build_experiment();
 
@@ -34,7 +34,7 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& o
 
 void HapticGuidance::wait_for_input() {
     if (INPUT_MODE_ == 0) {
-        Input::wait_for_key_press(Input::Key::Space);
+        mel::Input::wait_for_key_press(mel::Input::Key::Space);
     }
     else if (INPUT_MODE_ = 1) {
         gui_flag_.wait_for_flag(1);
@@ -48,7 +48,7 @@ void HapticGuidance::allow_continue_input() {
 }
 
 bool HapticGuidance::check_stop() {
-    return Input::is_key_pressed(Input::Escape) || (Input::is_key_pressed(Input::LControl) && Input::is_key_pressed(Input::C));
+    return mel::Input::is_key_pressed(mel::Input::Escape) || (mel::Input::is_key_pressed(mel::Input::LControl) && mel::Input::is_key_pressed(mel::Input::C));
 }
 
 
@@ -71,23 +71,31 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
     
     // enable OpenWrist DAQ
     if (CONDITION_ > 0) {
-        mel::print("Press O to enable OpenWrist Daq <" + ow_daq_->name_ + ">.");
-        Input::wait_for_key_press(Input::Key::O);
+        mel::print("\nPress Enter to enable OpenWrist Daq <" + ow_daq_->name_ + ">.");
+        mel::Input::wait_for_key_press(mel::Input::Key::Return);
         ow_daq_->enable();
+        if (!ow_daq_->is_enabled()) {
+            event(ST_STOP);
+            return;
+        }
     }
     
     // enable and pretension CUFF
     if (CONDITION_ == 2 || CONDITION_ == 3) {
-        std::cout << "Press C to enable and pretension CUFF" << std::endl;
-        Input::wait_for_key_press(Input::Key::C);
+        std::cout << "\nPress Enter to enable and pretension CUFF" << std::endl;
+        mel::Input::wait_for_key_press(mel::Input::Key::Return);
         cuff_.enable();
+        if (!cuff_.is_enabled()) {
+            event(ST_STOP);
+            return;
+        }
         cuff_.pretensioning(CUFF_NORMAL_FORCE_, offset, scaling_factor);
     } 
 
     // enable MahiExo-II DAQ
     if (CONDITION_ == 4) {
-        mel::print("Press M to enable MahiExo-II Daq <" + ow_daq_->name_ + ">.");
-        Input::wait_for_key_press(Input::Key::M);
+        mel::print("\nPress Enter to enable MahiExo-II Daq <" + ow_daq_->name_ + ">.");
+        mel::Input::wait_for_key_press(mel::Input::Key::Return);
     }
     
     event(ST_TRANSITION);   
@@ -325,7 +333,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
     update_unity(true, false, false, false, false, false, true);
 
     // save the data log from the last trial
-    if (current_trial_index_ > -1) {
+    if (trials_started_) {
         log_.save_and_clear_data(TRIALS_TAG_NAMES_[current_trial_index_], DIRECTORY_ + "\\_" + TRIALS_BLOCK_NAMES_[current_trial_index_], true);
     }
 
@@ -334,14 +342,16 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
         // increment the trial;
         current_trial_index_ += 1;
-        mel::print("Next trial: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Space to begin.");
-        while (!Input::is_key_pressed(Input::Space)) {
+        mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Space to begin.");
+        while (!mel::Input::is_key_pressed(mel::Input::Space)) {
             stop_ = check_stop();
             if (stop_) {
                 event(ST_STOP);
                 return;
             }
         }
+
+        trials_started_ = true;
 
         // resume hardware
         if (CONDITION_ > 0) {
@@ -350,7 +360,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         }
 
         // print message
-        mel::print("Starting trial <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Escape or Ctrl+C to terminate the experiment.");
+        mel::print("STARTING TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Escape or Ctrl+C to terminate the experiment.");
 
         // restart the clock
         clock_.start();
@@ -384,7 +394,12 @@ void HapticGuidance::sf_stop(const mel::NoEventData*) {
         mel::print("\nExperiment terminated during trial " + mel::namify(TRIALS_TAG_NAMES_[current_trial_index_ ]) + ". Disabling hardware.");
     else
         mel::print("\nExperiment completed. Disabling hardware.");
-    ow_daq_->disable();
+
+    if (CONDITION_ > 0)
+        ow_daq_->disable();
+
+    if (CONDITION_ == 2 || CONDITION_ == 3)
+        cuff_.disable();
 }
 
 //-----------------------------------------------------------------------------

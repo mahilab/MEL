@@ -16,27 +16,24 @@
 // Condition 3: OpenWrist P/S + CUFF w/ Haptic Guidance Forces        x10 subj
 // Condition 4: OpenWrist P/S + MahiExo-II w/ Haptic Guidance Forces  x10 subj
 //----------------------------------------------------------------------------
-// State Machine Flow (per subject+condition)
-//----------------------------------------------------------------------------
 // EXPERIMENT BREAKDOWN              | BLOCK | TRIAL #s |
 //----------------------------------------------------------------------------
-// Questionaire / Initialize Devices |       |          |
-// Familiarization Trial (x1 - 1min) | F     | 1        |
+// Familiarization Trial (x1 - 1min) | F1    | 1        |
 // Evaluation Trials (x3 - 20s ea)   | E1    | 2 - 4    |
 // Training Trials (x12 - 20s ea)    | T1    | 5 - 16   |
 // Evaluation Trials (x3 - 20s ea)   | E2    | 17 - 19  |
 // Training Trials (x12 - 20s ea)    | T2    | 20	31  |
 // Evaluation Trials (x3 - 20s ea)   | E3    | 32 - 34  |
 // Training Trials (x12 - 20s ea)    | T3    | 35 - 46  |
-// 5 Minute Break                    | B     |          |
-// Evaluation Trials (x3 - 20s ea)   | E4    | 47 - 49  |
-// Training Trials (x12 - 20s ea)    | T4    | 50 - 61  |
-// Evaluation Trials (x3 - 20s ea)   | E5    | 62 - 64  |
-// Training Trials (x12 - 20s ea)    | T5    | 65 - 76  | 
-// Evaluation Trials (x3 - 20s ea)   | E6    | 77 - 79  |
-// Training Trials (x12 - 20s ea)    | T6    | 80 - 91  |
-// Evaluation Trials (x3 - 20s ea)   | E7    | 92 - 94  |
-// Generalization (x12 - 20s ea)     | G     | 95 - 106 |
+// 5 Minute Break                    | B1    | 47       |
+// Evaluation Trials (x3 - 20s ea)   | E4    | 48 - 50  |
+// Training Trials (x12 - 20s ea)    | T4    | 51 - 62  |
+// Evaluation Trials (x3 - 20s ea)   | E5    | 63 - 65  |
+// Training Trials (x12 - 20s ea)    | T5    | 66 - 77  | 
+// Evaluation Trials (x3 - 20s ea)   | E6    | 78 - 80  |
+// Training Trials (x12 - 20s ea)    | T6    | 81 - 92  |
+// Evaluation Trials (x3 - 20s ea)   | E7    | 93 - 95  |
+// Generalization (x12 - 20s ea)     | G     | 96 - 107 |
 //----------------------------------------------------------------------------
 
 class HapticGuidance : public mel::StateMachine {
@@ -150,7 +147,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 0.5, 0.5, 0.5, 0.5, 0.5 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 60.0, 20.0, 20.0, 300.0, 20.0 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -159,6 +156,7 @@ private:
     std::vector<std::string> TRIALS_BLOCK_NAMES_;
     std::vector<std::string> TRIALS_TAG_NAMES_;
     int NUM_TRIALS_TOTAL_ = 0;
+    bool trials_started_ = false;
 
     // SUBJECT DIRECTORY
     std::string DIRECTORY_;

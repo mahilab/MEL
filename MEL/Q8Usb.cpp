@@ -90,9 +90,7 @@ namespace mel {
             if (result != 0) {
                 std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to activate." << std::endl;
                 return;
-            }
-
-            enabled_ = true;
+            }            
 
             // Configure Q8 USB (Functions called in same order as Simulink compiled code)
             std::cout << "Q8 USB " << id_ << ": Configuring ... ";
@@ -101,7 +99,9 @@ namespace mel {
                 std::cout << "Failed" << std::endl;
                 print_quarc_error(result);
                 return;
-            }                
+            }      
+
+            enabled_ = true;
 
             // stop and clear watchdog
             stop_watchdog();

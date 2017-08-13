@@ -1,22 +1,22 @@
 #pragma once
-#include <boost/atomic.hpp>
+#include <atomic>
 
 class Spinlock {
 private:
     typedef enum { Locked, Unlocked } LockState;
-    boost::atomic<LockState> state_;
+    std::atomic<LockState> state_;
 
 public:
     Spinlock() : state_(Unlocked) {}
 
     void lock()
     {
-        while (state_.exchange(Locked, boost::memory_order_acquire) == Locked) {
+        while (state_.exchange(Locked, std::memory_order_acquire) == Locked) {
             // busy wait
         }
     }
     void unlock()
     {
-        state_.store(Unlocked, boost::memory_order_release);
+        state_.store(Unlocked, std::memory_order_release);
     }
 };

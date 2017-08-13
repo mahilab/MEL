@@ -10,14 +10,11 @@
 #include "GuiFlag.h"
 #include "HapticGuidance.h"
 
-void ctrl_c_handler(int signum) {
-
-}
 
 int main(int argc, char * argv[]) {
 
-    // register Ctrl+C handler
-    signal(SIGINT, ctrl_c_handler);
+    // ignore CTRL-C signal (we can do this with Input)
+    signal(SIGINT, SIG_IGN);
 
     // set up program options 
     boost::program_options::options_description desc("Available Options");
@@ -25,10 +22,10 @@ int main(int argc, char * argv[]) {
         ("help", "produces help message")
         ("calibrate", "calibrate OpenWrist zero position")
         ("run", "run the haptic guidance experiment")
-        ("input-mode", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
-        ("subject-num", boost::program_options::value<int>(), "the subject number, 1-40")
+        ("input", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
+        ("subject", boost::program_options::value<int>(), "the subject number, 1-40")
         ("condition", boost::program_options::value<int>(), "1 = OW w/ PN, 2 = OW+CUFF w/ PN, 3 = OW+CUFF w/ HG, 4 = OW+MEII w/ HG")
-        ("start-trial", boost::program_options::value<std::string>(), "the trial to start at, e.g. F1-1, T3-5, G2-12, etc");
+        ("trial", boost::program_options::value<std::string>(), "the trial to start at, e.g. F1-1, T3-5, G2-12, etc");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -69,7 +66,7 @@ int main(int argc, char * argv[]) {
     OpenWrist open_wrist(config);
 
     // create and configure CUFF object
-    Cuff cuff;
+    Cuff cuff("cuff_forearm");
 
     // perform calibrate command if requested by user
     if (var_map.count("calibrate")) {
@@ -91,19 +88,19 @@ int main(int argc, char * argv[]) {
     if (var_map.count("run")) {
 
         int input_mode;
-        if (var_map.count("subject-num") && var_map.count("condition") && var_map.count("start-trial")) {
+        if (var_map.count("subject") && var_map.count("condition") && var_map.count("trial")) {
             input_mode = 0;
-            subject = var_map["subject-num"].as<int>();
+            subject = var_map["subject"].as<int>();
             condition = var_map["condition"].as<int>();
-            start_trial = var_map["start-trial"].as<std::string>();
+            start_trial = var_map["trial"].as<std::string>();
         }
-        else if (var_map.count("subject-num") && var_map.count("condition")) {
+        else if (var_map.count("subject") && var_map.count("condition")) {
             input_mode = 0;
-            subject = var_map["subject-num"].as<int>();
+            subject = var_map["subject"].as<int>();
             condition = var_map["condition"].as<int>();
             start_trial = "F1-1";
         }
-        else if (var_map.count("input-mode") && var_map["input-mode"].as<int>() == 1) {
+        else if (var_map.count("input") && var_map["input"].as<int>() == 1) {
             system("start GUI.pyw &");
             input_mode = 1;
             mel::print("Wait for input from GUI");
