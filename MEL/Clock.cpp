@@ -58,4 +58,15 @@ namespace mel {
     void Clock::save_log() {
         log_.save_data(log_.name_, "clock_logs", true);
     }
+
+    void Clock::wait_for(double seconds) {
+        auto wait_time = std::chrono::nanoseconds(static_cast<long long unsigned int>(1000000000 * seconds));
+        auto start = std::chrono::high_resolution_clock::now();
+        auto now = std::chrono::high_resolution_clock::now();
+        std::chrono::nanoseconds elapsed = now - start;
+        while (elapsed < wait_time) {
+            now = std::chrono::high_resolution_clock::now();
+            elapsed = now - start;
+        }
+    }
 }

@@ -2,7 +2,7 @@
 #include <array>
 #include "Daq.h"
 
-typedef struct tag_card *    t_card;
+typedef struct tag_card * t_card;
 
 namespace mel {
 
@@ -10,8 +10,9 @@ namespace mel {
 
     public:
 
-        // Q8 USB BOARD SPECIFIC OPTIONS (WIP)
-        // http://www.quanser.com/Products/quarc/documentation/q8_usb.html
+        //---------------------------------------------------------------------
+        // Q8 USB OPTIONS CLASS
+        //---------------------------------------------------------------------
 
         class Options {
 
@@ -81,9 +82,12 @@ namespace mel {
 
             std::string build();
 
-        };
+        }; // http://www.quanser.com/Products/quarc/documentation/q8_usb.html
 
+
+        //---------------------------------------------------------------------
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
         
         Q8Usb(uint32 id,
             channel_vec ai_channels,
@@ -94,19 +98,13 @@ namespace mel {
             Options options = Options());
 
         ~Q8Usb() override;
-
-    private:
-
-        Options options_;
-
-        // QUARC SPECIFIC TYPES AND OPTIONS
-
-        t_card q8_usb_;
-        char       options_str_[4096];   // Quarc board specific options
-
+        
     public:
 
-        // inhereted virtual functions from Daq class to be overriden
+        //---------------------------------------------------------------------
+        // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------
+        
         void enable() override;
         void disable() override;
         void reset() override;
@@ -143,17 +141,21 @@ namespace mel {
 
     private:
 
+        //---------------------------------------------------------------------
         // PRIVATE VARIABLES
+        //---------------------------------------------------------------------
 
         uint32 id_;
+        Options options_;
+        t_card q8_usb_;
+        char options_str_[4096];   // Quarc board specific options
 
-        // HELPTER FUNCTIONS 
+        //---------------------------------------------------------------------
+        // PRIVATE FUNCTIONS
+        //---------------------------------------------------------------------
 
         static void print_quarc_error(int result);
-        static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
-
-
-        
+        static channel_vec get_q8_encrate_channels(channel_vec enc_channels);        
 
     };
 }

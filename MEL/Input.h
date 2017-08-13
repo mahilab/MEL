@@ -4,7 +4,7 @@ class Input {
 
 public:
 
-    /// \brief Check if a key is pressed
+    /// \brief List of Keys
     enum Key
     {
         Unknown = -1, ///< Unhandled key
@@ -117,6 +117,8 @@ public:
     /// \param key Key to check
     /// \return True if the key is pressed, false otherwise
     static bool is_key_pressed(Input::Key key);
+
+    static bool is_console_window_focused();
 
     /// \brief Wait for key to be pressed
     /// \param key Key to check

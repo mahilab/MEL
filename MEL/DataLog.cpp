@@ -6,7 +6,7 @@
 namespace mel {
 
     DataLog::DataLog() :
-        DataLog("no_name",1000000) {}
+        DataLog("data_log",1000000) {}
 
     DataLog::DataLog(std::string name, bool autosave, size_t max_rows) :
         name_(name),
@@ -19,8 +19,8 @@ namespace mel {
     }
 
     DataLog::~DataLog() {
-        if (!log_saved_ && autosave_) {
-            save_data(name_, "data_backups", true);
+        if (!log_saved_ && row_index_ > 0 && autosave_) {
+            save_data(name_, "data_log_backups", true);
         }
     }
 
@@ -33,11 +33,21 @@ namespace mel {
     }
 
     void DataLog::add_row(std::vector<double> row_data) {
-        for (int i = 0; i < num_cols_; i++) {
+        if (row_index_ == max_rows_)
+            double_rows();
+        for (int i = 0; i < std::min(num_cols_, row_data.size()); i++) {
             data_[i][row_index_] = row_data[i];
         }
         log_saved_ = false;
         row_index_ += 1;
+    }
+
+    void DataLog::double_rows() {
+        print("WARNING: DataLog " + namify(name_) + " max rows exceeded. Automatically doubling size. Increase max_rows in the constructor to avoid delays.");
+        max_rows_ *= 2;
+        for (auto it = data_.begin(); it != data_.end(); ++it) {
+            it->resize(max_rows_, 0);
+        }
     }
 
     void DataLog::save_data(std::string filename, std::string directory, bool timestamp) {
@@ -45,7 +55,7 @@ namespace mel {
         boost::filesystem::path dir(directory.c_str());
         boost::filesystem::create_directories(dir);
         std::ofstream data_log;
-        std::cout << "Saving DataLog <" << name_ << "> to <" << full_filename << "> ... ";
+        std::cout << "Saving DataLog " + namify(name_) + " to <" << full_filename << "> ... ";
         data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
         for (auto it = column_names_.begin(); it != column_names_.end(); ++it) {
             data_log << *it << ",";

@@ -44,11 +44,15 @@ namespace mel {
 
     public:
 
+        //---------------------------------------------------------------------
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
 
         StateMachine(int num_states, int initial_state = 0);
 
+        //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------
 
         int get_current_state() { return current_state_; }
 
@@ -60,8 +64,6 @@ namespace mel {
 
         void event(int new_state, const EventData* data = nullptr);
 
-        // FLAGS
-
     private:
 
         const int NUM_STATES;
@@ -70,7 +72,7 @@ namespace mel {
 
         int new_state_;
 
-        bool event_generated_;        
+        bool event_generated_;
 
         const EventData* event_data_;
 

@@ -36,7 +36,8 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
 }
 
 OpenWrist::~OpenWrist() {
-    disable();
+    if (enabled_)
+        disable();
 }
 
 void OpenWrist::update_state_map() {

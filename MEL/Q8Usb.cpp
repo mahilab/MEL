@@ -56,7 +56,8 @@ namespace mel {
     }
 
     Q8Usb::~Q8Usb() {
-        disable();
+        if (enabled_)
+            disable();
     }
 
     void Q8Usb::enable() {

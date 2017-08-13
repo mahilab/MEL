@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "util.h"
 
 namespace mel {
 
@@ -12,7 +13,7 @@ namespace mel {
         //---------------------------------------------------------------------
 
         Device(std::string name) : name_(name), enabled_(false) {}
-        virtual ~Device() {}
+        virtual ~Device() { }
 
         //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS

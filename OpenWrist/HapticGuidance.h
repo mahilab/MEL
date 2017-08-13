@@ -100,10 +100,12 @@ private:
         return &STATE_MAP[0];
     }
 
-    // INPUT CONTROL
+    // USER INPUT CONTROL
     int INPUT_MODE_;
-    void wait_for_continue_input();
+    void wait_for_input();
     void allow_continue_input();
+    bool check_stop();
+    bool stop_ = false;
 
     //-------------------------------------------------------------------------
     // EXPERIMENT SETUP
@@ -148,7 +150,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 5, 2, 1, 10, 2 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 0.5, 0.5, 0.5, 0.5, 0.5 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -156,6 +158,7 @@ private:
     std::vector<BlockType> TRIALS_BLOCK_TYPES_;
     std::vector<std::string> TRIALS_BLOCK_NAMES_;
     std::vector<std::string> TRIALS_TAG_NAMES_;
+    int NUM_TRIALS_TOTAL_ = 0;
 
     // SUBJECT DIRECTORY
     std::string DIRECTORY_;

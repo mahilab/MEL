@@ -22,11 +22,11 @@ namespace mel {
         //---------------------------------------------------------------------
 
         /// Default constructor.
-        Robot() : Device("robot") {}
+        Robot() : Device(name_ + " robot") {}
         /// Prefered constructor.
         Robot(std::string name) : Device(name) {}
 
-        virtual ~Robot() {}
+        virtual ~Robot() { }
 
         //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS

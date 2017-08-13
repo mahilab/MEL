@@ -98,9 +98,6 @@
     <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EmgElectrode.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -9,7 +9,15 @@ namespace mel {
         
     public: 
 
+        //---------------------------------------------------------------------
+        // CONSTRUCTOR /  DESTRUCTOR
+        //---------------------------------------------------------------------
+
         Clock(uint32 frequency);
+
+        //---------------------------------------------------------------------
+        // PUBLIC FUNCTIONS
+        //---------------------------------------------------------------------
 
         /// Retruns the number of ticks or steps that have occured since that clock was started.
         /// This should only be called inside of a loop also calling the wait() function.
@@ -41,6 +49,10 @@ namespace mel {
 
     private:
 
+        //---------------------------------------------------------------------
+        // PRIVATE VARIABLES
+        //---------------------------------------------------------------------
+
         const uint32 frequency_;  ///< the clock sampling rate in Hz (e.g. 1000 Hz)
         uint32 tick_count_;       ///< the number or steps that have occured since that clock was started 
 
@@ -57,8 +69,6 @@ namespace mel {
         double                   elapsed_ideal_;   ///< the ideal ammount of time that has elapsed since the clock started
 
         const double NS2S = 1.0 / 1000000000.0;    ///< multiply by this to convert nanoseconds to seconds
-
-        // CLOCK DATA LOGGING
 
         DataLog log_; ///< the clock DataLog
 
