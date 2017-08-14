@@ -10,7 +10,6 @@
 #include "GuiFlag.h"
 #include "HapticGuidance.h"
 
-
 int main(int argc, char * argv[]) {
 
     // ignore CTRL-C signal (we can do this with Input)
@@ -51,15 +50,17 @@ int main(int argc, char * argv[]) {
     options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
     options.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
     options.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
-    mel::Daq* q8 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+
+    mel::Daq* q8_0 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
     // create and configure an OpenWrist object
     OpenWrist::Config config;
     for (int i = 0; i < 3; i++) {
-        config.enable_[i] = q8->do_(i);
-        config.command_[i] = q8->ao_(i);
-        config.encoder_[i] = q8->encoder_(i);
-        config.encrate_[i] = q8->encrate_(i);
+        config.enable_[i] = q8_0->do_(i);
+        config.command_[i] = q8_0->ao_(i);
+        config.sense_[i] = q8_0->ai_(i);
+        config.encoder_[i] = q8_0->encoder_(i);
+        config.encrate_[i] = q8_0->encrate_(i);
         config.amp_gains_[i] = 1;
     }
 
@@ -70,8 +71,8 @@ int main(int argc, char * argv[]) {
 
     // perform calibrate command if requested by user
     if (var_map.count("calibrate")) {
-        open_wrist.calibrate(q8);
-        delete q8;
+        open_wrist.calibrate(q8_0);
+        delete q8_0;
         return 0;
     }
 
@@ -82,12 +83,10 @@ int main(int argc, char * argv[]) {
     mel::share::MelShare start_commands("start_commands");
     std::array<int, 5> start_commands_data;
 
-    int subject, condition;
+    int subject, condition, input_mode;
     std::string start_trial;
 
     if (var_map.count("run")) {
-
-        int input_mode;
         if (var_map.count("subject") && var_map.count("condition") && var_map.count("trial")) {
             input_mode = 0;
             subject = var_map["subject"].as<int>();
@@ -113,7 +112,7 @@ int main(int argc, char * argv[]) {
         }
         else {
             mel::print("Not enough input parameters were provided to run the experiment.");
-            delete q8;
+            delete q8_0;
             return -1;
         }
 
@@ -123,9 +122,9 @@ int main(int argc, char * argv[]) {
         mel::print("Start Trial:    " + start_trial);
 
         mel::Clock clock(1000);
-        HapticGuidance haptic_guidance(clock, q8, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
+        HapticGuidance haptic_guidance(clock, q8_0, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
         haptic_guidance.execute();
-        delete q8;
+        delete q8_0;
         return 0;
     }    
 

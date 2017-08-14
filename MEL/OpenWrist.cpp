@@ -5,16 +5,19 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
     config_(configuration),
     params_(parameters)
 { 
+    // for every joint
     for (int i = 0; i < 3; i++) {
-
         std::string num = std::to_string(i);
 
+        // construct encoders
         mel::PositionSensor* encoder = new mel::Encoder("encoder_" + num, 
             params_.encoder_res_[i] / (2 * mel::PI), 
             config_.encoder_[i], 
             config_.encrate_[i]);
 
         position_sensors_.push_back(encoder);
+
+        // construct motors
         mel::Actuator* motor = new mel::Motor("motor_" + num,
             params_.kt_[i],
             config_.amp_gains_[i],
@@ -22,10 +25,12 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
             params_.motor_torque_limits_[i],
             config_.command_[i],
             config_.enable_[i],
-            mel::Actuator::EnableMode::High);
+            mel::Actuator::EnableMode::High,
+            config_.sense_[i]);
 
         actuators_.push_back(motor);
 
+        // construct joints
         mel::Joint* joint = new mel::Joint("joint_" + num,
             encoder,
             params_.eta_[i],
@@ -34,7 +39,15 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
             std::array<double, 2>({ params_.pos_limits_neg_[i] , params_.pos_limits_pos_[i] }),
             params_.vel_limits_[i],
             params_.joint_torque_limits[i]);
-        joints_.push_back(joint);        
+
+        joints_.push_back(joint);     
+
+        // add DAQs in config_ struct to daqs_ vector
+        add_daq(config_.enable_[i].daq_);
+        add_daq(config_.command_[i].daq_);
+        add_daq(config_.sense_[i].daq_);
+        add_daq(config_.encoder_[i].daq_);
+        add_daq(config_.encrate_[i].daq_);
     }
 }
 
@@ -54,6 +67,14 @@ void OpenWrist::update_state_map() {
     state_[7] = joints_[1]->get_torque();
     state_[8] = joints_[2]->get_torque();
     state_map_.write(state_);
+}
+
+void OpenWrist::add_daq(mel::Daq* daq) {
+    for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+        if ((*it)->name_ == daq->name_)
+            return;
+    }
+    daqs_.push_back(daq);
 }
 
 double OpenWrist::compute_gravity_compensation(mel::uint32 joint) {

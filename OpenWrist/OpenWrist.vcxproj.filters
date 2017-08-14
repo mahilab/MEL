@@ -21,14 +21,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenWrist.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qbmove_communications.cpp">
       <Filter>CUFF</Filter>
-    </ClCompile>
-    <ClCompile Include="Cuff.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
@@ -42,11 +36,11 @@
     <ClCompile Include="HapticGuidance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenWrist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="commands.h">
       <Filter>CUFF</Filter>
     </ClInclude>
@@ -56,19 +50,13 @@
     <ClInclude Include="qbmove_communications.h">
       <Filter>CUFF</Filter>
     </ClInclude>
-    <ClInclude Include="Cuff.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Spinlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Pendulum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GuiFlag.h">
+    <ClInclude Include="HapticGuidance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HapticGuidance.h">
+    <ClInclude Include="Cuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

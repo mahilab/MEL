@@ -14,8 +14,11 @@ namespace mel {
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
         //---------------------------------------------------------------------
 
+        /// Default constructor
         Actuator();
+        /// Constructor for actuator without torque limits
         Actuator(std::string name, EnableMode enable_mode);
+        /// Constructor for actuator with torque limits
         Actuator(std::string name, EnableMode enable_mode, double torque_limit);
 
         //---------------------------------------------------------------------

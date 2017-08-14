@@ -33,6 +33,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="Motor.cpp" />
+    <ClCompile Include="OpenWrist.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
@@ -50,8 +51,12 @@
     <ClInclude Include="Device.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="ForceSensor.h" />
+    <ClInclude Include="GuiFlag.h" />
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="OpenWrist.h" />
+    <ClInclude Include="PdController.h" />
+    <ClInclude Include="Spinlock.h" />
     <ClInclude Include="StateMachine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -215,7 +220,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\dev\boost_1_64_0\;C:\dev\quarc\include;C:\dev\eigen;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\boost_1_64_0\;C:\dev\quarc\include;C:\dev\eigen;$(SolutionDir)\MELShare;</AdditionalIncludeDirectories>
       <AssemblerOutput>AssemblyCode</AssemblerOutput>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
     </ClCompile>
