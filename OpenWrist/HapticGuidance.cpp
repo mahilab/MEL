@@ -1,7 +1,7 @@
 #include "HapticGuidance.h"
 #include "Input.h"
 
-HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
+HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
     int subject_number, int condition, std::string start_trial):
     StateMachine(8), 
     clock_(clock),
@@ -149,7 +149,12 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
             open_wrist_.joints_[0]->set_torque(ps_torque);
             open_wrist_.joints_[1]->set_torque(mel::pd_controller(40, 1.0, 0, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity()));
 
-            open_wrist_.check_joint_limits();
+            // check joint limits
+            mel::print(open_wrist_.check_all_joint_limits());
+            if (open_wrist_.check_all_joint_limits()) {
+                stop_ = true;
+                break;
+            }
 
             // update OpenWrist state
             open_wrist_.update_state_map();

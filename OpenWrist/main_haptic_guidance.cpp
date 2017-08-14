@@ -6,7 +6,6 @@
 #include "MelShare.h"
 #include "DataLog.h"
 #include <boost/program_options.hpp>
-#include "HGCondition0.h"
 #include "GuiFlag.h"
 #include "HapticGuidance.h"
 
@@ -54,7 +53,7 @@ int main(int argc, char * argv[]) {
     mel::Daq* q8_0 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
 
     // create and configure an OpenWrist object
-    OpenWrist::Config config;
+    mel::OpenWrist::Config config;
     for (int i = 0; i < 3; i++) {
         config.enable_[i] = q8_0->do_(i);
         config.command_[i] = q8_0->ao_(i);
@@ -64,7 +63,7 @@ int main(int argc, char * argv[]) {
         config.amp_gains_[i] = 1;
     }
 
-    OpenWrist open_wrist(config);
+    mel::OpenWrist open_wrist(config);
 
     // create and configure CUFF object
     Cuff cuff("cuff_forearm");

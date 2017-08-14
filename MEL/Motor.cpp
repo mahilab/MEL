@@ -30,8 +30,9 @@ namespace mel {
         ai_channel_(Daq::Ai())
     { }
 
-    Motor::Motor(std::string name, double kt, double amp_gain, double current_limit, double torque_limit, Daq::Ao ao_channel) :
-        Actuator(name, EnableMode::None, torque_limit),
+    Motor::Motor(std::string name, double kt, double amp_gain, Daq::Ao ao_channel,
+        double current_limit, double torque_limit, bool saturate) :
+        Actuator(name, EnableMode::None, torque_limit, saturate),
         kt_(kt),
         amp_gain_(amp_gain),
         current_(0.0),
@@ -58,9 +59,10 @@ namespace mel {
         ai_channel_(Daq::Ai())
     { }
 
-    Motor::Motor(std::string name, double kt, double amp_gain, double current_limit, double torque_limit,
-        Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode) :
-        Actuator(name, enable_mode, torque_limit),
+    Motor::Motor(std::string name, double kt, double amp_gain,
+        Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode,
+        double current_limit, double torque_limit, bool saturate) :
+        Actuator(name, enable_mode, torque_limit, saturate),
         kt_(kt),
         amp_gain_(amp_gain),
         current_(0.0),
@@ -87,9 +89,10 @@ namespace mel {
         ai_channel_(ai_channel)
     { }
 
-    Motor::Motor(std::string name, double kt, double amp_gain, double current_limit, double torque_limit,
-        Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel) :
-        Actuator(name, enable_mode, torque_limit),
+    Motor::Motor(std::string name, double kt, double amp_gain,
+        Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
+        double current_limit, double torque_limit, bool saturate) :
+        Actuator(name, enable_mode, torque_limit, saturate),
         kt_(kt),
         amp_gain_(amp_gain),
         current_(0.0),
@@ -136,8 +139,7 @@ namespace mel {
 
     void Motor::set_torque(double new_torque) {
         torque_ = new_torque;
-        if (has_torque_limit_ && abs(torque_) > torque_limit_) {
-            mel::print("WARNING: Motor " + namify(name_) + " was commanded a torque greater than torque limit with a value of " + std::to_string(torque_) + ". Saturating command.");
+        if (check_torque_limit() && saturate_) {
             torque_ = saturate(torque_, torque_limit_);
         }
         set_current( torque_ / kt_ );
@@ -145,8 +147,7 @@ namespace mel {
 
     void Motor::set_current(double new_current) {
         current_ = new_current;
-        if (has_current_limit_ && abs(current_) > current_limit_) {
-            mel::print("WARNING: Motor " + namify(name_) + " was commanded a current greater than current limit with a value of " + std::to_string(current_) + ". Saturating command.");
+        if (check_current_limit() && saturate_) {
             current_ = saturate(current_, current_limit_);
         }
         ao_channel_.set_voltage(current_ / amp_gain_);
@@ -160,5 +161,14 @@ namespace mel {
         std::cout << "WARNING: Motor <" << name_ << "> was not constructed to enable current measurement. Returning 0." << std::endl;
         return 0.0;
     }    
+
+    bool Motor::check_current_limit() {
+        bool exceeded = false;
+        if (has_current_limit_ && abs(current_) > current_limit_) {
+            print("WARNING: Motor " + namify(name_) + " command torque exceeded the torque limit " + std::to_string(current_limit_) + " with a value of " + std::to_string(current_) + ".");
+            exceeded = true;
+        }
+        return exceeded;
+    }
 
 }

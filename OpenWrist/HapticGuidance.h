@@ -40,7 +40,7 @@ class HapticGuidance : public mel::StateMachine {
 
 public:
 
-    HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
+    HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
         int subject_number, int condition, std::string start_trial = "F1-1");
 
 private:
@@ -177,7 +177,7 @@ private:
 
     // HARDWARE
     mel::Daq* ow_daq_;
-    OpenWrist& open_wrist_;
+    mel::OpenWrist& open_wrist_;
     Cuff& cuff_;
 
     // CUFF PARAMETERS

@@ -50,10 +50,43 @@ namespace mel {
         }
     }
 
-    bool Robot::check_joint_limits() {
+    bool Robot::check_all_joint_position_limits() {
         bool exceeded = false;
-        for (auto it = joints_.begin(); it != joints_.end(); ++it)
-            exceeded = (*it)->check_limits();
+        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+            if ((*it)->check_position_limits()) {
+                exceeded = true;
+            }
+        }
+        return exceeded;
+    }
+
+    bool Robot::check_all_joint_velocity_limits() {
+        bool exceeded = false;
+        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+            if ((*it)->check_velocity_limit()) {
+                exceeded = true;
+            }
+        }
+        return exceeded;
+    }
+
+    bool Robot::check_all_joint_torque_limits() {
+        bool exceeded = false;
+        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+            if ((*it)->check_torque_limit()) {
+                exceeded = true;
+            }
+        }
+        return exceeded;
+    }
+
+    bool Robot::check_all_joint_limits() {
+        bool exceeded = false;
+        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+            if ((*it)->check_all_limits()) {
+                exceeded = true;
+            }
+        }
         return exceeded;
     }
 
