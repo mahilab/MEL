@@ -19,6 +19,7 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("help", "produces help message")
         ("calibrate", "calibrate OpenWrist zero position")
+        ("transparent", "puts the OpenWrist in transparency mode indefinitely")
         ("run", "run the haptic guidance experiment")
         ("input", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
         ("subject", boost::program_options::value<int>(), "the subject number, 1-40")
@@ -70,7 +71,14 @@ int main(int argc, char * argv[]) {
 
     // perform calibrate command if requested by user
     if (var_map.count("calibrate")) {
-        open_wrist.calibrate(q8_0);
+        open_wrist.calibrate();
+        delete q8_0;
+        return 0;
+    }
+
+    // put the robot in transparency mode if requested by user
+    if (var_map.count("transparent")) {
+        open_wrist.transparency_mode();
         delete q8_0;
         return 0;
     }

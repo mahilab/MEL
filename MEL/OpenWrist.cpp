@@ -1,4 +1,5 @@
 #include "OpenWrist.h"
+#include "Input.h"
 
 namespace mel {
 
@@ -27,9 +28,9 @@ namespace mel {
                 config_.enable_[i],
                 Actuator::EnableMode::High,
                 config_.sense_[i],
-                params_.motor_current_limits_[i],
-                params_.motor_torque_limits_[i],
-                true);
+                params_.motor_cont_limits_[i],
+                params_.motor_peak_limits_[i],
+                params_.motor_i2t_times_[i]);
 
             actuators_.push_back(motor);
 
@@ -70,6 +71,9 @@ namespace mel {
         state_[6] = joints_[0]->get_torque();
         state_[7] = joints_[1]->get_torque();
         state_[8] = joints_[2]->get_torque();
+        state_[9] = joints_[0]->actuator_->get_limited_torque();
+        state_[10] = joints_[1]->actuator_->get_limited_torque();
+        state_[11] = joints_[2]->actuator_->get_limited_torque();
         state_map_.write(state_);
     }
 
@@ -114,152 +118,195 @@ namespace mel {
         return gravity_torques;
     }
 
-    void OpenWrist::calibrate(mel::Daq* daq) {
-        // make a new Clock and Controller
-        Clock clock(1000);
-        Controller controller(clock);
-        // queue Tasks for the Controller to execute
-        Task* task = new Calibration(this, daq);
-        controller.queue_task(task);
-        // execute the controller
-        controller.execute();
-        // clean up
-        delete task;
-    }
 
-    void OpenWrist::Calibration::start() {
-        std::cout << "Press ENTER to activate Daq <" << daq->name_ << ">.";
-        getchar();
-        daq->enable();
-        daq->zero_encoders();
-        std::cout << "Press ENTER to enable OpenWrist.";
-        getchar();
-        ow->enable();
-        std::cout << "Press ENTER to start the calibration.";
-        getchar();
+    void OpenWrist::calibrate() {
+
+        // create needed variables 
+        std::array<double, 3> zeros = { 0, 0, 0 }; // determined zero positions for each joint
+        std::array<int, 3> dir = { 1 , 1, -1 };    // direction to rotate each joint
+        mel::uint32 calibrating_joint = 0;         // joint currently calibrating
+        bool returning = false;                    // bool to track if calibrating joint is return to zero
+        double pos_ref = 0;                        // desired position
+        double vel_ref = 90 * DEG2RAD;             // desired velocity
+        std::vector<double> stored_positions;      // stores past positions
         stored_positions.reserve(100000);
-        daq->start_watchdog(0.1);
-        std::cout << "Calibrating. Press CTRL+C to stop." << std::endl;
-    }
+        Clock clock(1000);
 
-    void OpenWrist::Calibration::step() {
-        daq->read_all();
-        daq->reload_watchdog();
+        std::array<double, 3> sat_torques = { 2.0, 0.5, 1.0 }; // temporary saturation torques
 
-        // iterate over all joints
-        for (int i = 0; i < 3; i++) {
+        double timeout = 20; // max amout of time we will allow calibration to occur for
+        bool stop = false;   // flag used to exit calibration loop
+        
+        // enable DAQs, zero encoders, and start watchdog
+        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+            (*it)->enable();
+            (*it)->zero_encoders();
+            (*it)->start_watchdog(0.1);
+        }
 
-            // get positions and velocities
-            double pos_act = ow->joints_[i]->get_position();
-            double vel_act = ow->joints_[i]->get_velocity();
+        // enable OpenWrist
+        enable();
 
-            double torque = 0;
-            if (i == calibrating_joint) {
+        // start the clock
+        clock.start();
 
-                if (!returning) {
+        // start the calibration control loop
+        while (clock.time() < timeout && !stop) {
 
-                    // calculate torque req'd to move the calibrating joint forward at constant speed
-                    pos_ref += dir[i] * vel_ref * delta_time();
-                    torque = mel::pd_controller(kp_gains[i], kd_gains[i], pos_ref, pos_act, 0, vel_act);
-                    torque = mel::saturate(torque, sat_torques[i]);
+            // read and reload DAQs
+            for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+                (*it)->read_all();
+                (*it)->reload_watchdog();
+            }
 
-                    // check if the calibrating joint is still moving
-                    stored_positions.push_back(pos_act);
-                    bool moving = true;
-                    if (stored_positions.size() > 500) {
-                        moving = false;
-                        for (int i = stored_positions.size() - 500; i < stored_positions.size(); i++) {
-                            moving = stored_positions[i] != stored_positions[i - 1];
-                            if (moving)
-                                break;
+            // iterate over all joints
+            for (int i = 0; i < 3; i++) {
+
+                // get positions and velocities
+                double pos_act = joints_[i]->get_position();
+                double vel_act = joints_[i]->get_velocity();
+
+                double torque = 0;
+                if (i == calibrating_joint) {
+
+                    if (!returning) {
+
+                        // calculate torque req'd to move the calibrating joint forward at constant speed
+                        pos_ref += dir[i] * vel_ref * clock.delta_time();
+                        torque = pd_controllers[i].calculate(pos_ref, pos_act, 0, vel_act);
+                        torque = saturate(torque, sat_torques[i]);
+
+
+                        // check if the calibrating joint is still moving
+                        stored_positions.push_back(pos_act);
+                        bool moving = true;
+                        if (stored_positions.size() > 500) {
+                            moving = false;
+                            for (int i = stored_positions.size() - 500; i < stored_positions.size(); i++) {
+                                moving = stored_positions[i] != stored_positions[i - 1];
+                                if (moving)
+                                    break;
+                            }
+                        }
+
+                        // if it's not moving, it's at a hardstop so record the position and deduce the zero location
+                        if (!moving) {
+                            std::cout << "Joint <" << joints_[i]->name_ << "> reached the reference position. Returning to zero ... ";
+                            if (dir[i] > 0)
+                                zeros[i] = pos_act - params_.pos_limits_pos_[i];
+                            else if (dir[i] < 0)
+                                zeros[i] = pos_act - params_.pos_limits_neg_[i];
+                            returning = true;
                         }
                     }
 
-                    // if it's not moving, it's at a hardstop so record the position and deduce the zero location
-                    if (!moving) {
-                        std::cout << "Joint <" << ow->joints_[i]->name_ << "> reached the reference position. Returning to zero ... ";
-                        if (dir[i] > 0)
-                            zeros[i] = pos_act - ow->params_.pos_limits_pos_[i];
-                        else if (dir[i] < 0)
-                            zeros[i] = pos_act - ow->params_.pos_limits_neg_[i];
-                        returning = true;
-                    }
-                }
+                    else {
+                        // calculate torque req'd to retur the calibrating joint back to zero
+                        pos_ref -= dir[i] * vel_ref * clock.delta_time();
+                        torque = pd_controllers[i].calculate(pos_ref, pos_act, 0, vel_act);
+                        torque = mel::saturate(torque, sat_torques[i]);
 
+
+                        if (dir[i] * pos_ref <= dir[i] * zeros[i]) {
+                            // reset for the next joint
+                            calibrating_joint += 1;
+                            pos_ref = 0;
+                            returning = false;
+                            std::cout << "Done" << std::endl;
+                            if (calibrating_joint == 3)
+                                std::cout << "All Joints are in their calibrated positions. Press CTRL+C to confirm the calibration." << std::endl;
+                        }
+                    }
+
+                }
                 else {
-                    // calculate torque req'd to retur the calibrating joint back to zero
-                    pos_ref -= dir[i] * vel_ref * delta_time();
-                    torque = mel::pd_controller(kp_gains[i], kd_gains[i], pos_ref, pos_act, 0, vel_act);
+                    // lock all other joints at their zero positions
+                    torque = pd_controllers[i].calculate(zeros[i], pos_act, 0, vel_act);
                     torque = mel::saturate(torque, sat_torques[i]);
 
-                    if (dir[i] * pos_ref <= dir[i] * zeros[i]) {
-                        // reset for the next joint
-                        calibrating_joint += 1;
-                        pos_ref = 0;
-                        returning = false;
-                        std::cout << "Done" << std::endl;
-                        if (calibrating_joint == 3)
-                            std::cout << "All Joints are in their calibrated positions. Press CTRL+C to confirm the calibration." << std::endl;
-                    }
                 }
+                joints_[i]->set_torque(torque);
+            }
 
+            // update state map
+            update_state_map();
+
+            // check for stop input from user
+            stop = (Input::is_key_pressed(Input::LControl) && Input::is_key_pressed(Input::C));
+
+            // write all DAQs
+            for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+                (*it)->write_all();
             }
-            else {
-                // lock all other joints at their zero positions
-                torque = mel::pd_controller(kp_gains[i], kd_gains[i], zeros[i], pos_act, 0, vel_act);
-            }
-            ow->joints_[i]->set_torque(torque);
+
+            // wait the clock
+            clock.wait();
         }
 
-        ow->update_state_map();
-        daq->write_all();
+        // disable OpenWrist
+        disable();
+
+        // zero DAQs and disable them
+        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+            (*it)->zero_encoders();
+            (*it)->disable();
+        }
+
     }
 
-    void OpenWrist::Calibration::stop() {
-        ow->disable();
-        daq->zero_encoders();
-        daq->disable();
-    }
+    void OpenWrist::transparency_mode() {
 
-    void OpenWrist::transparency_mode(mel::Daq* daq) {
-        // make a new Clock and Controller
-        mel::Clock clock(1000);
-        mel::Controller controller(clock);
-        // queue Tasks for the Controller to execute
-        mel::Task* task = new TransparencyMode(this, daq);
-        controller.queue_task(task);
-        // execute the controller
-        controller.execute();
-        // clean up
-        delete task;
-    }
+        Clock clock(1000);
+        bool stop = false;
 
-    void OpenWrist::TransparencyMode::start() {
-        std::cout << "Press ENTER to activate Daq <" << daq_->name_ << ">.";
-        getchar();
-        daq_->enable();
-        std::cout << "Press ENTER to enable OpenWrist.";
-        getchar();
-        ow_->enable();
-        std::cout << "Press ENTER to start the controller.";
-        getchar();
-        daq_->start_watchdog(0.5);
-        std::cout << "Executing the controller. Press CTRL+C to stop." << std::endl;
-    }
+        // enable DAQs, zero encoders, and start watchdog
+        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+            (*it)->enable();
+            (*it)->start_watchdog(0.1);
+        }
 
-    void OpenWrist::TransparencyMode::step() {
-        daq_->read_all();
-        daq_->reload_watchdog();
-        ow_->joints_[0]->set_torque(ow_->compute_gravity_compensation(0) + ow_->compute_friction_compensation(0));
-        ow_->joints_[1]->set_torque(ow_->compute_gravity_compensation(1) + ow_->compute_friction_compensation(1));
-        ow_->joints_[2]->set_torque(ow_->compute_friction_compensation(2) * 0.5);
-        ow_->update_state_map();
-        daq_->write_all();
-    }
+        // enable OpenWrist
+        enable();
 
-    void OpenWrist::TransparencyMode::stop() {
-        ow_->disable();
-        daq_->disable();
+        // create and start the clock
+        clock.start();
+
+        while (!stop) {
+
+            // read and reload DAQs
+            for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+                (*it)->read_all();
+                (*it)->reload_watchdog();
+            }
+
+            // calculate and set compensation torques
+            joints_[0]->set_torque(compute_gravity_compensation(0) + compute_friction_compensation(0));
+            joints_[1]->set_torque(compute_gravity_compensation(1) + compute_friction_compensation(1));
+            joints_[2]->set_torque(compute_friction_compensation(2) * 0.5);
+
+            // update state map
+            update_state_map();
+
+            // check for stop input from user
+            stop = (Input::is_key_pressed(Input::LControl) && Input::is_key_pressed(Input::C));
+
+            // write all DAQs
+            for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+                (*it)->write_all();
+            }
+
+            // wait the clock
+            clock.wait();
+        }
+
+        // disable OpenWrist
+        disable();
+
+        // disable all DAQs
+        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
+            (*it)->disable();
+        }
+
     }
 
 }
