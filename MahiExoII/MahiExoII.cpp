@@ -21,7 +21,7 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
     selector_mat_(Eigen::MatrixXd::Zero(12,3))
 {
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; ++i) {
 
         std::string num = std::to_string(i);
 
