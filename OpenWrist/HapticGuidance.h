@@ -147,7 +147,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 60.0, 20.0, 20.0, 300.0, 20.0 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 100, 1, 1, 10, 1 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();

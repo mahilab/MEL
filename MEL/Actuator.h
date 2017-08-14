@@ -16,6 +16,7 @@ namespace mel {
 
         Actuator();
         Actuator(std::string name, EnableMode enable_mode);
+        Actuator(std::string name, EnableMode enable_mode, double torque_limit);
 
         //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
@@ -32,11 +33,10 @@ namespace mel {
 
         EnableMode enable_mode_; ///< the enable mode of the actuator (None, Low, or High)
 
-        //---------------------------------------------------------------------
-        // STATE VARIABLES
-        //---------------------------------------------------------------------
-
         double torque_; ///< stores the Actuator torque since the last call to set_torque()
+        double torque_limit_; ///< the absolute limit of torque that should be allowed from the Actuator
+        bool has_torque_limit_; /// whether or not the Actuator enforces a torque limit
+
 
     };
 }

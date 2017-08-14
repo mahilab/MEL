@@ -17,8 +17,9 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
         position_sensors_.push_back(encoder);
         mel::Actuator* motor = new mel::Motor("motor_" + num,
             params_.kt_[i],
-            params_.current_limits_[i],
             config_.amp_gains_[i],
+            params_.motor_current_limits_[i],
+            params_.motor_torque_limits_[i],
             config_.command_[i],
             config_.enable_[i],
             mel::Actuator::EnableMode::High);
@@ -29,8 +30,10 @@ OpenWrist::OpenWrist(Config configuration, Params parameters) :
             encoder,
             params_.eta_[i],
             motor,
-            params_.eta_[i]);
-
+            params_.eta_[i],
+            std::array<double, 2>({ params_.pos_limits_neg_[i] , params_.pos_limits_pos_[i] }),
+            params_.vel_limits_[i],
+            params_.joint_torque_limits[i]);
         joints_.push_back(joint);        
     }
 }
@@ -151,9 +154,9 @@ void OpenWrist::Calibration::step() {
                 if (!moving) {
                     std::cout << "Joint <" << ow->joints_[i]->name_ << "> reached the reference position. Returning to zero ... ";
                     if (dir[i] > 0)
-                        zeros[i] = pos_act - ow->params_.limits_pos[i];
+                        zeros[i] = pos_act - ow->params_.pos_limits_pos_[i];
                     else if (dir[i] < 0)
-                        zeros[i] = pos_act - ow->params_.limits_neg[i];
+                        zeros[i] = pos_act - ow->params_.pos_limits_neg_[i];
                     returning = true;
                 }
             }

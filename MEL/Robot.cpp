@@ -2,6 +2,24 @@
 
 namespace mel {
 
+    void Robot::enable() {
+        enabled_ = true;
+        mel::print("Enabling Robot <" + name_ + "> ... ", false);
+        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+            (*it)->enable();
+        }
+        mel::print("Done");
+    }
+
+    void Robot::disable() {
+        enabled_ = false;
+        mel::print("Disabling Robot <" + name_ + "> ... ", false);
+        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+            (*it)->disable();
+        }
+        mel::print("Done");
+    }
+
     /// Call RobotJoint::get_position() for each robot joint.
     /// \return vector of doubles containing robot joint positions.
     double_vec Robot::get_joint_positions() {
@@ -32,22 +50,11 @@ namespace mel {
         }
     }
 
-    void Robot::enable() {
-        enabled_ = true;
-        mel::print("Enabling Robot <" + name_ + "> ... ", false);
-        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-            (*it)->enable();
-        }
-        mel::print("Done");
-    }
-
-    void Robot::disable() {
-        enabled_ = false;
-        mel::print("Disabling Robot <" + name_ + "> ... ", false);
-        for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-            (*it)->disable();
-        }
-        mel::print("Done");
+    bool Robot::check_joint_limits() {
+        bool exceeded = false;
+        for (auto it = joints_.begin(); it != joints_.end(); ++it)
+            exceeded = (*it)->check_limits();
+        return exceeded;
     }
 
 }

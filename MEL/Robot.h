@@ -22,7 +22,7 @@ namespace mel {
         //---------------------------------------------------------------------
 
         /// Default constructor.
-        Robot() : Device(name_ + " robot") {}
+        Robot() : Device("robot") {}
         /// Prefered constructor.
         Robot(std::string name) : Device(name) {}
 
@@ -46,6 +46,9 @@ namespace mel {
 
         /// Set the desired actuator torques.
         void set_joint_torques(double_vec new_torques);
+
+        /// Checks position and velocity limits of all joints and returns true if any exceeded, false otherwise
+        bool check_joint_limits();
 
         //---------------------------------------------------------------------
         // PUBLIC VARIABLES

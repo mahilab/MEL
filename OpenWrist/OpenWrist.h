@@ -23,13 +23,16 @@ public:
 
     struct Params {
          
-        std::array<double, 3>      eta_            = {  0.4706 / 8.750,          0.4735 / 9.000,          0.2210 / 6.000 };         // transmission ratios    [inch / inch]
-        std::array<mel::uint32, 3> encoder_res_    = {  500,                     500,                     500 };                    // encoder resolutions    [counts / rev]        
-        std::array<double, 3>      limits_pos      = { +86.1123 * mel::DEG2RAD, +68.2490 * mel::DEG2RAD, +33.4192 * mel::DEG2RAD }; // joint limits in positive rotation [rad]
-        std::array<double, 3>      limits_neg      = { -86.1123 * mel::DEG2RAD, -63.2490 * mel::DEG2RAD, -36.6765 * mel::DEG2RAD }; // joint limits in positive rotation [rad]
-        std::array<double, 3>      kt_             = {  0.0603,                  0.0603,                  0.0538 };                 // motor torque constants [N-m/A]
-        std::array<double, 3>      current_limits_ = {  3.17,                    3.17,                    1.74 };                   // motor current limits   [A]
-        std::array<double, 3>      kin_friction_   = {  0.1891,                  0.0541,                  0.1339 };                 // joint kinetic friction [N-m]
+        std::array<double, 3>      kt_                   = {  0.0603,                  0.0603,                  0.0538 };                 // motor torque constants [Nm/A]
+        std::array<double, 3>      motor_current_limits_ = {  3.17,                    3.17,                    1.74 };                   // motor current limits [A]
+        std::array<double, 3>      motor_torque_limits_  = {  3.17 * 0.0603,           3.17 * 0.0603,           1.74 * 0.0538 };          // motor torque limits [Nm]
+        std::array<double, 3>      eta_                  = {  0.4706 / 8.750,          0.4735 / 9.000,          0.2210 / 6.000 };         // transmission ratios [inch/inch]
+        std::array<mel::uint32, 3> encoder_res_          = {  500,                     500,                     500 };                    // encoder resolutions [counts/rev]   
+        std::array<double, 3>      pos_limits_neg_       = { -86.1123 * mel::DEG2RAD, -63.2490 * mel::DEG2RAD, -36.6765 * mel::DEG2RAD }; // joint position limits in negative rotation [rad]
+        std::array<double, 3>      pos_limits_pos_       = { +86.1123 * mel::DEG2RAD, +68.2490 * mel::DEG2RAD, +33.4192 * mel::DEG2RAD }; // joint position limits in positive rotation [rad]
+        std::array<double, 3>      vel_limits_           = {  400     * mel::DEG2RAD,  400     * mel::DEG2RAD,  400     * mel::DEG2RAD }; // joint velocity limits [rad/s]
+        std::array<double, 3>      joint_torque_limits   = {  4.0,                     4.0,                     3.0,                   }; // joint torque limits [Nm]
+        std::array<double, 3>      kin_friction_         = {  0.1891,                  0.0541,                  0.1339 };                 // joint kinetic friction [Nm]
 
     };
 

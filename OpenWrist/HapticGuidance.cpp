@@ -149,6 +149,8 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
             open_wrist_.joints_[0]->set_torque(ps_torque);
             open_wrist_.joints_[1]->set_torque(mel::pd_controller(40, 1.0, 0, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity()));
 
+            open_wrist_.check_joint_limits();
+
             // update OpenWrist state
             open_wrist_.update_state_map();
 

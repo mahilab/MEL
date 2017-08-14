@@ -34,7 +34,7 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
         mel::Actuator* motor = new mel::Motor("motor_" + num,
             params_.kt_[i],
-            params_.current_limits_[i],
+            params_.motor_current_limits_[i],
             params_.amp_gains_[i],
             config_.command_[i],
             config_.enable_[i],
