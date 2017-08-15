@@ -2,12 +2,13 @@
 
 namespace mel {
 
+
     Filter::Filter() :
         Filter(2, { 0.020083365564211, 0.040166731128423, 0.020083365564211 }, { 1.000000000000000, -1.561018075800718, 0.641351538057563 })
     { }
 
     Filter::Filter(int order, double_vec b, double_vec a) :
-        Filter(1,order,b,a)
+        Filter(1, order, b, a)
     { }
 
     Filter::Filter(int length, int order, double_vec b, double_vec a) :
@@ -15,11 +16,11 @@ namespace mel {
         n_(order),
         a_(a),
         b_(b),
-        y_(double_vec(length,0))
+        y_(double_vec(length, 0))
     {
 
         for (int j = 0; j < length_; ++j) {
-            filter_implementations_.push_back(new FilterImplementation(order,b,a));
+            filter_implementations_.push_back(new FilterImplementation(order, b, a));
         }
     }
 
@@ -27,7 +28,7 @@ namespace mel {
         n_(order),
         a_(a),
         b_(b),
-        s_(double_vec(order-1,0))
+        s_(double_vec(order - 1, 0))
     { }
 
 
@@ -35,10 +36,10 @@ namespace mel {
 
         y_ = (s_[0] + b_[0] * x) / a_[0];
         for (int i = 0; i < n_; ++i) {
-            s_[i] = s_[i+1] + b_[i+1] * x - a_[i+1] * y_;
+            s_[i] = s_[i + 1] + b_[i + 1] * x - a_[i + 1] * y_;
         }
-        s_[n_-1] = b_[n_] * x - a_[n_] * y_;
-        
+        s_[n_ - 1] = b_[n_] * x - a_[n_] * y_;
+
         return y_;
     }
 
@@ -67,5 +68,6 @@ namespace mel {
 
         return y_;
     }
+
 
 }

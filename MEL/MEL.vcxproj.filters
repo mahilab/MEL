@@ -81,7 +81,9 @@
     <ClCompile Include="OpenWrist.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
-    <ClCompile Include="MelShare.cpp" />
+    <ClCompile Include="MelShare.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateMachine.h">
@@ -162,6 +164,8 @@
     <ClInclude Include="OpenWrist.h">
       <Filter>Devices</Filter>
     </ClInclude>
-    <ClInclude Include="MelShare.h" />
+    <ClInclude Include="MelShare.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

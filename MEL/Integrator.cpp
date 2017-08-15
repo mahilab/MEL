@@ -17,7 +17,7 @@ namespace mel {
             else if (step_count_ > 0)
                 integral_ += (t - last_t_) * (0.5 * (last_x_ + x));
             break;
-        }   
+        }
         last_last_x_ = last_x_;
         last_last_t_ = last_t_;
         last_x_ = x;
@@ -25,5 +25,4 @@ namespace mel {
         step_count_ += 1;
         return integral_;
     }
-
 }
