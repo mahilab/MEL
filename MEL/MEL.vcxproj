@@ -32,6 +32,7 @@
     <ClCompile Include="ForceSensor.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
+    <ClCompile Include="MelShare.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="OpenWrist.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="GuiFlag.h" />
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="MelShare.h" />
     <ClInclude Include="OpenWrist.h" />
     <ClInclude Include="PdController.h" />
     <ClInclude Include="Spinlock.h" />
