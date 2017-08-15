@@ -147,7 +147,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 100, 1, 1, 10, 1 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 1000, 20, 20, 300, 20 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -191,10 +191,10 @@ private:
     Pendulum pendulum_;
 
     // TRAJECTORY VARIABLES
-    double amplitude_ = 300;
+    double amplitude_ = 225;
     double length_ = 450;
-    double sin_freq_ = 0.1;
-    double cos_freq_ = 0.2;
+    double sin_freq_ = 0.225;
+    double cos_freq_ = 0.3;
     mel::share::MelShare trajectory_x_ = mel::share::MelShare("trajectory_x", 54*4); 
     mel::share::MelShare trajectory_y_ = mel::share::MelShare("trajectory_y", 54*4);
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");

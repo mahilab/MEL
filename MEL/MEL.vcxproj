@@ -42,6 +42,7 @@
     <ClCompile Include="StateMachine.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="UnityGame.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +74,7 @@
     <ClInclude Include="PositionSensor.h" />
     <ClInclude Include="Q8Usb.h" />
     <ClInclude Include="Robot.h" />
+    <ClInclude Include="UnityGame.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

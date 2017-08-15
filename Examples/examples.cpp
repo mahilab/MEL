@@ -4,6 +4,7 @@
 #include "MelShare.h"
 #include "Clock.h"
 #include "Integrator.h"
+#include "Input.h"
 #include <cmath>
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
@@ -24,7 +25,8 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("help", "produces help message")
         ("melshare", "example demonstrating how to use MELShare for two way communication with C# or Python")
-        ("melscope", "another MELShare demo that produces test data for also introducing in MELScope");
+        ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
+        ("test","test");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -162,6 +164,11 @@ int main(int argc, char * argv[]) {
             // wait the clock
             clock.wait();
         }
+    }
+
+    if (var_map.count("test")) {
+
+
     }
 }
 

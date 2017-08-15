@@ -25,10 +25,10 @@ CURVE_LINES:
   py2cpp_ampl: [Solid, Solid, Solid, Solid]
   py2cpp_freq: [Solid, Solid, Solid, Solid]
 CURVE_SIZES:
-  cpp2py: [3, 3, 3, 3]
-  integrals: [3, 3, 6, 3]
-  py2cpp_ampl: [3, 3, 3, 3]
-  py2cpp_freq: [3, 3, 3, 3]
+  cpp2py: [2, 2, 2, 2]
+  integrals: [2, 2, 2, 2]
+  py2cpp_ampl: [2, 2, 2, 2]
+  py2cpp_freq: [2, 2, 2, 2]
 DATA_NAMES:
   cpp2py: [sin wave, square wave, triangle wave, sawtooth wave]
   integrals: [t, dx/dt, x (analytical), x (numerical)]

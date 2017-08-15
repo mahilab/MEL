@@ -71,9 +71,9 @@ namespace mel {
         state_[6] = joints_[0]->get_torque();
         state_[7] = joints_[1]->get_torque();
         state_[8] = joints_[2]->get_torque();
-        state_[9] = joints_[0]->actuator_->get_limited_torque();
-        state_[10] = joints_[1]->actuator_->get_limited_torque();
-        state_[11] = joints_[2]->actuator_->get_limited_torque();
+        state_[9] =  static_cast<Motor*>(joints_[1]->actuator_)->get_current_sense();
+        state_[10] = static_cast<Motor*>(joints_[1]->actuator_)->get_current_limited();
+        state_[11] = static_cast<Motor*>(joints_[2]->actuator_)->get_current_limited();
         state_map_.write(state_);
     }
 

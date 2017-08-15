@@ -84,19 +84,19 @@ namespace mel {
 
     }
 
-    double Motor::get_command_current() {
+    double Motor::get_current_command() {
         return current_;
     }
 
-    double Motor::get_limited_current() {
+    double Motor::get_current_limited() {
         return limited_current_;
     }
 
-    double Motor::get_command_torque() {
+    double Motor::get_torque_command() {
         return current_ * kt_;
     }
 
-    double Motor::get_limited_torque() {
+    double Motor::get_torque_limited() {
         return limited_current_ * kt_;
     }
 
@@ -111,14 +111,12 @@ namespace mel {
         i2t_integrand_ = pow(limited_current_, 2) - pow(continuous_current_limit_, 2);
         i2t_time_now_ = i2t_clock_.async_time();
         i2t_integral_ = abs(i2t_integrand_ * (i2t_time_now_ - i2t_time_last_) + i2t_integral_);
-
         if (i2t_integral_ > i2t_time_ * (pow(peak_current_limit_, 2) - pow(continuous_current_limit_, 2))) {
             limited_current_ = saturate(current_, continuous_current_limit_);
         } 
         else {
             limited_current_ = saturate(current_, peak_current_limit_);
         }
-
         i2t_time_last_ = i2t_time_now_;
     }
 

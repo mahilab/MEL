@@ -54,24 +54,22 @@ namespace mel {
 
 
         /// Set the desired current to be generated at the Motor, calls limit_current(), converts from current to amplifier voltage command, and sets voltage on associated analog output channel
-        void set_current(double new_current);
-        
+        void set_current(double new_current);        
         /// Sets the desired torque to be generated at the Motor, converts from torque to current, and calls set_current()
         void set_torque(double new_torque) override; 
 
         /// Returns the commanded current resulting from the commanded current
-        double get_command_current();
+        double get_current_command();
         /// Returns the limited current resulting from the current limit mode operation
-        double get_limited_current();
+        double get_current_limited();
+        /// Gets the current measured by the current sensor of the current amplifier
+        double get_current_sense();
 
         /// Returns the attempted command current since the last call to set_current()
-        double get_command_torque() override;
+        double get_torque_command() override;
         /// Returns the limited command current since the last call to set_current()
-        double get_limited_torque() override;
+        double get_torque_limited() override;
 
-
-        /// Gets the current measured by the current sensor of the current amplifier
-        double get_current_sense(); 
         
         //---------------------------------------------------------------------
         // PUBLIC VARIABLES
