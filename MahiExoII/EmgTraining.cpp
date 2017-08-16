@@ -3,7 +3,7 @@
 
 
 
-EmgTraining::EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmg* meii) :
+EmgTraining::EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmgFrc* meii) :
     StateMachine(4),
     clock_(clock),
     q8_emg_(q8_emg),
@@ -47,7 +47,7 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
 
     
     std::cout << "Press Enter to start the controller" << std::endl;
-    getchar();
+    mel::Input::wait_for_key_press(mel::Input::Key::Return);
     q8_emg_->start_watchdog(0.1);
     std::cout << "Starting the controller ... " << std::endl;
 
@@ -144,10 +144,10 @@ void EmgTraining::sf_hold_neutral(const mel::NoEventData* data) {
         force_share_.resize(calib_force_.size());
         Eigen::VectorXd::Map(&force_share_[0], calib_force_.size()) = calib_force_;*/
 
-        //force_share_ = meii_->wrist_force_sensor_->get_forces();
-        //mel::print(force_share_);
+        force_share_ = meii_->wrist_force_sensor_->get_forces();
+        mel::print(force_share_);
 
-        mel::print(meii_->get_emg_voltages());
+        //mel::print(meii_->get_emg_voltages());
 
         //force_filt_ = multi_lpf_.filter(force_share_);
 

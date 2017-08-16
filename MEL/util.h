@@ -40,7 +40,6 @@ namespace mel {
     typedef std::vector<int32>  int32_vec;
     typedef std::vector<uint32> uint32_vec;
     typedef std::vector<double> double_vec;
-    typedef std::vector<std::vector<double>> double_mat;
 
     //-------------------------------------------------------------------------
     // TYPDEF MEL TYPES BASED ON DAQ MANUFACTUERER
@@ -112,6 +111,18 @@ namespace mel {
             std::cout << std::endl;
     }
 
+    /// Prints MEL 2D array
+    /*template <typename T, std::size_t N, std::size_t M>
+    void print(array_2D<T,N,M> array, bool end_line = true) {
+        for (auto it_row = array_.begin(); it_row != array_.end(); ++it_row) {
+            for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
+                std::cout << *it_col << " ";
+            }
+            if (end_line)
+                std::cout << std::endl;
+        }
+    }*/
+
     /// Formats string name in between angle brackets for MEL printing puproses
     std::string namify(std::string name);
 
@@ -129,11 +140,39 @@ namespace mel {
     double saturate(double value, double max, double min);
     double saturate(double value, double abs_max);
 
-    double_vec mat_vec_multiply(double_mat A, double_vec b);
+    //double_vec mat_vec_multiply(array_2D<double> A, double_vec b);
 
     //-------------------------------------------------------------------------
     // USEFUL CLASSES & TYPES
     //-------------------------------------------------------------------------
 
+    /// Template 2D array for storing 2D data arrays and doing simple arithmetic
+    template <typename T, std::size_t N, std::size_t M>
+    struct array_2D {
+    public:
+        array_2D() {};
+        array_2D(T val) {
+            for (auto it_row = array_.begin(); it_row != array_.end(); ++it_row) {
+                for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
+                    *it_col = val;
+                }          
+            }
+        };
+        std::array<T,M> operator [](int i) const { return array_[i]; }
+        std::array<T,M>& operator [](int i) { return array_[i]; }
+        std::array<T,N> multiply(std::array<T,M> b) {
+            std::array<T,N> c;
+            c.fill(0);
+            for (auto it_row = array_.begin(); it_row != array_.end(); ++it_row) {
+                for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
+                    c[it_row-array_.begin()] += *it_col * b[it_col - (*it_row).begin()];
+                }
+            }
+            return c;
+        };
+    private:
+        std::array<std::array<T,M>,N> array_;
 
+
+    };
 }

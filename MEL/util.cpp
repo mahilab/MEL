@@ -42,7 +42,7 @@ namespace mel {
         return -2 * amplitude / PI * atan(cos(PI * frequency * t) / sin(PI * frequency * t));
     }
 
-    double_vec mat_vec_multiply(double_mat A, double_vec b) {
+    /*double_vec mat_vec_multiply(double_mat A, double_vec b) {
         double_vec c(A.size(),0);
         if (A[0].size() == b.size()) {
             for (int i = 0; i < A.size(); ++i) {
@@ -55,7 +55,7 @@ namespace mel {
             print("FATAL ERROR: inner dimensions must match");
         }
         return c;
-    }
+    }*/
 
 
     double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd) {

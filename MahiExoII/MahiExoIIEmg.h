@@ -2,15 +2,15 @@
 #include "MahiExoII.h"
 #include "EmgElectrode.h"
 
-class MahiExoIIEmg : public MahiExoII {
+class MahiExoIIEmg : public virtual MahiExoII {
 
 public:
 
-    struct Config : public MahiExoII::Config {
+    struct Config : public virtual MahiExoII::Config {
         std::array<mel::Daq::Ai, 8> emg_; // analog input channels that measure EMG voltages
     };
 
-    struct Params : public MahiExoII::Params {
+    struct Params : public virtual MahiExoII::Params {
 
     };
 

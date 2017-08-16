@@ -20,11 +20,16 @@ public:
     };
 
     struct Params {
-        std::array<double, 5>      eta_ = { 0.42 / 4.5, 0.0662864, mel::INCH2METER*0.23, mel::INCH2METER*0.23, mel::INCH2METER*0.23 }; // transmission ratios    [inch / inch]
-        std::array<mel::uint32, 5> encoder_res_ = { 2048, 2048, 2048, 2048, 2048 };           // encoder resolutions    [counts / rev]
-        std::array<double, 5>      kt_ = { 0.127, 0.0603, 0.175, 0.175, 0.175 };        // motor torque constants [N-m/A]
-        std::array<double, 5>      motor_current_limits_ = { 6.0, 3.17, 0.626, 0.626, 0.626 };          // motor current limits   [A]
-        std::array<double, 5>            amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; // motor aplifier gains [A/V]
+        std::array<double, 5>      eta_ = { 0.42 / 4.5, 0.0662864, mel::INCH2METER*0.23, mel::INCH2METER*0.23, mel::INCH2METER*0.23 }; ///< transmission ratios    [inch / inch]
+        std::array<mel::uint32, 5> encoder_res_ = { 2048, 2048, 2048, 2048, 2048 };           ///< encoder resolutions    [counts / rev]
+        std::array<double, 5>      kt_ = { 0.127, 0.0603, 0.175, 0.175, 0.175 };        ///< motor torque constants [N-m/A]
+        std::array<double, 5>      motor_current_limits_ = { 6.0, 3.17, 0.626, 0.626, 0.626 };          ///< motor current limits   [A]
+        std::array<double, 5> motor_torque_limits_ = { 0, 0, 0, 0, 0 }; ///< motor torque limits [Nm]
+        std::array<double, 5> pos_limits_min_ = { 0, 0, 0, 0, 0 }; ///< joint position limits in negative direction
+        std::array<double, 5> pos_limits_max_ = { 0, 0, 0, 0, 0 }; ///< joint position limits in positive direction
+        std::array<double, 5> vel_lmits_ = { 0, 0, 0, 0, 0 }; ///< joint velocity limits
+        std::array<double, 5> joint_torque_limits = { 0, 0, 0, 0, 0 }; ///< joint torque limits
+        std::array<double, 5>            amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; ///< motor aplifier gains [A/V]
     };
 
     MahiExoII(Config configuration, Params parameters = Params());

@@ -12,7 +12,7 @@ namespace mel {
         //---------------------------------------------------------------------
 
         AtiMini45();
-        AtiMini45(std::string name, std::vector<Daq::Ai> ai_channels, double_mat calib_mat);
+        AtiMini45(std::string name, std::vector<Daq::Ai> ai_channels, array_2D<double,6,6> calib_mat);
 
         //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
@@ -26,7 +26,7 @@ namespace mel {
         // PRIVATE VARIABLES
         //---------------------------------------------------------------------
 
-        double_mat calib_mat_;
+        array_2D<double,6,6> calib_mat_;
 
     };
 

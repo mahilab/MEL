@@ -1,7 +1,7 @@
 #pragma once
 #include "StateMachine.h"
 #include "Q8Usb.h"
-#include "MahiExoIIEmg.h"
+#include "MahiExoIIEmgFrc.h"
 #include "MelShare.h"
 #include "Filter.h"
 #include "Clock.h"
@@ -22,7 +22,7 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmg* meii);
+    EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmgFrc* meii);
 
 private:
     
@@ -84,7 +84,7 @@ private:
     // HARDWARE
     mel::Daq* q8_emg_;
     mel::Daq* q8_ati_;
-    MahiExoIIEmg* meii_;
+    MahiExoIIEmgFrc* meii_;
 
     // MEII PARAMETERS
     mel::int8_vec backdrive_ = mel::int8_vec(5, 0);
@@ -110,7 +110,7 @@ private:
 
 
     // EMG SENSING
-    mel::double_mat emg_data_window_;
+    mel::array_2D<double,8,200> emg_data_window_;
     
     
 

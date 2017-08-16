@@ -25,6 +25,7 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
         std::string num = std::to_string(i);
 
+        // construct encoders
         mel::PositionSensor* encoder = new mel::Encoder("encoder_" + num,
             params_.encoder_res_[i] / (2 * mel::PI),
             config_.encoder_[i],
@@ -32,13 +33,16 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
         position_sensors_.push_back(encoder);
 
+        // construct motors
         mel::Actuator* motor = new mel::Motor("motor_" + num,
             params_.kt_[i],
-            params_.motor_current_limits_[i],
             params_.amp_gains_[i],
             config_.command_[i],
             config_.enable_[i],
-            mel::Actuator::EnableMode::Low);
+            mel::Actuator::EnableMode::Low,
+            params_.motor_current_limits_[i],
+            params_.motor_torque_limits_[i],
+            true);
 
         actuators_.push_back(motor);
 
