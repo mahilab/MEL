@@ -9,7 +9,6 @@
 #include "Encoder.h"
 #include "Motor.h"
 #include "PdController.h"
-#include "Input.h"
 
 namespace mel {
 
@@ -40,14 +39,15 @@ namespace mel {
         /// modify these values.
         struct Params {
             std::array<double, 3> kt_                   = { 0.0603,              0.0603,             0.0538 };            ///< motor torque constants [Nm/A]
-            std::array<double, 3> motor_current_limits_ = { 3.17,                3.17,               1.74 };              ///< motor current limits [A]
-            std::array<double, 3> motor_torque_limits_  = { 3.17 * 0.0603,       3.17 * 0.0603,      1.74 * 0.0538 };     ///< motor torque limits [Nm]
+            std::array<double, 3> motor_cont_limits_    = { 3.17,                3.17,               1.74 };              ///< motor continous current limits [A]
+            std::array<double, 3> motor_peak_limits_    = { 10.0,                10.0,               10.0 };              ///< motor peak current limits [A]
+            std::array<double, 3> motor_i2t_times_      = { 2.0,                 2.0,                2.0 };               ///< motor i^2*t times [s]
             std::array<double, 3> eta_                  = { 0.4706 / 8.750,      0.4735 / 9.000,     0.2210 / 6.000 };    ///< transmission ratios [inch/inch]
             std::array<uint32, 3> encoder_res_          = { 500,                 500,                500 };               ///< encoder resolutions [counts/rev]   
-            std::array<double, 3> pos_limits_neg_       = { -36.1123 * DEG2RAD, -63.2490 * DEG2RAD, -36.6765 * DEG2RAD }; ///< joint position limits in negative rotation [rad]
-            std::array<double, 3> pos_limits_pos_       = { +36.1123 * DEG2RAD, +68.2490 * DEG2RAD, +33.4192 * DEG2RAD }; ///< joint position limits in positive rotation [rad]
-            std::array<double, 3> vel_limits_           = { 100 * DEG2RAD,       100 * DEG2RAD,      100 * DEG2RAD };     ///< joint velocity limits [rad/s]
-            std::array<double, 3> joint_torque_limits   = { 4.0,                 4.0,                3.0, };              ///< joint torque limits [Nm]
+            std::array<double, 3> pos_limits_neg_       = { -86.1123 * DEG2RAD, -63.2490 * DEG2RAD, -36.6765 * DEG2RAD }; ///< joint position limits in negative rotation [rad]
+            std::array<double, 3> pos_limits_pos_       = { +86.1123 * DEG2RAD, +68.2490 * DEG2RAD, +33.4192 * DEG2RAD }; ///< joint position limits in positive rotation [rad]
+            std::array<double, 3> vel_limits_           = { 400 * DEG2RAD,       400 * DEG2RAD,      400 * DEG2RAD };     ///< joint velocity limits [rad/s]
+            std::array<double, 3> joint_torque_limits   = { 10.0,                10.0,               10.0, };              ///< joint torque limits [Nm]
             std::array<double, 3> kin_friction_         = { 0.1891,              0.0541,             0.1339 };            ///< joint kinetic friction [Nm]
         };
 
@@ -76,9 +76,9 @@ namespace mel {
         std::array<double, 3> compute_friction_compensation();
 
         /// Calibrates each joint position in sequence and zeros the encoders
-        void calibrate(Daq* daq);
+        void calibrate();
         /// Puts the OpenWrist in an endless graivity and friction compensated state
-        void transparency_mode(Daq* daq);
+        void transparency_mode();
         /// Updates the OpenWrist's state MELShare map
         void update_state_map();
 
@@ -87,7 +87,7 @@ namespace mel {
         //-------------------------------------------------------------------------
 
         share::MelShare state_map_ = share::MelShare("ow_state");
-        double_vec state_ = double_vec(9, 0);
+        double_vec state_ = double_vec(12, 0);
 
         const Config config_; ///< this OpenWrist's Config, set during construction
         const Params params_; ///< this OpenWrist's Params, set during construction
@@ -100,9 +100,9 @@ namespace mel {
 
         /// critically damped PD controllers for each joint, gains are N/m and N-s/m
         std::array<PdController, 3> pd_controllers = {
-            PdController(50, 1.15), // joint 0
-            PdController(40, 1.00), // joint 1
-            PdController(40, 0.25)  // joint 2
+            PdController(25, 1.15), // joint 0
+            PdController(20, 1.00), // joint 1
+            PdController(20, 0.25)  // joint 2
         };
 
         //-------------------------------------------------------------------------
@@ -112,42 +112,6 @@ namespace mel {
         /// Adds a Daq to daqs_ if it's not already in there based on the Device 
         /// variable name_
         void add_daq(Daq* daq);
-
-        //-------------------------------------------------------------------------
-        // TASKS / CONTROLLERS
-        //-------------------------------------------------------------------------
-
-    public:
-
-        class Calibration : public mel::Task {
-        public:
-            Calibration(OpenWrist* open_wrist, mel::Daq* daq) : Task("ow_calibration"), ow(open_wrist), daq(daq) {}
-            OpenWrist* ow;
-            mel::Daq* daq;
-            std::array<double, 3> kp_gains = { 50, 40, 40 };
-            std::array<double, 3> kd_gains = { 1.15, 1.0, 0.25 };
-            std::array<double, 3> sat_torques = { 2.0, 0.5, 1.0 };
-            std::array<double, 3> zeros = { 0,0,0 };
-            std::array<int, 3> dir = { 1 , 1, -1 };
-            mel::uint32 calibrating_joint = 0;
-            double pos_ref = 0;
-            double vel_ref = 90 * mel::DEG2RAD;
-            std::vector<double> stored_positions;
-            bool returning = false;
-            void start() override;
-            void step() override;
-            void stop() override;
-        };
-
-        class TransparencyMode : public mel::Task {
-        public:
-            TransparencyMode(OpenWrist* open_wrist, mel::Daq* daq) : Task("ow_transparency_mode"), ow_(open_wrist), daq_(daq) {}
-            OpenWrist* ow_;
-            mel::Daq* daq_;
-            void start() override;
-            void step() override;
-            void stop() override;
-        };
 
     };
 

@@ -18,6 +18,7 @@ namespace mel {
             e_ = x_ref - x;
             edot_ = xdot_ref - xdot;
             effort_ = kp_ * e_  + kd_ * edot_;
+            return effort_;
         }
 
         double kp_; ///< the proportional control gain

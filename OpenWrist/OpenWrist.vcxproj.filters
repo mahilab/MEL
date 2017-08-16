@@ -1,23 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="CUFF">
       <UniqueIdentifier>{0e370fab-c724-4371-81ea-2bffa33c0d32}</UniqueIdentifier>
     </Filter>
     <Filter Include="Main">
       <UniqueIdentifier>{29ff72c6-4665-4756-b665-157a4afe2529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HapticGuidance">
+      <UniqueIdentifier>{ea2c2e44-2cc4-4672-8b2d-6fa28485a836}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -27,17 +18,17 @@
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="main_haptic_guidance.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Pendulum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HapticGuidance.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>HapticGuidance</Filter>
     </ClCompile>
     <ClCompile Include="Cuff.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>CUFF</Filter>
+    </ClCompile>
+    <ClCompile Include="Pendulum.cpp">
+      <Filter>HapticGuidance</Filter>
+    </ClCompile>
+    <ClCompile Include="main_haptic_guidance.cpp">
+      <Filter>HapticGuidance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,14 +41,14 @@
     <ClInclude Include="qbmove_communications.h">
       <Filter>CUFF</Filter>
     </ClInclude>
-    <ClInclude Include="Pendulum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HapticGuidance.h">
-      <Filter>Header Files</Filter>
+      <Filter>HapticGuidance</Filter>
+    </ClInclude>
+    <ClInclude Include="Pendulum.h">
+      <Filter>HapticGuidance</Filter>
     </ClInclude>
     <ClInclude Include="Cuff.h">
-      <Filter>Header Files</Filter>
+      <Filter>CUFF</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,18 +3,16 @@
 
 namespace mel {
 
-    class Filter {  
+    class Filter {
 
     public:
 
         Filter();
         Filter(int order, double_vec b, double_vec a);
         Filter(int length, int order, double_vec b, double_vec a);
-        
+
         double filter(double);
         double_vec filter(double_vec x);
-        
-        
 
     private:
 
@@ -32,7 +30,7 @@ namespace mel {
 
             double_vec a_;
             double_vec b_;
-            
+
             double_vec s_;
             double y_;
         };
@@ -42,11 +40,12 @@ namespace mel {
 
         double_vec a_;
         double_vec b_;
-        
+
         double_vec y_;
-        
+
         std::vector<FilterImplementation*> filter_implementations_;
 
     };
 
 }
+

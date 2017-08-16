@@ -1,0 +1,63 @@
+CURVE_COLORS:
+  cpp2py:
+  - [255, 127, 0]
+  - [106, 61, 154]
+  - [177, 89, 40]
+  - [166, 206, 227]
+  integrals:
+  - [31, 120, 180]
+  - [227, 26, 28]
+  - [51, 160, 44]
+  - [255, 255, 0]
+  py2cpp_ampl:
+  - [251, 154, 153]
+  - [178, 223, 138]
+  - [253, 191, 111]
+  - [202, 178, 214]
+  py2cpp_freq:
+  - [255, 255, 153]
+  - [141, 211, 199]
+  - [255, 255, 179]
+  - [190, 186, 218]
+CURVE_LINES:
+  cpp2py: [Solid, Solid, Solid, Solid]
+  integrals: [Solid, Solid, Solid, Dash Dot]
+  py2cpp_ampl: [Solid, Solid, Solid, Solid]
+  py2cpp_freq: [Solid, Solid, Solid, Solid]
+CURVE_SIZES:
+  cpp2py: [2, 2, 2, 2]
+  integrals: [2, 2, 2, 2]
+  py2cpp_ampl: [2, 2, 2, 2]
+  py2cpp_freq: [2, 2, 2, 2]
+DATA_NAMES:
+  cpp2py: [sin wave, square wave, triangle wave, sawtooth wave]
+  integrals: [t, dx/dt, x (analytical), x (numerical)]
+  py2cpp_ampl: [sin amplitude, square amplitude, triangle amplitude, sawtooth amplitude]
+  py2cpp_freq: [sin frequency, square frequency, triangle frequency, sawtooth frequency]
+GRID_COLS: 3
+GRID_ROWS: 1
+MELSHARE_MODES: {cpp2py: Read Only, integrals: Read Only, py2cpp_ampl: Write Only,
+  py2cpp_freq: Write Only}
+MELSHARE_NAMES: [integrals, cpp2py, py2cpp_ampl, py2cpp_freq]
+MELSHARE_SIZES: {cpp2py: 4, integrals: 4, py2cpp_ampl: 4, py2cpp_freq: 4}
+SCOPE_FILTERS:
+- cpp2py: [false, false, false, false]
+  integrals: [false, true, true, true]
+  py2cpp_ampl: [false, false, false, false]
+  py2cpp_freq: [false, false, false, false]
+- cpp2py: [true, true, true, true]
+  integrals: [false, false, false, false]
+  py2cpp_ampl: [false, false, false, false]
+  py2cpp_freq: [false, false, false, false]
+- cpp2py: [false, false, false, false]
+  integrals: [true, false, false, false]
+  py2cpp_ampl: [true, true, true, true]
+  py2cpp_freq: [true, true, true, true]
+SCOPE_LEGENDS: [true, true, false]
+SCOPE_MODES: [Scope, Scope, I/O]
+SCOPE_RANGES:
+- [-6.0, 8.0]
+- [-10.0, 10.0]
+- [-1.0, 1.0]
+SCOPE_TITLES: [integrals, periodic data, io module]
+theme: Dark

@@ -19,27 +19,27 @@ namespace mel {
         // PUBLIC FUNCTIONS
         //---------------------------------------------------------------------
 
-        /// Retruns the number of ticks or steps that have occured since that clock was started.
-        /// This should only be called inside of a loop also calling the wait() function.
-        uint32 tick() {
-            return tick_count_;
-        }
-        /// Returns the ideal ammount of time that has elapsed since the clock was started or restarted.
-        /// This should only be called inside of a loop also calling the wait() function.
-        double time() {
-            return elapsed_ideal_;
-        }
-        /// Returns the clock fixed step time or fundamental sample time in seconds.
-        double delta_time() {
-            return delta_time_;
-        }
-
-        /// Starts or restarts the clock timer and clears the log. This should be called before the wait loop starts.
         void start();
         /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
-        /// execution time less than the fixed step time (delta time) of the clock.
+        /// execution time less than the fixed step time (delta time) of the clock.         
         void wait();
         /// Logs this clocks time variables to a DataLog. Call this in the wait loop immediately after wait().
+
+        /// Retruns the number of ticks or steps that have occured since that clock was started.
+        /// This should only be called inside of a loop also calling the wait() function.
+        uint32 tick();
+        /// Returns the ideal ammount of time that has elapsed since the clock was started or restarted.
+        /// This should only be called inside of a loop also calling the wait() function.
+        double time();
+        /// Returns the clock fixed step time or fundamental sample time in seconds.
+        double delta_time();
+        /// Starts or restarts the clock timer and clears the log. This should be called before the wait loop starts.
+
+        /// Returns the actual amout of time that has elapsed since the clock was started, regardless of 
+        /// of whether or not wait as been called. Can be used outside of wait loops. The output is not
+        /// quantized as in time()
+        double async_time();
+
         void log();
         /// Saves the clock log to ./clock_logs/
         void save_log();

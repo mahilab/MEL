@@ -97,6 +97,8 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
         mel::print("\nPress Enter to enable MahiExo-II Daq <" + ow_daq_->name_ + ">.");
         mel::Input::wait_for_key_press(mel::Input::Key::Return);
     }
+
+    // launch Unity game
     
     event(ST_TRANSITION);   
 }
@@ -127,7 +129,6 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 
             // step the pendulum simuation
             pendulum_.step_simulation(clock_.time(), open_wrist_.joints_[0]->get_position(), open_wrist_.joints_[0]->get_velocity());
-
             // compute anglular error
             double error = compute_trajectory_error(open_wrist_.joints_[0]->get_position());
 
@@ -147,10 +148,9 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 
             }
             open_wrist_.joints_[0]->set_torque(ps_torque);
-            open_wrist_.joints_[1]->set_torque(mel::pd_controller(40, 1.0, 0, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity()));
+            open_wrist_.joints_[1]->set_torque(mel::pd_controller(60, 1.0, 0, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity()));
 
             // check joint limits
-            mel::print(open_wrist_.check_all_joint_limits());
             if (open_wrist_.check_all_joint_limits()) {
                 stop_ = true;
                 break;
@@ -191,9 +191,13 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
 
         // update trajectory
         update_trajectory(clock_.time());
-
         // update expert position
         update_expert(clock_.time());
+
+        // step the pendulum simuation
+        pendulum_.step_simulation(clock_.time(), open_wrist_.joints_[0]->get_position(), open_wrist_.joints_[0]->get_velocity());
+        // compute anglular error
+        double error = compute_trajectory_error(open_wrist_.joints_[0]->get_position());
 
         if (CONDITION_ > 0) {
             // read and reload DAQ
@@ -229,9 +233,13 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
 
         // update trajectory
         update_trajectory(clock_.time());
-
         // update expert position
         update_expert(clock_.time());
+
+        // step the pendulum simuation
+        pendulum_.step_simulation(clock_.time(), open_wrist_.joints_[0]->get_position(), open_wrist_.joints_[0]->get_velocity());
+        // compute anglular error
+        double error = compute_trajectory_error(open_wrist_.joints_[0]->get_position());
 
         if (CONDITION_ > 0) {
             // read and reload DAQ
@@ -264,16 +272,6 @@ void HapticGuidance::sf_break(const mel::NoEventData*) {
 
     // enter the control loop
     while (clock_.time() < LENGTH_TRIALS_[BREAK] && !stop_) {
-
-        if (CONDITION_ > 0) {
-            // read and reload DAQ
-            ow_daq_->reload_watchdog();
-            ow_daq_->read_all();
-        }
-
-        // log data
-        log_data_ = { clock_.time() };
-        log_.add_row(log_data_);
 
         // check for stop input
         stop_ = check_stop();
@@ -349,7 +347,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
         // increment the trial;
         current_trial_index_ += 1;
-        mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Space to begin.");
+        mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SCPACE to begin.");
         while (!mel::Input::is_key_pressed(mel::Input::Space)) {
             stop_ = check_stop();
             if (stop_) {
@@ -367,7 +365,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         }
 
         // print message
-        mel::print("STARTING TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press Escape or Ctrl+C to terminate the experiment.");
+        mel::print("STARTING TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press ESC or CTRL+C to terminate the experiment.");
 
         // restart the clock
         clock_.start();
@@ -412,12 +410,11 @@ void HapticGuidance::sf_stop(const mel::NoEventData*) {
 //-----------------------------------------------------------------------------
 // UTILITY FUNCTIONS
 //-----------------------------------------------------------------------------
-
 void HapticGuidance::update_trajectory(double time) {
     // compute trajectory
     for (int i = 0; i < 54; i++) {
         trajectory_y_data[i] = 540 - i * 20;
-        trajectory_x_data[i] = (int)(300.0 * -sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0)) * 
+        trajectory_x_data[i] = (int)(amplitude_ * -sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0)) * 
                                               cos(2.0 * mel::PI * cos_freq_ * (time + (double)i * 20.0 / 1080.0)));
     }
     // send trajectory to Unity

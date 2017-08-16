@@ -79,6 +79,7 @@ namespace mel {
     void Joint::set_torque(double new_torque) {
         torque_ = new_torque;
         if (check_torque_limit() && saturate_) {
+            print("WARNING: Joint " + namify(name_) + " command torque saturated to " + std::to_string(torque_limit_) + ".");
             torque_ = saturate(torque_, torque_limit_);
         }
         actuator_->set_torque(actuator_transmission_ * torque_);

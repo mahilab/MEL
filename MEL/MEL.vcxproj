@@ -32,6 +32,7 @@
     <ClCompile Include="ForceSensor.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
+    <ClCompile Include="MelShare.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="OpenWrist.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="StateMachine.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="UnityGame.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +56,7 @@
     <ClInclude Include="GuiFlag.h" />
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="MelShare.h" />
     <ClInclude Include="OpenWrist.h" />
     <ClInclude Include="PdController.h" />
     <ClInclude Include="Spinlock.h" />
@@ -71,6 +74,7 @@
     <ClInclude Include="PositionSensor.h" />
     <ClInclude Include="Q8Usb.h" />
     <ClInclude Include="Robot.h" />
+    <ClInclude Include="UnityGame.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -137,7 +141,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\build\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

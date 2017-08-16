@@ -19,16 +19,16 @@ namespace mel {
         Technique technique_;
 
         // history
-        uint32 step_count_;
+        uint32 step_count_ = 0;
 
         // previous state(s)
-        double last_last_x_;
-        double last_last_t_;
-        double last_x_;
-        double last_t_;
+        double last_last_x_ = 0.0;
+        double last_last_t_ = 0.0;
+        double last_x_ = 0.0;
+        double last_t_ = 0.0;
 
         // integrated value
-        double integral_;
+        double integral_ = 0.0;
 
 
     };
