@@ -40,21 +40,25 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
             config_.command_[i],
             config_.enable_[i],
             mel::Actuator::EnableMode::Low,
-            params_.motor_current_limits_[i],
-            params_.motor_torque_limits_[i],
-            true);
+            mel::Daq::Ai(),
+            params_.motor_continuous_current_limits_[i],
+            params_.motor_peak_current_limits_[i],
+            params_.motor_i2t_times_[i]);
 
         actuators_.push_back(motor);
 
+        // construct joints
         mel::Joint* joint = new mel::Joint("joint_" + num,
             encoder,
             params_.eta_[i],
             motor,
-            params_.eta_[i]);
+            params_.eta_[i],
+            std::array<double, 2>({ params_.pos_limits_min_[i] , params_.pos_limits_max_[i] }),
+            params_.vel_limits_[i],
+            params_.joint_torque_limits[i],
+            true);
 
-        joints_.push_back(joint);
-
-        
+        joints_.push_back(joint);       
     }
 
     for (int i = 0; i < 5; i++) {
@@ -65,9 +69,12 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
 
     qp_0_ << mel::PI / 4, mel::PI / 4, mel::PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
     selector_mat_.bottomRows(3) = Eigen::MatrixXd::Identity(3, 3);
+}
 
-    
-
+MahiExoII::~MahiExoII() {
+    if (enabled_) {
+        disable();
+    }
 }
 
 /*

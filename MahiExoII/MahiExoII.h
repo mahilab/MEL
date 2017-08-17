@@ -12,46 +12,75 @@ class MahiExoII : public mel::Exo {
 
 public:
 
+    //-------------------------------------------------------------------------
+    // CONFIGURATION / PARAMETERS STRUCTS
+    //-------------------------------------------------------------------------
+
     struct Config {
-        std::array<mel::Daq::Do, 5>      enable_;    // digital output channels that enable motors
-        std::array<mel::Daq::Ao, 5>      command_;   // analog output channels that command motors
-        std::array<mel::Daq::Encoder, 5> encoder_;   // encoder channels that measure motor positions
-        std::array<mel::Daq::EncRate, 5> encrate_;   // encoder channels that measure motor velocities
+        std::array<mel::Daq::Do, 5>      enable_;    ///< digital output channels that enable motors
+        std::array<mel::Daq::Ao, 5>      command_;   ///< analog output channels that command motors
+        std::array<mel::Daq::Encoder, 5> encoder_;   ///< encoder channels that measure motor positions
+        std::array<mel::Daq::EncRate, 5> encrate_;   ///< encoder channels that measure motor velocities
     };
 
     struct Params {
-        std::array<double, 5>      eta_ = { 0.42 / 4.5, 0.0662864, mel::INCH2METER*0.23, mel::INCH2METER*0.23, mel::INCH2METER*0.23 }; ///< transmission ratios    [inch / inch]
-        std::array<mel::uint32, 5> encoder_res_ = { 2048, 2048, 2048, 2048, 2048 };           ///< encoder resolutions    [counts / rev]
-        std::array<double, 5>      kt_ = { 0.127, 0.0603, 0.175, 0.175, 0.175 };        ///< motor torque constants [N-m/A]
-        std::array<double, 5>      motor_current_limits_ = { 6.0, 3.17, 0.626, 0.626, 0.626 };          ///< motor current limits   [A]
-        std::array<double, 5> motor_torque_limits_ = { 0, 0, 0, 0, 0 }; ///< motor torque limits [Nm]
-        std::array<double, 5> pos_limits_min_ = { 0, 0, 0, 0, 0 }; ///< joint position limits in negative direction
-        std::array<double, 5> pos_limits_max_ = { 0, 0, 0, 0, 0 }; ///< joint position limits in positive direction
-        std::array<double, 5> vel_lmits_ = { 0, 0, 0, 0, 0 }; ///< joint velocity limits
-        std::array<double, 5> joint_torque_limits = { 0, 0, 0, 0, 0 }; ///< joint torque limits
-        std::array<double, 5>            amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; ///< motor aplifier gains [A/V]
+        std::array<double, 5> kt_ = { 0.127, 0.0603, 0.175, 0.175, 0.175 }; ///< motor torque constants [N-m/A]
+        std::array<double, 5> motor_continuous_current_limits_ = { 6.0, 3.17, 0.626, 0.626, 0.626 }; ///< motor continuous current limits [A]
+        std::array<double, 5> motor_peak_current_limits_ = { 18.0, 18.0, 1.8, 1.8, 1.8 }; ///< motor peak current limits [A]
+        std::array<double, 5> motor_i2t_times_ = { 2, 2, 2, 2, 2 }; ///< motor i^2*t times [s]
+        std::array<double, 5> eta_ = { 0.42 / 4.5, 0.0662864, mel::INCH2METER*0.23, mel::INCH2METER*0.23, mel::INCH2METER*0.23 }; ///< transmission ratios [inch/inch] or [m]
+        std::array<mel::uint32, 5> encoder_res_ = { 2048, 2048, 2048, 2048, 2048 }; ///< encoder resolutions [counts/rev]
+        std::array<double, 5> pos_limits_min_ = { -91.5 * mel::DEG2RAD, -99 * mel::DEG2RAD, 0.050, 0.050, 0.050 }; ///< robot joint position limits in negative direction [rad] or [m]
+        std::array<double, 5> pos_limits_max_ = {     1 * mel::DEG2RAD, 108 * mel::DEG2RAD, 0.132, 0.132, 0.132 }; ///< robot joint position limits in positive direction [rad] or [m]
+        std::array<double, 5> vel_limits_ = { 100 * mel::DEG2RAD, 300 * mel::DEG2RAD, 0.25, 0.25, 0.25 }; ///< robot joint velocity limits [rad/s] or [m/s]
+        std::array<double, 5> joint_torque_limits = { 10, 10, 200, 200, 200 }; ///< robot joint torque limits [Nm] or [N]
+        std::array<double, 5> amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; ///< motor aplifier gains [A/V]
     };
 
+    //-------------------------------------------------------------------------
+    // CONSTRUCTOR / DESTRUCTOR
+    //-------------------------------------------------------------------------
+
     MahiExoII(Config configuration, Params parameters = Params());
+    ~MahiExoII() override;
 
-    const Config config_;
-    const Params params_;
-
+    //-------------------------------------------------------------------------
+    // PUBLIC FUNCTIONS
+    //-------------------------------------------------------------------------
+    
+    //bool reached_anatomical_joint_position_target(double target_position);
     //void anatomical_joint_set_points(mel::double_vec& set_points);
     void update_kinematics();
-    
-
-    //bool reached_anatomical_joint_position_target(double target_position);
-
-    
 
     // inherited virtual functions from Exo class to be implemented
     void set_anatomical_joint_torques(mel::double_vec new_torques) override;
 
+    //-------------------------------------------------------------------------
+    // PUBLIC VARIABLES
+    //-------------------------------------------------------------------------
+
+    const Config config_;
+    const Params params_;
+   
+
+protected:
+
+    //-------------------------------------------------------------------------
+    // PROTECTED VARIABLES
+    //-------------------------------------------------------------------------
+
+    // MahiExoII MELSHARE STATE MAP
+    mel::share::MelShare state_map_ = mel::share::MelShare("MEII_state");
+    void update_state_map();
+    mel::double_vec state_ = mel::double_vec(15, 0);
+
 private:
 
+    //-------------------------------------------------------------------------
+    // PRIVATE VARIABLES
+    //-------------------------------------------------------------------------
     
-    // parameters
+    // geometric parameters
     const double R_ = 0.1044956;
     const double r_ = 0.05288174521;
     const double a56_ = 0.0268986 - 0.0272820;
@@ -76,6 +105,9 @@ private:
     const mel::uint32 max_it_ = 10;
     const double tol_ = 1e-12;
 
+    //-------------------------------------------------------------------------
+    // PRIVATE FUNCTIONS
+    //-------------------------------------------------------------------------
 
     // kinematics functions
     void forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out);
@@ -90,19 +122,5 @@ private:
     Eigen::VectorXd phi_func(Eigen::VectorXd& qp);
     Eigen::VectorXd a_func(Eigen::VectorXd& qp);
     Eigen::MatrixXd phi_d_qp_func(Eigen::VectorXd& qp);
-    
-    
-    // MahiExoII MELSHARE STATE MAP
-
-    mel::share::MelShare state_map_ = mel::share::MelShare("MEII_state");
-    void update_state_map();
-    mel::double_vec state_ = mel::double_vec(15, 0);
-
-    //const Config config_;
-    //const Params params_;
-    
-    
-
-    
     
 };

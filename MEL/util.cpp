@@ -72,6 +72,7 @@ namespace mel {
     }
 
     double saturate(double value, double abs_max) {
+        abs_max = abs(abs_max);
         return saturate(value, abs_max, -abs_max);
     }
 
