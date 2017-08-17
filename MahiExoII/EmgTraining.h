@@ -96,7 +96,7 @@ private:
     MahiExoIIEmgFrc meii_;
 
     // MEII PARAMETERS
-    mel::int8_vec backdrive_ = { 1,1,1,1,1 };
+    mel::int8_vec backdrive_ = { 0,1,1,1,1 };
 
     // MEII POSITION CONTROL
     mel::double_vec kp_ = { 35, 7, 25, 30, 0 };
@@ -120,8 +120,9 @@ private:
     // EMG SENSING
     mel::array_2D<double,8,200> emg_data_window_;
     
-    // UNITY CONTROLS
+    // UNITY INPUT/OUTPUT
+    mel::share::MelShare scene_num_ = mel::share::MelShare("scene_num");
     mel::share::MelShare target_ = mel::share::MelShare("target");
-    mel::share::MelShare force_mag_ = mel::share::MelShare("force_mag_");
+    mel::share::MelShare force_mag_ = mel::share::MelShare("force_mag");
   
 };

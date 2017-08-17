@@ -64,14 +64,20 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
     q8_emg_->start_watchdog(0.1);
     std::cout << "Starting the controller ... " << std::endl;
 
+    // transition to next state
+    event(ST_TO_CENTER);  
+
+}
+
+void EmgTraining::sf_to_center(const mel::NoEventData* data) {
+    
     // get current position
+    q8_emg_->reload_watchdog();
     q8_emg_->read_all();
     meii_.update_kinematics();
     init_pos_ = meii_.get_anatomical_joint_positions();
-    goal_pos_ = init_pos_;
-
-    // transition to next state
-    event(ST_TO_CENTER);
+    //double arm_translation_force = 1;
+    
 
     // entry into next state
     goal_pos_[0] = -35 * mel::DEG2RAD; // elbow neutral [rad]
@@ -80,12 +86,9 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
     goal_pos_[3] = 0 * mel::DEG2RAD; // wrist r/u neutral [rad]
     goal_pos_[4] = 0.09; // arm translation neutral [rad]
 
-}
-
-void EmgTraining::sf_to_center(const mel::NoEventData* data) {
-    
-    // reset and start the hardware clock
+    // start the hardware clock
     clock_.start();
+    init_time_ = clock_.time();
 
     // enter the control loop
     while (!stop_) {
@@ -99,8 +102,6 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute pd torques
-        double arm_translation_force = 1;
-        init_time_ = 0;
         for (auto i = 0; i < 5; ++i) {
             x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], init_time_, clock_.time(), speed_[i]);
             new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
@@ -112,9 +113,6 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
             }
         }
         //mel::print(arm_translation_force);
-
-        // write position data (UNITY DEBUG)
-        pos_data_.write(meii_.get_anatomical_joint_positions());
         
         //mel::double_vec printable = { new_torques_[0],static_cast<mel::Motor*>(meii_.joints_[0]->actuator_)->get_current_limited() };
         //mel::print(printable);
@@ -125,13 +123,10 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         // write to unity
         std::array<int, 1> target_share = { 0 };
         target_.write(target_share);
-
+        pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
         q8_emg_->write_all();
-
-        // transition to next state
-        event(ST_TO_CENTER);
 
         // check for stop input
         stop_ = check_stop();
@@ -140,15 +135,18 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         clock_.wait();
     }
 
+    // transition to next state
     if (stop_) {
-        event(ST_STOP);
+        // stop if user provided input
+        event(ST_STOP); 
+    }
+    else {
+        event(ST_HOLD_CENTER);
     }
 }
 
 void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
 
-    // reset and start the hardware clock
-    clock_.start();
 
     // enter the control loop
     while (!stop_) {
@@ -200,6 +198,16 @@ void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
 
 void EmgTraining::sf_present_target(const mel::NoEventData* data) {
 
+
+    // compute pd torques
+    init_time_ = 0;
+    for (auto i = 0; i < 5; ++i) {
+        x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], init_time_, clock_.time(), speed_[i]);
+        new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
+        if (backdrive_[i] == 1) {
+            new_torques_[i] = 0;
+        }
+    }
 }
 
 void EmgTraining::sf_stop(const mel::NoEventData* data) {
