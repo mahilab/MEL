@@ -4,7 +4,7 @@
 #include "MelShare.h"
 #include "Clock.h"
 #include "Integrator.h"
-#include "UnityGame.h"
+#include "ExternalApp.h"
 #include "Input.h"
 #include <cmath>
 #include <random>
@@ -29,7 +29,7 @@ int main(int argc, char * argv[]) {
         ("help", "produces help message")
         ("melshare", "example demonstrating how to use MELShare for two way communication with C# or Python")
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
-        ("unity", "example of how to launch a Unity game from C++")
+        ("external", "example of how to launch an external app or game from C++")
         ("test","test");
 
     boost::program_options::variables_map var_map;
@@ -170,25 +170,20 @@ int main(int argc, char * argv[]) {
         }
     }
 
-    if (var_map.count("test")) {
-        srand(2);
-        std::vector<int> numbers = { 1,2,3,4,5,6,7 };
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
+    if (var_map.count("external")) {
+        mel::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
+        my_app.launch();
     }
 
-    if (var_map.count("unity")) {
-        mel::UnityGame my_game("my_game", "C:\\Users\\epeze\\Dropbox\\OpenWrist\\Software\\Games\\Pendulum\\Build\\Pendulum.exe");
-        my_game.launch();
-        mel::Clock::wait_for(10);
+    if (var_map.count("test")) {
+        mel::share::MelShare single("single");
+        double five_out = 5.0;
+        single.write(five_out);
+        getchar();
+
+        double five_in = 0;
+        single.read(five_in);
+        mel::print(five_in);
     }
 }
 

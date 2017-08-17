@@ -67,6 +67,7 @@ namespace mel {
     //-------------------------------------------------------------------------
 
     const std::string get_ymdhms();  ///< Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+    std::string get_last_windows_error_message();
 
     //-------------------------------------------------------------------------
     // PRINTING AND FORMATTING FUNCTIONS

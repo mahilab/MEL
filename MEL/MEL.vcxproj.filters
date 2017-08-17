@@ -84,7 +84,7 @@
     <ClCompile Include="MelShare.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="UnityGame.cpp">
+    <ClCompile Include="ExternalApp.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,7 +170,7 @@
     <ClInclude Include="MelShare.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="UnityGame.h">
+    <ClInclude Include="ExternalApp.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
