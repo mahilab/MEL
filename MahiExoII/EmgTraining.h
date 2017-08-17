@@ -97,7 +97,7 @@ private:
     MahiExoIIEmgFrc meii_;
 
     // MEII PARAMETERS
-    mel::int8_vec backdrive_ = { 0,1,1,1,1 };
+    mel::int8_vec backdrive_ = { 0,0,0,0,1 };
 
     // MEII POSITION CONTROL
     mel::double_vec kp_ = { 35, 7, 25, 30, 0 };
@@ -113,10 +113,10 @@ private:
     mel::double_vec data_p_ = mel::double_vec(5, 0);
     
     // FORCE SENSING
-    mel::double_vec force_share_ = mel::double_vec(6, 0);
-    mel::double_vec force_filt_ = mel::double_vec(6, 0);
+    mel::double_vec wrist_forces_ = mel::double_vec(6, 0);
+    mel::double_vec wrist_forces_filt_ = mel::double_vec(6, 0);
     mel::Filter multi_lpf_ = mel::Filter(6, 4, { 0.009735570656078, -0.032135367809242, 0.045449986329302, -0.032135367809242, 0.009735570656078 }, { 1.000000000000000, -3.572942808701423, 4.807914652718555, -2.886325158284144, 0.652003706289986 });
-    mel::share::MelShare ati_data_ = mel::share::MelShare("MEII_ati");
+    //mel::share::MelShare ati_data_ = mel::share::MelShare("MEII_ati");
 
     // EMG SENSING
     mel::array_2D<double,8,200> emg_data_window_;
@@ -124,12 +124,16 @@ private:
     // EXPERIMENT CONTROL VARIABLES
     mel::char_vec target_check_joint_ = {1,1,1,1,1};
     bool target_reached_ = false;
-    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint);
+    bool hold_center_time_reached_ = false;
+    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
+    double hold_center_time_ = 2.0; // time to hold at center target [s]
+    bool check_wait_time_reached(double wait_time, double init_time, double current_time);
 
     // UNITY INPUT/OUTPUT
     mel::share::MelShare scene_num_ = mel::share::MelShare("scene_num");
-    mel::share::MelShare target_ = mel::share::MelShare("target");
     int target_share_ = 0;
+    mel::share::MelShare target_ = mel::share::MelShare("target");
+    double force_share_ = 0;
     mel::share::MelShare force_mag_ = mel::share::MelShare("force_mag");
   
 };
