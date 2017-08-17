@@ -335,7 +335,7 @@ namespace mel {
             ~MelShare();
 
             template<typename T>
-            int read(T* buffer, int buffer_size) {
+            int read(T* buffer, int buffer_size = 1) {
                 return read_map(buffer, buffer_size, region_data_, region_size_, mutex_name_);
             }
 
@@ -350,7 +350,7 @@ namespace mel {
             }
 
             template<typename T>
-            int write(T* buffer, int buffer_size) {
+            int write(T* buffer, int buffer_size = 1) {
                 return write_map(buffer, buffer_size, region_data_, region_size_, mutex_name_);
             }
 

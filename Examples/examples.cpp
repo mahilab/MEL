@@ -170,24 +170,16 @@ int main(int argc, char * argv[]) {
         }
     }
 
-    if (var_map.count("test")) {
-        srand(2);
-        std::vector<int> numbers = { 1,2,3,4,5,6,7 };
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-        std::random_shuffle(numbers.begin(), numbers.end());
-        mel::print(numbers);
-    }
-
     if (var_map.count("external")) {
         mel::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
         my_app.launch();
+    }
+
+    if (var_map.count("test")) {
+        mel::share::MelShare single("single");
+        double five = 5.0;
+        single.write(&five);
+        getchar();
     }
 }
 
