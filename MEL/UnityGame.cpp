@@ -1,12 +1,24 @@
 #include "UnityGame.h"
 #include <Windows.h>
 #include <tchar.h>
+#include "util.h"
+
+namespace mel {
+
+    UnityGame::UnityGame(std::string name, std::string path) : name_(name), path_(path) {
+
+    }
 
 
-void UnityGame::launch() {
-    char aux_string[255];
+    void UnityGame::launch() {
 
-    wchar_t *waux_string = new wchar_t[strlen(aux_string) + 1]; //memory allocation
-    mbstowcs(waux_string, aux_string, strlen(aux_string) + 1);
-    //ShellExecute(NULL, "open", "C:\\Users\\MAHI\\Dropbox\\OpenWrist\\Software\\Games\\AJLS\\AJLS_Unity_5.6.1f1\\Builds\\AJLS.exe", NULL, NULL, SW_SHOWDEFAULT)
+        print(path_);
+
+        std::string open = "open";
+        std::wstring wopen = std::wstring(open.begin(), open.end());
+        std::wstring wpath = std::wstring(path_.begin(), path_.end());
+
+        ShellExecute(NULL, wopen.c_str(), wpath.c_str(), NULL, NULL, SW_SHOWDEFAULT);
+    }
+
 }

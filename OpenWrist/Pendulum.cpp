@@ -48,3 +48,12 @@ void Pendulum::step_simulation(double time, double position_ref, double velocity
     state_data[7] = Tau[1];
     state.write(state_data);
 }
+
+void Pendulum::reset() {
+    Qdd = { 0,0 };
+    Qd = { 0,0 };
+    Q = { -mel::PI / 2  ,0 };
+    Tau = { 0, 0 };
+    Qdd2Qd = { mel::Integrator(Qd[0]), mel::Integrator(Qd[1]) };
+    Qd2Q = { mel::Integrator(Q[0]), mel::Integrator(Q[1]) };
+}

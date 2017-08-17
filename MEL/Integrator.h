@@ -11,7 +11,10 @@ namespace mel {
 
         Integrator(double initial_value, Technique technique = Technique::Trapezoidal);
 
+        /// Integrats x with respect to t
         double integrate(double x, double t);
+        /// Resets the integrators
+        void reset(double initial_value);
 
     private:
 
