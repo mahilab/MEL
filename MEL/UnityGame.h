@@ -1,20 +1,20 @@
 #pragma once
 #include <string>
 
-class UnityGame {
+namespace mel {
 
-public:
+    class UnityGame {
 
-    UnityGame(std::string name, std::string path) : name_(name) {}
+    public:
 
-    void launch();
+        UnityGame(std::string name, std::string path);
 
-    std::string name_;
+        void launch();
+        void close();
 
+        std::string name_;
+        std::string path_;
 
+    };
 
-    
-
-
-
-};
+}

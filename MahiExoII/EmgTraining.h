@@ -79,6 +79,7 @@ private:
     // EXPERIMENT SETUP
     //-------------------------------------------------------------------------
 
+    mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
 
     //-------------------------------------------------------------------------
     // EXPERIMENT COMPONENTS
@@ -120,6 +121,11 @@ private:
     // EMG SENSING
     mel::array_2D<double,8,200> emg_data_window_;
     
+    // EXPERIMENT CONTROL VARIABLES
+    mel::char_vec target_check_joint_ = {1,1,1,1,1};
+    bool target_reached_ = false;
+    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint);
+
     // UNITY INPUT/OUTPUT
     mel::share::MelShare scene_num_ = mel::share::MelShare("scene_num");
     mel::share::MelShare target_ = mel::share::MelShare("target");

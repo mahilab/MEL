@@ -29,6 +29,9 @@ bool EmgTraining::check_stop() {
     return mel::Input::is_key_pressed(mel::Input::Escape) || (mel::Input::is_key_pressed(mel::Input::LControl) && mel::Input::is_key_pressed(mel::Input::C));
 }
 
+//-----------------------------------------------------------------------------
+// "INITIALIZATION" STATE FUNCTION
+//-----------------------------------------------------------------------------
 void EmgTraining::sf_init(const mel::NoEventData* data) {
 
     // enable MEII EMG DAQ
@@ -64,36 +67,42 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
     q8_emg_->start_watchdog(0.1);
     std::cout << "Starting the controller ... " << std::endl;
 
+    // start the hardware clock
+    clock_.start();
+
     // transition to next state
     event(ST_TO_CENTER);  
 
 }
 
+//-----------------------------------------------------------------------------
+// "GO TO CENTER" STATE FUNCTION
+//-----------------------------------------------------------------------------
 void EmgTraining::sf_to_center(const mel::NoEventData* data) {
     
-    // get current position
+    // get current position and time to initialize trajectory
     q8_emg_->reload_watchdog();
     q8_emg_->read_all();
     meii_.update_kinematics();
     init_pos_ = meii_.get_anatomical_joint_positions();
-    //double arm_translation_force = 1;
-    
+    init_time_ = clock_.time();
+    //double arm_translation_force = 1; // for debugging
 
-    // entry into next state
+    // set goal position for trajectory
     goal_pos_[0] = -35 * mel::DEG2RAD; // elbow neutral [rad]
     goal_pos_[1] = 0 * mel::DEG2RAD; // forearm neutral [rad]
     goal_pos_[2] = 0 * mel::DEG2RAD; // wrist f/e neutral [rad]
     goal_pos_[3] = 0 * mel::DEG2RAD; // wrist r/u neutral [rad]
     goal_pos_[4] = 0.09; // arm translation neutral [rad]
 
-    // start the hardware clock
-    clock_.start();
-    init_time_ = clock_.time();
+    // set joints to be checked for target reached
+    target_check_joint_ = { 1, 1, 1, 1, 0 };
+    target_reached_ = false;
 
 
     target_share_ =  1;
     // enter the control loop
-    while (!stop_) {
+    while (!target_reached_ && !stop_) {
 
         // read and reload DAQs
         q8_emg_->reload_watchdog();
@@ -108,7 +117,7 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
             x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], init_time_, clock_.time(), speed_[i]);
             new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
             //if (i == 4) {
-            //    arm_translation_force = new_torques_[i];
+            //    arm_translation_force = new_torques_[i]; // for debugging
             //}
             if (backdrive_[i] == 1) {
                 new_torques_[i] = 0;
@@ -129,6 +138,9 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         // write to daq
         q8_emg_->write_all();
 
+        // check for target reached
+        target_reached_ = check_target_reached(goal_pos_, meii_.get_anatomical_joint_positions(), target_check_joint_);
+
         // check for stop input
         stop_ = check_stop();
 
@@ -141,13 +153,19 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         // stop if user provided input
         event(ST_STOP); 
     }
-    else {
+    else if (target_reached_) {
         event(ST_HOLD_CENTER);
+    }
+    else {
+        mel::print("ERROR: State transition undefined. Going to ST_STOP.");
+        event(ST_STOP);
     }
 }
 
+//-----------------------------------------------------------------------------
+// "HOLD AT CENTER" STATE FUNCTION
+//-----------------------------------------------------------------------------
 void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
-
 
     // enter the control loop
     while (!stop_) {
@@ -197,8 +215,10 @@ void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
     }
 }
 
+//-----------------------------------------------------------------------------
+// "PRESENT TARGET" STATE FUNCTION
+//-----------------------------------------------------------------------------
 void EmgTraining::sf_present_target(const mel::NoEventData* data) {
-
 
     // compute pd torques
     init_time_ = 0;
@@ -211,9 +231,31 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
     }
 }
 
+
+//-----------------------------------------------------------------------------
+// "STOP" STATE FUNCTION
+//-----------------------------------------------------------------------------
+
 void EmgTraining::sf_stop(const mel::NoEventData* data) {
     std::cout << "State Stop " << std::endl;
     meii_.disable();
     q8_emg_->disable();
     q8_ati_->disable();
+}
+
+//-----------------------------------------------------------------------------
+// UTILITY FUNCTIONS
+//-----------------------------------------------------------------------------
+
+bool EmgTraining::check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec target_check_joint) {
+
+    bool target_reached = true;
+    for (int i = 0; i < 5; ++i) {
+        if (target_check_joint[i]) {
+            if (abs(goal_pos[i] - current_pos[i]) > abs(target_tol_[i])) {
+                target_reached = false;
+            }
+        }
+    }
+    return target_reached;
 }

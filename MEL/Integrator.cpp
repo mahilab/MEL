@@ -25,4 +25,13 @@ namespace mel {
         step_count_ += 1;
         return integral_;
     }
+
+    void Integrator::reset(double initial_value) {
+        integral_ = initial_value;
+        step_count_ = 0;
+        last_last_x_ = 0.0;
+        last_last_t_ = 0.0;
+        last_x_ = 0.0;
+        last_t_ = 0.0;
+    }
 }

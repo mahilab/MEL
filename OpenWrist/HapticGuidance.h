@@ -6,6 +6,7 @@
 #include "GuiFlag.h"
 #include <noise/noise.h>
 
+
 //----------------------------------------------------------------------------
 // Hatpic guidance experiements with OpenWrist, CUFF, and MahiExo-II 
 //----------------------------------------------------------------------------
@@ -16,15 +17,15 @@
 // Condition 3: OpenWrist P/S + CUFF w/ Haptic Guidance Forces        x10 subj
 // Condition 4: OpenWrist P/S + MahiExo-II w/ Haptic Guidance Forces  x10 subj
 //----------------------------------------------------------------------------
-// EXPERIMENT BREAKDOWN              | BLOCK | TRIAL #s |
+// EXPERIMENT BREAKDOWN              | BLOCK | TRIAL #s | 
 //----------------------------------------------------------------------------
-// Familiarization Trial (x1 - 1min) | F1    | 1        |
-// Evaluation Trials (x3 - 20s ea)   | E1    | 2 - 4    |
+// Familiarization Trial (x1 - 1min) | F1    | 1        | 
+// Evaluation Trials (x3 - 20s ea)   | E1    | 2 - 4    | 
 // Training Trials (x12 - 20s ea)    | T1    | 5 - 16   |
-// Evaluation Trials (x3 - 20s ea)   | E2    | 17 - 19  |
-// Training Trials (x12 - 20s ea)    | T2    | 20	31  |
-// Evaluation Trials (x3 - 20s ea)   | E3    | 32 - 34  |
-// Training Trials (x12 - 20s ea)    | T3    | 35 - 46  |
+// Evaluation Trials (x3 - 20s ea)   | E2    | 17 - 19  | 
+// Training Trials (x12 - 20s ea)    | T2    | 20	31  | 
+// Evaluation Trials (x3 - 20s ea)   | E3    | 32 - 34  | 
+// Training Trials (x12 - 20s ea)    | T3    | 35 - 46  | 
 // 5 Minute Break                    | B1    | 47       |
 // Evaluation Trials (x3 - 20s ea)   | E4    | 48 - 50  |
 // Training Trials (x12 - 20s ea)    | T4    | 51 - 62  |
@@ -147,7 +148,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 1000, 20, 20, 300, 20 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 5, 5, 5, 5, 5 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -171,6 +172,7 @@ private:
     // DATA LOG
     mel::DataLog log_ = mel::DataLog("hg_log");
     std::vector<double> log_data_;
+    void log_row();
 
     // HARDWARE CLOCK
     mel::Clock clock_;
@@ -191,6 +193,18 @@ private:
     Pendulum pendulum_;
 
     // TRAJECTORY VARIABLES
+
+    struct TrajParams {
+        TrajParams(double amp, double sin, double cos) : amp_(amp), sin_(sin), cos_(cos) {}
+        double amp_, sin_, cos_;
+    };
+
+    std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(225, 0.1, 0.1) };
+    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(225, 0.1, 0.1), TrajParams(225, 0.2, 0.2), TrajParams(225, 0.3, 0.3) };
+    std::vector<TrajParams> TRAJ_PARAMS_T_; // to be generated from TRAJ_PARAMS_E_
+    std::vector<TrajParams> TRAJ_PARAMS_G_; // TO DO!!!!!!!!!!!!!!
+    std::vector<TrajParams> TRAJ_PARAMS_; // random generated for all trials
+
     double amplitude_ = 225;
     double length_ = 450;
     double sin_freq_ = 0.225;
@@ -203,7 +217,8 @@ private:
     std::array<int, 2> expert_position_ = { 0, 0 };
     void update_trajectory(double time);
     void update_expert(double time);
-    double compute_trajectory_error(double joint_angle);
+    double traj_error_ = 0;
+    void update_trajectory_error(double joint_angle);
 
     // UNITY GAMEMANAGER
     mel::share::MelShare unity_ = mel::share::MelShare("unity");

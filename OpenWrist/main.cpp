@@ -12,7 +12,6 @@
 #include <boost/program_options.hpp>
 #include <noise/noise.h>
 #include "Integrator.h"
-#include "HgCondition0.h"
 
 namespace po = boost::program_options;
 

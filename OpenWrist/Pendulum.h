@@ -12,6 +12,7 @@ public:
 
     /// Steps the pendulum simulation
     void step_simulation(double time, double position_ref, double velocity_ref);
+    void reset();
 
     // PENDULUM PARAMETERS
     double g = 9.81;

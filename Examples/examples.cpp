@@ -4,8 +4,11 @@
 #include "MelShare.h"
 #include "Clock.h"
 #include "Integrator.h"
+#include "UnityGame.h"
 #include "Input.h"
 #include <cmath>
+#include <random>
+
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -26,6 +29,7 @@ int main(int argc, char * argv[]) {
         ("help", "produces help message")
         ("melshare", "example demonstrating how to use MELShare for two way communication with C# or Python")
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
+        ("unity", "example of how to launch a Unity game from C++")
         ("test","test");
 
     boost::program_options::variables_map var_map;
@@ -167,8 +171,24 @@ int main(int argc, char * argv[]) {
     }
 
     if (var_map.count("test")) {
+        srand(2);
+        std::vector<int> numbers = { 1,2,3,4,5,6,7 };
+        std::random_shuffle(numbers.begin(), numbers.end());
+        mel::print(numbers);
+        std::random_shuffle(numbers.begin(), numbers.end());
+        mel::print(numbers);
+        std::random_shuffle(numbers.begin(), numbers.end());
+        mel::print(numbers);
+        std::random_shuffle(numbers.begin(), numbers.end());
+        mel::print(numbers);
+        std::random_shuffle(numbers.begin(), numbers.end());
+        mel::print(numbers);
+    }
 
-
+    if (var_map.count("unity")) {
+        mel::UnityGame my_game("my_game", "C:\\Users\\epeze\\Dropbox\\OpenWrist\\Software\\Games\\Pendulum\\Build\\Pendulum.exe");
+        my_game.launch();
+        mel::Clock::wait_for(10);
     }
 }
 
