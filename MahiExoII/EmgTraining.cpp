@@ -90,6 +90,8 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
     clock_.start();
     init_time_ = clock_.time();
 
+
+    target_share_ =  1;
     // enter the control loop
     while (!stop_) {
 
@@ -121,8 +123,7 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         meii_.set_anatomical_joint_torques(new_torques_);
         
         // write to unity
-        std::array<int, 1> target_share = { 0 };
-        target_.write(target_share);
+        target_.write(&target_share_,1);
         pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq

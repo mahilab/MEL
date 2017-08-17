@@ -123,6 +123,7 @@ private:
     // UNITY INPUT/OUTPUT
     mel::share::MelShare scene_num_ = mel::share::MelShare("scene_num");
     mel::share::MelShare target_ = mel::share::MelShare("target");
+    int target_share_ = 0;
     mel::share::MelShare force_mag_ = mel::share::MelShare("force_mag");
   
 };
