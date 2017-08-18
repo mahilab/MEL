@@ -135,7 +135,7 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         meii_.set_anatomical_joint_torques(new_torques_);
         
         // write to unity
-        target_.write(&target_share_,4);
+        target_.write(target_share_);
         pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
@@ -224,7 +224,7 @@ void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
         meii_.set_anatomical_joint_torques(new_torques_);
 
         // write to unity
-        target_.write(&target_share_, 4);
+        target_.write(target_share_);
         pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
@@ -317,9 +317,9 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
         mel::print(force_share_);
 
         // write to unity
-        target_.write(&target_share_, 4);
+        target_.write(target_share_);
         pos_data_.write(meii_.get_anatomical_joint_positions());
-        force_mag_.write(&force_share_, 8);
+        force_mag_.write(force_share_);
 
         // write to daq
         q8_emg_->write_all();
