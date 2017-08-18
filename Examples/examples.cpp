@@ -9,7 +9,6 @@
 #include <cmath>
 #include <random>
 
-
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
 // does not require any variables from other sections. To run a particular secition,
@@ -105,6 +104,8 @@ int main(int argc, char * argv[]) {
     //-------------------------------------------------------------------------
 
     if (var_map.count("melscope")) {
+
+        // **Open example.scope in MELScope to see this example in action**
 
         // Create our MELShare maps. We will make one map, "integrals", to demonstate
         // MEL's Integrator class. We will also make three other maps, "cpp2py", 
