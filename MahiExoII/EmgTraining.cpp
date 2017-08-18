@@ -101,7 +101,7 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
     target_check_joint_ = { 1, 1, 1, 1, 0 };
     target_reached_ = false;
 
-    // unity controls
+    // MelShare unity interface
     target_share_ =  0;
 
     // enter the control loop
@@ -190,7 +190,7 @@ void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
 
     hold_center_time_reached_ = false;
 
-    // unity controls
+    // MelShare unity interface
     target_share_ = 0;
 
     // enter the control loop
@@ -274,8 +274,15 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
     init_pos_ = goal_pos_;
     init_time_ = clock_.time();
 
-    // unity controls
-    target_share_ = 1;
+    // MelShare unity interface
+    if (current_target_ < target_sequence_.size()) {
+        target_share_ = target_sequence_[current_target_];
+    }
+    else {
+        target_share_ = target_sequence_.back();
+        end_of_target_sequence_ = true;
+    }
+    force_share_ = 0;
 
     // enter the control loop
     while (!stop_) {
@@ -376,4 +383,11 @@ bool EmgTraining::check_target_reached(mel::double_vec goal_pos, mel::double_vec
 
 bool EmgTraining::check_wait_time_reached(double wait_time, double init_time, double current_time) {
     return (current_time - init_time) > wait_time;
+}
+
+bool EmgTraining::check_force_mag_reached(double force_mag_goal, double force_mag) {
+    force_mag_time_now_ = clock_.async_time();
+    force_mag_maintained_ += std::copysign(1.0, force_mag_tol_ - std::abs(force_mag_goal - force_mag)) * (force_mag_time_now_ - force_mag_time_last_);
+    force_mag_time_last_ = force_mag_time_now_;
+    return force_mag_maintained_ > force_mag_dwell_time_;
 }

@@ -79,7 +79,17 @@ private:
     // EXPERIMENT SETUP
     //-------------------------------------------------------------------------
 
+    int current_target_ = 0;
+    std::vector<int> target_sequence_ = { 1,2,1,2,1,2 };
+    mel::char_vec target_check_joint_ = { 1,1,1,1,1 };
     mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
+    double hold_center_time_ = 2.0; // time to hold at center target [s]
+    double force_mag_goal_ = 1000; // [N^2]
+    double force_mag_tol_ = 1.0; // [N]
+    double force_mag_dwell_time_ = 1.0; // [s]
+    double force_mag_maintained_ = 0; // [s]
+    double force_mag_time_now_ = 0;
+    double force_mag_time_last_ = 0;
 
     //-------------------------------------------------------------------------
     // EXPERIMENT COMPONENTS
@@ -121,13 +131,14 @@ private:
     // EMG SENSING
     mel::array_2D<double,8,200> emg_data_window_;
     
-    // EXPERIMENT CONTROL VARIABLES
-    mel::char_vec target_check_joint_ = {1,1,1,1,1};
+    // STATE TRANSITION EVENTS
     bool target_reached_ = false;
     bool hold_center_time_reached_ = false;
+    bool force_mag_reached_ = false;
+    bool end_of_target_sequence_ = false;
     bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
-    double hold_center_time_ = 2.0; // time to hold at center target [s]
     bool check_wait_time_reached(double wait_time, double init_time, double current_time);
+    bool check_force_mag_reached(double force_mag_goal, double force_mag);
 
     // UNITY INPUT/OUTPUT
     mel::share::MelShare scene_num_ = mel::share::MelShare("scene_num");
