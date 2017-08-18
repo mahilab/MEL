@@ -5,6 +5,7 @@
 #include "Pendulum.h"
 #include "GuiFlag.h"
 #include <noise/noise.h>
+#include "ExternalApp.h"
 
 
 //----------------------------------------------------------------------------
@@ -148,7 +149,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 5, 5, 5, 5, 5 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 60, 20, 20, 300, 20 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -166,11 +167,14 @@ private:
     // EXPERIMENT COMPONENTS
     //-------------------------------------------------------------------------
 
+    // UNITY GAME
+    mel::ExternalApp game = mel::ExternalApp("pendulum", "C:\\Users\\mep9\\Dropbox\\OpenWrist\\Software\\Games\\Pendulum\\Build\\Pendulum.exe");
+
     // GUI FLAGS
     GuiFlag& gui_flag_;
 
     // DATA LOG
-    mel::DataLog log_ = mel::DataLog("hg_log");
+    mel::DataLog log_ = mel::DataLog("hg_log", false);
     std::vector<double> log_data_;
     void log_row();
 

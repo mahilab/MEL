@@ -119,6 +119,9 @@ void HapticGuidance::build_experiment() {
 // START STATE FUNCTION
 //-----------------------------------------------------------------------------
 void HapticGuidance::sf_start(const mel::NoEventData*) {
+
+    // launch game
+    game.launch();
     
     // enable OpenWrist DAQ
     if (CONDITION_ > 0) {
@@ -199,7 +202,9 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 
             }
             open_wrist_.joints_[0]->set_torque(ps_torque);
-            open_wrist_.joints_[1]->set_torque(mel::pd_controller(60, 1.0, 0, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity()));
+            open_wrist_.joints_[1]->set_torque(mel::pd_controller(60, 1.00, 0, open_wrist_.joints_[1]->get_position(), 0, open_wrist_.joints_[1]->get_velocity()));
+            open_wrist_.joints_[2]->set_torque(mel::pd_controller(20, 0.25, 0, open_wrist_.joints_[2]->get_position(), 0, open_wrist_.joints_[2]->get_velocity()));
+
 
             // check joint limits
             if (open_wrist_.check_all_joint_limits()) {
