@@ -170,12 +170,6 @@ void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
 
 }
 
-bool reached_anatomical_joint_position_target(double target_position) {
-
-
-
-}
-
 
 
 void MahiExoII::forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out) {

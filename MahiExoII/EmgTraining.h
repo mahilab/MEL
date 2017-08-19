@@ -8,6 +8,7 @@
 #include "util.h"
 #include "mahiexoii_util.h"
 #include "GuiFlag.h"
+#include <boost/circular_buffer.hpp>
 
 class EmgTrainingData : public mel::EventData {
 
@@ -37,6 +38,8 @@ private:
         ST_TO_CENTER,
         ST_HOLD_CENTER,
         ST_PRESENT_TARGET,
+        ST_PROCESS_EMG,
+        ST_FINISH,
         ST_STOP,
         ST_NUM_STATES
     };
@@ -54,6 +57,12 @@ private:
     void sf_present_target(const mel::NoEventData*);
     mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_present_target> sa_present_target;
 
+    void sf_process_emg(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_process_emg> sa_process_emg;
+
+    void sf_finish(const mel::NoEventData*);
+    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_finish> sa_finish;
+
     void sf_stop(const mel::NoEventData*);
     mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_stop> sa_stop;
 
@@ -64,6 +73,8 @@ private:
             &sa_to_center,
             &sa_hold_center,
             &sa_present_target,
+            &sa_process_emg,
+            &sa_finish,
             &sa_stop,
         };
         return &STATE_MAP[0];
@@ -85,7 +96,7 @@ private:
     mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
     double hold_center_time_ = 2.0; // time to hold at center target [s]
     double force_mag_goal_ = 1000; // [N^2]
-    double force_mag_tol_ = 1.0; // [N]
+    double force_mag_tol_ = 100; // [N]
     double force_mag_dwell_time_ = 1.0; // [s]
     double force_mag_maintained_ = 0; // [s]
     double force_mag_time_now_ = 0;
@@ -121,7 +132,7 @@ private:
     mel::double_vec new_torques_ = mel::double_vec(5, 0);
     mel::share::MelShare pos_data_ = mel::share::MelShare("MEII_pos");
     mel::double_vec data_p_ = mel::double_vec(5, 0);
-    
+
     // FORCE SENSING
     mel::double_vec wrist_forces_ = mel::double_vec(6, 0);
     mel::double_vec wrist_forces_filt_ = mel::double_vec(6, 0);
@@ -129,12 +140,55 @@ private:
     //mel::share::MelShare ati_data_ = mel::share::MelShare("MEII_ati");
 
     // EMG SENSING
-    mel::array_2D<double,8,200> emg_data_window_;
+    int num_channels_ = 8; 
+    mel::double_vec emg_voltages_ = mel::double_vec(num_channels_, 0);
+    struct EmgDataBuffer {
+        EmgDataBuffer(size_t num_channels, size_t length) :
+            num_channels_(num_channels),
+            length_(length)
+        {
+            for (int i = 0; i < num_channels_; ++i) {
+                data_buffer_.push_back(boost::circular_buffer<double>(length_));
+            }
+        }
+        void push_back(mel::double_vec data_vec) {
+            if (data_vec.size() != num_channels_) {
+                mel::print("ERROR: Incorrect number of rows when calling EmgDataBuffer::push_back().");
+            }
+            for (int i = 0; i < num_channels_; ++i) {
+                data_buffer_[i].push_back(data_vec[i]);
+            }
+        }
+        mel::double_vec at(int index) {
+            mel::double_vec data_vec;
+            for (int i = 0; i < num_channels_; ++i) {
+                data_vec.push_back(data_buffer_[i][index]);
+            }
+            return data_vec;
+        }
+        size_t num_channels_;
+        size_t length_;
+        std::vector<boost::circular_buffer<double>> data_buffer_;
+    };   
+    EmgDataBuffer emg_data_buffer_ = EmgDataBuffer(num_channels_,200);
+    
+
+    // EMG FEATURE EXTRACTION
+    int num_features_ = 5;
+    mel::double_vec feature_vec_ = mel::double_vec(num_features_*num_channels_, 0);
+    mel::double_vec feature_extract(EmgDataBuffer& emg_data_buffer);
+    double rms_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
+    double mav_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
+    double wl_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
+    double zc_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
+    double ssc_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
+    mel::double_vec ar4_feature_extract(boost::circular_buffer<double> emg_channel_buffer);    
     
     // STATE TRANSITION EVENTS
     bool target_reached_ = false;
     bool hold_center_time_reached_ = false;
     bool force_mag_reached_ = false;
+    bool emg_data_processed_ = false;
     bool end_of_target_sequence_ = false;
     bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
     bool check_wait_time_reached(double wait_time, double init_time, double current_time);
@@ -146,5 +200,10 @@ private:
     mel::share::MelShare target_ = mel::share::MelShare("target");
     double force_share_ = 0;
     mel::share::MelShare force_mag_ = mel::share::MelShare("force_mag");
-  
+
+    // MELSCOPE VARIABLES
+    mel::share::MelShare pos_share_ = mel::share::MelShare("pos_share");
+    mel::share::MelShare vel_share_ = mel::share::MelShare("vel_share");
+    mel::share::MelShare emg_share_ = mel::share::MelShare("emg_share");
+
 };
