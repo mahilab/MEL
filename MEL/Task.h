@@ -34,7 +34,7 @@ namespace mel {
         }
 
         double delta_time() {
-            return clock_->delta_time();
+            return clock_->delta_time_;
         }
 
     private:

@@ -87,6 +87,9 @@
     <ClCompile Include="ExternalApp.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="PdController.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateMachine.h">

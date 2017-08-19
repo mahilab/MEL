@@ -99,7 +99,6 @@ namespace mel {
         // PRIVATE VARIABLES
         //---------------------------------------------------------------------   
 
-        Clock i2t_clock_;
         double i2t_integrand_;
         double i2t_integral_;
         double i2t_time_now_;

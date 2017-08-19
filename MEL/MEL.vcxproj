@@ -35,6 +35,7 @@
     <ClCompile Include="MelShare.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="OpenWrist.cpp" />
+    <ClCompile Include="PdController.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />

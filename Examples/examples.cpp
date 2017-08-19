@@ -177,14 +177,8 @@ int main(int argc, char * argv[]) {
     }
 
     if (var_map.count("test")) {
-        mel::share::MelShare single("single");
-        double five_out = 5.0;
-        single.write(five_out);
-        getchar();
-
-        double five_in = 0;
-        single.read(five_in);
-        mel::print(five_in);
+        mel::Clock::wait_for(5);
+        mel::print(mel::Clock::global_time());
     }
 }
 
