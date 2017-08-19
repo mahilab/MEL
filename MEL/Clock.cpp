@@ -4,6 +4,9 @@
 
 namespace mel {
 
+    const double Clock::NS2S = 1.0 / 1000000000.0;    
+    const std::chrono::high_resolution_clock::time_point Clock::global_start_ = std::chrono::high_resolution_clock::now();
+
     Clock::Clock(uint32 frequency) :
         frequency_(frequency),
         delta_time_(1.0 / frequency),
@@ -58,16 +61,6 @@ namespace mel {
         return elapsed_ideal_;
     }
 
-    double Clock::delta_time() {
-        return delta_time_;
-    }
-
-    double Clock::async_time() {
-        now_ = std::chrono::high_resolution_clock::now();
-        elapsed_actual_ = now_ - start_;
-        return static_cast<double>(elapsed_actual_.count()) * NS2S;
-    }
-
     void Clock::log() {
         std::vector<double> row = { static_cast<double>(tick_count_) , elapsed_ideal_ , elapsed_actual_.count() * NS2S , elapsed_exe_.count() * NS2S , elapsed_wait_.count() * NS2S , elapsed_tick_.count() * NS2S };
         log_.add_row(row);
@@ -86,5 +79,11 @@ namespace mel {
             now = std::chrono::high_resolution_clock::now();
             elapsed = now - start;
         }
+    }
+
+    double Clock::global_time() {
+        auto now = std::chrono::high_resolution_clock::now();
+        std::chrono::nanoseconds elapsed = now - global_start_;
+        return static_cast<double>(elapsed.count()) * NS2S;
     }
 }

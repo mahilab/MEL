@@ -9,7 +9,6 @@
 #include <cmath>
 #include <random>
 
-
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
 // does not require any variables from other sections. To run a particular secition,
@@ -106,6 +105,8 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("melscope")) {
 
+        // **Open example.scope in MELScope to see this example in action**
+
         // Create our MELShare maps. We will make one map, "integrals", to demonstate
         // MEL's Integrator class. We will also make three other maps, "cpp2py", 
         // "py2cpp_ampl", and "py2cpp_freq" to deomstate bidirectional communication in 
@@ -176,14 +177,8 @@ int main(int argc, char * argv[]) {
     }
 
     if (var_map.count("test")) {
-        mel::share::MelShare single("single");
-        double five_out = 5.0;
-        single.write(five_out);
-        getchar();
-
-        double five_in = 0;
-        single.read(five_in);
-        mel::print(five_in);
+        mel::Clock::wait_for(5);
+        mel::print(mel::Clock::global_time());
     }
 }
 

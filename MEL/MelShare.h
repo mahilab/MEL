@@ -334,41 +334,49 @@ namespace mel {
             MelShare& operator=(const MelShare& other);
             ~MelShare();
 
+            /// Reads n = #buffer_size values into C-style array #buffer
             template<typename T>
             int read(T* buffer, int buffer_size) {
                 return read_map(buffer, buffer_size, region_data_, region_size_, mutex_name_);
             }
 
+            /// Reads single value into buffer
             template<typename T>
             int read(T& buffer) {
-                return read_map(&buffer, 1, region_data_, region_size_, mutex_name_);
+                return read(&buffer, 1);
             }
 
+            /// Reads n = buffer.size() values into STL vector #buffer
             template<typename T>
             int read(std::vector<T>& buffer) {
                 return read(&buffer[0], buffer.size());
             }
 
+            /// Reads n = buffer.size() values into STL array #buffer
             template <typename T, std::size_t N>
             int read(std::array<T, N>& buffer) {
                 return read(&buffer[0], buffer.size());
             }
 
+            /// Writes n = #buffer_size values from C-style array #buffer
             template<typename T>
             int write(T* buffer, int buffer_size) {
                 return write_map(buffer, buffer_size, region_data_, region_size_, mutex_name_);
             }
 
+            /// Writes single value from buffer
             template<typename T>
             int write(T& buffer) {
-                return write_map(&buffer, 1, region_data_, region_size_, mutex_name_);
+                return write(&buffer, 1);
             }
 
+            /// Writes n = buffer.size() values from STL vector #buffer
             template<typename T>
             int write(std::vector<T>& buffer) {
                 return write(&buffer[0], buffer.size());
             }
 
+            /// Writes n = buffer.size() values from STL array #buffer
             template <typename T, std::size_t N>
             int write(std::array<T, N>& buffer) {
                 return write(&buffer[0], buffer.size());
@@ -389,6 +397,7 @@ namespace mel {
                 return read_write(&read_buffer[0], read_buffer.size(), &write_buffer[0], write_buffer.size());
             }
 
+            /// Gets the current number of elements in the MELShare
             int get_size() {
                 int* empty = nullptr;
                 return read_map(empty, 0, region_data_, region_size_, mutex_name_);

@@ -18,8 +18,7 @@ namespace mel {
         i2t_time_(i2t_time),
         current_limit_mode_(CurrentLimitMode::I2T),
         has_current_limit_(false),
-        has_current_sense_(true),
-        i2t_clock_(Clock(1000))
+        has_current_sense_(true)
     {
 
     }
@@ -28,9 +27,8 @@ namespace mel {
         enabled_ = true;
         double i2t_integrand_ = 0;
         double i2t_integral_ = 0;
-        double i2t_time_now_ = 0;
-        double i2t_time_last_ = 0;
-        i2t_clock_.start();
+        double i2t_time_now_ = Clock::global_time();
+        double i2t_time_last_ = Clock::global_time();
         if (enable_mode_ == EnableMode::High) {
             do_channel_.set_signal(1);
             do_channel_.daq_->write_digitals();
@@ -109,7 +107,7 @@ namespace mel {
 
     void Motor::limit_current_i2t() {
         i2t_integrand_ = pow(limited_current_, 2) - pow(continuous_current_limit_, 2);
-        i2t_time_now_ = i2t_clock_.async_time();
+        i2t_time_now_ = Clock::global_time();
         i2t_integral_ = abs(i2t_integrand_ * (i2t_time_now_ - i2t_time_last_) + i2t_integral_);
         if (i2t_integral_ > i2t_time_ * (pow(peak_current_limit_, 2) - pow(continuous_current_limit_, 2))) {
             limited_current_ = saturate(current_, continuous_current_limit_);
