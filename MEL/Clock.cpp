@@ -61,12 +61,6 @@ namespace mel {
         return elapsed_ideal_;
     }
 
-    double Clock::async_time() {
-        now_ = std::chrono::high_resolution_clock::now();
-        elapsed_actual_ = now_ - start_;
-        return static_cast<double>(elapsed_actual_.count()) * NS2S;
-    }
-
     void Clock::log() {
         std::vector<double> row = { static_cast<double>(tick_count_) , elapsed_ideal_ , elapsed_actual_.count() * NS2S , elapsed_exe_.count() * NS2S , elapsed_wait_.count() * NS2S , elapsed_tick_.count() * NS2S };
         log_.add_row(row);

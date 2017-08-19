@@ -33,11 +33,6 @@ namespace mel {
         /// This should only be called inside of a loop also calling the wait() function.
         double time();
 
-        /// Returns the actual amout of time that has elapsed since the clock was started, regardless of 
-        /// of whether or not wait as been called. Can be used outside of wait loops. The output is not
-        /// quantized as in time()
-        double async_time();
-
         void log();
         /// Saves the clock log to ./clock_logs/
         void save_log();
