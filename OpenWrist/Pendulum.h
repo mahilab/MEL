@@ -16,8 +16,8 @@ public:
 
     // PENDULUM PARAMETERS
     double g = 9.81;
-    std::array<double, 2> M = { 0.01, 0.125 };   // [kg]
-    std::array<double, 2> L = { 0.45, 0.375 };   // [m]
+    std::array<double, 2> M = { 0.01, 0.1 };   // [kg]
+    std::array<double, 2> L = { 0.45, 0.3 };   // [m]
     std::array<double, 2> B = { 0.0025,0.0025 };  // [N-s/m]
     std::array<double, 2> Fk = { 0.001,0.001 }; // [Nm]
 

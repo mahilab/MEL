@@ -239,6 +239,12 @@ namespace mel {
                 (*it)->write_all();
             }
 
+            // check joint velocity limits
+            if (check_all_joint_velocity_limits()) {
+                stop = true;
+                break;
+            }
+
             // wait the clock
             clock.wait();
         }
@@ -293,6 +299,12 @@ namespace mel {
             // write all DAQs
             for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
                 (*it)->write_all();
+            }
+
+            // check joint limits
+            if (check_all_joint_limits()) {
+                stop = true;
+                break;
             }
 
             // wait the clock

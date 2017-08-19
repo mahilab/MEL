@@ -176,5 +176,8 @@
     <ClInclude Include="ExternalApp.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="mel_math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
