@@ -5,7 +5,7 @@
 
 
 EmgTraining::EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmgFrc& meii, GuiFlag& gui_flag, int input_mode) :
-    StateMachine(5),
+    StateMachine(7),
     clock_(clock),
     q8_emg_(q8_emg),
     q8_ati_(q8_ati),
@@ -70,8 +70,16 @@ void EmgTraining::sf_init(const mel::NoEventData* data) {
     // start the hardware clock
     clock_.start();
 
+    // get current position and velocity to apply safety check
+    /*q8_emg_->reload_watchdog();
+    q8_emg_->read_all();
+    meii_.update_kinematics();
+    if (meii_.check_all_joint_limits()) {
+        stop_ = true;
+    }*/
+
     // transition to next state
-    event(ST_TO_CENTER);  
+    event(ST_PRESENT_TARGET);  
 
 }
 
@@ -98,7 +106,7 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
     goal_pos_[4] = 0.09; // arm translation neutral [rad]
 
     // set joints to be checked for target reached
-    target_check_joint_ = { 1, 1, 1, 1, 0 };
+    target_check_joint_ = { 1, 0, 0, 0, 0 };
     target_reached_ = false;
 
     // MelShare unity interface
@@ -114,6 +122,17 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
 
         // update robot kinematics
         meii_.update_kinematics();
+
+        // check joint limits
+        if (meii_.check_all_joint_limits()) {
+            stop_ = true;
+            break;
+        }
+
+        //mel::print(meii_.get_anatomical_joint_velocities());
+        vel_share_.write(meii_.get_anatomical_joint_velocities());
+        //mel::print(meii_.get_anatomical_joint_positions());
+        pos_share_.write(meii_.get_anatomical_joint_positions());
 
         // compute pd torques
         for (auto i = 0; i < 5; ++i) {
@@ -132,17 +151,17 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         //mel::print(printable);
         
         // set new torques
-        meii_.set_anatomical_joint_torques(new_torques_);
+        //meii_.set_anatomical_joint_torques(new_torques_);
         
         // write to unity
         target_.write(target_share_);
         pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
-        q8_emg_->write_all();
+        //q8_emg_->write_all();
 
         // check for target reached
-        target_reached_ = check_target_reached(goal_pos_, meii_.get_anatomical_joint_positions(), target_check_joint_);
+        target_reached_ = check_target_reached(goal_pos_, meii_.get_anatomical_joint_positions(), target_check_joint_,true);
 
         // check for stop input
         stop_ = check_stop();
@@ -157,6 +176,7 @@ void EmgTraining::sf_to_center(const mel::NoEventData* data) {
         event(ST_STOP); 
     }
     else if (target_reached_) {
+        target_reached_ = false;
         event(ST_HOLD_CENTER);
     }
     else {
@@ -221,14 +241,14 @@ void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
         }
 
         // set new torques
-        meii_.set_anatomical_joint_torques(new_torques_);
+        //meii_.set_anatomical_joint_torques(new_torques_);
 
         // write to unity
         target_.write(target_share_);
         pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
-        q8_emg_->write_all();
+        //q8_emg_->write_all();
 
         // check for hold time reached
         hold_center_time_reached_ = check_wait_time_reached(hold_center_time_,init_time_,clock_.time());
@@ -246,6 +266,7 @@ void EmgTraining::sf_hold_center(const mel::NoEventData* data) {
         event(ST_STOP);
     }
     else if (hold_center_time_reached_) {
+        hold_center_time_reached_ = false;
         event(ST_PRESENT_TARGET);
     }
     else {
@@ -284,8 +305,17 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
     }
     force_share_ = 0;
 
+    // initialize force checking algorithm
+    force_mag_maintained_ = 0; // [s]
+    force_mag_time_now_ = 0;
+    force_mag_time_last_ = 0;
+
+    // initialize emg data buffer
+    //boost::circular_buffer<double> emg_data_buffer_(200);
+    //emg_data_buffer_ = mel::array_2D<double, 8, 200>(0);
+
     // enter the control loop
-    while (!stop_) {
+    while (!force_mag_reached_ && !end_of_target_sequence_ && !stop_) {
 
         // read and reload DAQs
         q8_emg_->reload_watchdog();
@@ -296,10 +326,10 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // check joint limits
-        if (meii_.check_all_joint_limits()) {
+        /*if (meii_.check_all_joint_limits()) {
             stop_ = true;
             break;
-        }
+        }*/
 
         // compute pd torques
         init_time_ = 0;
@@ -312,7 +342,7 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
         }
 
         // set new torques
-        meii_.set_anatomical_joint_torques(new_torques_);
+        //meii_.set_anatomical_joint_torques(new_torques_);
 
         // get measured forces at wrist force sensor
         wrist_forces_ = meii_.wrist_force_sensor_->get_forces();
@@ -321,7 +351,14 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
         for (int i = 0; i < 3; ++i) {
             force_share_ += std::pow(wrist_forces_filt_[i], 2);
         }
+
+        // get measured emg voltages
+        emg_data_buffer_.push_back(meii_.get_emg_voltages());
+        emg_share_.write(emg_data_buffer_.at(0));
+
+        // check force magnitude
         mel::print(force_share_);
+        force_mag_reached_ = check_force_mag_reached(force_mag_goal_, force_share_);
 
         // write to unity
         target_.write(target_share_);
@@ -329,7 +366,7 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
         force_mag_.write(force_share_);
 
         // write to daq
-        q8_emg_->write_all();
+        //q8_emg_->write_all();
 
         // check for stop input
         stop_ = check_stop();
@@ -343,12 +380,56 @@ void EmgTraining::sf_present_target(const mel::NoEventData* data) {
         // stop if user provided input
         event(ST_STOP);
     }
+    else if (force_mag_reached_) {
+        force_mag_reached_ = false;
+        current_target_++;
+        event(ST_PROCESS_EMG);      
+    }
+    else if (end_of_target_sequence_) {
+        event(ST_FINISH);
+    }
     else {
         mel::print("ERROR: State transition undefined. Going to ST_STOP.");
         event(ST_STOP);
     }
 }
 
+//-----------------------------------------------------------------------------
+// "PROCESS EMG DATA" STATE FUNCTION
+//-----------------------------------------------------------------------------
+void EmgTraining::sf_process_emg(const mel::NoEventData* data) {
+
+    mel::print("Process EMG Data");
+
+    // extract features from EMG data
+    feature_vec_ = feature_extract(emg_data_buffer_);
+    mel::print(feature_vec_);
+
+    stop_ = true;
+
+    // transition to next state
+    if (stop_) {
+        // stop if user provided input
+        event(ST_STOP);
+    }
+    else if (emg_data_processed_) {
+        event(ST_HOLD_CENTER);
+    }
+
+}
+
+
+
+//-----------------------------------------------------------------------------
+// "FINISH Experiment" STATE FUNCTION
+//-----------------------------------------------------------------------------
+void EmgTraining::sf_finish(const mel::NoEventData* data) {
+
+    mel::print("Finish Experiment");
+
+    event(ST_STOP);
+
+}
 
 //-----------------------------------------------------------------------------
 // "STOP" STATE FUNCTION
@@ -387,7 +468,148 @@ bool EmgTraining::check_wait_time_reached(double wait_time, double init_time, do
 
 bool EmgTraining::check_force_mag_reached(double force_mag_goal, double force_mag) {
     force_mag_time_now_ = clock_.async_time();
-    force_mag_maintained_ += std::copysign(1.0, force_mag_tol_ - std::abs(force_mag_goal - force_mag)) * (force_mag_time_now_ - force_mag_time_last_);
+    force_mag_maintained_ = std::abs(force_mag_maintained_ + std::copysign(1.0, force_mag_tol_ - std::abs(force_mag_goal - force_mag)) * (force_mag_time_now_ - force_mag_time_last_));
     force_mag_time_last_ = force_mag_time_now_;
     return force_mag_maintained_ > force_mag_dwell_time_;
+}
+
+mel::double_vec EmgTraining::feature_extract(EmgDataBuffer& emg_data_buffer) {
+
+    mel::double_vec feature_vec;
+    feature_vec.reserve(num_channels_*num_features_);
+    mel::double_vec nrms_vec;
+    mel::double_vec nmav_vec;
+    mel::double_vec nwl_vec;
+    mel::double_vec nzc_vec;
+    mel::double_vec nssc_vec;
+
+    // extract unnormalized features
+    for (int i = 0; i < emg_data_buffer.num_channels_; ++i) {
+        nrms_vec.push_back(rms_feature_extract(emg_data_buffer.data_buffer_[i]));
+        nmav_vec.push_back(mav_feature_extract(emg_data_buffer.data_buffer_[i]));
+        nwl_vec.push_back(wl_feature_extract(emg_data_buffer.data_buffer_[i]));
+        nzc_vec.push_back(zc_feature_extract(emg_data_buffer.data_buffer_[i]));
+        nssc_vec.push_back(ssc_feature_extract(emg_data_buffer.data_buffer_[i]));
+    }
+    
+    // normalize features
+    double rms_mean = 0;
+    double mav_mean = 0;
+    double wl_mean = 0;
+    double zc_mean = 0;
+    double ssc_mean = 0;
+    for (int i = 0; i < emg_data_buffer.num_channels_; ++i) {
+        rms_mean += nrms_vec[i] / num_channels_;
+        mav_mean += nmav_vec[i] / num_channels_;
+        wl_mean += nwl_vec[i] / num_channels_;
+        zc_mean += nzc_vec[i] / num_channels_;
+        ssc_mean += nssc_vec[i] / num_channels_;
+    }
+    for (int i = 0; i < emg_data_buffer.num_channels_; ++i) {
+        nrms_vec[i] = nrms_vec[i] / rms_mean;
+        nmav_vec[i] = nmav_vec[i] / mav_mean;
+        nwl_vec[i] = nwl_vec[i] / wl_mean;
+        if (zc_mean > 0) {
+            nzc_vec[i] = nzc_vec[i] / zc_mean;
+        }
+        if (ssc_mean > 0) {
+            nssc_vec[i] = nssc_vec[i] / ssc_mean;
+        }
+    }
+
+    // copy features into one vector (inserted in reverse order)
+    auto it = feature_vec.begin();
+    it = feature_vec.insert(it, nssc_vec.begin(), nssc_vec.end());
+    it = feature_vec.insert(it, nzc_vec.begin(), nzc_vec.end());
+    it = feature_vec.insert(it, nwl_vec.begin(), nwl_vec.end());
+    it = feature_vec.insert(it, nmav_vec.begin(), nmav_vec.end());
+    it = feature_vec.insert(it, nrms_vec.begin(), nrms_vec.end());
+    return feature_vec;
+}
+
+double EmgTraining::rms_feature_extract(boost::circular_buffer<double> emg_channel_buffer) {
+    double sum_squares = 0;
+    for (int i = 0; i < emg_channel_buffer.size(); ++i) {
+        sum_squares += std::pow(emg_channel_buffer[i], 2);
+    }
+    return std::sqrt(sum_squares / emg_channel_buffer.size());
+}
+
+double EmgTraining::mav_feature_extract(boost::circular_buffer<double> emg_channel_buffer) {
+    double sum_abs = 0;
+    for (int i = 0; i < emg_channel_buffer.size(); ++i) {
+        sum_abs += std::abs(emg_channel_buffer[i]);
+    }
+    return std::sqrt(sum_abs / emg_channel_buffer.size());
+}
+
+double EmgTraining::wl_feature_extract(boost::circular_buffer<double> emg_channel_buffer) {
+    double sum_abs_diff = 0;
+    for (int i = 0; i < emg_channel_buffer.size()-1; ++i) {
+        sum_abs_diff += std::abs(emg_channel_buffer[i + 1] - emg_channel_buffer[i]);
+    }
+    return sum_abs_diff;
+}
+
+double EmgTraining::zc_feature_extract(boost::circular_buffer<double> emg_channel_buffer) {
+    double sum_abs_diff_sign = 0;
+    for (int i = 0; i < emg_channel_buffer.size() - 1; ++i) {
+        sum_abs_diff_sign += std::abs(std::copysign(1.0,emg_channel_buffer[i + 1]) - std::copysign(1.0,emg_channel_buffer[i]));
+    }
+    return sum_abs_diff_sign / 2;
+}
+
+double EmgTraining::ssc_feature_extract(boost::circular_buffer<double> emg_channel_buffer) {
+    double sum_abs_diff_sign_diff = 0;
+    for (int i = 0; i < emg_channel_buffer.size() - 2; ++i) {
+        sum_abs_diff_sign_diff += std::abs(std::copysign(1.0,(emg_channel_buffer[i + 2] - emg_channel_buffer[i+1])) - std::copysign(1.0, (emg_channel_buffer[i + 1] - emg_channel_buffer[i])));
+    }
+    return sum_abs_diff_sign_diff / 2;
+}
+
+mel::double_vec EmgTraining::ar4_feature_extract(boost::circular_buffer<double> emg_channel_buffer) {
+    const mel::double_vec x = { 1, 2, 3 };
+    // initialize
+    mel::double_vec coeffs;
+    size_t N = emg_channel_buffer.size();
+    size_t m = 4;
+    mel::double_vec A_k(m + 1, 0.0);
+    A_k[0] = 1.0;
+    mel::double_vec f(x);
+    mel::double_vec b(x);
+    double D_k = 0;
+    for (size_t j = 0; j <= N; ++j) {
+        D_k += 2.0 * std::pow(f[j], 2);
+    }
+    D_k -= std::pow(f[0], 2) + std::pow(b[N], 2);
+
+    // Burg recursion
+    for (size_t k = 0; k < m; ++k) {
+        // compute mu
+        double mu = 0.0;
+        for (size_t n = 0; n <= N - k - 1; ++n) {
+            mu += f[n + k + 1] * b[n];
+        }
+        mu *= -2.0 / D_k;
+
+        // update A_k
+        for (size_t n = 0; n <= (k + 1) / 2; ++n) {
+            double t1 = A_k[n] + mu * A_k[k = 1 - n];
+            double t2 = A_k[k + 1 - n] + mu * A_k[n];
+            A_k[n] = t1;
+            A_k[k + 1 - n] = t2;
+        }
+
+        // update f and b
+        for (size_t n = 0; n <= N - k - 1; ++n) {
+            double t1 = f[n + k + 1] + mu * b[n];
+            double t2 = b[n] + mu * f[n + k + 1];
+            f[n + k + 1] = t1;
+            b[n] = t2;
+        }
+
+        // update D_k
+        D_k = (1.0 - std::pow(mu, 2)) * D_k - std::pow(f[k + 1], 2) - std::pow(b[N - k - 1], 2);
+    }
+    // assign coefficients
 }

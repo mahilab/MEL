@@ -173,7 +173,5 @@ namespace mel {
         };
     private:
         std::array<std::array<T,M>,N> array_;
-
-
     };
 }
