@@ -1,7 +1,7 @@
 #pragma once
 #include "StateMachine.h"
 #include "Q8Usb.h"
-#include "MahiExoIIEmgFrc.h"
+#include "MahiExoIIEmg.h"
 #include "MelShare.h"
 #include "Filter.h"
 #include "Clock.h"
@@ -16,7 +16,7 @@ public:
 
 };
 
-class EmgTraining : public mel::StateMachine {
+class EmgRTControl : public mel::StateMachine {
 
 public:
 
@@ -24,11 +24,10 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    //EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, mel::Daq* q8_ati, MahiExoIIEmgFrc& meii, GuiFlag& gui_flag, int input_mode);
-    EmgTraining(mel::Clock& clock, mel::Daq* q8_emg, MahiExoIIEmg& meii, GuiFlag& gui_flag, int input_mode);
+    EmgRTControl(mel::Clock& clock, mel::Daq* q8_emg, MahiExoIIEmg& meii, GuiFlag& gui_flag, int input_mode);
 
 private:
-    
+
     //-------------------------------------------------------------------------
     // STATE MACHINE SETUP
     //-------------------------------------------------------------------------
@@ -40,6 +39,7 @@ private:
         ST_HOLD_CENTER,
         ST_PRESENT_TARGET,
         ST_PROCESS_EMG,
+        ST_TRAIN_CLASSIFIER,
         ST_FINISH,
         ST_STOP,
         ST_NUM_STATES
@@ -47,25 +47,28 @@ private:
 
     // STATE FUNCTIONS
     void sf_init(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_init> sa_init;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_init> sa_init;
 
     void sf_to_center(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_to_center> sa_to_center;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_to_center> sa_to_center;
 
     void sf_hold_center(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_hold_center> sa_hold_center;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_hold_center> sa_hold_center;
 
     void sf_present_target(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_present_target> sa_present_target;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_present_target> sa_present_target;
 
     void sf_process_emg(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_process_emg> sa_process_emg;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_process_emg> sa_process_emg;
+
+    void sf_train_classifier(const mel::NoEventData*);
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_train_classifier> sa_train_classifier;
 
     void sf_finish(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_finish> sa_finish;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_finish> sa_finish;
 
     void sf_stop(const mel::NoEventData*);
-    mel::StateAction<EmgTraining, mel::NoEventData, &EmgTraining::sf_stop> sa_stop;
+    mel::StateAction<EmgRTControl, mel::NoEventData, &EmgRTControl::sf_stop> sa_stop;
 
     // STATE MAP
     virtual const mel::StateMapRow* get_state_map() {
@@ -75,6 +78,7 @@ private:
             &sa_hold_center,
             &sa_present_target,
             &sa_process_emg,
+            &sa_train_classifier,
             &sa_finish,
             &sa_stop,
         };
@@ -117,7 +121,6 @@ private:
     mel::Daq* q8_emg_;
     mel::Daq* q8_ati_;
     MahiExoIIEmg meii_;
-    //MahiExoIIEmgFrc meii_;
 
     // MEII PARAMETERS
     mel::int8_vec backdrive_ = { 1,1,1,1,1 };
@@ -141,15 +144,15 @@ private:
     mel::Filter multi_lpf_ = mel::Filter(6, 4, { 0.009735570656078, -0.032135367809242, 0.045449986329302, -0.032135367809242, 0.009735570656078 }, { 1.000000000000000, -3.572942808701423, 4.807914652718555, -2.886325158284144, 0.652003706289986 });
 
     // EMG SENSING
-    int num_channels_ = 8; 
-    mel::double_vec emg_voltages_ = mel::double_vec(num_channels_, 0);
+    static const int num_emg_channels_ = 8;
+    mel::double_vec emg_voltages_ = mel::double_vec(num_emg_channels_, 0);
     struct EmgDataBuffer {
         EmgDataBuffer(size_t num_channels, size_t length) :
             num_channels_(num_channels),
             length_(length)
         {
-            for (int i = 0; i < num_channels_; ++i) {
-                data_buffer_.push_back(boost::circular_buffer<double>(length_));
+            for (size_t i = 0; i < num_channels_; ++i) {
+                data_buffer_.push_back(boost::circular_buffer<double>(length_,0.0));
             }
         }
         void push_back(mel::double_vec data_vec) {
@@ -177,12 +180,13 @@ private:
         size_t num_channels_;
         size_t length_;
         std::vector<boost::circular_buffer<double>> data_buffer_;
-    };   
-    EmgDataBuffer emg_data_buffer_ = EmgDataBuffer(num_channels_,200);
+    };
+    EmgDataBuffer emg_data_buffer_ = EmgDataBuffer(num_emg_channels_, 200);
 
     // EMG FEATURE EXTRACTION
-    int num_features_ = 9;
-    mel::double_vec feature_vec_ = mel::double_vec(num_features_*num_channels_, 0);
+    static const int num_features_ = 9;
+    mel::double_vec feature_vec_ = mel::double_vec(num_features_*num_emg_channels_, 0);
+    std::array<double, num_features_*num_emg_channels_> feature_array_;
     mel::double_vec feature_extract(EmgDataBuffer& emg_data_buffer);
     double rms_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
     double mav_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
@@ -190,7 +194,12 @@ private:
     double zc_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
     double ssc_feature_extract(boost::circular_buffer<double> emg_channel_buffer);
     void ar4_feature_extract(mel::double_vec& coeffs, const mel::double_vec& emg_channel_buffer);
-    
+
+    // EMG TRAINING DATA
+    std::vector<std::array<double,num_features_*num_emg_channels_>> emg_training_data_;
+    int N_train_ = 6;
+    mel::share::MelShare trng_share_ = mel::share::MelShare("trng_share_");
+
     // STATE TRANSITION EVENTS
     bool target_reached_ = false;
     bool hold_center_time_reached_ = false;
@@ -213,5 +222,6 @@ private:
     mel::share::MelShare pos_share_ = mel::share::MelShare("pos_share");
     mel::share::MelShare vel_share_ = mel::share::MelShare("vel_share");
     mel::share::MelShare emg_share_ = mel::share::MelShare("emg_share");
+    
 
 };

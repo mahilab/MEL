@@ -42,6 +42,12 @@
     <ClCompile Include="MahiExoIIEmgFrc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main_emg_rt_control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EmgRTControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MahiExoII.h">
@@ -60,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoIIEmgFrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EmgRTControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

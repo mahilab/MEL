@@ -141,8 +141,6 @@ namespace mel {
     double saturate(double value, double max, double min);
     double saturate(double value, double abs_max);
 
-    //double_vec mat_vec_multiply(array_2D<double> A, double_vec b);
-
     //-------------------------------------------------------------------------
     // USEFUL CLASSES & TYPES
     //-------------------------------------------------------------------------

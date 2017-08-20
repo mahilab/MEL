@@ -32,7 +32,7 @@ public:
         std::array<mel::uint32, 5> encoder_res_ = { 2048, 2048, 2048, 2048, 2048 }; ///< encoder resolutions [counts/rev]
         std::array<double, 5> pos_limits_min_ = { -91.5 * mel::DEG2RAD, -99 * mel::DEG2RAD, 0.050, 0.050, 0.050 }; ///< robot joint position limits in negative direction [rad] or [m]
         std::array<double, 5> pos_limits_max_ = {     1 * mel::DEG2RAD, 108 * mel::DEG2RAD, 0.132, 0.132, 0.132 }; ///< robot joint position limits in positive direction [rad] or [m]
-        std::array<double, 5> vel_limits_ = { 250 * mel::DEG2RAD, 300 * mel::DEG2RAD, 0.25, 0.25, 0.25 }; ///< robot joint velocity limits [rad/s] or [m/s]
+        std::array<double, 5> vel_limits_ = { 250 * mel::DEG2RAD, 300 * mel::DEG2RAD, 0.3, 0.3, 0.3 }; ///< robot joint velocity limits [rad/s] or [m/s]
         std::array<double, 5> joint_torque_limits = { 1, 1, 20, 20, 20 }; ///< robot joint torque limits [Nm] or [N]
         std::array<double, 5> amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; ///< motor aplifier gains [A/V]
     };
@@ -60,7 +60,6 @@ public:
 
     const Config config_;
     const Params params_;
-   
 
 protected:
 
