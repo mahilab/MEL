@@ -96,16 +96,16 @@ private:
     //-------------------------------------------------------------------------
 
     int current_target_ = 0;
-    std::vector<int> target_sequence_ = { 1,2,1,2,1,2 };
+    std::vector<int> target_sequence_ = { 1,2,1,2 };
     mel::char_vec target_check_joint_ = { 1,1,1,1,1 };
     mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
-    double hold_center_time_ = 2.0; // time to hold at center target [s]
-    double force_mag_goal_ = 1000; // [N^2]
-    double force_mag_tol_ = 100; // [N]
+    double hold_center_time_ = 1.0; // time to hold at center target [s]
+    double force_mag_goal_ = 1000.0; // [N^2]
+    double force_mag_tol_ = 100.0; // [N]
     double force_mag_dwell_time_ = 1.0; // [s]
-    double force_mag_maintained_ = 0; // [s]
-    double force_mag_time_now_ = 0;
-    double force_mag_time_last_ = 0;
+    double force_mag_maintained_ = 0.0; // [s]
+    double force_mag_time_now_ = 0.0;
+    double force_mag_time_last_ = 0.0;
 
     //-------------------------------------------------------------------------
     // EXPERIMENT COMPONENTS
@@ -197,8 +197,11 @@ private:
 
     // EMG TRAINING DATA
     std::vector<std::array<double,num_features_*num_emg_channels_>> emg_training_data_;
-    int N_train_ = 6;
-    mel::share::MelShare trng_share_ = mel::share::MelShare("trng_share_");
+    int N_train_ = target_sequence_.size();
+    mel::share::MelShare trng_size_ = mel::share::MelShare("trng_size");
+    mel::share::MelShare trng_share_ = mel::share::MelShare("trng_share");
+    mel::share::MelShare label_share_ = mel::share::MelShare("label_share");
+    
 
     // STATE TRANSITION EVENTS
     bool target_reached_ = false;

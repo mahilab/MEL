@@ -27,20 +27,21 @@ print ' '
 rows = arraydims[0]
 cols = arraydims[1]
 trng_len = rows*cols
+print(rows)
 
 #Create instance of datatype
-myints2 = ctypes.c_int * cols;
+myints2 = ctypes.c_int * rows;
 # make instances of our data types
 labels = myints2();
 
-result = mel_share.read_int_map("label_share", labels, 2)
+result = mel_share.read_int_map("label_share", labels, rows)
 print "labels:    ",
 if (result < 0): print 'ERROR:', result
 for value in labels:
     print value,
 print ' '
 
-labels = labels.reshape(-1)
+#labels = labels.reshape(-1)
 
 #Create instance of datatype
 mydoubles = ctypes.c_double * rows*cols
@@ -82,12 +83,23 @@ lda.fit(X, Y)
 #output in the coefficients of the linear decision function
 coeff = lda.coef_
 print(coeff)
+print(coeff.shape)
 coeff_mat_size = coeff.shape
 c_row = coeff_mat_size[0]
 c_col =coeff_mat_size[1]
+print(c_row)
+print(c_col)
 coeff_len = c_row*c_col
 
-result = mel_share.write_double_map("LDA_coeff", coeff, coeff_len)
+coeffArray = ctypes.c_double * coeff_len
+coeff_doubles = coeffArray()
+
+#Figure out how to make same size to read into MELShare buffer
+coeff_doubles = coeff
+
+#my_doubles[:] = [value * 2 for value in my_doubles]
+
+result = mel_share.write_double_map("LDA_coeff", coeff_doubles, coeff_len)
 print "LDA_coeff:    ",
 if (result < 0): print 'ERROR:', result
 for value in coeff:

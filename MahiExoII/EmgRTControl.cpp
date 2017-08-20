@@ -302,7 +302,6 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
         // read and reload DAQs
         q8_emg_->reload_watchdog();
         q8_emg_->read_all();
-        //q8_ati_->read_all();
 
         // update robot kinematics
         meii_.update_kinematics();
@@ -363,7 +362,7 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
         event(ST_PROCESS_EMG);
     }
     else if (end_of_target_sequence_) {
-        event(ST_FINISH);
+        event(ST_TRAIN_CLASSIFIER);
     }
     else {
         mel::print("ERROR: State transition undefined. Going to ST_STOP.");
@@ -414,7 +413,37 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
     }
 
     // write training data to python
+    std::array<int, 2> training_data_size = {N_train_, num_emg_channels_ * num_features_};
+    trng_size_.write(training_data_size);
     trng_share_.write(emg_training_data_vec_);
+    std::vector<int> training_labels(N_train_);
+    std::copy_n(target_sequence_.begin(), N_train_, training_labels.begin());
+    label_share_.write(training_labels);
+
+    // wait for python to receive
+    // restart the clock
+    clock_.start();
+    while (!stop_) {
+
+        // read and reload DAQs
+        q8_emg_->reload_watchdog();
+        q8_emg_->read_all();
+
+        // update robot kinematics
+        meii_.update_kinematics();
+
+        // check joint limits
+        if (meii_.check_all_joint_limits()) {
+            stop_ = true;
+            break;
+        }
+
+        // check for stop input
+        stop_ = check_stop();
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
 
     event(ST_FINISH);
 }
