@@ -16,7 +16,7 @@ namespace mel {
         /// Calculates the control effort given the current state and desired reference 
         double calculate(double x_ref, double x, double xdot_ref, double xdot);
 
-        double move_to_hold(double x_ref, double x, double xdot_ref, double xdot);
+        double move_to_hold(double x_ref, double x, double xdot_ref, double xdot, double delta_time, double window, bool start_here);
 
         double kp_; ///< the proportional control gain
         double kd_; ///< the derivative control gain
@@ -30,6 +30,9 @@ namespace mel {
         //---------------------------------------------------------------------
         // PRIVATE VARIABLES
         //---------------------------------------------------------------------
+
+        double last_x_;
+        bool holding_;
 
     };
 

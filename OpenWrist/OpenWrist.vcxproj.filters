@@ -4,9 +4,6 @@
     <Filter Include="CUFF">
       <UniqueIdentifier>{0e370fab-c724-4371-81ea-2bffa33c0d32}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{29ff72c6-4665-4756-b665-157a4afe2529}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HapticGuidance">
       <UniqueIdentifier>{ea2c2e44-2cc4-4672-8b2d-6fa28485a836}</UniqueIdentifier>
     </Filter>
@@ -14,9 +11,6 @@
   <ItemGroup>
     <ClCompile Include="qbmove_communications.cpp">
       <Filter>CUFF</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="HapticGuidance.cpp">
       <Filter>HapticGuidance</Filter>

@@ -6,7 +6,7 @@
 #include "GuiFlag.h"
 #include <noise/noise.h>
 #include "ExternalApp.h"
-
+#include "PdController.h"
 
 //----------------------------------------------------------------------------
 // Hatpic guidance experiements with OpenWrist, CUFF, and MahiExo-II 
@@ -149,7 +149,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 60, 20, 20, 300, 20 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 1, 1, 20, 300, 20 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -186,10 +186,14 @@ private:
     mel::OpenWrist& open_wrist_;
     Cuff& cuff_;
 
+    // PD CONTROLLERS
+    mel::PdController pd1_ = mel::PdController(60, 1);
+    mel::PdController pd2_ = mel::PdController(40, 0.5);
+
     // CUFF PARAMETERS
-    short int CUFF_NORMAL_FORCE_ = 5;
+    short int CUFF_NORMAL_FORCE_ = 3;
     short int CUFF_NOISE_GAIN_ = 8400;
-    short int CUFF_GUIDANCE_GAIN_ = 12000;
+    short int CUFF_GUIDANCE_GAIN_ = 15000;
     short int offset[2];
     short int scaling_factor[2];
 
@@ -199,20 +203,20 @@ private:
     // TRAJECTORY VARIABLES
 
     struct TrajParams {
-        TrajParams(double amp, double sin, double cos) : amp_(amp), sin_(sin), cos_(cos) {}
-        double amp_, sin_, cos_;
+        TrajParams(double amp, double sin, double noise) : amp_(amp), sin_(sin), noise_(noise) {}
+        double amp_, sin_, noise_;
     };
 
     std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(225, 0.1, 0.1) };
-    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(225, 0.1, 0.1), TrajParams(225, 0.2, 0.2), TrajParams(225, 0.3, 0.3) };
+    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(225, 0.1, 0.25), TrajParams(225,0.2, 0.5), TrajParams(225, 0.225, 0.3) };
     std::vector<TrajParams> TRAJ_PARAMS_T_; // to be generated from TRAJ_PARAMS_E_
-    std::vector<TrajParams> TRAJ_PARAMS_G_; // TO DO!!!!!!!!!!!!!!
+    std::vector<TrajParams> TRAJ_PARAMS_G_ = std::vector<TrajParams>(12, TrajParams(225, 0.2, 0.275));
     std::vector<TrajParams> TRAJ_PARAMS_; // random generated for all trials
 
     double amplitude_ = 225;
     double length_ = 450;
     double sin_freq_ = 0.225;
-    double cos_freq_ = 0.3;
+    double noise_freq_ = 0.3;
     mel::share::MelShare trajectory_x_ = mel::share::MelShare("trajectory_x", 54*4); 
     mel::share::MelShare trajectory_y_ = mel::share::MelShare("trajectory_y", 54*4);
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");
@@ -231,6 +235,9 @@ private:
     void update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars);
 
     // PERLIN NOISE MODULES
-    noise::module::Perlin perlin_module_;
+    noise::module::Perlin guidance_module_;
+    double ow_noise_gain_ = 0.25;
+
+    noise::module::Perlin trajectory_module_;
 
 };
