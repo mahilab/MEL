@@ -192,6 +192,7 @@ namespace mel {
         }
     }
 
+
     void Q8Usb::offset_encoders(int32_vec offset_counts) {
         if (enabled_ && encoder_channels_count_ > 0) {
             std::cout << "Q8 USB " << id_ << ": Offsetting encoder counts ... ";

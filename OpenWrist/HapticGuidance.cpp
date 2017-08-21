@@ -31,12 +31,10 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWri
     guidance_module_.SetOctaveCount(1);
     guidance_module_.SetFrequency(1.0);
     guidance_module_.SetPersistence(0.1);
-    guidance_module_.SetSeed(subject_number);
 
     // set up trajectory module
     trajectory_module_.SetOctaveCount(1);
     trajectory_module_.SetPersistence(0.0);
-    trajectory_module_.SetSeed(subject_number);
 
     // seed random number generator with subject num
     srand(subject_number);
@@ -51,8 +49,10 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWri
     }
 
     // Add columns to logger
-    log_.add_col("Time [s]").add_col("Amplitude [px]").add_col("Sin [Hz]").add_col("Cos [Hz]")
-        .add_col("Exp_x [px]").add_col("Exp_y [px]");
+    log_.add_col("Time [s]").add_col("Amplitude [px]").add_col("Sin Freq. [Hz]").add_col("Noise Freq. [Hz]")
+        .add_col("Exp_x [px]").add_col("Exp_y [px]").add_col("Angular Error [rad]").add_col("OW PS Position [rad]").add_col("OW PS Velocity [rad/s]").add_col("OW PS Total Torque [Nm]")
+        .add_col("OW PS Compensation Torque [Nm]").add_col("OW PS Task Torque [Nm]").add_col("OW PS Noise Torque")
+        .add_col("CUFF Motor Position 1").add_col("CUFF Motor Position 2").add_col("CUFF Noise");
 }
 
 void HapticGuidance::log_row() {
@@ -63,6 +63,16 @@ void HapticGuidance::log_row() {
     row.push_back(noise_freq_);
     row.push_back(expert_position_[0]);
     row.push_back(expert_position_[1]);
+    row.push_back(traj_error_);
+    row.push_back(open_wrist_.joints_[0]->get_position());
+    row.push_back(open_wrist_.joints_[0]->get_velocity());
+    row.push_back(ps_total_torque_);
+    row.push_back(ps_comp_torque_);
+    row.push_back(-pendulum_.Tau[0]);
+    row.push_back(ps_noise_torque_);
+    row.push_back((double)cuff_pos_1_);
+    row.push_back((double)cuff_pos_2_);
+    row.push_back(cuff_noise_);
     log_.add_row(row);
 }
 
@@ -102,8 +112,6 @@ void HapticGuidance::build_experiment() {
             traj_params_temp = TRAJ_PARAMS_T_;
         else if (*it == GENERALIZATION)
             traj_params_temp = TRAJ_PARAMS_G_;
-        else
-            mel::print("shit");
 
         // shuffle the temp traj params
         std::random_shuffle(traj_params_temp.begin(), traj_params_temp.end());
@@ -150,6 +158,7 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
             return;
         }
         cuff_.pretensioning(CUFF_NORMAL_FORCE_, offset, scaling_factor);
+        cuff_.set_motor_positions(-100, 100, true);
     } 
 
     // enable MahiExo-II DAQ
@@ -195,8 +204,14 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
 
             // set device forces based on conditions
-            double ps_torque = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0) - pendulum_.Tau[0];
-            open_wrist_.joints_[0]->set_torque(ps_torque);
+            ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
+            ps_noise_torque_ = 0;
+            ps_total_torque_ = ps_comp_torque_ - pendulum_.Tau[0] + ps_noise_torque_;
+            open_wrist_.joints_[0]->set_torque(ps_total_torque_);
+
+            cuff_noise_ = 0;
+            cuff_pos_1_ = 0;
+            cuff_pos_2_ = 0;
             
             if (!move_started) {
                 open_wrist_.joints_[1]->set_torque(pd1_.move_to_hold(0, open_wrist_.joints_[1]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[1]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, true));
@@ -241,7 +256,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, true, true, true, true, true, true);
+    update_unity(true, true, true, false, false, false, true);
 
     bool move_started = false;
    
@@ -266,8 +281,14 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
 
             // set device forces based on conditions
-            double ps_torque = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0) - pendulum_.Tau[0];
-            open_wrist_.joints_[0]->set_torque(ps_torque);
+            ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
+            ps_noise_torque_ = 0;
+            ps_total_torque_ = ps_comp_torque_ - pendulum_.Tau[0] + ps_noise_torque_;
+            open_wrist_.joints_[0]->set_torque(ps_total_torque_);
+
+            cuff_noise_ = 0;
+            cuff_pos_1_ = 0;
+            cuff_pos_2_ = 0;
 
             if (!move_started) {
                 open_wrist_.joints_[1]->set_torque(pd1_.move_to_hold(0, open_wrist_.joints_[1]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[1]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, true));
@@ -295,7 +316,6 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
         // log data
         log_row();
 
-
         // check for stop input
         stop_ = check_stop();
 
@@ -313,7 +333,7 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
 void HapticGuidance::sf_training(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, true, true, true, true, true, true);
+    update_unity(true, true, true, false, false, false, true);
 
     bool move_started = false;
 
@@ -337,24 +357,35 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
             // compute anglular error
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
 
-            double ps_torque = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0) - pendulum_.Tau[0];
+            ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
+            ps_noise_torque_ = 0;
+
+            cuff_noise_ = 0;
+            cuff_pos_1_ = 0;
+            cuff_pos_2_ = 0;
+
+
             if (CONDITION_ == 1) {
-                double noise = guidance_module_.GetValue(clock_.time(), 0.0, 0.0);
-                ps_torque += noise * ow_noise_gain_;
+                ps_noise_torque_ = guidance_module_.GetValue(clock_.time(), 0.0, 0.0) * ow_noise_gain_;
+                scope_.write(ps_noise_torque_);
             }
             else if (CONDITION_ == 2) {
-                double noise = guidance_module_.GetValue(clock_.time(), 0.0, 0.0);
-                cuff_.set_motor_positions((short int)(noise * CUFF_NOISE_GAIN_) + offset[0], (short int)(noise * CUFF_NOISE_GAIN_) + offset[1], true);
+                cuff_noise_ = guidance_module_.GetValue(clock_.time(), 0.0, 0.0);
+                cuff_pos_1_ = (short int)(cuff_noise_ * CUFF_NOISE_GAIN_) + offset[0];
+                cuff_pos_2_ = (short int)(cuff_noise_ * CUFF_NOISE_GAIN_) + offset[1];
+                cuff_.set_motor_positions(cuff_pos_1_, cuff_pos_2_, true);
             }
             else if (CONDITION_ == 3) {
-                cuff_.set_motor_positions((short int)(-traj_error_ * CUFF_GUIDANCE_GAIN_ + offset[0]), (short int)(-traj_error_ * CUFF_GUIDANCE_GAIN_ + offset[1]), true);
+                cuff_pos_1_ = (short int)(-traj_error_ * CUFF_GUIDANCE_GAIN_ + offset[0]);
+                cuff_pos_2_ = (short int)(-traj_error_ * CUFF_GUIDANCE_GAIN_ + offset[1]);
+                cuff_.set_motor_positions(cuff_pos_1_, cuff_pos_2_, true);
             }
             else if (CONDITION_ == 4) {
 
             }
 
-            // set device forces based on conditions
-            open_wrist_.joints_[0]->set_torque(ps_torque);
+            ps_total_torque_ = ps_comp_torque_ - pendulum_.Tau[0] + ps_noise_torque_;
+            open_wrist_.joints_[0]->set_torque(ps_total_torque_);
 
             if (!move_started) {
                 open_wrist_.joints_[1]->set_torque(pd1_.move_to_hold(0, open_wrist_.joints_[1]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[1]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, true));
@@ -388,6 +419,11 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
         // wait for the next clock cycle
         clock_.wait();
     }
+
+    // release CUFF
+    if (CONDITION_ == 2 || CONDITION_ == 3)
+        cuff_.set_motor_positions(-100, 100, true);
+
 
     // transition to the next state
     event(ST_TRANSITION);
@@ -446,8 +482,14 @@ void HapticGuidance::sf_generalization(const mel::NoEventData*) {
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
 
             // set device forces based on conditions
-            double ps_torque = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0) - pendulum_.Tau[0];
-            open_wrist_.joints_[0]->set_torque(ps_torque);
+            ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
+            ps_noise_torque_ = 0;
+            ps_total_torque_ = ps_comp_torque_ - pendulum_.Tau[0] + ps_noise_torque_;
+            open_wrist_.joints_[0]->set_torque(ps_total_torque_);
+
+            cuff_noise_ = 0;
+            cuff_pos_1_ = 0;
+            cuff_pos_2_ = 0;
 
             if (!move_started) {
                 open_wrist_.joints_[1]->set_torque(pd1_.move_to_hold(0, open_wrist_.joints_[1]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[1]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, true));
@@ -511,7 +553,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
         // increment the trial;
         current_trial_index_ += 1;
-        mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SCPACE to begin.");
+        mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SPACE to begin.");
         while (!mel::Input::is_key_pressed(mel::Input::Space)) {
             stop_ = check_stop();
             if (stop_) {
@@ -523,15 +565,20 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         // reset the pendlum
         pendulum_.reset();
 
+        // set the guidance module parameters
+        guidance_module_.SetSeed(current_trial_index_);
+
         // set the trajectory parameters
         amplitude_ = TRAJ_PARAMS_[current_trial_index_].amp_;
         sin_freq_ = TRAJ_PARAMS_[current_trial_index_].sin_;
         noise_freq_ = TRAJ_PARAMS_[current_trial_index_].noise_;
         trajectory_module_.SetFrequency(noise_freq_);
+        trajectory_module_.SetSeed(current_trial_index_);
+
 
         // print message
         mel::print("STARTING TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">." +
-            " A = " + std::to_string(amplitude_) + " S = " + std::to_string(sin_freq_) + " C = " + std::to_string(noise_freq_));
+            " A = " + std::to_string(amplitude_) + " S = " + std::to_string(sin_freq_) + " N = " + std::to_string(noise_freq_));
         mel::print("Press ESC or CTRL+C to terminate the experiment.");
 
         trials_started_ = true;

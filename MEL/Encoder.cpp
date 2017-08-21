@@ -28,7 +28,6 @@ namespace mel {
         rate_(0.0)
     { }
 
-
     double Encoder::get_position() {
         count_ = encoder_channel_.get_count();
         position_ = count_ / (counts_per_unit_ *  encoder_channel_.get_quadrature_factor());

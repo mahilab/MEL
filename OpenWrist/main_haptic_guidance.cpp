@@ -131,6 +131,7 @@ int main(int argc, char * argv[]) {
         mel::Clock clock(1000);
         HapticGuidance haptic_guidance(clock, q8_0, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
         haptic_guidance.execute();
+        q8_0->
         delete q8_0;
         return 0;
     }    
