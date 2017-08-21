@@ -4,6 +4,79 @@ namespace mel {
 
     namespace share {
 
+        int get_map_size(const boost::interprocess::mapped_region& region_size,
+            const std::string& mutex_name)
+        {
+            volatile int* size;
+            std::wstring w_mutex_name = std::wstring(mutex_name.begin(), mutex_name.end());
+            HANDLE mutex;
+            mutex = OpenMutex(MUTEX_ALL_ACCESS, FALSE, w_mutex_name.c_str());
+            DWORD dwWaitResult;
+            if (mutex != NULL) {
+                dwWaitResult = WaitForSingleObject(mutex, INFINITE);
+                switch (dwWaitResult) {
+                case WAIT_OBJECT_0:
+                    size = static_cast<int*>(region_size.get_address());
+                    if (!ReleaseMutex(mutex)) {
+                        std::cout << "ERROR: Failed to release mutex <" << mutex_name << ">." << std::endl;
+                        printf("WINDOWS ERROR: %d\n", GetLastError());
+                        return -6;
+                    }
+                    if (!CloseHandle(mutex)) {
+                        std::cout << "ERROR: Failed to close mutex <" << mutex_name << "> handle." << std::endl;
+                        printf("WINDOWS ERROR: %d\n", GetLastError());
+                        return -7;
+                    }
+                    return *size;
+                case WAIT_ABANDONED:
+                    std::cout << "ERROR: Wait on mutex <" << mutex_name << "> abandoned." << std::endl;
+                    printf("WINDOWS ERROR: %d\n", GetLastError());
+                    return -3;
+                case WAIT_TIMEOUT:
+                    std::cout << "ERROR: Wait on mutex <" << mutex_name << "> timed out." << std::endl;
+                    printf("WINDOWS ERROR: %d\n", GetLastError());
+                    return -4;
+                case WAIT_FAILED:
+                    std::cout << "ERROR: Wait on mutex <" << mutex_name << "> failed." << std::endl;
+                    printf("WINDOWS ERROR: %d\n", GetLastError());
+                    return -5;
+                }
+            }
+            else {
+                std::cout << "ERROR: Failed to open mutex <" << mutex_name << ">." << std::endl;
+                printf("WINDOWS ERROR: %d\n", GetLastError());
+                return -2;
+            }
+        }
+
+        int get_map_size(const std::string& name) {
+            try {
+                std::string name_size = name + "_size";
+                std::string mutex_name = name + "_mutex";
+                boost::interprocess::windows_shared_memory shm_size(boost::interprocess::open_only, name_size.c_str(), boost::interprocess::read_only);
+                boost::interprocess::mapped_region region_size(shm_size, boost::interprocess::read_only);
+
+                return get_map_size(region_size, mutex_name);
+            }
+            catch (boost::interprocess::interprocess_exception &ex) {
+                std::cout << "ERROR: Failed to open shared memory map <" << name << ">." << std::endl;
+                std::cout << "BOOST ERROR: " << ex.what() << std::endl;
+                return -1;
+            }
+        }
+
+        std::string read_message(const std::string& name) {
+            int message_size = get_map_size(name);
+            std::vector<char> message_chars(message_size);
+            read_map(name, message_chars);
+            return std::string(message_chars.begin(), message_chars.end());
+        }
+
+        void write_message(const std::string& name, const std::string& message) {
+            std::vector<char> message_chars(message.begin(), message.end());
+            write_map(name, message_chars);
+        }
+        
         MelShare::MelShare(std::string name, unsigned int bytes) :
             name_(name),
             name_data_(name.c_str()),

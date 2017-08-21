@@ -178,7 +178,7 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
 void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, true, true, true, true, true, true);
+    update_unity(true, true, true, true, true, true, true, true);
 
     bool move_started = false;
 
@@ -256,7 +256,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
 void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, true, true, false, false, false, true);
+    update_unity(true, true, true, false, false, false, true, true);
 
     bool move_started = false;
    
@@ -333,7 +333,7 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
 void HapticGuidance::sf_training(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, true, true, false, false, false, true);
+    update_unity(true, true, true, false, false, false, true, true);
 
     bool move_started = false;
 
@@ -435,7 +435,7 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
 void HapticGuidance::sf_break(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, false, false, false, false, false, true);
+    update_unity(true, false, false, false, false, false, true, true);
 
     // enter the control loop
     while (clock_.time() < LENGTH_TRIALS_[BREAK] && !stop_) {
@@ -457,7 +457,7 @@ void HapticGuidance::sf_break(const mel::NoEventData*) {
 void HapticGuidance::sf_generalization(const mel::NoEventData*) {
 
     // show/hide Unity elements
-    update_unity(true, true, true, false, false, false, true);
+    update_unity(true, true, true, false, false, false, true, true);
 
     bool move_started = false;
 
@@ -541,7 +541,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
     }
 
     // show/hide Unity elements
-    update_unity(true, false, false, false, false, false, true);
+    update_unity(true, false, false, false, false, false, true, true);
 
     // save the data log from the last trial
     if (trials_started_) {
@@ -678,7 +678,7 @@ void HapticGuidance::update_trajectory_error(double joint_angle) {
     traj_error_ = (joint_angle - correct_angle);
 }
 
-void HapticGuidance::update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars) {
+void HapticGuidance::update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars, bool trial) {
     unity_data_ = { 0,0,0,0,0,0,0 };
     if (background)
         unity_data_[0] = 1;
@@ -694,5 +694,8 @@ void HapticGuidance::update_unity(bool background, bool pendulum, bool trajector
         unity_data_[5] = 1;
     if (stars)
         unity_data_[6] = 1;
+    if (trial)
+        unity_data_[7] = 1;
     unity_.write(unity_data_);
+    trial_.write_message(TRIALS_TAG_NAMES_[current_trial_index_]);
 }

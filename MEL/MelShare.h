@@ -216,6 +216,22 @@ namespace mel {
             }
         }
 
+        /// Returns the current size of the data stored in the map
+        int get_map_size(const boost::interprocess::mapped_region& region_size, const std::string& mutex_name);
+
+        //---------------------------------------------------------------------
+        // BASIC FUNCTIONS
+        //---------------------------------------------------------------------
+
+        /// Returns the current size of the data stored in the map
+        int get_map_size(const std::string& name);
+
+        /// Returns a string message from the map by reading an underlying char array
+        std::string read_message(const std::string& name);
+
+        /// Writes a string message to the map as a char array
+        void write_message(const std::string& name, const std::string& message);
+
         //---------------------------------------------------------------------
         // TEMPLATED READ/WRITE FUNCTIONS THAT REOPEN AN EXISTING MELSHARE MAP
         //---------------------------------------------------------------------
@@ -278,6 +294,9 @@ namespace mel {
                 return -1;
             }
         }
+
+
+
 
         //---------------------------------------------------------------------
         // TEMPLATED READ/WRITE FUNCTIONS FOR STL CONTAINERS
@@ -399,8 +418,19 @@ namespace mel {
 
             /// Gets the current number of elements in the MELShare
             int get_size() {
-                int* empty = nullptr;
-                return read_map(empty, 0, region_data_, region_size_, mutex_name_);
+                return  get_map_size(region_size_, mutex_name_);
+            }
+
+            std::string read_message() {
+                int message_size = get_size();
+                std::vector<char> message_chars(message_size);
+                read(message_chars);
+                return std::string(message_chars.begin(), message_chars.end());
+            }
+
+            void write_message(const std::string& message) {
+                std::vector<char> message_chars(message.begin(), message.end());
+                write(message_chars);
             }
 
             std::string name_;

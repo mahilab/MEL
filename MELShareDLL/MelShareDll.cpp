@@ -1,8 +1,7 @@
 #include "MelShareDll.h"
 
 int get_map_size(char* name) {
-    int* empty = nullptr;
-    return mel::share::read_map(name, empty, 0);
+    return mel::share::get_map_size(name);
 }
 
 int read_char_map(char* name, char* buffer, int buffer_size) {
