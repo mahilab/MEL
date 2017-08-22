@@ -149,7 +149,7 @@ private:
 
     // LENGTH IN SECONDS OF EACH BLOCK TYPE TRIAL (SET MANUALLY)
     // [ FAMILIARIZATION, EVALUATION, TRAINING, BREAK, GENERALIZATION ]
-    std::array<double, 5> LENGTH_TRIALS_ = { 1, 1, 20, 300, 20 };
+    std::array<double, 5> LENGTH_TRIALS_ = { 60, 20, 20, 300, 20 };
 
     // EXPERIMENT TRIAL ORDERING
     void build_experiment();
@@ -201,16 +201,15 @@ private:
     Pendulum pendulum_;
 
     // TRAJECTORY VARIABLES
-
     struct TrajParams {
         TrajParams(double amp, double sin, double noise) : amp_(amp), sin_(sin), noise_(noise) {}
         double amp_, sin_, noise_;
     };
 
-    std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(225, 0.1, 0.1) };
-    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(225, 0.1, 0.25), TrajParams(225,0.2, 0.5), TrajParams(225, 0.225, 0.3) };
+    std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(200, 0.1, 0.1) };
+    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(200, 0.1, 0.2), TrajParams(200,0.2, 0.4), TrajParams(200, 0.3, 0.6) };
     std::vector<TrajParams> TRAJ_PARAMS_T_; // to be generated from TRAJ_PARAMS_E_
-    std::vector<TrajParams> TRAJ_PARAMS_G_ = std::vector<TrajParams>(12, TrajParams(225, 0.2, 0.275));
+    std::vector<TrajParams> TRAJ_PARAMS_G_ = std::vector<TrajParams>(12, TrajParams(200, 0.25, 0.5));
     std::vector<TrajParams> TRAJ_PARAMS_; // random generated for all trials
 
     double amplitude_ = 225;
@@ -228,16 +227,25 @@ private:
     double traj_error_ = 0;
     void update_trajectory_error(double joint_angle);
 
+    // SAVE VARIABLES
+    double ps_comp_torque_;
+    double ps_noise_torque_;
+    double ps_total_torque_;
+
+    short int cuff_pos_1_;
+    short int cuff_pos_2_;
+    double cuff_noise_;
+
     // UNITY GAMEMANAGER
     mel::share::MelShare unity_ = mel::share::MelShare("unity");
-    // [ background on/off, pendulum on/off , trajectory region on/off , trajectory center on/off, expert on/off, radius on/off , stars on/off ]
-    std::array<int, 7> unity_data_ = { 1,1,1,1,1,1,1 };
-    void update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars);
+    mel::share::MelShare trial_ = mel::share::MelShare("trial");
+    std::array<int, 8> unity_data_ = { 1,1,1,1,1,1,1,1 };
+    void update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars, bool trial);
 
     // PERLIN NOISE MODULES
+    mel::share::MelShare scope_ = mel::share::MelShare("scope");
     noise::module::Perlin guidance_module_;
-    double ow_noise_gain_ = 0.25;
-
+    double ow_noise_gain_ = 0.375;
     noise::module::Perlin trajectory_module_;
 
 };

@@ -26,10 +26,10 @@ int main(int argc, char * argv[]) {
     boost::program_options::options_description desc("Available Options");
     desc.add_options()
         ("help", "produces help message")
-        ("melshare", "example demonstrating how to use MELShare for two way communication with C# or Python")
+        ("melshare-data", "example demonstrating how to use MELShare for two way data sharing with C# or Python")
+        ("melshare-msg", "example demonstrating how to send and recieve string messages over MELShare")
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
-        ("external", "example of how to launch an external app or game from C++")
-        ("test","test");
+        ("external", "example of how to launch an external app or game from C++");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -43,10 +43,10 @@ int main(int argc, char * argv[]) {
     }
 
     //-------------------------------------------------------------------------
-    // MELSHARE EXAMPLE:    >Examples.exe --melshare
+    // MELSHARE DATA EXAMPLE:    >Examples.exe --melshare
     //-------------------------------------------------------------------------
 
-    if (var_map.count("melshare")) {
+    if (var_map.count("melshare-data")) {
 
         // create shared memory maps (optionally define size in bytes, default = 256 bytes)
         // note that on Windows, the shared memory maps will only stay active for as long as
@@ -97,6 +97,18 @@ int main(int argc, char * argv[]) {
         std::cout << "map2:    ";  mel::print(my_ints_bigger);
 
         return 0;
+    }
+
+    //-------------------------------------------------------------------------
+    // MELSHARE MESSAGING EXAMPLE:    >Examples-exe --melshare-msg
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("melshare-msg")) {
+        // create a MELShare
+        mel::share::MelShare messenger("messenger");
+        messenger.write_message("this is a message being sent to unity");
+        getchar();
+        mel::print(messenger.read_message());
     }
 
     //-------------------------------------------------------------------------
@@ -171,15 +183,15 @@ int main(int argc, char * argv[]) {
         }
     }
 
+    //-------------------------------------------------------------------------
+    // EXTERNAL APPLICATION EXAMPLE:    >Examples.exe --external
+    //-------------------------------------------------------------------------
+
     if (var_map.count("external")) {
         mel::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
         my_app.launch();
     }
 
-    if (var_map.count("test")) {
-        mel::Clock::wait_for(5);
-        mel::print(mel::Clock::global_time());
-    }
 }
 
 

@@ -56,19 +56,3 @@ extern "C" {
 extern "C" {
     MELSHARE_API int write_double_map(char* name, double* buffer, int buffer_size);
 }
-
-extern "C" {
-    MELSHARE_API int read_write_char_map(char* name, char* read_buffer, int read_buffer_size, char* write_buffer, int write_buffer_size);
-}
-
-extern "C" {
-    MELSHARE_API int read_write_int_map(char* name, int* read_buffer, int read_buffer_size, int* write_buffer, int write_buffer_size);
-}
-
-extern "C" {
-    MELSHARE_API int read_write_float_map(char* name, float* read_buffer, int read_buffer_size, float* write_buffer, int write_buffer_size);
-}
-
-extern "C" {
-    MELSHARE_API int read_write_double_map(char* name, double* read_buffer, int read_buffer_size, double* write_buffer, int write_buffer_size);
-}

@@ -8,6 +8,7 @@
 #include <boost/program_options.hpp>
 #include "GuiFlag.h"
 #include "HapticGuidance.h"
+#include <csignal>
 
 int main(int argc, char * argv[]) {
 

@@ -1,9 +1,10 @@
 #include "Q8Usb.h"
-#include <iostream>
-#include <tchar.h>
 #include "hil.h"
 #include "quanser_messages.h"
+#include <iostream>
+#include <tchar.h>
 #include <functional>
+#include <string>
 
 namespace mel {
 
@@ -191,6 +192,7 @@ namespace mel {
             std::cout << "Done" << std::endl;
         }
     }
+
 
     void Q8Usb::offset_encoders(int32_vec offset_counts) {
         if (enabled_ && encoder_channels_count_ > 0) {

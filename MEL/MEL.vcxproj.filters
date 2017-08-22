@@ -90,6 +90,9 @@
     <ClCompile Include="PdController.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Mutex.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateMachine.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="mel_math.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutex.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
