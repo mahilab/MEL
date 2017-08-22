@@ -92,11 +92,11 @@ namespace mel {
 
         std::vector<Daq*> daqs_; ///< all unique DAQs found in config_
 
-        /// critically damped PD controllers for each joint, gains are N/m and N-s/m
+        /// critically damped PD controllers for each joint
         std::array<PdController, 3> pd_controllers = {
-            PdController(25, 1.15), // joint 0
-            PdController(20, 1.00), // joint 1
-            PdController(20, 0.25)  // joint 2
+            PdController(25, 1.15), // joint 0 ( Nm/rad , Nm-s/rad )
+            PdController(20, 1.00), // joint 1 ( Nm/rad , Nm-s/rad )
+            PdController(20, 0.25)  // joint 2 ( Nm/rad , Nm-s/rad )
         };
 
         //-------------------------------------------------------------------------
