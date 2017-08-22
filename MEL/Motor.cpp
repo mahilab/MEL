@@ -30,10 +30,12 @@ namespace mel {
         double i2t_time_now_ = Clock::global_time();
         double i2t_time_last_ = Clock::global_time();
         if (enable_mode_ == EnableMode::High) {
+            ao_channel_.set_voltage(0);
             do_channel_.set_signal(1);
             do_channel_.daq_->write_digitals();
         }
         else if (enable_mode_ == EnableMode::Low) {
+            ao_channel_.set_voltage(0);
             do_channel_.set_signal(0);
             do_channel_.daq_->write_digitals();
         }
@@ -111,6 +113,7 @@ namespace mel {
         i2t_integral_ = abs(i2t_integrand_ * (i2t_time_now_ - i2t_time_last_) + i2t_integral_);
         if (i2t_integral_ > i2t_time_ * (pow(peak_current_limit_, 2) - pow(continuous_current_limit_, 2))) {
             limited_current_ = saturate(current_, continuous_current_limit_);
+            print("WARNING: Motor " + namify(name_) + " command current exceeded the I2T current limit: current saturated to " + std::to_string(continuous_current_limit_) + " with a commanded value of " + std::to_string(current_) + ".");
         } 
         else {
             limited_current_ = saturate(current_, peak_current_limit_);

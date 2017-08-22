@@ -2,16 +2,17 @@
 #include <csignal>
 #include "Q8Usb.h"
 #include "Clock.h"
-#include "MahiExoIIEmgFrc.h"
+#include "MahiExoII.h"
 #include "util.h"
 #include "mahiexoii_util.h"
 #include <boost/program_options.hpp>
-#include "EmgRTControl.h"
-#include "MelShare.h"
-#include "GuiFlag.h"
+#include "FesExperiment.h"
+#include "Input.h"
+
 
 
 int main(int argc, char * argv[]) {
+
 
     // ignore CTRL-C signal (we can do this with Input)
     signal(SIGINT, SIG_IGN);
@@ -48,17 +49,14 @@ int main(int argc, char * argv[]) {
 
 
     // create and configure a MahiExoII object
-    MahiExoIIEmg::Config config;
+    MahiExoII::Config config;
     for (int i = 0; i < 5; ++i) {
-        config.enable_[i] = q8_emg->do_(i+1);
-        config.command_[i] = q8_emg->ao_(i+1);
-        config.encoder_[i] = q8_emg->encoder_(i+1);
-        config.encrate_[i] = q8_emg->encrate_(i+1);
+        config.enable_[i] = q8_emg->do_(i + 1);
+        config.command_[i] = q8_emg->ao_(i + 1);
+        config.encoder_[i] = q8_emg->encoder_(i + 1);
+        config.encrate_[i] = q8_emg->encrate_(i + 1);
     }
-    for (int i = 0; i < 8; ++i) {
-        config.emg_[i] = q8_emg->ai_(i);
-    }
-    MahiExoIIEmg meii(config);
+    MahiExoII meii(config);
 
     // manual zero joint positions
     if (var_map.count("zero")) {
@@ -68,15 +66,11 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
-    // create GUI flag
-    GuiFlag gui_flag("gui_flag", 0);
-
 
     // run the experiment
-    int input_mode = 0;
     mel::Clock clock(1000);
-    EmgRTControl emg_rt_control(clock, q8_emg, meii, gui_flag, input_mode);
-    emg_rt_control.execute();
+    FesExperiment fes_experiment(clock, q8_emg, meii);
+    fes_experiment.execute();
     delete q8_emg;
     return 0;
 

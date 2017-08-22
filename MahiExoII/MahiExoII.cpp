@@ -377,21 +377,4 @@ Eigen::MatrixXd MahiExoII::phi_d_qp_func(Eigen::VectorXd& qp) {
 
 }
 
-void MahiExoII::update_state_map() {
-    state_[0] = joints_[0]->get_position();
-    state_[1] = joints_[1]->get_position();
-    state_[2] = joints_[2]->get_position();
-    state_[3] = joints_[3]->get_position();
-    state_[4] = joints_[4]->get_position();
-    state_[5] = joints_[0]->get_velocity();
-    state_[6] = joints_[1]->get_velocity();
-    state_[7] = joints_[2]->get_velocity();
-    state_[8] = joints_[3]->get_velocity();
-    state_[9] = joints_[4]->get_velocity();
-    state_[10] = joints_[0]->get_torque();
-    state_[11] = joints_[1]->get_torque();
-    state_[12] = joints_[2]->get_torque();
-    state_[13] = joints_[3]->get_torque();
-    state_[14] = joints_[4]->get_torque();
-    state_map_.write(state_);
-}
+

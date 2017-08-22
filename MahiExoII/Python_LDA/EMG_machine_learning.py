@@ -1,11 +1,5 @@
 # Load libraries
-#import pandas
-#import matplotlib.pyplot as plt
-#from sklearn import model_selection
-#from sklearn.metrics import confusion_matrix
-#from sklearn.metrics import accuracy_score
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-#from perf_measure import perf_measure
 import ctypes
 import numpy as np
 
@@ -51,33 +45,21 @@ emg_doubles = mydoubles()
 result = mel_share.read_double_map("trng_share", emg_doubles, trng_len)
 print "trng_share:    ",
 if (result < 0): print 'ERROR:', result
-for value in emg_doubles:
-    print value,
+#for value in emg_doubles:
+ #   print value,
+for i in range(0, trng_len):
+	print str(emg_doubles[i]),
 print ' '
 
 emg_features = np.reshape(emg_doubles,(rows,cols))
 
-
-# Load dataset
-#Xdataset = pandas.read_csv('C:/Users/mep9/Desktop/Troy/EMG_X_features.csv')
-#Ydataset = pandas.read_csv('C:/Users/mep9/Desktop/Troy/EMG_Y_labels.csv')
-
-
-
 #split out validation (testing) dataset
 X = emg_features
 Y = labels
-#validation_size = 0.25
-#seed = 7
-#X_train, X_validation, Y_train, Y_validation = model_selection.train_test_split(X, Y, test_size=validation_size, random_state=seed)
-
-
-#	kfold = model_selection.KFold(n_splits=10, random_state=seed)
-#	cv_results = model_selection.cross_val_score(model, X_train, Y_train, cv=kfold, scoring=scoring)
-#	results.append(cv_results)
 
 #make predictions on validation datatset
 lda = LinearDiscriminantAnalysis()
+lda.set_params(solver='lsqr')
 lda.fit(X, Y)
 
 #output in the coefficients of the linear decision function
@@ -94,9 +76,14 @@ coeff_len = c_row*c_col
 coeffArray = ctypes.c_double * coeff_len
 coeff_doubles = coeffArray()
 
-#Figure out how to make same size to read into MELShare buffer
-coeff_doubles = coeff
+#print(coeffArray.shape)
+print(coeff.shape)
+for i in range(0,coeff_len):
+	print str(coeff_doubles[i]) + ' ',
+	coeff_doubles[i] = coeff[0][i]
 
+#coeff = np.vectorize(coeff)
+#Figure out how to make same size to read into MELShare buffer
 #my_doubles[:] = [value * 2 for value in my_doubles]
 
 result = mel_share.write_double_map("LDA_coeff", coeff_doubles, coeff_len)
@@ -105,27 +92,3 @@ if (result < 0): print 'ERROR:', result
 for value in coeff:
     print value,
 print ' '
-#predictions = lda.predict(X_validation)
-#cm = confusion_matrix(Y_validation, predictions)
-#print(accuracy_score(Y_validation, predictions))
-#print(cm)
-#print(classification_report(Y_validation, predictions))
-
-#perf_data = perf_measure(Y_validation, predictions)
-
-#TP = float(perf_data[0])
-#TN = float(perf_data[1])
-#FP = float(perf_data[2])
-#FN = float(perf_data[3])
-
-
-#ACC = (TP + TN) / (TP + TN + FP + FN)
-#SN = TP/(TP+FN)
-#SP = TN/(TN+FP)
-#P = TP/(TP+FP)
-
-#print ("Acc = %s" % ACC)
-#print("SN = %s" % SN)
-#print("SP = %s" % SP)
-#print("P = %s" % P)
-

@@ -3,7 +3,7 @@
 #include "Motor.h"
 
 EmgRTControl::EmgRTControl(mel::Clock& clock, mel::Daq* q8_emg, MahiExoIIEmg& meii, GuiFlag& gui_flag, int input_mode) :
-    StateMachine(8),
+    StateMachine(9),
     clock_(clock),
     q8_emg_(q8_emg),
     meii_(meii),
@@ -40,6 +40,18 @@ void EmgRTControl::sf_init(const mel::NoEventData* data) {
         return;
     }
 
+    // check DAQ behavior for safety
+    q8_emg_->read_all();
+    meii_.update_kinematics();
+    if (meii_.check_all_joint_limits()) {
+        event(ST_STOP);
+        return;
+    }
+    if (!check_digital_loopback(0, 7)) {
+        event(ST_STOP);
+        return;
+    }
+
     // enable MEII
     mel::print("\nPress Enter to enable MEII.");
     mel::Input::wait_for_key_press(mel::Input::Key::Return);
@@ -55,47 +67,111 @@ void EmgRTControl::sf_init(const mel::NoEventData* data) {
     q8_emg_->start_watchdog(0.1);
     std::cout << "Starting the controller ... " << std::endl;
 
-    // start the hardware clock
+    // check for stop input
+    stop_ = check_stop();
+
+    // start the clock
     clock_.start();
 
-    // get current position and velocity to apply safety check
-    q8_emg_->reload_watchdog();
-    q8_emg_->read_all();
-    meii_.update_kinematics();
-    if (meii_.check_all_joint_limits()) {
-        stop_ = true;
+    // transition to next state
+    if (stop_) {
+        // stop if user provided input
+        event(ST_STOP);
+    }
+    else {
+        event(ST_TRANSPARENT);
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+// "TRANSPARENT" STATE FUNCTION
+//-----------------------------------------------------------------------------
+void EmgRTControl::sf_transparent(const mel::NoEventData* data) {
+    mel::print("Robot Transparent");
+
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+    init_transparent_time_reached_ = false;
+    
+
+    // enter the control loop
+    while (!init_transparent_time_reached_ && !stop_) {
+
+        // read and reload DAQs
+        q8_emg_->reload_watchdog();
+        q8_emg_->read_all();
+
+        // update robot kinematics
+        meii_.update_kinematics();
+
+        // write kinematics to MelScope
+        pos_share_.write(meii_.get_anatomical_joint_positions());
+        vel_share_.write(meii_.get_anatomical_joint_velocities());
+
+        // check joint limits
+        if (meii_.check_all_joint_limits()) {
+            stop_ = true;
+            break;
+        }
+
+        // set zero torques
+        commanded_torques_ = { 0,0,0,0,0 };
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+
+        // write motor commands to MelScope
+        torque_share_.write(commanded_torques_);
+
+        // write to daq
+        q8_emg_->write_all();
+
+        // check for init transparent time reached
+        init_transparent_time_reached_ = check_wait_time_reached(init_transparent_time_, st_enter_time_, clock_.time());
+
+        // check for stop input
+        stop_ = check_stop();
+
+        // wait for the next clock cycle
+        clock_.wait();
     }
 
     // transition to next state
-    event(ST_HOLD_CENTER);
-
+    if (stop_) {
+        // stop if user provided input
+        event(ST_STOP);
+    }
+    else if (init_transparent_time_reached_) {
+        init_transparent_time_reached_ = false; // reset flag
+        event(ST_TO_CENTER);
+    }
+    else {
+        mel::print("ERROR: State transition undefined. Going to ST_STOP.");
+        event(ST_STOP);
+    }
 }
+
 
 //-----------------------------------------------------------------------------
 // "GO TO CENTER" STATE FUNCTION
 //-----------------------------------------------------------------------------
 void EmgRTControl::sf_to_center(const mel::NoEventData* data) {
-
     mel::print("Go to Center");
+
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+    target_reached_ = false;
 
     // get current position and time to initialize trajectory
     q8_emg_->reload_watchdog();
     q8_emg_->read_all();
     meii_.update_kinematics();
     init_pos_ = meii_.get_anatomical_joint_positions();
-    init_time_ = clock_.time();
-    //double arm_translation_force = 1; // for debugging
 
     // set goal position for trajectory
-    goal_pos_[0] = -35 * mel::DEG2RAD; // elbow neutral [rad]
-    goal_pos_[1] = 0 * mel::DEG2RAD; // forearm neutral [rad]
-    goal_pos_[2] = 0 * mel::DEG2RAD; // wrist f/e neutral [rad]
-    goal_pos_[3] = 0 * mel::DEG2RAD; // wrist r/u neutral [rad]
-    goal_pos_[4] = 0.09; // arm translation neutral [rad]
+    goal_pos_ = center_pos_;
 
     // set joints to be checked for target reached
-    target_check_joint_ = { 1, 1, 1, 1, 0 };
-    target_reached_ = false;
+    target_check_joint_ = { 1, 0, 0, 0, 0 }; 
 
     // MelShare unity interface
     target_share_ = 0;
@@ -110,45 +186,42 @@ void EmgRTControl::sf_to_center(const mel::NoEventData* data) {
         // update robot kinematics
         meii_.update_kinematics();
 
+        // write kinematics to MelScope
+        pos_share_.write(meii_.get_anatomical_joint_positions());
+        vel_share_.write(meii_.get_anatomical_joint_velocities());
+
         // check joint limits
         if (meii_.check_all_joint_limits()) {
             stop_ = true;
             break;
         }
 
-        //mel::print(meii_.get_anatomical_joint_velocities());
-        vel_share_.write(meii_.get_anatomical_joint_velocities());
-        //mel::print(meii_.get_anatomical_joint_positions());
-        pos_share_.write(meii_.get_anatomical_joint_positions());
-
         // compute pd torques
         for (auto i = 0; i < 5; ++i) {
-            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], init_time_, clock_.time(), speed_[i]);
+            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], st_enter_time_, clock_.time(), speed_[i]);
             new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
-            //if (i == 4) {
-            //    arm_translation_force = new_torques_[i]; // for debugging
-            //}
             if (backdrive_[i] == 1) {
                 new_torques_[i] = 0;
             }
         }
-        //mel::print(arm_translation_force);
-
-        //mel::double_vec printable = { new_torques_[0],static_cast<mel::Motor*>(meii_.joints_[0]->actuator_)->get_current_limited() };
-        //mel::print(printable);
 
         // set new torques
-        //meii_.set_anatomical_joint_torques(new_torques_);
+        commanded_torques_ = new_torques_;
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+        //mel::print(commanded_torques_[0]);
 
-        // write to unity
+        // write motor commands to MelScope
+        torque_share_.write(commanded_torques_);
+
+        // write to Unity
         target_.write(target_share_);
-        pos_data_.write(meii_.get_anatomical_joint_positions());
+        //pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
-        //q8_emg_->write_all();
+        q8_emg_->write_all();
 
         // check for target reached
-        target_reached_ = check_target_reached(goal_pos_, meii_.get_anatomical_joint_positions(), target_check_joint_,true);
+        target_reached_ = check_target_reached(goal_pos_, meii_.get_anatomical_joint_positions(), target_check_joint_);
 
         // check for stop input
         stop_ = check_stop();
@@ -176,23 +249,15 @@ void EmgRTControl::sf_to_center(const mel::NoEventData* data) {
 // "HOLD AT CENTER" STATE FUNCTION
 //-----------------------------------------------------------------------------
 void EmgRTControl::sf_hold_center(const mel::NoEventData* data) {
-
     mel::print("Hold at Center");
 
-    // restart the clock
-    clock_.start();
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+    hold_center_time_reached_ = false;
 
     // initialize trajectory
-    goal_pos_[0] = -35 * mel::DEG2RAD; // elbow neutral [rad]
-    goal_pos_[1] = 0 * mel::DEG2RAD; // forearm neutral [rad]
-    goal_pos_[2] = 0 * mel::DEG2RAD; // wrist f/e neutral [rad]
-    goal_pos_[3] = 0 * mel::DEG2RAD; // wrist r/u neutral [rad]
-    goal_pos_[4] = 0.09; // arm translation neutral [rad]
-    init_pos_ = goal_pos_;
-    init_time_ = clock_.time();
-
-    // initialize event variables
-    hold_center_time_reached_ = false;
+    init_pos_ = center_pos_;
+    goal_pos_ = center_pos_;
 
     // MelShare unity interface
     target_share_ = 0;
@@ -207,6 +272,10 @@ void EmgRTControl::sf_hold_center(const mel::NoEventData* data) {
         // update robot kinematics
         meii_.update_kinematics();
 
+        // write kinematics to MelScope
+        pos_share_.write(meii_.get_anatomical_joint_positions());
+        vel_share_.write(meii_.get_anatomical_joint_velocities());
+
         // check joint limits
         if (meii_.check_all_joint_limits()) {
             stop_ = true;
@@ -214,9 +283,8 @@ void EmgRTControl::sf_hold_center(const mel::NoEventData* data) {
         }
 
         // compute pd torques
-        init_time_ = 0;
-        for (auto i = 0; i < 5; ++i) {
-            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], init_time_, clock_.time(), speed_[i]);
+        for (int i = 0; i < 5; ++i) {
+            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], st_enter_time_, clock_.time(), speed_[i]);
             new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
             if (backdrive_[i] == 1) {
                 new_torques_[i] = 0;
@@ -224,17 +292,22 @@ void EmgRTControl::sf_hold_center(const mel::NoEventData* data) {
         }
 
         // set new torques
-        //meii_.set_anatomical_joint_torques(new_torques_);
+        commanded_torques_ = new_torques_;
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+        //mel::print(commanded_torques_[0]);
+
+        // write motor commands to MelScope
+        torque_share_.write(commanded_torques_);
 
         // write to unity
         target_.write(target_share_);
-        pos_data_.write(meii_.get_anatomical_joint_positions());
+        //pos_data_.write(meii_.get_anatomical_joint_positions());
 
         // write to daq
-        //q8_emg_->write_all();
+        q8_emg_->write_all();
 
         // check for hold time reached
-        hold_center_time_reached_ = check_wait_time_reached(hold_center_time_, init_time_, clock_.time());
+        hold_center_time_reached_ = check_wait_time_reached(hold_center_time_, st_enter_time_, clock_.time());
 
         // check for stop input
         stop_ = check_stop();
@@ -262,20 +335,15 @@ void EmgRTControl::sf_hold_center(const mel::NoEventData* data) {
 // "PRESENT TARGET" STATE FUNCTION
 //-----------------------------------------------------------------------------
 void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
-
     mel::print("Present Target");
 
-    // initialize trajectory
-    goal_pos_[0] = -35 * mel::DEG2RAD; // elbow neutral [rad]
-    goal_pos_[1] = 0 * mel::DEG2RAD; // forearm neutral [rad]
-    goal_pos_[2] = 0 * mel::DEG2RAD; // wrist f/e neutral [rad]
-    goal_pos_[3] = 0 * mel::DEG2RAD; // wrist r/u neutral [rad]
-    goal_pos_[4] = 0.09; // arm translation neutral [rad]
-    init_pos_ = goal_pos_;
-    init_time_ = clock_.time();
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+    force_mag_reached_ = false;
 
-    // restart the clock
-    clock_.start();
+    // initialize trajectory
+    init_pos_ = center_pos_;
+    goal_pos_ = center_pos_;
 
     // MelShare unity interface
     if (current_target_ < target_sequence_.size()) {
@@ -306,6 +374,10 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
         // update robot kinematics
         meii_.update_kinematics();
 
+        // write kinematics to MelScope
+        pos_share_.write(meii_.get_anatomical_joint_positions());
+        vel_share_.write(meii_.get_anatomical_joint_velocities());
+
         // check joint limits
         if (meii_.check_all_joint_limits()) {
             stop_ = true;
@@ -315,7 +387,7 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
         // compute pd torques
         init_time_ = 0;
         for (auto i = 0; i < 5; ++i) {
-            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], init_time_, clock_.time(), speed_[i]);
+            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], st_enter_time_, clock_.time(), speed_[i]);
             new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
             if (backdrive_[i] == 1) {
                 new_torques_[i] = 0;
@@ -323,10 +395,16 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
         }
 
         // set new torques
-        //meii_.set_anatomical_joint_torques(new_torques_);
+        commanded_torques_ = new_torques_;
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+        //mel::print(commanded_torques_[0]);
+
+        // write motor commands to MelScope
+        torque_share_.write(commanded_torques_);
+
 
         // artificial force input
-        force_share_ = 1000;
+        force_share_ = 1000.0;
 
         // get measured emg voltages
         // TO DO: add in band pass filtering
@@ -338,11 +416,11 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
 
         // write to unity
         target_.write(target_share_);
-        pos_data_.write(meii_.get_anatomical_joint_positions());
+        //pos_data_.write(meii_.get_anatomical_joint_positions());
         force_mag_.write(force_share_);
 
         // write to daq
-        //q8_emg_->write_all();
+        q8_emg_->write_all();
 
         // check for stop input
         stop_ = check_stop();
@@ -374,16 +452,13 @@ void EmgRTControl::sf_present_target(const mel::NoEventData* data) {
 // "PROCESS EMG DATA" STATE FUNCTION
 //-----------------------------------------------------------------------------
 void EmgRTControl::sf_process_emg(const mel::NoEventData* data) {
-
     mel::print("Process EMG Data");
 
     // extract features from EMG data
     feature_vec_ = feature_extract(emg_data_buffer_);
-    mel::print(feature_vec_);
 
     // store features in training data set
     std::copy_n(feature_vec_.begin(), feature_array_.size(), feature_array_.begin());
-    mel::print(feature_array_);
     emg_training_data_.push_back(feature_array_);
 
     emg_data_processed_ = true;
@@ -406,6 +481,11 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
     
     mel::print("Training Complete");
 
+    meii_.disable();
+
+    //open LDA script in Python
+    //system("start EMG_Machine_learning.py &");
+
     // create vector to send training data to python
     mel::double_vec emg_training_data_vec_(N_train_ * num_emg_channels_ * num_features_);
     for (int i = 0; i < N_train_; ++i) {
@@ -420,6 +500,8 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
     std::copy_n(target_sequence_.begin(), N_train_, training_labels.begin());
     label_share_.write(training_labels);
 
+    mel::double_vec lda_coeff_c(num_class_, num_emg_channels_ * num_features_);
+
     // wait for python to receive
     // restart the clock
     clock_.start();
@@ -432,11 +514,19 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
         // update robot kinematics
         meii_.update_kinematics();
 
+        // write kinematics to MelScope
+        pos_share_.write(meii_.get_anatomical_joint_positions());
+        vel_share_.write(meii_.get_anatomical_joint_velocities());
+
         // check joint limits
         if (meii_.check_all_joint_limits()) {
             stop_ = true;
             break;
         }
+
+        //read for LDA Coefficients from Python
+        lda_coeff_.read(lda_coeff_c);
+        //mel::print(lda_coeff_c);
 
         // check for stop input
         stop_ = check_stop();
@@ -465,8 +555,12 @@ void EmgRTControl::sf_finish(const mel::NoEventData* data) {
 
 void EmgRTControl::sf_stop(const mel::NoEventData* data) {
     std::cout << "State Stop " << std::endl;
-    meii_.disable();
-    q8_emg_->disable();
+    if (meii_.is_enabled()) {
+        meii_.disable();
+    }
+    if (q8_emg_->is_enabled()) {
+        q8_emg_->disable();
+    }
 }
 
 //-----------------------------------------------------------------------------
