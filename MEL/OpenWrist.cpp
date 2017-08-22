@@ -1,4 +1,6 @@
 #include "OpenWrist.h"
+#include "Encoder.h"
+#include "Motor.h"
 #include "Input.h"
 
 namespace mel {
@@ -182,7 +184,7 @@ namespace mel {
                         bool moving = true;
                         if (stored_positions.size() > 500) {
                             moving = false;
-                            for (int i = stored_positions.size() - 500; i < stored_positions.size(); i++) {
+                            for (size_t i = stored_positions.size() - 500; i < stored_positions.size(); i++) {
                                 moving = stored_positions[i] != stored_positions[i - 1];
                                 if (moving)
                                     break;

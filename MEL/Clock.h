@@ -2,6 +2,8 @@
 #include <chrono>
 #include "util.h"
 #include "DataLog.h"
+#include <string>
+
 
 namespace mel {
 
@@ -41,7 +43,7 @@ namespace mel {
         // PUBLIC VARIABLES
         //---------------------------------------------------------------------
 
-        const const uint32 frequency_;  ///< the clock sampling rate in Hz (e.g. 1000 Hz)
+        const uint32 frequency_;  ///< the clock sampling rate in Hz (e.g. 1000 Hz)
         const double delta_time_;       ///< the clock fixed step time or fundamental sample time in seconds (e.g. 0.001 seconds)        
 
     private:

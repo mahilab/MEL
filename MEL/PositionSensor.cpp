@@ -1,4 +1,6 @@
 #include "PositionSensor.h"
+#include <iostream>
+#include <string>
 
 namespace mel {
 

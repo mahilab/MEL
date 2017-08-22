@@ -10,7 +10,7 @@ namespace mel {
 
     ForceSensor::ForceSensor(std::string name, std::vector<Daq::Ai> ai_channels) :
         Device(name),
-        num_channels_(ai_channels.size()),
+        num_channels_(static_cast<int>(ai_channels.size())),
         voltages_(double_vec(ai_channels.size(),0))
     {
         for (int i = 0; i < num_channels_; ++i) {

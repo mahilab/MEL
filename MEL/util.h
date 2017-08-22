@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <iostream>
-
+#include <string>
 
 namespace mel {
     

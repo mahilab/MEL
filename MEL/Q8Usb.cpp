@@ -1,9 +1,10 @@
 #include "Q8Usb.h"
-#include <iostream>
-#include <tchar.h>
 #include "hil.h"
 #include "quanser_messages.h"
+#include <iostream>
+#include <tchar.h>
 #include <functional>
+#include <string>
 
 namespace mel {
 

@@ -2,6 +2,7 @@
 #include "definitions.h"
 #include "commands.h"
 #include <chrono>
+#include <iostream>
 
 #define CUFF_ID 1
 

@@ -540,9 +540,6 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         ow_daq_->stop_watchdog();
     }
 
-    // show/hide Unity elements
-    update_unity(true, false, false, false, false, false, true, true);
-
     // save the data log from the last trial
     if (trials_started_) {
         log_.save_and_clear_data(TRIALS_TAG_NAMES_[current_trial_index_], DIRECTORY_ + "\\_" + TRIALS_BLOCK_NAMES_[current_trial_index_], true);
@@ -553,6 +550,10 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
         // increment the trial;
         current_trial_index_ += 1;
+
+        // show/hide Unity elements
+        update_unity(true, false, false, false, false, false, true, true);
+
         mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SPACE to begin.");
         while (!mel::Input::is_key_pressed(mel::Input::Space)) {
             stop_ = check_stop();
@@ -574,6 +575,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         noise_freq_ = TRAJ_PARAMS_[current_trial_index_].noise_;
         trajectory_module_.SetFrequency(noise_freq_);
         trajectory_module_.SetSeed(current_trial_index_);
+
 
 
         // print message

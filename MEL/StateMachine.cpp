@@ -1,4 +1,6 @@
 #include "StateMachine.h"
+#include "util.h"
+
 
 namespace mel {
 

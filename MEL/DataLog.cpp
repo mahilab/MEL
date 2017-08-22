@@ -6,7 +6,7 @@
 namespace mel {
 
     DataLog::DataLog() :
-        DataLog("data_log",1000000) {}
+        DataLog("data_log", true, 1000000) {}
 
     DataLog::DataLog(std::string name, bool autosave, size_t max_rows) :
         name_(name),
@@ -61,8 +61,8 @@ namespace mel {
             data_log << *it << ",";
         }
         data_log << std::endl;
-        for (int i = 0; i < row_index_; i++) {
-            for (int j = 0; j < num_cols_; j++) {
+        for (uint32 i = 0; i < row_index_; i++) {
+            for (size_t j = 0; j < num_cols_; j++) {
                 data_log << data_[j][i] << ",";
             }
             data_log << std::endl;

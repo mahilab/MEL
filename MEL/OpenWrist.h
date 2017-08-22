@@ -1,13 +1,7 @@
 #pragma once
 #include <array>
 #include "Exo.h"
-#include "util.h"
 #include "MelShare.h"
-#include "Task.h"
-#include "Controller.h" 
-#include "Clock.h"
-#include "Encoder.h"
-#include "Motor.h"
 #include "PdController.h"
 
 namespace mel {
