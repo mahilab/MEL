@@ -53,6 +53,10 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWri
         .add_col("Exp_x [px]").add_col("Exp_y [px]").add_col("Angular Error [rad]").add_col("OW PS Position [rad]").add_col("OW PS Velocity [rad/s]").add_col("OW PS Total Torque [Nm]")
         .add_col("OW PS Compensation Torque [Nm]").add_col("OW PS Task Torque [Nm]").add_col("OW PS Noise Torque")
         .add_col("CUFF Motor Position 1").add_col("CUFF Motor Position 2").add_col("CUFF Noise");
+
+    // update Unity
+    update_unity(true, true, false, false, false, true, true, false);
+
 }
 
 void HapticGuidance::log_row() {
@@ -191,6 +195,10 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         // update expert position
         update_expert(clock_.time());
 
+        // update countdown timer
+        std::array<double, 2> timer = { clock_.time(), LENGTH_TRIALS_[FAMILIARIZATION] };
+        timer_.write(timer);
+
         // read and reload DAQ
         if (CONDITION_ > 0) {
 
@@ -268,6 +276,10 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
         // update expert position
         update_expert(clock_.time());
 
+        // update countdown timer
+        std::array<double, 2> timer = { clock_.time(), LENGTH_TRIALS_[EVALUATION] };
+        timer_.write(timer);
+
         // read and reload DAQ
         if (CONDITION_ > 0) {
 
@@ -344,6 +356,10 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
         update_trajectory(clock_.time());
         // update expert position
         update_expert(clock_.time());
+
+        // update countdown timer
+        std::array<double, 2> timer = { clock_.time(), LENGTH_TRIALS_[TRAINING] };
+        timer_.write(timer);
 
         // read and reload DAQ
         if (CONDITION_ > 0) {
@@ -440,6 +456,10 @@ void HapticGuidance::sf_break(const mel::NoEventData*) {
     // enter the control loop
     while (clock_.time() < LENGTH_TRIALS_[BREAK] && !stop_) {
 
+        // update countdown timer
+        std::array<double, 2> timer = { clock_.time(), LENGTH_TRIALS_[BREAK] };
+        timer_.write(timer);
+
         // check for stop input
         stop_ = check_stop();
 
@@ -468,6 +488,10 @@ void HapticGuidance::sf_generalization(const mel::NoEventData*) {
         update_trajectory(clock_.time());
         // update expert position
         update_expert(clock_.time());
+
+        // update countdown timer
+        std::array<double, 2> timer = { clock_.time(), LENGTH_TRIALS_[GENERALIZATION] };
+        timer_.write(timer);
 
         // read and reload DAQ
         if (CONDITION_ > 0) {
@@ -545,14 +569,19 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         log_.save_and_clear_data(TRIALS_TAG_NAMES_[current_trial_index_], DIRECTORY_ + "\\_" + TRIALS_BLOCK_NAMES_[current_trial_index_], true);
     }
 
+    // show/hide Unity elements
+    update_unity(true, true, false, false, false, false, true, true);
+
     // start a new tiral if there is one or stop hasn't been requested
     if (current_trial_index_ < NUM_TRIALS_TOTAL_ - 1 && !stop_) {
 
         // increment the trial;
         current_trial_index_ += 1;
 
-        // show/hide Unity elements
-        update_unity(true, false, false, false, false, false, true, true);
+        // write the trial string out
+        trial_.write_message(TRIALS_TAG_NAMES_[current_trial_index_]);
+        std::array<double, 2> timer = { 0, LENGTH_TRIALS_[TRIALS_BLOCK_TYPES_[current_trial_index_]] };
+        timer_.write(timer);
 
         mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SPACE to begin.");
         while (!mel::Input::is_key_pressed(mel::Input::Space)) {
@@ -566,9 +595,6 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         // reset the pendlum
         pendulum_.reset();
 
-        // set the guidance module parameters
-        guidance_module_.SetSeed(current_trial_index_);
-
         // set the trajectory parameters
         amplitude_ = TRAJ_PARAMS_[current_trial_index_].amp_;
         sin_freq_ = TRAJ_PARAMS_[current_trial_index_].sin_;
@@ -576,8 +602,9 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         trajectory_module_.SetFrequency(noise_freq_);
         trajectory_module_.SetSeed(current_trial_index_);
 
-
-
+        // seed the guidane with a numer unique to the current traj param
+        guidance_module_.SetSeed(static_cast<int>(TRAJ_PARAMS_[current_trial_index_].noise_ * 10));
+        
         // print message
         mel::print("STARTING TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">." +
             " A = " + std::to_string(amplitude_) + " S = " + std::to_string(sin_freq_) + " N = " + std::to_string(noise_freq_));
@@ -641,7 +668,6 @@ void HapticGuidance::update_trajectory(double time) {
         //trajectory_x_data[i] = (int)(amplitude_ * -sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0)) * 
         //                                      cos(2.0 * mel::PI * cos_freq_ * (time + (double)i * 20.0 / 1080.0))); 
 
-        //trajectory_x_data[i] = (int)(amplitude_ * trajectory_module_.GetValue(time + (double)i * 20.0 / 1080.0, 0.0, 0.0));
         trajectory_x_data[i] = (int)(amplitude_ * (trajectory_module_.GetValue(time + (double)i * 20.0 / 1080.0, 0.0, 0.0) + sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0))));
 
     }
@@ -680,7 +706,7 @@ void HapticGuidance::update_trajectory_error(double joint_angle) {
     traj_error_ = (joint_angle - correct_angle);
 }
 
-void HapticGuidance::update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars, bool trial) {
+void HapticGuidance::update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars, bool ui) {
     unity_data_ = { 0,0,0,0,0,0,0 };
     if (background)
         unity_data_[0] = 1;
@@ -696,8 +722,7 @@ void HapticGuidance::update_unity(bool background, bool pendulum, bool trajector
         unity_data_[5] = 1;
     if (stars)
         unity_data_[6] = 1;
-    if (trial)
+    if (ui)
         unity_data_[7] = 1;
-    unity_.write(unity_data_);
-    trial_.write_message(TRIALS_TAG_NAMES_[current_trial_index_]);
+    unity_.write(unity_data_);    
 }

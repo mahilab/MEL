@@ -16,6 +16,9 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{0175eb56-8306-41f4-815b-b396f5020cc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Communications">
+      <UniqueIdentifier>{5f778315-7578-4869-acfb-360e11ff8643}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actuator.cpp">
@@ -81,9 +84,6 @@
     <ClCompile Include="OpenWrist.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
-    <ClCompile Include="MelShare.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="ExternalApp.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -92,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="Mutex.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MelShare.cpp">
+      <Filter>Communications</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +176,6 @@
     <ClInclude Include="OpenWrist.h">
       <Filter>Devices</Filter>
     </ClInclude>
-    <ClInclude Include="MelShare.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="ExternalApp.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -184,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Mutex.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MelShare.h">
+      <Filter>Communications</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

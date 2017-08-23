@@ -239,8 +239,10 @@ private:
     // UNITY GAMEMANAGER
     mel::share::MelShare unity_ = mel::share::MelShare("unity");
     mel::share::MelShare trial_ = mel::share::MelShare("trial");
+    mel::share::MelShare timer_ = mel::share::MelShare("timer");
+
     std::array<int, 8> unity_data_ = { 1,1,1,1,1,1,1,1 };
-    void update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars, bool trial);
+    void update_unity(bool background, bool pendulum, bool trajectory_region, bool trajectory_center, bool expert, bool radius, bool stars, bool ui);
 
     // PERLIN NOISE MODULES
     mel::share::MelShare scope_ = mel::share::MelShare("scope");
