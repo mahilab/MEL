@@ -2,6 +2,7 @@
 #include "Clock.h"
 #include "Q8Usb.h"
 #include "OpenWrist.h"
+#include "MahiExoII.h"
 #include "Cuff.h"
 #include "MelShare.h"
 #include "DataLog.h"
@@ -36,7 +37,7 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
-    //  create a Q8Usb object
+    //  create a Q8Usb object(s)
     mel::uint32 id = 0;
 
     mel::channel_vec  ai_channels = { 0, 1, 2 };
@@ -45,27 +46,51 @@ int main(int argc, char * argv[]) {
     mel::channel_vec  do_channels = { 0, 1, 2 };
     mel::channel_vec enc_channels = { 0, 1, 2 };
 
-    mel::Q8Usb::Options options;
-    options.update_rate_ = mel::Q8Usb::Options::UpdateRate::Fast_8kHz;
-    options.decimation_ = 1;
-    options.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
-    options.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
-    options.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
+    mel::Q8Usb::Options options_q8;
+    options_q8.update_rate_ = mel::Q8Usb::Options::UpdateRate::Fast_8kHz;
+    options_q8.decimation_ = 1;
+    options_q8.ao_modes_[0] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+    options_q8.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+    options_q8.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
 
-    mel::Daq* q8_0 = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options);
+    mel::Daq* q8_ow = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
+
+    id = 0;
+    ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    ao_channels = { 1, 2, 3, 4, 5 };
+    di_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    do_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+    enc_channels = { 1, 2, 3, 4, 5 };
+    mel::Q8Usb::Options options_meii;
+    for (int i = 0; i < 8; ++i) {
+        options_meii.do_initial_signals_[i] = 1;
+        options_meii.do_final_signals_[i] = 1;
+        options_meii.do_expire_signals_[i] = 1;
+    }
+    mel::Daq* q8_meii = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_meii);
 
     // create and configure an OpenWrist object
-    mel::OpenWrist::Config config;
+    mel::OpenWrist::Config ow_config;
     for (int i = 0; i < 3; i++) {
-        config.enable_[i] = q8_0->do_(i);
-        config.command_[i] = q8_0->ao_(i);
-        config.sense_[i] = q8_0->ai_(i);
-        config.encoder_[i] = q8_0->encoder_(i);
-        config.encrate_[i] = q8_0->encrate_(i);
-        config.amp_gains_[i] = 1;
+        ow_config.enable_[i] = q8_ow->do_(i);
+        ow_config.command_[i] = q8_ow->ao_(i);
+        ow_config.sense_[i] = q8_ow->ai_(i);
+        ow_config.encoder_[i] = q8_ow->encoder_(i);
+        ow_config.encrate_[i] = q8_ow->encrate_(i);
+        ow_config.amp_gains_[i] = 1;
     }
 
-    mel::OpenWrist open_wrist(config);
+    mel::OpenWrist open_wrist(ow_config);
+
+    // create and configure a MahiExo-II object
+    MahiExoII::Config config;
+    for (int i = 0; i < 5; ++i) {
+        config.enable_[i] =  q8_meii->do_(i + 1);
+        config.command_[i] = q8_meii->ao_(i + 1);
+        config.encoder_[i] = q8_meii->encoder_(i + 1);
+        config.encrate_[i] = q8_meii->encrate_(i + 1);
+    }
+    MahiExoII meii(config);
 
     // create and configure CUFF object
     Cuff cuff("cuff_forearm");
@@ -73,14 +98,16 @@ int main(int argc, char * argv[]) {
     // perform calibrate command if requested by user
     if (var_map.count("calibrate")) {
         open_wrist.calibrate();
-        delete q8_0;
+        delete q8_ow;
+        delete q8_meii;
         return 0;
     }
 
     // put the robot in transparency mode if requested by user
     if (var_map.count("transparent")) {
         open_wrist.transparency_mode();
-        delete q8_0;
+        delete q8_ow;
+        delete q8_meii;
         return 0;
     }
 
@@ -120,7 +147,8 @@ int main(int argc, char * argv[]) {
         }
         else {
             mel::print("Not enough input parameters were provided to run the experiment.");
-            delete q8_0;
+            delete q8_ow;
+            delete q8_meii;
             return -1;
         }
 
@@ -130,9 +158,10 @@ int main(int argc, char * argv[]) {
         mel::print("Start Trial:    " + start_trial);
 
         mel::Clock clock(1000);
-        HapticGuidance haptic_guidance(clock, q8_0, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
+        HapticGuidance haptic_guidance(clock, q8_ow, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
         haptic_guidance.execute();
-        delete q8_0;
+        delete q8_ow;
+        delete q8_meii;
         return 0;
     }    
 
