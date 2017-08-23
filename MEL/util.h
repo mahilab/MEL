@@ -30,7 +30,8 @@ namespace mel {
     typedef unsigned   short uint16;  ///<              0 to +65,535
     typedef              int  int32;  ///< -2,147,483,648 to +2,147,483,647
     typedef unsigned     int uint32;  ///<              0 to +4,294,967,295
-
+    typedef signed   __int64 int64;   ///<
+    typedef unsigned __int64 uint64;  ///<
 
     typedef std::vector<char>   char_vec;
     typedef std::vector<int8>   int8_vec;
