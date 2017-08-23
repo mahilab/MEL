@@ -77,31 +77,6 @@ MahiExoII::~MahiExoII() {
     }
 }
 
-/*
-void MahiExoII::anatomical_joint_set_points(mel::double_vec& set_points) {
-
-    mel::double_vec torques = { 0,0,0,0,0 };
-
-    torques[0] = mel::pd_controller(35, 0.25, set_points[0], anatomical_joint_positions_[0], 0, anatomical_joint_velocities_[0]);
-    torques[1] = mel::pd_controller( 7, 0.06, set_points[1], anatomical_joint_positions_[1], 0, anatomical_joint_velocities_[1]);
-
-    Eigen::VectorXd q_ser_ref = Eigen::VectorXd::Zero(3);
-    Eigen::VectorXd q_par_ref = Eigen::VectorXd::Zero(3);
-    q_ser_ref << set_points[2], set_points[3], 0.1;
-    inverse_kinematics(q_ser_ref, q_par_ref);
-
-    torques[2] = mel::pd_controller(10, 0.01, q_par_ref[0], joints_[2]->get_position(), 0, joints_[2]->get_velocity());
-    torques[3] = mel::pd_controller(10, 0.01, q_par_ref[1], joints_[3]->get_position(), 0, joints_[3]->get_velocity());
-    torques[4] = mel::pd_controller(10, 0.01, q_par_ref[2], joints_[4]->get_position(), 0, joints_[4]->get_velocity());
-
-    joints_[0]->set_torque(torques[0]);
-    joints_[1]->set_torque(torques[1]);
-    joints_[2]->set_torque(torques[2]);
-    joints_[3]->set_torque(torques[3]);
-    joints_[4]->set_torque(torques[4]);
-
-}
-*/
 
 void MahiExoII::update_kinematics() {
 

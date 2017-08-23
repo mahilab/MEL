@@ -22,6 +22,7 @@ int main(int argc, char * argv[]) {
     desc.add_options()
         ("help", "produces help message")
         ("zero", "zeros encoder counts on startup");
+        ("calibrate", "set zero elbow flexion position");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
@@ -66,10 +67,15 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
+    if (var_map.count("calibrate")) {
+        return 0;
+    }
 
     // run the experiment
     mel::Clock clock(1000);
-    FesExperiment fes_experiment(clock, q8_emg, meii);
+    int subject = 0;
+    int condition = 0; // 0 = FES only, 1 = MEII only, 2 = FES & MEII combined
+    FesExperiment fes_experiment( clock, q8_emg, meii, condition, subject );
     fes_experiment.execute();
     delete q8_emg;
     return 0;

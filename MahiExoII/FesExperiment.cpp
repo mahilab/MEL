@@ -1,13 +1,56 @@
 #include "FesExperiment.h"
 #include "Input.h"
+#include "mahiexoii_util.h"
 
 
-FesExperiment::FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii) :
-    StateMachine(6),
+FesExperiment::FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int condition, int subject_number) :
+    StateMachine(9),
     clock_(clock),
     q8_emg_(q8_emg),
-    meii_(meii)
+    meii_(meii),
+    SUBJECT_NUMBER_(subject_number),
+    CONDITION_(condition)
 {
+
+    // create subject folder
+    if (subject_number < 10) {
+        DIRECTORY_ = "FES_S0" + std::to_string(subject_number);// +"_C" + std::to_string(condition);
+    }
+    else {
+        DIRECTORY_ = "FES_S" + std::to_string(subject_number);// +"_C" + std::to_string(condition);
+    }
+
+    // Add columns to logger
+    log_.add_col("Time [s]").add_col("State")
+        .add_col("Reference EFE Position [rad]")
+        .add_col("MEII EFE Position [rad]").add_col("MEII EFE Velocity [rad/s]").add_col("MEII EFE Commanded Torque [Nm]")
+        .add_col("MEII FPS Position [rad]").add_col("MEII FPS Velocity [rad/s]").add_col("MEII FPS Commanded Torque [Nm]")
+        .add_col("MEII RPS1 Position [m]").add_col("MEII RPS1 Velocity [m/s]").add_col("MEII RPS1 Commanded Force [N]")
+        .add_col("MEII RPS2 Position [m]").add_col("MEII RPS2 Velocity [m/s]").add_col("MEII RPS2 Commanded Force [N]")
+        .add_col("MEII RPS3 Position [m]").add_col("MEII RPS3 Velocity [m/s]").add_col("MEII RPS3 Commanded Force [N]");
+}
+
+void FesExperiment::log_row() {
+    std::vector<double> row;
+    row.push_back(clock_.time());
+    row.push_back(get_current_state());
+    row.push_back(elbow_ref_pos_ * mel::RAD2DEG);
+    row.push_back(meii_.joints_[0]->get_position() * mel::RAD2DEG);
+    row.push_back(meii_.joints_[0]->get_velocity() * mel::RAD2DEG);
+    row.push_back(static_cast<mel::Motor*>(meii_.actuators_[0])->get_torque_command());
+    row.push_back(meii_.joints_[1]->get_position() * mel::RAD2DEG);
+    row.push_back(meii_.joints_[1]->get_velocity() * mel::RAD2DEG);
+    row.push_back(static_cast<mel::Motor*>(meii_.actuators_[1])->get_torque_command());
+    row.push_back(meii_.joints_[2]->get_position() * mel::RAD2DEG);
+    row.push_back(meii_.joints_[2]->get_velocity() * mel::RAD2DEG);
+    row.push_back(static_cast<mel::Motor*>(meii_.actuators_[2])->get_torque_command());
+    row.push_back(meii_.joints_[3]->get_position() * mel::RAD2DEG);
+    row.push_back(meii_.joints_[3]->get_velocity() * mel::RAD2DEG);
+    row.push_back(static_cast<mel::Motor*>(meii_.actuators_[3])->get_torque_command());
+    row.push_back(meii_.joints_[4]->get_position() * mel::RAD2DEG);
+    row.push_back(meii_.joints_[4]->get_velocity() * mel::RAD2DEG);
+    row.push_back(static_cast<mel::Motor*>(meii_.actuators_[4])->get_torque_command());
+    log_.add_row(row);
 }
 
 void FesExperiment::wait_for_input() {
@@ -24,8 +67,6 @@ bool FesExperiment::check_stop() {
 void FesExperiment::sf_init(const mel::NoEventData* data) {
 
     // initialize UDP
-    //struct sockaddr_in si_other_;
-    //int s_, slen_ = sizeof(si_other_);
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
     {
@@ -105,13 +146,17 @@ void FesExperiment::sf_init(const mel::NoEventData* data) {
 void FesExperiment::sf_transparent(const mel::NoEventData* data) {
     mel::print("Robot Transparent");
 
+    if (CONDITION_ == 0 && initial_position_reached_) {
+        clock_.start();
+        init_transparent_time_ = flexion_trajectory_time_ + hold_flexed_time_ + extension_trajectory_time_ + hold_extended_time_;
+    }
+
     // initialize event variables
     st_enter_time_ = clock_.time();
     init_transparent_time_reached_ = false;
 
     // enter the control loop
     while (!init_transparent_time_reached_ && !stop_) {
-    //while (!stop_) {
 
         // read and reload DAQs
         q8_emg_->reload_watchdog();
@@ -120,19 +165,30 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
         // update robot kinematics
         meii_.update_kinematics();
 
+        // compute anatomical elbow position
+        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
-        // setting up UDP double array of elbow position and time
-        elbow_pos_deg_ = meii_.get_anatomical_joint_position(0) * mel::RAD2DEG;
-        current_time_ = clock_.time();
-        UDP_data_[0] = elbow_pos_deg_;
-        UDP_data_[1] = current_time_;
+        if (CONDITION_ == 0 && initial_position_reached_) {
 
-        // send joint angle and time through UDP
-        /*sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_);*/
-        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
-        {
-            printf("sendto() failed with error code : %d", WSAGetLastError());
-            exit(EXIT_FAILURE);
+            // send elbow joint angle and time through UDP
+            UDP_data_[0] = elbow_pos_deg_;
+            UDP_data_[1] = clock_.time();
+            if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
+            {
+                printf("sendto() failed with error code : %d", WSAGetLastError());
+                exit(EXIT_FAILURE);
+            }
+
+            // update elbow reference position
+            if (clock_.time() <= flexion_trajectory_time_) {
+                elbow_ref_pos_ = compute_elbow_flexion_trajectory(st_enter_time_, clock_.time());
+            }
+            else if ((clock_.time() > flexion_trajectory_time_) && (clock_.time() <= flexion_trajectory_time_ + hold_flexed_time_) ) {
+                elbow_ref_pos_ = elbow_flexed_pos_;
+            }
+            else if (clock_.time() > flexion_trajectory_time_ + hold_flexed_time_) {
+                elbow_ref_pos_ = compute_elbow_extension_trajectory(st_enter_time_, clock_.time());
+            }
         }
 
         // check joint limits
@@ -151,6 +207,9 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
         // check for init transparent time reached
         init_transparent_time_reached_ = check_wait_time_reached(init_transparent_time_, st_enter_time_, clock_.time());
 
+        // log data
+        log_row();
+
         // check for stop input
         stop_ = check_stop();
 
@@ -165,7 +224,20 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
     }
     else if (init_transparent_time_reached_) {
         init_transparent_time_reached_ = false; // reset flag
-        event(ST_TO_CENTER);
+        if (CONDITION_ == 0) {
+            if (!initial_position_reached_) {
+                event(ST_TO_EXTENDED);
+            }
+            else {
+                event(ST_FINISH);
+            }
+        }
+        else if (CONDITION_ == 1) {
+            event(ST_TO_EXTENDED);
+        }
+        else if (CONDITION_ == 2) {
+            event(ST_TO_EXTENDED);
+        }
     }
     else {
         mel::print("ERROR: State transition undefined. Going to ST_STOP.");
@@ -175,10 +247,10 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
 
 
 //-----------------------------------------------------------------------------
-// "GO TO CENTER" STATE FUNCTION
+// "GO TO EXTENDED" STATE FUNCTION
 //-----------------------------------------------------------------------------
-void FesExperiment::sf_to_center(const mel::NoEventData* data) {
-    mel::print("Go to Center");
+void FesExperiment::sf_to_extended(const mel::NoEventData* data) {
+    mel::print("Go to Extended Position");
 
     // initialize event variables
     st_enter_time_ = clock_.time();
@@ -190,8 +262,8 @@ void FesExperiment::sf_to_center(const mel::NoEventData* data) {
     meii_.update_kinematics();
     init_pos_ = meii_.get_anatomical_joint_positions();
 
-    // set goal position for trajectory
-    goal_pos_ = center_pos_;
+    // set goal position for start of trajectory
+    goal_pos_ = extended_pos_;
 
     // set joints to be checked for target reached
     target_check_joint_ = { 1, 0, 0, 0, 0 };
@@ -206,6 +278,9 @@ void FesExperiment::sf_to_center(const mel::NoEventData* data) {
 
         // update robot kinematics
         meii_.update_kinematics();
+
+        // compute anatomical elbow position
+        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         // check joint limits
         if (meii_.check_all_joint_limits()) {
@@ -225,13 +300,15 @@ void FesExperiment::sf_to_center(const mel::NoEventData* data) {
         // set new torques
         commanded_torques_ = new_torques_;
         meii_.set_anatomical_joint_torques(commanded_torques_);
-        //mel::print(commanded_torques_[0]);
 
         // write to daq
         q8_emg_->write_all();
 
         // check for target reached
         target_reached_ = check_target_reached(goal_pos_, meii_.get_anatomical_joint_positions(), target_check_joint_);
+
+        // log data
+        log_row();
 
         // check for stop input
         stop_ = check_stop();
@@ -242,12 +319,12 @@ void FesExperiment::sf_to_center(const mel::NoEventData* data) {
 
     // transition to next state
     if (stop_) {
-        // stop if user provided input
-        event(ST_STOP);
+        event(ST_STOP); // stop if user provided input
     }
     else if (target_reached_) {
         target_reached_ = false; // reset flag
-        event(ST_HOLD_CENTER);
+        initial_position_reached_ = true;
+        event(ST_HOLD_EXTENDED);
     }
     else {
         mel::print("ERROR: State transition undefined. Going to ST_STOP.");
@@ -256,21 +333,21 @@ void FesExperiment::sf_to_center(const mel::NoEventData* data) {
 }
 
 //-----------------------------------------------------------------------------
-// "HOLD AT CENTER" STATE FUNCTION
+// "HOLD AT EXTENDED" STATE FUNCTION
 //-----------------------------------------------------------------------------
-void FesExperiment::sf_hold_center(const mel::NoEventData* data) {
-    mel::print("Hold at Center");
+void FesExperiment::sf_hold_extended(const mel::NoEventData* data) {
+    mel::print("Hold at Extended Position");
 
     // initialize event variables
     st_enter_time_ = clock_.time();
-    hold_center_time_reached_ = false;
+    hold_extended_time_reached_ = false;
 
-    // initialize trajectory
-    init_pos_ = center_pos_;
-    goal_pos_ = center_pos_;
+    // initialize moving set point
+    init_pos_ = extended_pos_;
+    goal_pos_ = extended_pos_;
 
     // enter the control loop
-    while (!hold_center_time_reached_ && !stop_) {
+    while (!hold_extended_time_reached_ && !stop_) {
 
         // read and reload DAQs
         q8_emg_->reload_watchdog();
@@ -278,6 +355,21 @@ void FesExperiment::sf_hold_center(const mel::NoEventData* data) {
 
         // update robot kinematics
         meii_.update_kinematics();
+
+        // compute anatomical elbow position
+        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+
+        if (flexion_trajectory_finished_ && extension_trajectory_finished_) {
+
+            // send elbow joint angle and time through UDP
+            UDP_data_[0] = elbow_pos_deg_;
+            UDP_data_[1] = clock_.time();
+            if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
+            {
+                printf("sendto() failed with error code : %d", WSAGetLastError());
+                exit(EXIT_FAILURE);
+            }
+        }
 
         // check joint limits
         if (meii_.check_all_joint_limits()) {
@@ -297,13 +389,15 @@ void FesExperiment::sf_hold_center(const mel::NoEventData* data) {
         // set new torques
         commanded_torques_ = new_torques_;
         meii_.set_anatomical_joint_torques(commanded_torques_);
-        //mel::print(commanded_torques_[0]);
 
         // write to daq
         q8_emg_->write_all();
 
         // check for hold time reached
-        hold_center_time_reached_ = check_wait_time_reached(hold_center_time_, st_enter_time_, clock_.time());
+        hold_extended_time_reached_ = check_wait_time_reached(hold_extended_time_, st_enter_time_, clock_.time());
+
+        // log data
+        log_row();
 
         // check for stop input
         stop_ = check_stop();
@@ -317,9 +411,286 @@ void FesExperiment::sf_hold_center(const mel::NoEventData* data) {
         // stop if user provided input
         event(ST_STOP);
     }
-    else if (hold_center_time_reached_) {
-        hold_center_time_reached_ = false; // reset flag
-        event(ST_FINISH);
+    else if (hold_extended_time_reached_) {
+        hold_extended_time_reached_ = false; // reset flag
+        if (CONDITION_ == 0) {
+            event(ST_TRANSPARENT);
+        }
+        else if (CONDITION_ == 1) {
+            if (flexion_trajectory_finished_ && extension_trajectory_finished_) {
+                event(ST_FINISH);
+            }
+            else {
+                event(ST_FLEXION_TRAJECTORY);
+            }
+        }
+        else if (CONDITION_ == 2) {
+            if (flexion_trajectory_finished_ && extension_trajectory_finished_) {
+                event(ST_FINISH);
+            }
+            else {
+                event(ST_FLEXION_TRAJECTORY);
+            }
+        }
+    }
+    else {
+        mel::print("ERROR: State transition undefined. Going to ST_STOP.");
+        event(ST_STOP);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// "FLEXION TRAJECTORY" STATE FUNCTION
+//-----------------------------------------------------------------------------
+void FesExperiment::sf_flexion_trajectory(const mel::NoEventData* data) {
+    mel::print("Flexion Trajectory");
+
+    // restart the clock
+    clock_.start();
+
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+
+    // initialize reference position
+    x_ref_ = extended_pos_;
+
+    // enter the control loop
+    while (!flexion_trajectory_finished_ && !stop_) {
+
+        // read and reload DAQs
+        q8_emg_->reload_watchdog();
+        q8_emg_->read_all();
+
+        // update robot kinematics
+        meii_.update_kinematics();
+
+        // compute anatomical elbow position
+        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+
+        // send elbow joint angle and time through UDP
+        UDP_data_[0] = elbow_pos_deg_;
+        UDP_data_[1] = clock_.time();
+        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
+        {
+            printf("sendto() failed with error code : %d", WSAGetLastError());
+            exit(EXIT_FAILURE);
+        }
+
+        // check joint limits
+        if (meii_.check_all_joint_limits()) {
+            stop_ = true;
+            break;
+        }
+
+        // update elbow reference position
+        x_ref_[0] = compute_elbow_flexion_trajectory(st_enter_time_, clock_.time());
+
+        // compute pd torques
+        for (int i = 0; i < 5; ++i) {
+            new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
+            if (backdrive_[i] == 1) {
+                new_torques_[i] = 0;
+            }
+        }
+
+        // set new torques
+        commanded_torques_ = new_torques_;
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+
+        // write to daq
+        q8_emg_->write_all();
+
+        // check for trajectory finished
+        flexion_trajectory_finished_ = check_wait_time_reached(flexion_trajectory_time_, st_enter_time_, clock_.time());
+
+        // log data
+        log_row();
+
+        // check for stop input
+        stop_ = check_stop();
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
+
+    // transition to next state
+    if (stop_) {
+        // stop if user provided input
+        event(ST_STOP);
+    }
+    else if (flexion_trajectory_finished_) {
+        event(ST_HOLD_FLEXED);
+    }
+    else {
+        mel::print("ERROR: State transition undefined. Going to ST_STOP.");
+        event(ST_STOP);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// "HOLD AT FLEXED" STATE FUNCTION
+//-----------------------------------------------------------------------------
+void FesExperiment::sf_hold_flexed(const mel::NoEventData* data) {
+    mel::print("Hold at Flexed Position");
+
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+    hold_flexed_time_reached_ = false;
+
+    // initialize moving set point
+    init_pos_ = flexed_pos_;
+    goal_pos_ = flexed_pos_;
+
+    // enter the control loop
+    while (!hold_flexed_time_reached_ && !stop_) {
+
+        // read and reload DAQs
+        q8_emg_->reload_watchdog();
+        q8_emg_->read_all();
+
+        // update robot kinematics
+        meii_.update_kinematics();
+
+        // compute anatomical elbow position
+        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+
+        // send elbow joint angle and time through UDP
+        UDP_data_[0] = elbow_pos_deg_;
+        UDP_data_[1] = clock_.time();
+        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
+        {
+            printf("sendto() failed with error code : %d", WSAGetLastError());
+            exit(EXIT_FAILURE);
+        }
+
+        // check joint limits
+        if (meii_.check_all_joint_limits()) {
+            stop_ = true;
+            break;
+        }
+
+        // compute pd torques
+        for (int i = 0; i < 5; ++i) {
+            x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], st_enter_time_, clock_.time(), speed_[i]);
+            new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
+            if (backdrive_[i] == 1) {
+                new_torques_[i] = 0;
+            }
+        }
+
+        // set new torques
+        commanded_torques_ = new_torques_;
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+
+        // write to daq
+        q8_emg_->write_all();
+
+        // check for hold time reached
+        hold_flexed_time_reached_ = check_wait_time_reached(hold_flexed_time_, st_enter_time_, clock_.time());
+
+        // log data
+        log_row();
+
+        // check for stop input
+        stop_ = check_stop();
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
+
+    // transition to next state
+    if (stop_) {
+        // stop if user provided input
+        event(ST_STOP);
+    }
+    else if (hold_flexed_time_reached_) {
+        hold_flexed_time_reached_ = false; // reset flag
+        event(ST_EXTENSION_TRAJECTORY);
+    }
+    else {
+        mel::print("ERROR: State transition undefined. Going to ST_STOP.");
+        event(ST_STOP);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// "EXTENSION TRAJECTORY" STATE FUNCTION
+//-----------------------------------------------------------------------------
+void FesExperiment::sf_extension_trajectory(const mel::NoEventData* data) {
+    mel::print("Extension Trajectory");
+
+    // initialize event variables
+    st_enter_time_ = clock_.time();
+
+    // initialize reference position
+    x_ref_ = flexed_pos_;
+
+    // enter the control loop
+    while (!extension_trajectory_finished_ && !stop_) {
+
+        // read and reload DAQs
+        q8_emg_->reload_watchdog();
+        q8_emg_->read_all();
+
+        // update robot kinematics
+        meii_.update_kinematics();
+
+        // compute anatomical elbow position
+        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+
+        // send elbow joint angle and time through UDP
+        UDP_data_[0] = elbow_pos_deg_;
+        UDP_data_[1] = clock_.time();
+        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
+        {
+            printf("sendto() failed with error code : %d", WSAGetLastError());
+            exit(EXIT_FAILURE);
+        }
+
+        // check joint limits
+        if (meii_.check_all_joint_limits()) {
+            stop_ = true;
+            break;
+        }
+
+        // update elbow reference position
+        x_ref_[0] = compute_elbow_extension_trajectory(st_enter_time_, clock_.time());
+
+        // compute pd torques
+        for (int i = 0; i < 5; ++i) {
+            new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
+            if (backdrive_[i] == 1) {
+                new_torques_[i] = 0;
+            }
+        }
+
+        // set new torques
+        commanded_torques_ = new_torques_;
+        meii_.set_anatomical_joint_torques(commanded_torques_);
+
+        // write to daq
+        q8_emg_->write_all();
+
+        // check for trajectory finished
+        extension_trajectory_finished_ = check_wait_time_reached(extension_trajectory_time_, st_enter_time_, clock_.time());
+
+        // log data
+        log_row();
+
+        // check for stop input
+        stop_ = check_stop();
+
+        // wait for the next clock cycle
+        clock_.wait();
+    }
+
+    // transition to next state
+    if (stop_) {
+        // stop if user provided input
+        event(ST_STOP);
+    }
+    else if (extension_trajectory_finished_) {
+        event(ST_HOLD_EXTENDED);
     }
     else {
         mel::print("ERROR: State transition undefined. Going to ST_STOP.");
@@ -331,8 +702,16 @@ void FesExperiment::sf_hold_center(const mel::NoEventData* data) {
 // "FINISH Experiment" STATE FUNCTION
 //-----------------------------------------------------------------------------
 void FesExperiment::sf_finish(const mel::NoEventData* data) {
+    mel::print("Finish Experiment and Stop Robot");
 
-    mel::print("Finish Experiment");
+    if (meii_.is_enabled()) {
+        meii_.disable();
+    }
+    if (q8_emg_->is_enabled()) {
+        q8_emg_->disable();
+    }
+
+    log_.save_data("fes_exp_data", DIRECTORY_ + "\\_" + std::to_string(CONDITION_), true);
 
     event(ST_STOP);
 
@@ -343,7 +722,7 @@ void FesExperiment::sf_finish(const mel::NoEventData* data) {
 //-----------------------------------------------------------------------------
 
 void FesExperiment::sf_stop(const mel::NoEventData* data) {
-    std::cout << "State Stop " << std::endl;
+    std::cout << "Stop Robot" << std::endl;
     if (meii_.is_enabled()) {
         meii_.disable();
     }
@@ -373,12 +752,29 @@ bool FesExperiment::check_target_reached(mel::double_vec goal_pos, mel::double_v
 }
 
 bool FesExperiment::check_wait_time_reached(double wait_time, double init_time, double current_time) {
-    return (current_time - init_time) > wait_time;
+    return (current_time - init_time) >= wait_time;
 }
 
-bool FesExperiment::check_force_mag_reached(double force_mag_goal, double force_mag) {
-    force_mag_time_now_ = clock_.global_time();
-    force_mag_maintained_ = std::abs(force_mag_maintained_ + std::copysign(1.0, force_mag_tol_ - std::abs(force_mag_goal - force_mag)) * (force_mag_time_now_ - force_mag_time_last_));
-    force_mag_time_last_ = force_mag_time_now_;
-    return force_mag_maintained_ > force_mag_dwell_time_;
+
+
+double FesExperiment::compute_elbow_position(double robot_elbow_position) {
+    return robot_elbow_position - elbow_extended_pos_;
+}
+
+double FesExperiment::compute_elbow_flexion_trajectory(double init_time, double current_time) {
+    double t = current_time - init_time;
+    double delta = elbow_extended_pos_ - elbow_flexed_pos_;
+    double ref_pos = - (6 * delta) * std::pow(t,5) / std::pow(flexion_trajectory_time_,5) + (15 * delta) * std::pow(t,4) / std::pow(flexion_trajectory_time_,4) - (10 * delta) * std::pow(t,3) / std::pow(flexion_trajectory_time_,3) + elbow_extended_pos_;
+    ref_pos = mel::saturate(ref_pos,elbow_flexed_pos_,elbow_extended_pos_);
+
+    return ref_pos;  
+}
+
+double FesExperiment::compute_elbow_extension_trajectory(double init_time, double current_time) {
+    double t = current_time - init_time;
+    double delta = elbow_flexed_pos_ - elbow_extended_pos_;
+    double ref_pos = -(6 * delta) * std::pow(t, 5) / std::pow(extension_trajectory_time_, 5) + (15 * delta) * std::pow(t, 4) / std::pow(extension_trajectory_time_, 4) - (10 * delta) * std::pow(t, 3) / std::pow(extension_trajectory_time_, 3) + elbow_flexed_pos_;
+    ref_pos = mel::saturate(ref_pos, elbow_flexed_pos_, elbow_extended_pos_);
+
+    return ref_pos;
 }

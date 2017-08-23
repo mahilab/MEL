@@ -5,13 +5,14 @@
 #include "Filter.h"
 #include "Clock.h"
 #include "util.h"
-#include "mahiexoii_util.h"
+#include "MelShare.h"
+#include "DataLog.h"
 
 // Simple udp client
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include<stdio.h>
-#include<winsock2.h>
-# include <iostream>
+#include <stdio.h>
+#include <winsock2.h>
+#include <iostream>
 #include <SDKDDKVer.h>
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 #include <stdio.h>
@@ -35,7 +36,7 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii);
+    FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int condition, int subject_number);
 
 private:
 
@@ -47,8 +48,11 @@ private:
     enum States {
         ST_INIT,
         ST_TRANSPARENT,
-        ST_TO_CENTER,
-        ST_HOLD_CENTER,
+        ST_TO_EXTENDED,
+        ST_HOLD_EXTENDED,
+        ST_FLEXION_TRAJECTORY,
+        ST_HOLD_FLEXED,
+        ST_EXTENSION_TRAJECTORY,
         ST_FINISH,
         ST_STOP,
         ST_NUM_STATES
@@ -61,11 +65,20 @@ private:
     void sf_transparent(const mel::NoEventData*);
     mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_transparent> sa_transparent;
 
-    void sf_to_center(const mel::NoEventData*);
-    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_to_center> sa_to_center;
+    void sf_to_extended(const mel::NoEventData*);
+    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_to_extended> sa_to_extended;
 
-    void sf_hold_center(const mel::NoEventData*);
-    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_hold_center> sa_hold_center;
+    void sf_hold_extended(const mel::NoEventData*);
+    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_hold_extended> sa_hold_extended;
+
+    void sf_flexion_trajectory(const mel::NoEventData*);
+    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_flexion_trajectory> sa_flexion_trajectory;
+
+    void sf_hold_flexed(const mel::NoEventData*);
+    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_hold_flexed> sa_hold_flexed;
+
+    void sf_extension_trajectory(const mel::NoEventData*);
+    mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_extension_trajectory> sa_extension_trajectory;
 
     void sf_finish(const mel::NoEventData*);
     mel::StateAction<FesExperiment, mel::NoEventData, &FesExperiment::sf_finish> sa_finish;
@@ -78,8 +91,11 @@ private:
         static const mel::StateMapRow STATE_MAP[] = {
             &sa_init,
             &sa_transparent,
-            &sa_to_center,
-            &sa_hold_center,
+            &sa_to_extended,
+            &sa_hold_extended,
+            &sa_flexion_trajectory,
+            &sa_hold_flexed,
+            &sa_extension_trajectory,
             &sa_finish,
             &sa_stop,
         };
@@ -96,24 +112,34 @@ private:
     //-------------------------------------------------------------------------
 
     int current_target_ = 0;
-    double init_transparent_time_ = 5.0; // [s]
-    std::vector<int> target_sequence_ = { 1, 2, 1, 2 };
-    mel::char_vec target_check_joint_ = { 1,1,1,1,1 };
+    double init_transparent_time_ = 1.0; // [s]
+    mel::char_vec target_check_joint_ = { 1, 1, 1, 1, 1 };
     mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
-    double hold_center_time_ = 1.0; // time to hold at center target [s]
-    double force_mag_goal_ = 1000.0; // [N^2]
-    double force_mag_tol_ = 100.0; // [N]
-    double force_mag_dwell_time_ = 1.0; // [s]
-    double force_mag_maintained_ = 0.0; // [s]
-    double force_mag_time_now_ = 0.0;
-    double force_mag_time_last_ = 0.0;
+    double hold_extended_time_ = 1.0; // time to hold at start of trajectory [s]
+    double hold_flexed_time_ = 1.0; // time to hold at end of trajectory [s]
+    mel::double_vec extended_pos_ = { -60 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD,  0.09 };
+    mel::double_vec flexed_pos_ = { -10 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD,  0.09 };
+    double elbow_extended_pos_ = extended_pos_[0];
+    double elbow_flexed_pos_ = flexed_pos_[0];
+    double flexion_trajectory_time_ = 5.0; // time of trajectory from start to finish [s] 
+    double extension_trajectory_time_ = 5.0; // time of trajectory from start to finish [s]
+    double elbow_ref_pos_ = elbow_extended_pos_;
 
-    mel::double_vec center_pos_ = { -35 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD,  0.09 };
+    // SUBJECT DIRECTORY
+    std::string DIRECTORY_;
 
     //-------------------------------------------------------------------------
     // EXPERIMENT COMPONENTS
     //-------------------------------------------------------------------------
 
+    // SUBJECT/CONDITION
+    int SUBJECT_NUMBER_;
+    int CONDITION_;
+
+    // DATA LOG
+    mel::DataLog log_ = mel::DataLog("fes_exp_log");
+    std::vector<double> log_data_;
+    void log_row();
 
     // HARDWARE CLOCK
     mel::Clock clock_;
@@ -126,13 +152,12 @@ private:
     mel::int8_vec backdrive_ = { 0,1,1,1,1 }; // anatomical joints; 1 = backdrivable, 0 = active
 
     // UDP
-    double elbow_pos_deg_ = 0; 
-    double current_time_ = 0;
+    double elbow_pos_deg_ = 0.0; 
+    double current_time_ = 0.0;
     struct sockaddr_in si_other_;
     int s_ = sizeof(si_other_);
     int slen_ = sizeof(si_other_);  
     double UDP_data_[2];
-    
 
     // MEII POSITION CONTROL
     mel::double_vec kp_ = { 50, 7, 25, 30, 0 };
@@ -151,16 +176,25 @@ private:
     // STATE TRANSITION EVENTS
     bool init_transparent_time_reached_ = false;
     bool target_reached_ = false;
-    bool hold_center_time_reached_ = false;
-    bool force_mag_reached_ = false;
-    bool emg_data_processed_ = false;
-    bool end_of_target_sequence_ = false;
-    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
-    bool check_wait_time_reached(double wait_time, double init_time, double current_time);
-    bool check_force_mag_reached(double force_mag_goal, double force_mag);
-
+    bool initial_position_reached_ = false;
+    bool hold_extended_time_reached_ = false;
+    bool flexion_trajectory_finished_ = false;
+    bool hold_flexed_time_reached_ = false;
+    bool extension_trajectory_finished_ = false;
+    
     // USEFUL STATE VARIABLES
     double st_enter_time_;
 
-
+    // UTILITY FUNCTIONS
+    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
+    bool check_wait_time_reached(double wait_time, double init_time, double current_time);
+    double compute_elbow_position(double robot_elbow_position);
+    double compute_elbow_flexion_trajectory(double init_time, double current_time);
+    double compute_elbow_extension_trajectory(double init_time, double current_time);
+    
+    // MELSCOPE VARIABLES
+    mel::share::MelShare pos_share_ = mel::share::MelShare("pos_share");
+    mel::share::MelShare vel_share_ = mel::share::MelShare("vel_share");
+    mel::share::MelShare torque_share_ = mel::share::MelShare("torque_share");
+    mel::share::MelShare ref_share_ = mel::share::MelShare("ref_share");
 };
