@@ -78,8 +78,7 @@ private:
     const double r_ = 0.05288174521;
     const double a56_ = 0.0268986 - 0.0272820;
     const double alpha5_ = 0.094516665054824;
-    const double alpha13_ = mel::DEG2RAD * 5;
-    
+    const double alpha13_ = mel::DEG2RAD * 5;    
 
     // kinematics variables
     Eigen::VectorXd qp_;

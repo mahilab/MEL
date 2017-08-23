@@ -1,7 +1,5 @@
 #include "MahiExoII.h"
 
-
-
 MahiExoII::MahiExoII(Config configuration, Params parameters) :
     Exo("mahi_exo_ii"),
     config_(configuration),

@@ -160,7 +160,6 @@
     <ClCompile Include="FesExperiment.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="MahiExoII.cpp" />
     <ClCompile Include="MahiExoIIEmg.cpp" />
     <ClCompile Include="MahiExoIIEmgFrc.cpp" />
     <ClCompile Include="MahiExoIIFrc.cpp" />
@@ -191,7 +190,6 @@
     <ClInclude Include="FesExperiment.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="MahiExoII.h" />
     <ClInclude Include="MahiExoIIEmg.h" />
     <ClInclude Include="MahiExoIIEmgFrc.h" />
     <ClInclude Include="MahiExoIIFrc.h" />
