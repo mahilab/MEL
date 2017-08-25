@@ -55,6 +55,7 @@ int main(int argc, char * argv[]) {
 
     mel::Daq* q8_ow = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
 
+    /*
     id = 0;
     ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
     ao_channels = { 1, 2, 3, 4, 5 };
@@ -68,6 +69,7 @@ int main(int argc, char * argv[]) {
         options_meii.do_expire_signals_[i] = 1;
     }
     mel::Daq* q8_meii = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_meii);
+    */
 
     // create and configure an OpenWrist object
     mel::OpenWrist::Config ow_config;
@@ -82,6 +84,7 @@ int main(int argc, char * argv[]) {
 
     mel::OpenWrist open_wrist(ow_config);
 
+    /*
     // create and configure a MahiExo-II object
     MahiExoII::Config config;
     for (int i = 0; i < 5; ++i) {
@@ -91,15 +94,17 @@ int main(int argc, char * argv[]) {
         config.encrate_[i] = q8_meii->encrate_(i + 1);
     }
     MahiExoII meii(config);
+    */
 
     // create and configure CUFF object
     Cuff cuff("cuff_forearm");
+    
 
     // perform calibrate command if requested by user
     if (var_map.count("calibrate")) {
         open_wrist.calibrate();
         delete q8_ow;
-        delete q8_meii;
+        //delete q8_meii;
         return 0;
     }
 
@@ -107,7 +112,7 @@ int main(int argc, char * argv[]) {
     if (var_map.count("transparent")) {
         open_wrist.transparency_mode();
         delete q8_ow;
-        delete q8_meii;
+        //delete q8_meii;
         return 0;
     }
 
@@ -148,7 +153,7 @@ int main(int argc, char * argv[]) {
         else {
             mel::print("Not enough input parameters were provided to run the experiment.");
             delete q8_ow;
-            delete q8_meii;
+            //delete q8_meii;
             return -1;
         }
 
@@ -161,7 +166,7 @@ int main(int argc, char * argv[]) {
         HapticGuidance haptic_guidance(clock, q8_ow, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
         haptic_guidance.execute();
         delete q8_ow;
-        delete q8_meii;
+        //delete q8_meii;
         return 0;
     }    
 
