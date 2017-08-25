@@ -74,7 +74,7 @@ print(X_transform.shape)
 #write new training data dimensions to MELShare in trng_size
 #buffer of 2 ints
 arraydims2 = myints(n_trials, n_features);
-result = mel_share.write_int_map("trng_size", arraydims2, 2)
+result = mel_share.write_int_map("trng_size2", arraydims2, 2)
 print "trng_size2:    ",
 if (result < 0): print 'ERROR:', result
 for value in arraydims2:
@@ -92,7 +92,6 @@ if (result < 0): print 'ERROR:', result
 for value in feat_sel_ints:
     print value,
 print ' '
-
 
 #write X-transform to melshare as the down-selected feature matrix feat_sel
 #create double array buffer of n_features*n_trials

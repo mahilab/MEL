@@ -484,7 +484,7 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
     meii_.disable();
 
     //open LDA script in Python
-    //system("start EMG_Machine_learning.py &");
+    //system("start EMG_FS_LDA.py &");
 
     // create vector to send training data to python
     mel::double_vec emg_training_data_vec_(N_train_ * num_emg_channels_ * num_features_);
@@ -500,7 +500,9 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
     std::copy_n(target_sequence_.begin(), N_train_, training_labels.begin());
     label_share_.write(training_labels);
 
-    mel::double_vec lda_coeff_c(num_class_, num_emg_channels_ * num_features_);
+    std::array<int, 2> training_data_size2;
+    std::vector<int> sel_feats(training_data_size2[1]);
+    mel::double_vec lda_coeff_c(num_class_, training_data_size2[1]); //replaced 2nd index (num_emg_channels_ * num_features_)
 
     // wait for python to receive
     // restart the clock
@@ -523,6 +525,12 @@ void EmgRTControl::sf_train_classifier(const mel::NoEventData* data) {
             stop_ = true;
             break;
         }
+
+        //read for number of selected features from Python
+        trng_size2_.read(training_data_size2);
+
+        //read for selected feature indicies from Python
+        feat_id_.read(sel_feats);
 
         //read for LDA Coefficients from Python
         lda_coeff_.read(lda_coeff_c);

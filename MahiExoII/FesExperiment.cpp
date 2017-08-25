@@ -3,28 +3,36 @@
 #include "mahiexoii_util.h"
 
 
-FesExperiment::FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int condition, int subject_number) :
+FesExperiment::FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int subject_number, int trial) :
     StateMachine(9),
     clock_(clock),
     q8_emg_(q8_emg),
     meii_(meii),
     SUBJECT_NUMBER_(subject_number),
-    CONDITION_(condition)
+    TRIAL_(trial),
+    CONDITION_(cond_mat_[subject_number-1][trial])
 {
+
+    if (subject_number < 1 || subject_number > 10) {
+        mel::print("ERROR: Subject number out of range (1-10)");
+    }
+    if (trial < 0 || subject_number > 27) {
+        mel::print("ERROR: Trial number out of range (0-27)");
+    }
 
     // create subject folder
     if (subject_number < 10) {
-        DIRECTORY_ = "FES_S0" + std::to_string(subject_number);// +"_C" + std::to_string(condition);
+        DIRECTORY_ = "FES_S0" + std::to_string(subject_number);
     }
     else {
-        DIRECTORY_ = "FES_S" + std::to_string(subject_number);// +"_C" + std::to_string(condition);
+        DIRECTORY_ = "FES_S" + std::to_string(subject_number);
     }
 
     // Add columns to logger
     log_.add_col("Time [s]").add_col("State")
-        .add_col("Reference EFE Position [rad]")
-        .add_col("MEII EFE Position [rad]").add_col("MEII EFE Velocity [rad/s]").add_col("MEII EFE Commanded Torque [Nm]")
-        .add_col("MEII FPS Position [rad]").add_col("MEII FPS Velocity [rad/s]").add_col("MEII FPS Commanded Torque [Nm]")
+        .add_col("Reference Elbow Position [deg]").add_col("Anatomical Elbow Position [deg]")
+        .add_col("MEII EFE Position [deg]").add_col("MEII EFE Velocity [deg/s]").add_col("MEII EFE Commanded Torque [Nm]")
+        .add_col("MEII FPS Position [deg]").add_col("MEII FPS Velocity [deg/s]").add_col("MEII FPS Commanded Torque [Nm]")
         .add_col("MEII RPS1 Position [m]").add_col("MEII RPS1 Velocity [m/s]").add_col("MEII RPS1 Commanded Force [N]")
         .add_col("MEII RPS2 Position [m]").add_col("MEII RPS2 Velocity [m/s]").add_col("MEII RPS2 Commanded Force [N]")
         .add_col("MEII RPS3 Position [m]").add_col("MEII RPS3 Velocity [m/s]").add_col("MEII RPS3 Commanded Force [N]");
@@ -34,7 +42,8 @@ void FesExperiment::log_row() {
     std::vector<double> row;
     row.push_back(clock_.time());
     row.push_back(get_current_state());
-    row.push_back(elbow_ref_pos_ * mel::RAD2DEG);
+    row.push_back(elbow_ref_pos_deg_);
+    row.push_back(elbow_pos_deg_);
     row.push_back(meii_.joints_[0]->get_position() * mel::RAD2DEG);
     row.push_back(meii_.joints_[0]->get_velocity() * mel::RAD2DEG);
     row.push_back(static_cast<mel::Motor*>(meii_.actuators_[0])->get_torque_command());
@@ -166,28 +175,22 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute anatomical elbow position
-        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+        elbow_pos_deg_ = compute_elbow_anatomical_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         if (CONDITION_ == 0 && initial_position_reached_) {
 
             // send elbow joint angle and time through UDP
-            UDP_data_[0] = elbow_pos_deg_;
-            UDP_data_[1] = clock_.time();
-            if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
-            {
-                printf("sendto() failed with error code : %d", WSAGetLastError());
-                exit(EXIT_FAILURE);
-            }
+            send_udp_packet(elbow_pos_deg_); 
 
             // update elbow reference position
             if (clock_.time() <= flexion_trajectory_time_) {
-                elbow_ref_pos_ = compute_elbow_flexion_trajectory(st_enter_time_, clock_.time());
+                elbow_ref_pos_deg_ = compute_elbow_anatomical_position(compute_elbow_flexion_trajectory(st_enter_time_, clock_.time())) * mel::RAD2DEG;
             }
-            else if ((clock_.time() > flexion_trajectory_time_) && (clock_.time() <= flexion_trajectory_time_ + hold_flexed_time_) ) {
-                elbow_ref_pos_ = elbow_flexed_pos_;
+            else if ((clock_.time() > flexion_trajectory_time_) && (clock_.time() <= (flexion_trajectory_time_ + hold_flexed_time_)) ) {
+                elbow_ref_pos_deg_ = compute_elbow_anatomical_position(elbow_flexed_pos_) * mel::RAD2DEG;
             }
             else if (clock_.time() > flexion_trajectory_time_ + hold_flexed_time_) {
-                elbow_ref_pos_ = compute_elbow_extension_trajectory(st_enter_time_, clock_.time());
+                elbow_ref_pos_deg_ = compute_elbow_anatomical_position(compute_elbow_extension_trajectory(st_enter_time_ + flexion_trajectory_time_ + hold_flexed_time_, clock_.time())) * mel::RAD2DEG;
             }
         }
 
@@ -205,7 +208,12 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
         q8_emg_->write_all();
 
         // check for init transparent time reached
-        init_transparent_time_reached_ = check_wait_time_reached(init_transparent_time_, st_enter_time_, clock_.time());
+        if (CONDITION_ != 3) {
+            init_transparent_time_reached_ = check_wait_time_reached(init_transparent_time_, st_enter_time_, clock_.time());
+        }
+        else {
+            mel::print(elbow_pos_deg_);
+        }
 
         // log data
         log_row();
@@ -232,10 +240,7 @@ void FesExperiment::sf_transparent(const mel::NoEventData* data) {
                 event(ST_FINISH);
             }
         }
-        else if (CONDITION_ == 1) {
-            event(ST_TO_EXTENDED);
-        }
-        else if (CONDITION_ == 2) {
+        else if (CONDITION_ == 1 || CONDITION_ == 2) {
             event(ST_TO_EXTENDED);
         }
     }
@@ -268,7 +273,6 @@ void FesExperiment::sf_to_extended(const mel::NoEventData* data) {
     // set joints to be checked for target reached
     target_check_joint_ = { 1, 0, 0, 0, 0 };
 
-
     // enter the control loop
     while (!target_reached_ && !stop_) {
 
@@ -280,7 +284,7 @@ void FesExperiment::sf_to_extended(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute anatomical elbow position
-        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+        elbow_pos_deg_ = compute_elbow_anatomical_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         // check joint limits
         if (meii_.check_all_joint_limits()) {
@@ -291,7 +295,7 @@ void FesExperiment::sf_to_extended(const mel::NoEventData* data) {
         // compute pd torques
         for (auto i = 0; i < 5; ++i) {
             x_ref_[i] = moving_set_point(init_pos_[i], goal_pos_[i], st_enter_time_, clock_.time(), speed_[i]);
-            new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));
+            new_torques_[i] = mel::pd_controller(kp_[i], kd_[i], x_ref_[i], meii_.get_anatomical_joint_position(i), 0, meii_.get_anatomical_joint_velocity(i));    
             if (backdrive_[i] == 1) {
                 new_torques_[i] = 0;
             }
@@ -357,18 +361,12 @@ void FesExperiment::sf_hold_extended(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute anatomical elbow position
-        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+        elbow_pos_deg_ = compute_elbow_anatomical_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         if (flexion_trajectory_finished_ && extension_trajectory_finished_) {
 
             // send elbow joint angle and time through UDP
-            UDP_data_[0] = elbow_pos_deg_;
-            UDP_data_[1] = clock_.time();
-            if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
-            {
-                printf("sendto() failed with error code : %d", WSAGetLastError());
-                exit(EXIT_FAILURE);
-            }
+            send_udp_packet(elbow_pos_deg_);
         }
 
         // check joint limits
@@ -416,15 +414,7 @@ void FesExperiment::sf_hold_extended(const mel::NoEventData* data) {
         if (CONDITION_ == 0) {
             event(ST_TRANSPARENT);
         }
-        else if (CONDITION_ == 1) {
-            if (flexion_trajectory_finished_ && extension_trajectory_finished_) {
-                event(ST_FINISH);
-            }
-            else {
-                event(ST_FLEXION_TRAJECTORY);
-            }
-        }
-        else if (CONDITION_ == 2) {
+        else if (CONDITION_ == 1 || CONDITION_ == 2) {
             if (flexion_trajectory_finished_ && extension_trajectory_finished_) {
                 event(ST_FINISH);
             }
@@ -465,16 +455,10 @@ void FesExperiment::sf_flexion_trajectory(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute anatomical elbow position
-        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+        elbow_pos_deg_ = compute_elbow_anatomical_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         // send elbow joint angle and time through UDP
-        UDP_data_[0] = elbow_pos_deg_;
-        UDP_data_[1] = clock_.time();
-        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
-        {
-            printf("sendto() failed with error code : %d", WSAGetLastError());
-            exit(EXIT_FAILURE);
-        }
+        send_udp_packet(elbow_pos_deg_);
 
         // check joint limits
         if (meii_.check_all_joint_limits()) {
@@ -484,6 +468,7 @@ void FesExperiment::sf_flexion_trajectory(const mel::NoEventData* data) {
 
         // update elbow reference position
         x_ref_[0] = compute_elbow_flexion_trajectory(st_enter_time_, clock_.time());
+        elbow_ref_pos_deg_ = compute_elbow_anatomical_position(x_ref_[0]) * mel::RAD2DEG;
 
         // compute pd torques
         for (int i = 0; i < 5; ++i) {
@@ -552,16 +537,10 @@ void FesExperiment::sf_hold_flexed(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute anatomical elbow position
-        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+        elbow_pos_deg_ = compute_elbow_anatomical_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         // send elbow joint angle and time through UDP
-        UDP_data_[0] = elbow_pos_deg_;
-        UDP_data_[1] = clock_.time();
-        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
-        {
-            printf("sendto() failed with error code : %d", WSAGetLastError());
-            exit(EXIT_FAILURE);
-        }
+        send_udp_packet(elbow_pos_deg_);
 
         // check joint limits
         if (meii_.check_all_joint_limits()) {
@@ -636,16 +615,10 @@ void FesExperiment::sf_extension_trajectory(const mel::NoEventData* data) {
         meii_.update_kinematics();
 
         // compute anatomical elbow position
-        elbow_pos_deg_ = compute_elbow_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
+        elbow_pos_deg_ = compute_elbow_anatomical_position(meii_.get_anatomical_joint_position(0)) * mel::RAD2DEG;
 
         // send elbow joint angle and time through UDP
-        UDP_data_[0] = elbow_pos_deg_;
-        UDP_data_[1] = clock_.time();
-        if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
-        {
-            printf("sendto() failed with error code : %d", WSAGetLastError());
-            exit(EXIT_FAILURE);
-        }
+        send_udp_packet(elbow_pos_deg_);
 
         // check joint limits
         if (meii_.check_all_joint_limits()) {
@@ -655,6 +628,7 @@ void FesExperiment::sf_extension_trajectory(const mel::NoEventData* data) {
 
         // update elbow reference position
         x_ref_[0] = compute_elbow_extension_trajectory(st_enter_time_, clock_.time());
+        elbow_ref_pos_deg_ = compute_elbow_anatomical_position(x_ref_[0]) * mel::RAD2DEG;
 
         // compute pd torques
         for (int i = 0; i < 5; ++i) {
@@ -711,7 +685,23 @@ void FesExperiment::sf_finish(const mel::NoEventData* data) {
         q8_emg_->disable();
     }
 
-    log_.save_data("fes_exp_data", DIRECTORY_ + "\\_" + std::to_string(CONDITION_), true);
+    std::string filename;
+    if (SUBJECT_NUMBER_ < 10) {
+        filename = "fes_exp_data_S0" + std::to_string(SUBJECT_NUMBER_);
+    }
+    else {
+        filename = "fes_exp_data_S" + std::to_string(SUBJECT_NUMBER_);
+    }
+    if (TRIAL_ < 10) {
+        filename = filename + "_T0" + std::to_string(TRIAL_) + "_C" + std::to_string(CONDITION_);
+    }
+    else {
+        filename = filename + "_T" + std::to_string(TRIAL_) + "_C" + std::to_string(CONDITION_);
+    }
+
+
+
+    log_.save_data(filename, DIRECTORY_, true);
 
     event(ST_STOP);
 
@@ -757,7 +747,7 @@ bool FesExperiment::check_wait_time_reached(double wait_time, double init_time, 
 
 
 
-double FesExperiment::compute_elbow_position(double robot_elbow_position) {
+double FesExperiment::compute_elbow_anatomical_position(double robot_elbow_position) {
     return robot_elbow_position - elbow_extended_pos_;
 }
 
@@ -777,4 +767,17 @@ double FesExperiment::compute_elbow_extension_trajectory(double init_time, doubl
     ref_pos = mel::saturate(ref_pos, elbow_flexed_pos_, elbow_extended_pos_);
 
     return ref_pos;
+}
+
+void FesExperiment::send_udp_packet(double elbow_pos_deg) {
+    UDP_data_[0] = elbow_pos_deg;
+    UDP_data_[1] = clock_.time();
+    UDP_data_[2] = SUBJECT_NUMBER_;
+    UDP_data_[3] = TRIAL_;
+    UDP_data_[4] = CONDITION_;
+    if (sendto(s_, (char *)&UDP_data_, sizeof(UDP_data_), 0, (struct sockaddr *) &si_other_, slen_) == SOCKET_ERROR)
+    {
+        printf("sendto() failed with error code : %d", WSAGetLastError());
+        exit(EXIT_FAILURE);
+    }
 }

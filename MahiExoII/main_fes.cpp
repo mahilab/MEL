@@ -9,20 +9,21 @@
 #include "FesExperiment.h"
 #include "Input.h"
 
-
-
 int main(int argc, char * argv[]) {
-
 
     // ignore CTRL-C signal (we can do this with Input)
     signal(SIGINT, SIG_IGN);
+
 
     // set up program options 
     boost::program_options::options_description desc("Available Options");
     desc.add_options()
         ("help", "produces help message")
-        ("zero", "zeros encoder counts on startup");
-        ("calibrate", "set zero elbow flexion position");
+        ("zero", "zeros encoder counts on startup")
+        ("subject", boost::program_options::value<int>(), "the subject number, 1-10")
+        ("trial", boost::program_options::value<int>(), "the trial to start at, e.g. 1, 2, 3, etc");
+        //("condition", boost::program_options::value<int>(), "0 = FES only, 1 = MEII only, 2 = FES & MEII combined, 3 = calibrate");
+            
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), var_map);
@@ -67,15 +68,21 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
-    if (var_map.count("calibrate")) {
-        return 0;
+    // read in command line input arguments
+    int subject, condition, trial;
+    if (var_map.count("subject") && var_map.count("trial")) {
+        subject = var_map["subject"].as<int>();
+        trial = var_map["trial"].as<int>();
+    }
+    else {
+        mel::print("Not enough input parameters were provided to run the experiment.");
+        delete q8_emg;
+        return -1;
     }
 
     // run the experiment
     mel::Clock clock(1000);
-    int subject = 0;
-    int condition = 0; // 0 = FES only, 1 = MEII only, 2 = FES & MEII combined
-    FesExperiment fes_experiment( clock, q8_emg, meii, condition, subject );
+    FesExperiment fes_experiment( clock, q8_emg, meii, subject, trial);
     fes_experiment.execute();
     delete q8_emg;
     return 0;

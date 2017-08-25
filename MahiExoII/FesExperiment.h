@@ -36,7 +36,7 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int condition, int subject_number);
+    FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int subject_number, int trial);
 
 private:
 
@@ -114,7 +114,7 @@ private:
     int current_target_ = 0;
     double init_transparent_time_ = 1.0; // [s]
     mel::char_vec target_check_joint_ = { 1, 1, 1, 1, 1 };
-    mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
+    mel::double_vec target_tol_ = { 2.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
     double hold_extended_time_ = 1.0; // time to hold at start of trajectory [s]
     double hold_flexed_time_ = 1.0; // time to hold at end of trajectory [s]
     mel::double_vec extended_pos_ = { -60 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD, 0 * mel::DEG2RAD,  0.09 };
@@ -123,10 +123,23 @@ private:
     double elbow_flexed_pos_ = flexed_pos_[0];
     double flexion_trajectory_time_ = 5.0; // time of trajectory from start to finish [s] 
     double extension_trajectory_time_ = 5.0; // time of trajectory from start to finish [s]
-    double elbow_ref_pos_ = elbow_extended_pos_;
+    
 
     // SUBJECT DIRECTORY
     std::string DIRECTORY_;
+
+    // RANDOMIZED CONDITION ORDER
+    std::vector<std::vector<double>> cond_mat_ = { { 3, 0, 1, 0, 2, 2, 1, 2, 1, 0, 0, 1, 0, 2, 2, 1, 0, 2, 1, 1, 2, 0, 1, 0, 1, 0, 2, 2 },
+                                                   { 3, 1, 1, 0, 2, 1, 0, 0, 2, 2, 1, 2, 0, 0, 1, 2, 1, 0, 2, 2, 1, 1, 0, 0, 2, 0, 1, 2 },
+                                                   { 3, 0, 2, 1, 0, 2, 2, 1, 0, 1, 1, 0, 0, 1, 2, 0, 2, 1, 2, 1, 2, 2, 0, 1, 1, 0, 2, 0 },
+                                                   { 3, 2, 1, 2, 1, 2, 0, 1, 0, 0, 2, 0, 1, 2, 0, 2, 1, 0, 1, 2, 0, 1, 1, 2, 1, 0, 2, 0 },
+                                                   { 3, 2, 1, 0, 1, 0, 2, 1, 0, 2, 0, 0, 2, 1, 2, 1, 0, 1, 2, 1, 2, 0, 1, 0, 0, 2, 2, 1 },
+                                                   { 3, 2, 2, 1, 1, 1, 0, 2, 0, 0, 0, 1, 1, 0, 0, 2, 2, 1, 2, 2, 2, 0, 0, 1, 0, 1, 2, 1 },
+                                                   { 3, 1, 2, 2, 0, 1, 2, 0, 0, 1, 0, 2, 2, 1, 1, 0, 0, 1, 2, 0, 1, 1, 2, 0, 0, 2, 1, 2 },
+                                                   { 3, 2, 2, 2, 1, 0, 0, 0, 1, 1, 0, 2, 2, 2, 1, 1, 0, 1, 0, 2, 2, 1, 0, 0, 2, 1, 0, 1 },
+                                                   { 3, 0, 1, 0, 1, 2, 1, 0, 2, 2, 0, 1, 1, 1, 2, 0, 0, 2, 2, 1, 2, 0, 1, 0, 0, 2, 2, 1 },
+                                                   { 3, 1, 2, 2, 2, 1, 0, 0, 0, 1, 1, 2, 1, 2, 0, 1, 0, 2, 0, 2, 2, 1, 0, 0, 1, 0, 1, 2 } };
+
 
     //-------------------------------------------------------------------------
     // EXPERIMENT COMPONENTS
@@ -134,10 +147,11 @@ private:
 
     // SUBJECT/CONDITION
     int SUBJECT_NUMBER_;
+    int TRIAL_;
     int CONDITION_;
 
     // DATA LOG
-    mel::DataLog log_ = mel::DataLog("fes_exp_log");
+    mel::DataLog log_ = mel::DataLog("fes_exp_log",false);
     std::vector<double> log_data_;
     void log_row();
 
@@ -153,11 +167,13 @@ private:
 
     // UDP
     double elbow_pos_deg_ = 0.0; 
+    double elbow_ref_pos_deg_ = 0.0;
     double current_time_ = 0.0;
     struct sockaddr_in si_other_;
     int s_ = sizeof(si_other_);
     int slen_ = sizeof(si_other_);  
-    double UDP_data_[2];
+    double UDP_data_[5];
+    void FesExperiment::send_udp_packet(double elbow_pos_deg);
 
     // MEII POSITION CONTROL
     mel::double_vec kp_ = { 50, 7, 25, 30, 0 };
@@ -174,6 +190,7 @@ private:
     mel::double_vec commanded_torques_ = mel::double_vec(5, 0);
 
     // STATE TRANSITION EVENTS
+    bool first_udp_packet_sent = false;
     bool init_transparent_time_reached_ = false;
     bool target_reached_ = false;
     bool initial_position_reached_ = false;
@@ -188,7 +205,7 @@ private:
     // UTILITY FUNCTIONS
     bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
     bool check_wait_time_reached(double wait_time, double init_time, double current_time);
-    double compute_elbow_position(double robot_elbow_position);
+    double compute_elbow_anatomical_position(double robot_elbow_position);
     double compute_elbow_flexion_trajectory(double init_time, double current_time);
     double compute_elbow_extension_trajectory(double init_time, double current_time);
     

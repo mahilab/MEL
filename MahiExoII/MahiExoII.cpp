@@ -143,6 +143,8 @@ void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
 	joints_[3]->set_torque(par_torques(1));
 	joints_[4]->set_torque(par_torques(2));
 
+    //std::cout << par_torques(2) << std::endl;
+
 }
 
 

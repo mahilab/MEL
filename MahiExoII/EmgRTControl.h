@@ -208,6 +208,8 @@ private:
     mel::share::MelShare trng_share_ = mel::share::MelShare("trng_share");
     mel::share::MelShare label_share_ = mel::share::MelShare("label_share");
     mel::share::MelShare lda_coeff_ = mel::share::MelShare("LDA_coeff");
+    mel::share::MelShare trng_size2_ = mel::share::MelShare("trng_size2");
+    mel::share::MelShare feat_id_ = mel::share::MelShare("feat_id");
     
     // STATE TRANSITION EVENTS
     bool init_transparent_time_reached_ = false;
