@@ -21,9 +21,6 @@
     <ClCompile Include="main_testing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MahiExoII.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EmgTraining.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,9 +53,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MahiExoII.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EmgTraining.h">
       <Filter>Header Files</Filter>
     </ClInclude>

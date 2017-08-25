@@ -96,6 +96,7 @@
     <ClCompile Include="MelShare.cpp">
       <Filter>Communications</Filter>
     </ClCompile>
+    <ClCompile Include="MahiExoII.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateMachine.h">
@@ -188,5 +189,6 @@
     <ClInclude Include="MelShare.h">
       <Filter>Communications</Filter>
     </ClInclude>
+    <ClInclude Include="MahiExoII.h" />
   </ItemGroup>
 </Project>
