@@ -62,20 +62,18 @@ void EmgRTControl::sf_init(const mel::NoEventData* data) {
     }
 
     // confirm start of experiment
-    std::cout << "Press Enter to start the controller" << std::endl;
+    mel::print("\nPress Enter to run EMG Real-Time Control");
     mel::Input::wait_for_key_press(mel::Input::Key::Return);
-    q8_emg_->start_watchdog(0.1);
-    std::cout << "Starting the controller ... " << std::endl;
+    mel::print("\nRunning EMG Real-Time Control ... ");
 
-    // check for stop input
-    stop_ = check_stop();
+    // start the watchdog
+    q8_emg_->start_watchdog(0.1);
 
     // start the clock
     clock_.start();
 
     // transition to next state
     if (stop_) {
-        // stop if user provided input
         event(ST_STOP);
     }
     else {

@@ -103,7 +103,7 @@ private:
     int current_target_ = 0;
     double init_transparent_time_ = 3.0; // [s]
     std::vector<int> target_sequence_ = { 1, 2, 1, 2 };
-    mel::char_vec target_check_joint_ = { 1,1,1,1,1 };
+    mel::char_vec target_check_joint_ = { 1, 1, 1, 1, 1 };
     mel::double_vec target_tol_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01 };
     double hold_center_time_ = 1.0; // time to hold at center target [s]
     double force_mag_goal_ = 1000.0; // [N^2]
@@ -142,8 +142,6 @@ private:
     mel::double_vec x_ref_ = mel::double_vec(5, 0);
     mel::double_vec set_points_ = mel::double_vec(5, 0.0);
     mel::double_vec new_torques_ = mel::double_vec(5, 0.0);
-    //mel::share::MelShare pos_data_ = mel::share::MelShare("MEII_pos");
-    mel::double_vec data_p_ = mel::double_vec(5, 0.0);
 
     // FORCE SENSING
     mel::double_vec commanded_torques_ = mel::double_vec(5, 0);
@@ -218,12 +216,14 @@ private:
     bool force_mag_reached_ = false;
     bool emg_data_processed_ = false;
     bool end_of_target_sequence_ = false;
-    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
-    bool check_wait_time_reached(double wait_time, double init_time, double current_time);
-    bool check_force_mag_reached(double force_mag_goal, double force_mag);
 
     // USEFUL STATE VARIABLES
     double st_enter_time_;
+
+    // UTILITY FUNCTIONS
+    bool check_target_reached(mel::double_vec goal_pos, mel::double_vec current_pos, mel::char_vec check_joint, bool print_output = false);
+    bool check_wait_time_reached(double wait_time, double init_time, double current_time);
+    bool check_force_mag_reached(double force_mag_goal, double force_mag);
 
     // UNITY INPUT/OUTPUT
     int scene_num_share = 0;

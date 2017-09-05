@@ -2,7 +2,7 @@
 #include <csignal>
 #include "Q8Usb.h"
 #include "Clock.h"
-#include "MahiExoIIEmgFrc.h"
+#include "MahiExoIIEmg.h"
 #include "util.h"
 #include "mahiexoii_util.h"
 #include <boost/program_options.hpp>
