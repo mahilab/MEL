@@ -3,9 +3,11 @@
 #include "util.h"
 #include <Eigen\Dense>
 #include <Eigen\LU>
+#include <Eigen\StdVector>
 #include <array>
 #include "Motor.h"
 #include "Encoder.h"
+#include "Integrator.h"
 
 class MahiExoII : public mel::Exo {
 
@@ -92,7 +94,7 @@ private:
     Eigen::VectorXd psi_;
     Eigen::MatrixXd psi_d_qp_;
     Eigen::MatrixXd rho_;
-    Eigen::MatrixXd rho_sub_;
+    //Eigen::MatrixXd rho_sub_;
     Eigen::MatrixXd selector_mat_;
     const mel::uint32 max_it_ = 10;
     const double tol_ = 1e-12;
@@ -114,5 +116,6 @@ private:
     Eigen::VectorXd phi_func(Eigen::VectorXd& qp);
     Eigen::VectorXd a_func(Eigen::VectorXd& qp);
     Eigen::MatrixXd phi_d_qp_func(Eigen::VectorXd& qp);
+    
     
 };

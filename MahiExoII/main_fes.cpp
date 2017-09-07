@@ -22,7 +22,6 @@ int main(int argc, char * argv[]) {
         ("zero", "zeros encoder counts on startup")
         ("subject", boost::program_options::value<int>(), "the subject number, 1-10")
         ("trial", boost::program_options::value<int>(), "the trial to start at, e.g. 1, 2, 3, etc");
-        //("condition", boost::program_options::value<int>(), "0 = FES only, 1 = MEII only, 2 = FES & MEII combined, 3 = calibrate");
             
 
     boost::program_options::variables_map var_map;

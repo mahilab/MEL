@@ -15,7 +15,7 @@ MahiExoII::MahiExoII(Config configuration, Params parameters) :
     psi_(Eigen::VectorXd::Zero(12)),
     psi_d_qp_(Eigen::MatrixXd::Zero(12, 12)),
     rho_(Eigen::MatrixXd::Zero(12,3)),
-    rho_sub_(Eigen::MatrixXd::Zero(3,3)),
+    //rho_sub_(Eigen::MatrixXd::Zero(3,3)),
     selector_mat_(Eigen::MatrixXd::Zero(12,3))
 {
 
@@ -106,7 +106,6 @@ void MahiExoII::update_kinematics() {
     anatomical_joint_velocities_[2] = qp_dot_(6); // wrist flexion/extension
     anatomical_joint_velocities_[3] = qp_dot_(7); // wrist radial/ulnar deviation
     anatomical_joint_velocities_[4] = qp_dot_(9); // arm translation
-
 }
 
 
@@ -130,7 +129,26 @@ void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
     rho_sub.row(1) = rho.row(7);
     rho_sub.row(2) = rho.row(9);
 
-	// set torques for two wrist anatomical joints
+    // calculate the spectral norm of the transformation matrix
+    Eigen::EigenSolver<Eigen::Matrix3d> eigensolver(rho_sub * rho_sub,false);
+    if (eigensolver.info() != Eigen::Success) {
+        mel::print("ERROR: Eigensolver did not converge!");
+        joints_[2]->set_torque(0.0);
+        joints_[3]->set_torque(0.0);
+        joints_[4]->set_torque(0.0);
+        return;
+    }
+    Eigen::EigenSolver<Eigen::Matrix3d>::EigenvalueType lambda = eigensolver.eigenvalues();
+    mel::double_vec lambda_abs;
+    for (int i = 0; i < 3; ++i) {
+        lambda_abs.push_back(std::abs(lambda(i)));
+    }
+    std::vector<double>::iterator lambda_max;
+    lambda_max = std::max_element(lambda_abs.begin(), lambda_abs.end());
+    mel::print(std::sqrt(*lambda_max));
+    //mel::print(eigensolver.eigenvalues());
+
+	// set torques for two wrist anatomical joints and arm translation
 	Eigen::VectorXd par_torques = Eigen::VectorXd::Zero(3);
 	Eigen::VectorXd ser_torques = Eigen::VectorXd::Zero(3);
 	ser_torques(0) = new_torques[2];
@@ -140,8 +158,6 @@ void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques) {
 	joints_[2]->set_torque(par_torques(0));
 	joints_[3]->set_torque(par_torques(1));
 	joints_[4]->set_torque(par_torques(2));
-
-    //std::cout << par_torques(2) << std::endl;
 
 }
 
@@ -201,9 +217,6 @@ void MahiExoII::forward_kinematics_velocity(Eigen::VectorXd& q_par_dot_in, Eigen
 
     psi_d_qp_update(qp_);
     Eigen::MatrixXd rho = psi_d_qp_.fullPivLu().solve(selector_mat_);
-    //rho_sub_.row(0) = rho_.row(6);
-    //rho_sub_.row(1) = rho_.row(7);
-    //rho_sub_.row(2) = rho_.row(9);
 
     Eigen::VectorXd qp_dot = rho*q_par_dot_in;
 
