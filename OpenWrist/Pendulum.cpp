@@ -49,6 +49,13 @@ void Pendulum::step_simulation(double time, double position_ref, double velocity
     state.write(state_data);
 }
 
+double Pendulum::natural_frequency(int mode) {
+    if (mode == 0) // this should be the fast mode
+        return sqrt((g*(sqrt((M[0] + M[1])*((L[0] * L[0])*M[0] + (L[0] * L[0])*M[1] + (L[1] * L[1])*M[0] + (L[1] * L[1])*M[1] - L[0] * L[1] * M[0] * 2.0 + L[0] * L[1] * M[1] * 2.0)) + L[0] * M[0] + L[0] * M[1] + L[1] * M[0] + L[1] * M[1])*(0.5)) / (L[0] * L[1] * M[0]));
+    else if (mode = 1) // this should be the slow mode
+        return sqrt((g*(-sqrt((M[0] + M[1])*((L[0] * L[0])*M[0] + (L[0] * L[0])*M[1] + (L[1] * L[1])*M[0] + (L[1] * L[1])*M[1] - L[0] * L[1] * M[0] * 2.0 + L[0] * L[1] * M[1] * 2.0)) + L[0] * M[0] + L[0] * M[1] + L[1] * M[0] + L[1] * M[1])*(0.5)) / (L[0] * L[1] * M[0]));
+}
+
 void Pendulum::reset() {
     Qdd = { 0,0 };
     Qd = { 0,0 };

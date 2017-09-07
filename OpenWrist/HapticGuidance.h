@@ -168,7 +168,7 @@ private:
     //-------------------------------------------------------------------------
 
     // UNITY GAME
-    mel::ExternalApp game = mel::ExternalApp("pendulum", "C:\\Users\\mep9\\Dropbox\\OpenWrist\\Software\\Games\\Pendulum\\Build\\Pendulum.exe");
+    mel::ExternalApp game = mel::ExternalApp("pendulum", "C:\\Users\\mep9\\Git\\SpacePendulum\\Builds\\SpacePendulum.exe");
 
     // GUI FLAGS
     GuiFlag& gui_flag_;
@@ -202,20 +202,20 @@ private:
 
     // TRAJECTORY VARIABLES
     struct TrajParams {
-        TrajParams(double amp, double sin, double noise) : amp_(amp), sin_(sin), noise_(noise) {}
-        double amp_, sin_, noise_;
+        TrajParams(double amp, double sin, double cos) : amp_(amp), sin_(sin), cos_(cos) {}
+        double amp_, sin_, cos_;
     };
 
-    std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(200, 0.1, 0.1) };
-    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(200, 0.1, 0.2), TrajParams(200,0.2, 0.4), TrajParams(200, 0.3, 0.6) };
+    std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(250, 0.1, 0.1) };
+    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(250, 0.3, 0.4), TrajParams(250,0.2, 0.1), TrajParams(250, 0.3, 0.2) };
     std::vector<TrajParams> TRAJ_PARAMS_T_; // to be generated from TRAJ_PARAMS_E_
-    std::vector<TrajParams> TRAJ_PARAMS_G_ = std::vector<TrajParams>(12, TrajParams(200, 0.25, 0.5));
+    std::vector<TrajParams> TRAJ_PARAMS_G_ = std::vector<TrajParams>(12, TrajParams(250, 0.25, 0.5));
     std::vector<TrajParams> TRAJ_PARAMS_; // random generated for all trials
 
     double amplitude_ = 225;
     double length_ = 450;
-    double sin_freq_ = 0.225;
-    double noise_freq_ = 0.3;
+    double sin_freq_ = 0.2;
+    double cos_freq_ = 0.3;
     mel::share::MelShare trajectory_x_ = mel::share::MelShare("trajectory_x", 54*4); 
     mel::share::MelShare trajectory_y_ = mel::share::MelShare("trajectory_y", 54*4);
     mel::share::MelShare exp_pos = mel::share::MelShare("exp_pos");

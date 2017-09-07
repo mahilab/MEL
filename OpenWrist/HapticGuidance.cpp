@@ -49,7 +49,7 @@ HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWri
     }
 
     // Add columns to logger
-    log_.add_col("Time [s]").add_col("Amplitude [px]").add_col("Sin Freq. [Hz]").add_col("Noise Freq. [Hz]")
+    log_.add_col("Time [s]").add_col("Amplitude [px]").add_col("Sin Freq. [Hz]").add_col("Cos Freq. [Hz]")
         .add_col("Exp_x [px]").add_col("Exp_y [px]").add_col("Angular Error [rad]").add_col("OW PS Position [rad]").add_col("OW PS Velocity [rad/s]").add_col("OW PS Total Torque [Nm]")
         .add_col("OW PS Compensation Torque [Nm]").add_col("OW PS Task Torque [Nm]").add_col("OW PS Noise Torque")
         .add_col("CUFF Motor Position 1").add_col("CUFF Motor Position 2").add_col("CUFF Noise");
@@ -64,7 +64,7 @@ void HapticGuidance::log_row() {
     row.push_back(clock_.time());
     row.push_back(amplitude_);
     row.push_back(sin_freq_);
-    row.push_back(noise_freq_);
+    row.push_back(cos_freq_);
     row.push_back(expert_position_[0]);
     row.push_back(expert_position_[1]);
     row.push_back(traj_error_);
@@ -142,7 +142,7 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
     game.launch();
     
     // enable OpenWrist DAQ
-    if (CONDITION_ > 0) {
+    if (CONDITION_ >= 0) {
         mel::print("\nPress Enter to enable OpenWrist Daq <" + ow_daq_->name_ + ">.");
         mel::Input::wait_for_key_press(mel::Input::Key::Return);
         ow_daq_->enable();
@@ -200,7 +200,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         timer_.write(timer);
 
         // read and reload DAQ
-        if (CONDITION_ > 0) {
+        if (CONDITION_ >= 0) {
 
             // read and reload DAQ
             ow_daq_->reload_watchdog();
@@ -210,6 +210,7 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
             pendulum_.step_simulation(clock_.time(), open_wrist_.joints_[0]->get_position(), open_wrist_.joints_[0]->get_velocity());
             // compute anglular error
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
+            scope_.write(traj_error_);
 
             // set device forces based on conditions
             ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
@@ -281,7 +282,7 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
         timer_.write(timer);
 
         // read and reload DAQ
-        if (CONDITION_ > 0) {
+        if (CONDITION_ >= 0) {
 
             // read and reload DAQ
             ow_daq_->reload_watchdog();
@@ -291,6 +292,7 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
             pendulum_.step_simulation(clock_.time(), open_wrist_.joints_[0]->get_position(), open_wrist_.joints_[0]->get_velocity());
             // compute anglular error
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
+            scope_.write(traj_error_);
 
             // set device forces based on conditions
             ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
@@ -347,6 +349,7 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
     // show/hide Unity elements
     update_unity(true, true, true, false, false, false, true, true);
 
+
     bool move_started = false;
 
     // enter the control loop
@@ -362,7 +365,7 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
         timer_.write(timer);
 
         // read and reload DAQ
-        if (CONDITION_ > 0) {
+        if (CONDITION_ >= 0) {
 
             // read and reload DAQ
             ow_daq_->reload_watchdog();
@@ -372,6 +375,7 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
             pendulum_.step_simulation(clock_.time(), open_wrist_.joints_[0]->get_position(), open_wrist_.joints_[0]->get_velocity());
             // compute anglular error
             update_trajectory_error(open_wrist_.joints_[0]->get_position());
+            scope_.write(traj_error_);
 
             ps_comp_torque_ = open_wrist_.compute_gravity_compensation(0) + 0.75 * open_wrist_.compute_friction_compensation(0);
             ps_noise_torque_ = 0;
@@ -382,8 +386,7 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
 
 
             if (CONDITION_ == 1) {
-                ps_noise_torque_ = guidance_module_.GetValue(clock_.time(), 0.0, 0.0) * ow_noise_gain_;
-                scope_.write(ps_noise_torque_);
+                ps_noise_torque_ = guidance_module_.GetValue(clock_.time(), 0.0, 0.0) * ow_noise_gain_;               
             }
             else if (CONDITION_ == 2) {
                 cuff_noise_ = guidance_module_.GetValue(clock_.time(), 0.0, 0.0);
@@ -494,7 +497,7 @@ void HapticGuidance::sf_generalization(const mel::NoEventData*) {
         timer_.write(timer);
 
         // read and reload DAQ
-        if (CONDITION_ > 0) {
+        if (CONDITION_ >= 0) {
 
             // read and reload DAQ
             ow_daq_->reload_watchdog();
@@ -559,7 +562,7 @@ void HapticGuidance::sf_generalization(const mel::NoEventData*) {
 void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
     // suspend hardware
-    if (CONDITION_ > 0) {
+    if (CONDITION_ >= 0) {
         open_wrist_.disable();
         ow_daq_->stop_watchdog();
     }
@@ -580,17 +583,43 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
 
         // write the trial string out
         trial_.write_message(TRIALS_TAG_NAMES_[current_trial_index_]);
-        std::array<double, 2> timer = { 0, LENGTH_TRIALS_[TRIALS_BLOCK_TYPES_[current_trial_index_]] };
-        timer_.write(timer);
 
-        mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SPACE to begin.");
-        while (!mel::Input::is_key_pressed(mel::Input::Space)) {
-            stop_ = check_stop();
-            if (stop_) {
-                event(ST_STOP);
-                return;
+        // delay or ask for input
+        if (TRIALS_TAG_NAMES_[current_trial_index_] == "F1-1" ||
+            TRIALS_TAG_NAMES_[current_trial_index_] == "E1-1" ||
+            TRIALS_TAG_NAMES_[current_trial_index_] == "T1-1" ||
+            TRIALS_TAG_NAMES_[current_trial_index_] == "B1-1" ||
+            TRIALS_TAG_NAMES_[current_trial_index_] == "G1-1") 
+        {
+            std::array<double, 2> timer = { 0, LENGTH_TRIALS_[TRIALS_BLOCK_TYPES_[current_trial_index_]] };
+            timer_.write(timer);
+
+            mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">. Press SPACE to begin.");
+            while (!mel::Input::is_key_pressed(mel::Input::Space)) {
+                stop_ = check_stop();
+                if (stop_) {
+                    event(ST_STOP);
+                    return;
+                }
             }
         }
+        else {
+            mel::print("\nNEXT TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">.");
+            clock_.start();
+            while (clock_.time() < 3.0) {
+                std::array<double, 2> timer = { clock_.time(), 3.0 };
+                timer_.write(timer);
+                stop_ = check_stop();
+                if (stop_) {
+                    event(ST_STOP);
+                    return;
+                }
+                clock_.wait();
+            }
+        }
+
+        std::array<double, 2> timer = { 0, LENGTH_TRIALS_[TRIALS_BLOCK_TYPES_[current_trial_index_]] };
+        timer_.write(timer);
 
         // reset the pendlum
         pendulum_.reset();
@@ -598,22 +627,22 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         // set the trajectory parameters
         amplitude_ = TRAJ_PARAMS_[current_trial_index_].amp_;
         sin_freq_ = TRAJ_PARAMS_[current_trial_index_].sin_;
-        noise_freq_ = TRAJ_PARAMS_[current_trial_index_].noise_;
-        trajectory_module_.SetFrequency(noise_freq_);
+        cos_freq_ = TRAJ_PARAMS_[current_trial_index_].cos_;
+        trajectory_module_.SetFrequency(cos_freq_);
         trajectory_module_.SetSeed(current_trial_index_);
 
         // seed the guidane with a numer unique to the current traj param
-        guidance_module_.SetSeed(static_cast<int>(TRAJ_PARAMS_[current_trial_index_].noise_ * 10));
+        guidance_module_.SetSeed(static_cast<int>(TRAJ_PARAMS_[current_trial_index_].cos_ * 10));
         
         // print message
         mel::print("STARTING TRIAL: <" + TRIALS_TAG_NAMES_[current_trial_index_] + ">." +
-            " A = " + std::to_string(amplitude_) + " S = " + std::to_string(sin_freq_) + " N = " + std::to_string(noise_freq_));
+            " A = " + std::to_string(amplitude_) + " S = " + std::to_string(sin_freq_) + " C = " + std::to_string(cos_freq_));
         mel::print("Press ESC or CTRL+C to terminate the experiment.");
 
         trials_started_ = true;
 
         // resume hardware
-        if (CONDITION_ > 0) {
+        if (CONDITION_ >= 0) {
             open_wrist_.enable();
             ow_daq_->start_watchdog(0.1);
         }
@@ -651,7 +680,7 @@ void HapticGuidance::sf_stop(const mel::NoEventData*) {
     else
         mel::print("\nExperiment completed. Disabling hardware.");
 
-    if (CONDITION_ > 0)
+    if (CONDITION_ >= 0)
         ow_daq_->disable();
 
     if (CONDITION_ == 2 || CONDITION_ == 3)
@@ -659,23 +688,20 @@ void HapticGuidance::sf_stop(const mel::NoEventData*) {
 }
 
 //-----------------------------------------------------------------------------
-// UTILITY FUNCTIONS
+// TRAJECTORY FUNCTIONS
 //-----------------------------------------------------------------------------
 void HapticGuidance::update_trajectory(double time) {
     // compute trajectory
     for (int i = 0; i < 54; i++) {
-        trajectory_y_data[i] = 540 - i * 20; // I don't think this needs to change
-        //trajectory_x_data[i] = (int)(amplitude_ * -sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0)) * 
-        //                                      cos(2.0 * mel::PI * cos_freq_ * (time + (double)i * 20.0 / 1080.0))); 
-
-        trajectory_x_data[i] = (int)(amplitude_ * (trajectory_module_.GetValue(time + (double)i * 20.0 / 1080.0, 0.0, 0.0) + sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0))));
-
+        trajectory_y_data[i] = (540 - i * 20); // I don't think this needs to change
+        trajectory_x_data[i] = (int)(amplitude_ * -sin(2.0 * mel::PI * sin_freq_ * (time - (double)i * 20.0 / 1080.0)) * cos(2.0 * mel::PI * cos_freq_ * (time - (double)i * 20.0 / 1080.0))); 
+        //trajectory_x_data[i] = (int)(amplitude_ * -sin(pendulum_.natural_frequency(1) * (time - (double)i * 20.0 / 1080.0)));
+        //trajectory_x_data[i] = (int)(amplitude_ * (trajectory_module_.GetValue(time + (double)i * 20.0 / 1080.0, 0.0, 0.0) + sin(2.0 * mel::PI * sin_freq_ * (time + (double)i * 20.0 / 1080.0))));
     }
     // send trajectory to Unity
     trajectory_x_.write(trajectory_x_data);
     trajectory_y_.write(trajectory_y_data);
 }
-
 
 void HapticGuidance::update_expert(double time) {
     double traj_point;
@@ -684,9 +710,11 @@ void HapticGuidance::update_expert(double time) {
     int pos_min = 0;
     double traj_point_min;
     for (int i = 540 - (int)length_; i < 540; i++) {
-        //traj_point = amplitude_ / 1000.0 * -sin(2.0*mel::PI*sin_freq_*(time + (double)i    / 1080.0  )) *cos(2.0*mel::PI*cos_freq_*(time + (double)i / 1080.0    ));
+        traj_point = amplitude_ / 1000.0 * -sin(2.0*mel::PI*sin_freq_*(time - (double)i    / 1080.0  )) *cos(2.0*mel::PI*cos_freq_*(time - (double)i / 1080.0    ));
+        //traj_point = amplitude_ / 1000.0 * -sin(pendulum_.natural_frequency(1)*(time - (double)i / 1080.0));
+
         //traj_point = (amplitude_ / 1000.0 * trajectory_module_.GetValue(time + (double)i  / 1080.0, 0.0, 0.0));
-        traj_point = (amplitude_ / 1000.0 * (trajectory_module_.GetValue(time + (double)i / 1080.0, 0.0, 0.0) + sin(2.0*mel::PI*sin_freq_*(time + (double)i / 1080.0))));
+        //traj_point = (amplitude_ / 1000.0 * (trajectory_module_.GetValue(time + (double)i / 1080.0, 0.0, 0.0) + sin(2.0*mel::PI*sin_freq_*(time + (double)i / 1080.0))));
 
         check_array[i] = abs(length_/1000.0 - sqrt(pow(traj_point, 2) + pow(((double)i / 1000.0) - (540.0 - length_)/1000, 2)));
         if (check_array[i] < min) {
