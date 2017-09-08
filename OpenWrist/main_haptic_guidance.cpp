@@ -23,7 +23,8 @@ int main(int argc, char * argv[]) {
     boost::program_options::options_description desc("Available Options");
     desc.add_options()
         ("help", "produces help message")
-        ("calibrate", "calibrate OpenWrist zero position")
+        ("calibrate-ow", "calibrate OpenWrist zero position (auto)")
+        ("calibrate-meii", "calibrate MahiExo-II zero position (manual)")
         ("transparent", "puts the OpenWrist in transparency mode indefinitely")
         ("run", "run the haptic guidance experiment")
         ("input", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
@@ -40,7 +41,7 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
-    //  create a Q8Usb object(s)
+    // create Q8Usb OpenWrist
     mel::uint32 id = 0;
 
     mel::channel_vec  ai_channels = { 0, 1, 2 };
@@ -58,7 +59,7 @@ int main(int argc, char * argv[]) {
 
     mel::Daq* q8_ow = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
 
-    /*
+    // create Q8Usb MahiExo-II
     id = 0;
     ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
     ao_channels = { 1, 2, 3, 4, 5 };
@@ -71,8 +72,9 @@ int main(int argc, char * argv[]) {
         options_meii.do_final_signals_[i] = 1;
         options_meii.do_expire_signals_[i] = 1;
     }
-    mel::Daq* q8_meii = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_meii);
-    */
+    mel::Daq* q8_meii = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_meii);    
+
+    // figure out which Q8 is which
 
     // create and configure an OpenWrist object
     mel::OpenWrist::Config ow_config;
@@ -84,10 +86,8 @@ int main(int argc, char * argv[]) {
         ow_config.encrate_[i] = q8_ow->encrate_(i);
         ow_config.amp_gains_[i] = 1;
     }
-
     mel::OpenWrist open_wrist(ow_config);
-
-    /*
+    
     // create and configure a MahiExo-II object
     MahiExoII::Config config;
     for (int i = 0; i < 5; ++i) {
@@ -96,22 +96,26 @@ int main(int argc, char * argv[]) {
         config.encoder_[i] = q8_meii->encoder_(i + 1);
         config.encrate_[i] = q8_meii->encrate_(i + 1);
     }
-    MahiExoII meii(config);
-    */
+    MahiExoII meii(config);    
 
     // create and configure CUFF object
-    Cuff cuff("cuff_forearm");
-    
+    Cuff cuff("cuff_forearm");    
 
-    // perform calibrate command if requested by user
-    if (var_map.count("calibrate")) {
+    // perform calibration commands if requested by user
+    if (var_map.count("calibrate-ow")) {
         open_wrist.calibrate();
         delete q8_ow;
         //delete q8_meii;
         return 0;
     }
+    if (var_map.count("calibrate-meii")) {
+        q8_meii->enable();
+        q8_meii->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
+        q8_meii->disable();
+        return 0;
+    }
 
-    // put the robot in transparency mode if requested by user
+    // put the OpenWrist in transparency mode if requested by user
     if (var_map.count("transparent")) {
         open_wrist.transparency_mode();
         delete q8_ow;
