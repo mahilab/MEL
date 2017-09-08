@@ -16,6 +16,9 @@ int main(int argc, char * argv[]) {
     // ignore CTRL-C signal (we can do this with Input)
     signal(SIGINT, SIG_IGN);
 
+    // enable soft realtime
+    mel::enable_soft_realtime();
+
     // set up program options 
     boost::program_options::options_description desc("Available Options");
     desc.add_options()

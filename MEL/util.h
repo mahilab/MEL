@@ -72,6 +72,8 @@ namespace mel {
 
     const std::string get_ymdhms();  ///< Get current date/time, format is YYYY-MM-DD.HH:mm:ss
     std::string get_last_windows_error_message();
+    
+    void enable_soft_realtime();    
 
     std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec);
 

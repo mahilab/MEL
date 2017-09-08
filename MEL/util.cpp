@@ -1,5 +1,6 @@
 #include "util.h"
 #include "Windows.h"
+#include <tchar.h>
 
 namespace mel {
 
@@ -30,6 +31,7 @@ namespace mel {
         return message;
     }
 
+
     std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec) {
         std::vector<double> std_vec;
         std_vec.resize(eigen_vec.size());
@@ -40,6 +42,21 @@ namespace mel {
     Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec) {
         Eigen::Map<Eigen::VectorXd> eigen_vec(&std_vec[0], std_vec.size());
         return eigen_vec;
+    }
+
+    void enable_soft_realtime() {
+        DWORD dwError;
+        if (!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
+        {
+            dwError = GetLastError();
+            _tprintf(TEXT("Failed to elevate process priority (%d)\n"), dwError);
+        }
+        if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST))
+        {
+            dwError = GetLastError();
+            _tprintf(TEXT("Failed to elevate thread priority (%d)\n"), dwError);
+        }
+
     }
 
     std::string namify(std::string name) {
