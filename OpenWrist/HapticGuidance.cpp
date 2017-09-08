@@ -2,12 +2,14 @@
 #include "Input.h"
 #include <random>
 
-HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
+HapticGuidance::HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWrist& open_wrist, mel::Daq* meii_daq, mel::MahiExoII& meii, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
     int subject_number, int condition, std::string start_trial):
     StateMachine(8), 
     clock_(clock),
     ow_daq_(ow_daq),
     open_wrist_(open_wrist), 
+    meii_daq_(meii_daq),
+    meii_(meii),
     cuff_(cuff),
     gui_flag_(gui_flag),
     INPUT_MODE_(input_mode),
@@ -169,9 +171,20 @@ void HapticGuidance::sf_start(const mel::NoEventData*) {
     if (CONDITION_ == 4) {
         mel::print("\nPress Enter to enable MahiExo-II Daq <" + ow_daq_->name_ + ">.");
         mel::Input::wait_for_key_press(mel::Input::Key::Return);
-    }
+        meii_daq_->enable();
+        if (!meii_daq_->is_enabled()) {
+            event(ST_STOP);
+            return;
+        }
 
-    // launch Unity game
+        // check DAQ behavior for safety
+        meii_daq_->read_all();
+        meii_.update_kinematics();
+        if (meii_.check_all_joint_limits()) {
+            event(ST_STOP);
+            return;
+        }
+    }
     
     event(ST_TRANSITION);   
 }
@@ -353,7 +366,8 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
     update_unity(true, true, true, false, false, false, true, true);
 
 
-    bool move_started = false;
+    bool move_started_ow = false;
+    bool move_started_meii = false;
 
     // enter the control loop
     while (clock_.time() < LENGTH_TRIALS_[TRAINING] && !stop_) {
@@ -403,16 +417,40 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
                 cuff_.set_motor_positions(cuff_pos_1_, cuff_pos_2_, true);
             }
             else if (CONDITION_ == 4) {
+                meii_daq_->reload_watchdog();
+                meii_daq_->read_all();
 
+                meii_.update_kinematics();
+                meii_.check_all_joint_limits();
+
+                mel::double_vec meii_torques(5, 0.0);
+                //double meii_torque = meii_.robot_joint_pd_controllers_[1].calculate(open_wrist_.joints_[0]->get_position(), meii_.get_anatomical_joint_position(1), 0, meii_.get_anatomical_joint_velocity(1));
+                //meii_.joints_[1]->set_torque(meii_torque);
+
+                for (auto i = 0; i < 5; ++i) {
+                    if (i != 1) {                        
+                        if (!move_started_meii) {
+                            meii_torques[i] = meii_.robot_joint_pd_controllers_[i].move_to_hold(neutral_pos_meii_[i], meii_.joints_[i]->get_position(), speed_meii_[i], meii_.joints_[i]->get_velocity(), clock_.delta_time_, pos_tol_meii_[i], true);
+                            move_started_meii = true;
+                        }
+                        else {
+                            meii_torques[i] = meii_.robot_joint_pd_controllers_[i].move_to_hold(neutral_pos_meii_[i], meii_.joints_[i]->get_position(), speed_meii_[i], meii_.joints_[i]->get_velocity(), clock_.delta_time_, pos_tol_meii_[i], false);
+                        }
+                    }
+                    else {
+                        meii_torques[i] = 7.0 * traj_error_;
+                    }
+                }
+                meii_daq_->write_all();
             }
 
             ps_total_torque_ = ps_comp_torque_ - pendulum_.Tau[0] + ps_noise_torque_;
             open_wrist_.joints_[0]->set_torque(ps_total_torque_);
 
-            if (!move_started) {
+            if (!move_started_ow) {
                 open_wrist_.joints_[1]->set_torque(pd1_.move_to_hold(0, open_wrist_.joints_[1]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[1]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, true));
                 open_wrist_.joints_[2]->set_torque(pd2_.move_to_hold(0, open_wrist_.joints_[2]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[2]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, true));
-                move_started = true;
+                move_started_ow = true;
             }
             else {
                 open_wrist_.joints_[1]->set_torque(pd1_.move_to_hold(0, open_wrist_.joints_[1]->get_position(), 60 * mel::DEG2RAD, open_wrist_.joints_[1]->get_velocity(), clock_.delta_time_, mel::DEG2RAD, false));
@@ -574,6 +612,11 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         ow_daq_->stop_watchdog();
     }
 
+    if (CONDITION_ == 4) {
+        meii_.disable();
+        meii_daq_->stop_watchdog();
+    }
+
     // save the data log from the last trial
     if (trials_started_) {
         log_.save_and_clear_data(TRIALS_TAG_NAMES_[current_trial_index_], DIRECTORY_ + "\\_" + TRIALS_BLOCK_NAMES_[current_trial_index_], true);
@@ -653,6 +696,11 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
         if (CONDITION_ >= 0) {
             open_wrist_.enable();
             ow_daq_->start_watchdog(0.1);
+        }
+
+        if (CONDITION_ == 4) {
+            meii_.enable();
+            meii_daq_->start_watchdog(0.1);
         }
 
         // restart the clock

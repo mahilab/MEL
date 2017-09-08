@@ -1,6 +1,7 @@
 #pragma once
 #include "StateMachine.h"
 #include "OpenWrist.h"
+#include "MahiExoII.h"
 #include "Cuff.h"
 #include "Pendulum.h"
 #include "GuiFlag.h"
@@ -42,7 +43,7 @@ class HapticGuidance : public mel::StateMachine {
 
 public:
 
-    HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWrist& open_wrist, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
+    HapticGuidance(mel::Clock& clock, mel::Daq* ow_daq, mel::OpenWrist& open_wrist, mel::Daq* meii_daq, mel::MahiExoII& meii, Cuff& cuff, GuiFlag& gui_flag, int input_mode,
         int subject_number, int condition, std::string start_trial = "F1-1");
 
 private:
@@ -184,6 +185,8 @@ private:
     // HARDWARE
     mel::Daq* ow_daq_;
     mel::OpenWrist& open_wrist_;
+    mel::Daq* meii_daq_;
+    mel::MahiExoII& meii_;
     Cuff& cuff_;
 
     // PD CONTROLLERS
@@ -226,6 +229,12 @@ private:
     void update_expert(double time);
     double traj_error_ = 0;
     void update_trajectory_error(double joint_angle);
+
+    // MEII VARIABLES
+    mel::double_vec neutral_pos_meii_ = { -10.0 * mel::DEG2RAD, 0.0 * mel::DEG2RAD, 0.11 , 0.11,  0.11 }; // robot joint positions
+    mel::double_vec speed_meii_ = { 0.25, 0.25, 0.0125, 0.0125, 0.0125 };
+    mel::double_vec pos_tol_meii_ = { 1.0 * mel::DEG2RAD, 1.0 * mel::DEG2RAD, 0.01, 0.01, 0.01 };
+
 
     // SAVE VARIABLES
     double ps_comp_torque_;

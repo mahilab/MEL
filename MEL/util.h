@@ -75,6 +75,8 @@ namespace mel {
     
     void enable_soft_realtime();    
 
+    
+
     std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec);
 
     Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec);

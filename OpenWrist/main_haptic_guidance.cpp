@@ -30,7 +30,8 @@ int main(int argc, char * argv[]) {
         ("input", boost::program_options::value<int>(), "0 = Terminal, 1 = GUI")
         ("subject", boost::program_options::value<int>(), "the subject number, 1-40")
         ("condition", boost::program_options::value<int>(), "1 = OW w/ PN, 2 = OW+CUFF w/ PN, 3 = OW+CUFF w/ HG, 4 = OW+MEII w/ HG")
-        ("trial", boost::program_options::value<std::string>(), "the trial to start at, e.g. F1-1, T3-5, G2-12, etc");
+        ("trial", boost::program_options::value<std::string>(), "the trial to start at, e.g. F1-1, T3-5, G2-12, etc")
+        ("meii", "append if MahiExo-II is present");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -41,11 +42,31 @@ int main(int argc, char * argv[]) {
         return 0;
     }
 
-    // create Q8Usb OpenWrist
-    mel::uint32 id = 0;
+    // identify Q8Usb's
+    mel::uint32 id_ow = 0;
 
+    /*
+    mel::uint32 id_meii = 1;
+    if ((var_map.count("condition") && var_map["condition"].as<int>() == 4) || var_map.count("calibrate-meii")) {
+        id_ow = 1;
+        id_meii = 0;
+        if (!mel::Q8Usb::check_digital_loopback(id_meii, 7)) {
+            mel::print("Warning: Digital loopback not connected to Q8Usb 0");
+            if (mel::Q8Usb::check_digital_loopback(id_ow, 7)) {
+                id_ow = 0;
+                id_meii = 1;
+            }
+            else {
+                mel::print("Error: Digital loopback not connected to Q8Usb 1. EMG DAQ not identified.");
+                return -1;
+            }
+        }
+    }
+    */
+
+    // create Q8Usb OpenWrist
     mel::channel_vec  ai_channels = { 0, 1, 2 };
-    mel::channel_vec  ao_channels = { 0, 1, 2 };
+    mel::channel_vec  ao_channels = { 0, 1, 2,3 };
     mel::channel_vec  di_channels = { 0, 1, 2 };
     mel::channel_vec  do_channels = { 0, 1, 2 };
     mel::channel_vec enc_channels = { 0, 1, 2 };
@@ -57,10 +78,10 @@ int main(int argc, char * argv[]) {
     options_q8.ao_modes_[1] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
     options_q8.ao_modes_[2] = mel::Q8Usb::Options::AoMode(mel::Q8Usb::Options::AoMode::CurrentMode1, 0,  1.912, 18.43, 0, -1, 0, 1000);
 
-    mel::Daq* q8_ow = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
+    mel::Daq* q8_ow = new mel::Q8Usb(id_ow, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
 
+    /*
     // create Q8Usb MahiExo-II
-    id = 0;
     ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
     ao_channels = { 1, 2, 3, 4, 5 };
     di_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -72,9 +93,9 @@ int main(int argc, char * argv[]) {
         options_meii.do_final_signals_[i] = 1;
         options_meii.do_expire_signals_[i] = 1;
     }
-    mel::Daq* q8_meii = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_meii);    
+    mel::Daq* q8_meii = new mel::Q8Usb(id_meii, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_meii);    
 
-    // figure out which Q8 is which
+    */
 
     // create and configure an OpenWrist object
     mel::OpenWrist::Config ow_config;
@@ -88,38 +109,49 @@ int main(int argc, char * argv[]) {
     }
     mel::OpenWrist open_wrist(ow_config);
     
+    /*
     // create and configure a MahiExo-II object
-    MahiExoII::Config config;
+    mel::MahiExoII::Config config;
     for (int i = 0; i < 5; ++i) {
         config.enable_[i] =  q8_meii->do_(i + 1);
         config.command_[i] = q8_meii->ao_(i + 1);
         config.encoder_[i] = q8_meii->encoder_(i + 1);
         config.encrate_[i] = q8_meii->encrate_(i + 1);
     }
-    MahiExoII meii(config);    
+    mel::MahiExoII meii(config);    
+    */
 
     // create and configure CUFF object
     Cuff cuff("cuff_forearm");    
 
     // perform calibration commands if requested by user
     if (var_map.count("calibrate-ow")) {
+        // mel::print(static_cast<mel::Q8Usb*>(q8_ow)->options_.ao_final_voltages_);
         open_wrist.calibrate();
+        //q8_ow->enable();
+        //q8_ow->ao_(0).set_voltage(0);
+        //q8_ow->write_all();
+        //getchar();
         delete q8_ow;
         //delete q8_meii;
         return 0;
     }
+    /*
     if (var_map.count("calibrate-meii")) {
         q8_meii->enable();
         q8_meii->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
         q8_meii->disable();
+        delete q8_ow;
+        delete q8_meii;
         return 0;
     }
+    */
 
     // put the OpenWrist in transparency mode if requested by user
     if (var_map.count("transparent")) {
         open_wrist.transparency_mode();
         delete q8_ow;
-        //delete q8_meii;
+       // delete q8_meii;
         return 0;
     }
 
@@ -170,8 +202,8 @@ int main(int argc, char * argv[]) {
         mel::print("Start Trial:    " + start_trial);
 
         mel::Clock clock(1000);
-        HapticGuidance haptic_guidance(clock, q8_ow, open_wrist, cuff, gui_flag, input_mode, subject, condition, start_trial);
-        haptic_guidance.execute();
+        //HapticGuidance haptic_guidance(clock, q8_ow, open_wrist, q8_meii, meii, cuff, gui_flag, input_mode, subject, condition, start_trial);
+        //haptic_guidance.execute();
         delete q8_ow;
         //delete q8_meii;
         return 0;
