@@ -1,5 +1,6 @@
 #include "util.h"
 #include "Windows.h"
+#include <tchar.h>
 
 namespace mel {
 
@@ -28,6 +29,20 @@ namespace mel {
         LocalFree(messageBuffer);
 
         return message;
+    }
+
+    void enable_soft_realtime() {
+        DWORD dwError;
+        if (!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
+        {
+            dwError = GetLastError();
+            _tprintf(TEXT("Failed to elevate process priority (%d)\n"), dwError);
+        }
+        if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST))
+        {
+            dwError = GetLastError();
+            _tprintf(TEXT("Failed to elevate thread priority (%d)\n"), dwError);
+        }
     }
 
     std::string namify(std::string name) {

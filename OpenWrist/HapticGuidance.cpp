@@ -252,7 +252,8 @@ void HapticGuidance::sf_familiarization(const mel::NoEventData*) {
         stop_ = check_stop();
 
         // wait for the next clock cycle
-        clock_.wait();        
+        clock_.wait();      
+        clock_.log();
     }
 
     // transition to the next state
@@ -335,6 +336,8 @@ void HapticGuidance::sf_evaluation(const mel::NoEventData*) {
 
         // wait for the next clock cycle
         clock_.wait();
+        clock_.log();
+
     }
 
     // transition to the next state
@@ -437,6 +440,8 @@ void HapticGuidance::sf_training(const mel::NoEventData*) {
 
         // wait for the next clock cycle
         clock_.wait();
+        clock_.log();
+
     }
 
     // release CUFF
@@ -549,6 +554,8 @@ void HapticGuidance::sf_generalization(const mel::NoEventData*) {
 
         // wait for the next clock cycle
         clock_.wait();
+        clock_.log();
+
     }
 
     // transition to the next state
@@ -571,6 +578,7 @@ void HapticGuidance::sf_transition(const mel::NoEventData*) {
     if (trials_started_) {
         log_.save_and_clear_data(TRIALS_TAG_NAMES_[current_trial_index_], DIRECTORY_ + "\\_" + TRIALS_BLOCK_NAMES_[current_trial_index_], true);
     }
+    clock_.save_log();
 
     // show/hide Unity elements
     update_unity(true, true, false, false, false, false, true, true);

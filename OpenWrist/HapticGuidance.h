@@ -207,7 +207,7 @@ private:
     };
 
     std::vector<TrajParams> TRAJ_PARAMS_FB_ = { TrajParams(250, 0.1, 0.1) };
-    std::vector<TrajParams> TRAJ_PARAMS_E_ = { TrajParams(250, 0.3, 0.4), TrajParams(250,0.2, 0.1), TrajParams(250, 0.3, 0.2) };
+    std::vector<TrajParams> TRAJ_PARAMS_E_ = {TrajParams(250,0.2, 0.1), TrajParams(250, 0.3, 0.2), TrajParams(250, 0.3, 0.4) };
     std::vector<TrajParams> TRAJ_PARAMS_T_; // to be generated from TRAJ_PARAMS_E_
     std::vector<TrajParams> TRAJ_PARAMS_G_ = std::vector<TrajParams>(12, TrajParams(250, 0.25, 0.5));
     std::vector<TrajParams> TRAJ_PARAMS_; // random generated for all trials
