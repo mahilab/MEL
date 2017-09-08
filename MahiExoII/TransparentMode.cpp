@@ -2,7 +2,7 @@
 #include "Input.h"
 #include "mahiexoii_util.h"
 
-TransparentMode::TransparentMode(mel::Clock& clock, mel::Daq* daq, MahiExoII& meii) :
+TransparentMode::TransparentMode(mel::Clock& clock, mel::Daq* daq, mel::MahiExoII& meii) :
     StateMachine(3),
     clock_(clock),
     daq_(daq),
@@ -54,9 +54,9 @@ void TransparentMode::sf_init(const mel::NoEventData* data) {
     }
 
     // confirm start of experiment
-    mel::print("\nPress Enter to run EMG Real-Time Control");
+    mel::print("\nPress Enter to run Transparent Mode");
     mel::Input::wait_for_key_press(mel::Input::Key::Return);
-    mel::print("\nRunning EMG Real-Time Control ... ");
+    mel::print("\nRunning Transparent Mode ... ");
 
     // start the watchdog
     daq_->start_watchdog(0.1);
@@ -103,7 +103,17 @@ void TransparentMode::sf_transparent(const mel::NoEventData* data) {
         }
 
         // set zero torques
-        meii_.set_anatomical_joint_torques({ 0,0,0,0,0 });
+        meii_.set_anatomical_joint_torques({ 0,0,0,0,0 }, meii_.error_code_);
+        switch (meii_.error_code_) {
+            case -1 : mel::print("ERROR: Eigensolver did not converge!");
+                break;
+            case -2: mel::print("ERROR: Discontinuity in spectral norm of wrist jacobian");
+                break;
+        }
+        if (meii_.error_code_ < 0) {
+            stop_ = true;
+            break;
+        }
 
         // write to daq
         daq_->write_all();

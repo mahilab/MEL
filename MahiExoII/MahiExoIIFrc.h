@@ -3,15 +3,15 @@
 #include "mahiexoii_util.h"
 #include "AtiMini45.h"
 
-class MahiExoIIFrc : public virtual MahiExoII {
+class MahiExoIIFrc : public virtual mel::MahiExoII {
 
 public:
 
-    struct Config : public virtual MahiExoII::Config {
+    struct Config : public virtual mel::MahiExoII::Config {
         std::array<mel::Daq::Ai,6> wrist_force_sensor_; // analog input channels that measure force/torque
     };
 
-    struct Params : public virtual MahiExoII::Params {
+    struct Params : public virtual mel::MahiExoII::Params {
         Params() {
             calib_mat_[0] = {   0.45676,   0.37263,   2.84454, -95.32922,  -1.60986,  93.56974 };
             calib_mat_[1] = { -10.00557, 107.83272,   2.80461, -54.50607,   2.67834, -55.04209 };

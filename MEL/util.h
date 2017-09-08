@@ -5,7 +5,10 @@
 #include <stdint.h>
 #include <time.h>
 #include <iostream>
+#include <iomanip>
 #include <string>
+#include <Eigen\Dense>
+#include <Eigen\StdVector>
 
 namespace mel {
     
@@ -69,6 +72,10 @@ namespace mel {
 
     const std::string get_ymdhms();  ///< Get current date/time, format is YYYY-MM-DD.HH:mm:ss
     std::string get_last_windows_error_message();
+
+    std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec);
+
+    Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec);
 
     //-------------------------------------------------------------------------
     // PRINTING AND FORMATTING FUNCTIONS

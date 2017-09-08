@@ -50,14 +50,14 @@ int main(int argc, char * argv[]) {
 
 
     // create and configure a MahiExoII object
-    MahiExoII::Config config;
+    mel::MahiExoII::Config config;
     for (int i = 0; i < 5; ++i) {
         config.enable_[i] = q8_emg->do_(i + 1);
         config.command_[i] = q8_emg->ao_(i + 1);
         config.encoder_[i] = q8_emg->encoder_(i + 1);
         config.encrate_[i] = q8_emg->encrate_(i + 1);
     }
-    MahiExoII meii(config);
+    mel::MahiExoII meii(config);
 
     // manual zero joint positions
     if (var_map.count("zero")) {

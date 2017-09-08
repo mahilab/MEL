@@ -19,7 +19,7 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    TransparentMode(mel::Clock& clock, mel::Daq* daq, MahiExoII& meii);
+    TransparentMode(mel::Clock& clock, mel::Daq* daq, mel::MahiExoII& meii);
 
 private:
 
@@ -69,7 +69,7 @@ private:
 
     // HARDWARE
     mel::Daq* daq_;
-    MahiExoII meii_;
+    mel::MahiExoII meii_;
 
     // GENERIC STATE FUNCTIONS
     void sf_transparent_start();

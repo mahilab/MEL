@@ -3,7 +3,7 @@
 #include "mahiexoii_util.h"
 
 
-FesExperiment::FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int subject_number, int trial) :
+FesExperiment::FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, mel::MahiExoII& meii, int subject_number, int trial) :
     StateMachine(9),
     clock_(clock),
     q8_emg_(q8_emg),

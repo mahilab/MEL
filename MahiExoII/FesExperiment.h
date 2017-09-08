@@ -36,7 +36,7 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, MahiExoII& meii, int subject_number, int trial);
+    FesExperiment(mel::Clock& clock, mel::Daq* q8_emg, mel::MahiExoII& meii, int subject_number, int trial);
 
 private:
 
@@ -160,7 +160,7 @@ private:
 
     // HARDWARE
     mel::Daq* q8_emg_;
-    MahiExoII meii_;
+    mel::MahiExoII meii_;
 
     // MEII PARAMETERS
     mel::int8_vec backdrive_ = { 0,1,1,1,1 }; // anatomical joints; 1 = backdrivable, 0 = active

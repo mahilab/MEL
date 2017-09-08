@@ -181,6 +181,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SmoothPositionControl.cpp" />
     <ClCompile Include="TransparentMode.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +196,7 @@
     <ClInclude Include="MahiExoIIEmgFrc.h" />
     <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="mahiexoii_util.h" />
+    <ClInclude Include="SmoothPositionControl.h" />
     <ClInclude Include="TransparentMode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

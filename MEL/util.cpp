@@ -30,6 +30,18 @@ namespace mel {
         return message;
     }
 
+    std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec) {
+        std::vector<double> std_vec;
+        std_vec.resize(eigen_vec.size());
+        Eigen::VectorXd::Map(&std_vec[0], eigen_vec.size()) = eigen_vec;
+        return std_vec;
+    }
+
+    Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec) {
+        Eigen::Map<Eigen::VectorXd> eigen_vec(&std_vec[0], std_vec.size());
+        return eigen_vec;
+    }
+
     std::string namify(std::string name) {
         return "<" + name + ">";
     }
@@ -95,3 +107,4 @@ namespace mel {
     }
 
 }
+

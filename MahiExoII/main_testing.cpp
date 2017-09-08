@@ -7,6 +7,7 @@
 #include "mahiexoii_util.h"
 #include <boost/program_options.hpp>
 #include "TransparentMode.h"
+#include "SmoothPositionControl.h"
 #include "MelShare.h"
 #include "GuiFlag.h"
 #include "Input.h"
@@ -50,14 +51,14 @@ int main(int argc, char * argv[]) {
 
 
     // create and configure a MahiExoII object
-    MahiExoII::Config config;
+    mel::MahiExoII::Config config;
     for (int i = 0; i < 5; ++i) {
         config.enable_[i] = q8_mot->do_(i+1);
         config.command_[i] = q8_mot->ao_(i+1);
         config.encoder_[i] = q8_mot->encoder_(i+1);
         config.encrate_[i] = q8_mot->encrate_(i+1);
     }
-    MahiExoII meii(config);
+    mel::MahiExoII meii(config);
 
     // manual zero joint positions
     if (var_map.count("zero")) {
@@ -69,8 +70,8 @@ int main(int argc, char * argv[]) {
 
     // run transparent mode
     mel::Clock clock(1000);
-    TransparentMode tp_mode(clock,q8_mot,meii);
-    tp_mode.execute();
+    SmoothPositionControl pos_ctrl(clock,q8_mot,meii);
+    pos_ctrl.execute();
     delete q8_mot;
     return 0;
 
