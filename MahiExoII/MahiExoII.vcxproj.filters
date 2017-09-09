@@ -27,16 +27,7 @@
     <ClCompile Include="mahiexoii_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MahiExoIIFrc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MahiExoIIEmg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main_emg_training.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MahiExoIIEmgFrc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main_emg_rt_control.cpp">
@@ -63,15 +54,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mahiexoii_util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MahiExoIIFrc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MahiExoIIEmg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MahiExoIIEmgFrc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EmgRTControl.h">

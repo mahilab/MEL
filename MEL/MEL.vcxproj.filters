@@ -99,6 +99,15 @@
     <ClCompile Include="MahiExoII.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
+    <ClCompile Include="..\MahiExoII\MahiExoIIEmg.cpp">
+      <Filter>Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MahiExoII\MahiExoIIEmgFrc.cpp">
+      <Filter>Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MahiExoII\MahiExoIIFrc.cpp">
+      <Filter>Devices</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateMachine.h">
@@ -192,6 +201,15 @@
       <Filter>Communications</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoII.h">
+      <Filter>Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MahiExoII\MahiExoIIEmg.h">
+      <Filter>Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MahiExoII\MahiExoIIEmgFrc.h">
+      <Filter>Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MahiExoII\MahiExoIIFrc.h">
       <Filter>Devices</Filter>
     </ClInclude>
   </ItemGroup>

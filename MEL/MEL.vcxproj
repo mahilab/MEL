@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\MahiExoII\MahiExoIIEmg.cpp" />
+    <ClCompile Include="..\MahiExoII\MahiExoIIEmgFrc.cpp" />
+    <ClCompile Include="..\MahiExoII\MahiExoIIFrc.cpp" />
     <ClCompile Include="Actuator.cpp" />
     <ClCompile Include="AtiMini45.cpp" />
     <ClCompile Include="Clock.cpp" />
@@ -49,6 +52,9 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\MahiExoII\MahiExoIIEmg.h" />
+    <ClInclude Include="..\MahiExoII\MahiExoIIEmgFrc.h" />
+    <ClInclude Include="..\MahiExoII\MahiExoIIFrc.h" />
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="AtiMini45.h" />
     <ClInclude Include="Clock.h" />
