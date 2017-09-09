@@ -195,8 +195,6 @@ If you are on Windows and using Visual Studio, building MEL is fairly straight-f
 
     - **C/C++ >> General >> Additional Include Directories**
         - add: *path-to-your-MEL-repository\MEL;C:\dev\boost_1_64_0\;C:\dev\eigen;*
-    - **C/C++ >> Preprocessor >> Preprocessor Definitions**
-        - add: *CRT_SECURE_NO_WARNINGS;*
     - **Linker >> General >> Additional Library Directories**
         - add: *path-to-your-MEL-repository\bin;C:\dev\boost_1_64_0\lib64-msvc-14.1;*
     - **Linker >> Input >> Additional Dependencies**
