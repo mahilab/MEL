@@ -16,6 +16,8 @@
     - [Required C++ Libraries](#required-c-libraries-boost-eigen-quarc)
     - [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
     - [Sublime Text 3 (Optional)](#sublime-text-3-optional)
+3. [Building MEL (Windows 64-bit)](#building-mel-windows-64-bit)
+4. [Using MEL (Windows 64-bit)](#using-mel-in-your-projects-windows-64-bit)
 
 ##   Git / GitHub Setup
 
@@ -169,5 +171,37 @@
 
 7. Optionally choose a new Sublime theme from [Package Control](https://packagecontrol.io/). Evan's personal favorites are [Material Theme](https://packagecontrol.io/packages/Material%20Theme) and [Spacegray](https://packagecontrol.io/packages/Theme%20-%20Spacegray) with [A File Icon](https://packagecontrol.io/packages/A%20File%20Icon) installed on top.
 
+## Building MEL (Windows 64-bit)
+
+If you are on Windows and using Visual Studio, building MEL is fairly straight-forward using the provided Solution file.
+
+1. Navigate to your cloned MEL repository, and open the MEL solution (*MEL.sln*)
+
+2. The MEL solution has 3 projects:
+
+    1. **MEL** - This is the MEL library, itself. It outputs **MEL.lib** to *\bin*.
+
+    2. **MELShareDLL** - This is an optionally compiled dynamically linked library that exposes an interface to MEL's shared memory system, **MELShare**, for developing apps in Unity, Python, etc. It outputs **MELShare.dll** to *\bin*.
+
+    3. **Examples** - This is an optionally compiled executable that demonstrates basic MEL use. It outputs **Examples.exe** to *\bin*.
+
+3. Make sure the Visual Studio build configuration is set to **Release x64**. You can build all three projects at once by selecting **Build >> Build Solution** from the menu. If you only want to build one project, right-click the project in the Solution Explorer and select **Build**. The resulting binaries (.lib, .dll, or. exe) will output to *\bin*.
+
+## Using MEL In Your Projects (Windows 64-bit)
+
+1. If you are starting a new project, first create a new Visual Studio solution. Go to **File >> New >> Project**. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know how these work and want to use them). Note that you could optionally add a new Project to your MEL solution instead of creating a new one, but this is not recommended.
+
+2. Right-click your project in the Solution Explorer and select **Properties**. Make the following changes/additions:
+
+    - **C/C++ >> General >> Additional Include Directories**
+        - add: *path-to-your-MEL-repository\MEL;C:\dev\boost_1_64_0\;C:\dev\eigen;*
+    - **C/C++ >> Preprocessor >> Preprocessor Definitions**
+        - add: *CRT_SECURE_NO_WARNINGS;*
+    - **Linker >> General >> Additional Library Directories**
+        - add: *path-to-your-MEL-repository\bin;C:\dev\boost_1_64_0\lib64-msvc-14.1;*
+    - **Linker >> Input >> Additional Dependencies**
+        - add: *MEL.lib;*
+
+3. Your project should now be configured to use MEL! For usage examples, check out the [Examples project](https://github.com/epezent/MEL/tree/master/Examples), the official MEL documentation, or the [OpenWrist](https://github.com/epezent/OpenWrist) and MAHI Exo-II repositories.
 
 
