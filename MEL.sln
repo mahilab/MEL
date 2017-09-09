@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MEL", "MEL\MEL.vcxproj", "{071E0DE1-8C63-468C-A3A7-4B7BBC5AB350}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenWrist", "OpenWrist\OpenWrist.vcxproj", "{08DC7CB8-9577-407D-952E-D82BB24C343D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MahiExoII", "MahiExoII\MahiExoII.vcxproj", "{BD5D364F-16AF-4550-B8A4-0FEA0EE231CC}"
 EndProject
@@ -29,14 +27,6 @@ Global
 		{071E0DE1-8C63-468C-A3A7-4B7BBC5AB350}.Release|x64.Build.0 = Release|x64
 		{071E0DE1-8C63-468C-A3A7-4B7BBC5AB350}.Release|x86.ActiveCfg = Release|Win32
 		{071E0DE1-8C63-468C-A3A7-4B7BBC5AB350}.Release|x86.Build.0 = Release|Win32
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Debug|x64.ActiveCfg = Debug|x64
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Debug|x64.Build.0 = Debug|x64
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Debug|x86.ActiveCfg = Debug|Win32
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Debug|x86.Build.0 = Debug|Win32
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Release|x64.ActiveCfg = Release|x64
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Release|x64.Build.0 = Release|x64
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Release|x86.ActiveCfg = Release|Win32
-		{08DC7CB8-9577-407D-952E-D82BB24C343D}.Release|x86.Build.0 = Release|Win32
 		{BD5D364F-16AF-4550-B8A4-0FEA0EE231CC}.Debug|x64.ActiveCfg = Debug|x64
 		{BD5D364F-16AF-4550-B8A4-0FEA0EE231CC}.Debug|x64.Build.0 = Debug|x64
 		{BD5D364F-16AF-4550-B8A4-0FEA0EE231CC}.Debug|x86.ActiveCfg = Debug|Win32
