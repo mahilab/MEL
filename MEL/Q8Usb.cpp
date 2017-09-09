@@ -5,6 +5,7 @@
 #include <tchar.h>
 #include <functional>
 #include <string>
+#include "Clock.h"
 
 namespace mel {
 
@@ -139,6 +140,9 @@ namespace mel {
         if (enabled_) {
             t_error result;
 
+            // reset the Q8 board sepcifc options to factory defaults
+            factory_reset();
+
             // Stop all tasks and monitors (possibly unnecessary)
             hil_task_stop_all(q8_usb_);
             hil_monitor_stop_all(q8_usb_);
@@ -176,6 +180,19 @@ namespace mel {
             ao_voltages_ = ao_initial_voltages_;
             do_signals_ = do_initial_signals_;
             write_all();
+        }
+    }
+
+    void Q8Usb::factory_reset() {
+        Options factory_options;
+        factory_options.update_rate_ = Options::UpdateRate::Default;
+        char factory_options_str[4096];
+        strcpy(factory_options_str, factory_options.build().c_str());
+        t_error result = hil_set_card_specific_options(q8_usb_, factory_options_str, strlen(factory_options_str)); 
+        if (result < 0) {
+            std::cout << "ERROR: Failed to reset Q8 USB " << id_ << ".";
+            print_quarc_error(result);
+            return;
         }
     }
 
@@ -473,5 +490,54 @@ namespace mel {
             }             
         }
         return options;
+    }
+
+    bool Q8Usb::check_digital_loopback(uint32 daq_id, channel digital_channel) {
+
+        //  create a Q8Usb object
+        mel::uint32 id = daq_id;
+        mel::channel_vec  ai_channels = {};
+        mel::channel_vec  ao_channels = {};
+        mel::channel_vec  di_channels = { digital_channel };
+        mel::channel_vec  do_channels = { digital_channel };
+        mel::channel_vec enc_channels = {};
+        mel::Daq* q8_temp = new mel::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+
+        // create clock
+        mel::Clock clock(100);
+
+        mel::dsignal di_signal = 0;
+        mel::dsignal do_signal = 0;
+        bool is_connected = true;
+
+        q8_temp->enable();
+        q8_temp->start_watchdog(0.1);
+
+        clock.start();
+
+        for (auto i = 0; i < 11; i++) {
+
+            q8_temp->reload_watchdog();
+
+            if (i > 0) {
+                q8_temp->read_digitals();
+                di_signal = q8_temp->get_digital_signal(digital_channel);
+                if (di_signal != do_signal) {
+                    is_connected = false;
+                }
+                do_signal = 1 - do_signal;
+            }
+
+            q8_temp->set_digital_signal(digital_channel, do_signal);
+            q8_temp->write_digitals();
+
+            clock.wait();
+        }
+
+        delete q8_temp;
+        q8_temp = nullptr;
+
+        return is_connected;
+
     }
 }

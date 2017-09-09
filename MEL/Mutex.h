@@ -19,6 +19,7 @@ namespace mel {
             LOCK_TIMEOUT,   ///< wait on mutex lock timed out
             LOCK_FAILED,    ///< wait on mutex lock failed
             NOT_OPEN,       ///< mutex lock failed because mutex is not open
+            RELEASE_SUCCESS, ///< release of mutex lock succeeded
             RELEASE_FAILED, ///< realse of mutex lock failed
             CLOSE_FAILED    ///< close of mutex failed
         };

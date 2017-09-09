@@ -101,6 +101,8 @@ namespace mel {
         
     public:
 
+        Options options_;
+
         //---------------------------------------------------------------------
         // PUBLIC FUNCTIONS
         //---------------------------------------------------------------------
@@ -108,6 +110,7 @@ namespace mel {
         void enable() override;
         void disable() override;
         void reset() override;
+        void factory_reset();
 
         void zero_encoders() override;
         void offset_encoders(int32_vec offset_counts) override;
@@ -139,6 +142,8 @@ namespace mel {
 
         virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) override;
 
+        static bool check_digital_loopback(uint32 daq_id, channel digital_channel);
+
     private:
 
         //---------------------------------------------------------------------
@@ -146,7 +151,6 @@ namespace mel {
         //---------------------------------------------------------------------
 
         uint32 id_;
-        Options options_;
         t_card q8_usb_;
         char options_str_[4096];   // Quarc board specific options
 

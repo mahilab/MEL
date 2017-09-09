@@ -56,6 +56,7 @@ namespace mel {
                 printf("WINDOWS ERROR: %d\n", GetLastError());
                 return Result::LOCK_FAILED;
             }
+            return Result::LOCK_FAILED;
         } 
         else {
             std::cout << "ERROR: Failed to open mutex <" << name_ << ">." << std::endl;
@@ -69,6 +70,7 @@ namespace mel {
             std::cout << "ERROR: Failed to release mutex <" << name_ << ">." << std::endl;
             printf("WINDOWS ERROR: %d\n", GetLastError());
             return Result::RELEASE_FAILED;
-        }        
+        }   
+        return Result::RELEASE_SUCCESS;
     }
 }

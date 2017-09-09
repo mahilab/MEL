@@ -66,7 +66,8 @@ namespace mel {
                     return -6;
                 }
                 return *size;
-            }    
+            }  
+            return -5;
         }
 
         /// Writes n = #buffer_size values into mapped region #region from #buffer.
@@ -103,6 +104,7 @@ namespace mel {
                 }
                 return *size;
             }
+            return -5;
         }
 
         /// Returns the current size of the data stored in the map
