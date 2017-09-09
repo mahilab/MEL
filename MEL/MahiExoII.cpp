@@ -216,6 +216,12 @@ namespace mel {
         lambda_max = std::max_element(lambda_abs.begin(), lambda_abs.end());
         double spec_norm = std::sqrt(*lambda_max);
         //mel::print(spec_norm);
+
+        // kill robot if norm too large
+        if (spec_norm > 100) {
+            error_code_ = -3;
+        }
+
         if (spec_norm_prev_ != 0) {
             if (std::abs(spec_norm - spec_norm_prev_) > 100) {
                 std::cout << std::setprecision(12);

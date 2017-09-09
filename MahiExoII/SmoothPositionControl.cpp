@@ -149,7 +149,8 @@ void SmoothPositionControl::sf_waypoint(const mel::NoEventData* data) {
     goal_pos_ = wp_1_;
 
     // enter the control loop
-    while (!waypoint_reached_ && !stop_) {
+    //while (!waypoint_reached_ && !stop_) {
+    while (!stop_) {
 
         // read and reload DAQs
         daq_->reload_watchdog();
@@ -210,9 +211,22 @@ void SmoothPositionControl::sf_waypoint(const mel::NoEventData* data) {
             }
 
             // set command torques
-            mel::print(pd_torques_);
-            meii_.set_anatomical_joint_torques(commanded_torques_);
 
+            //mel::print(pd_torques_);
+            meii_.set_anatomical_joint_torques(commanded_torques_);
+            switch (meii_.error_code_) {
+            case -1: mel::print("ERROR: Eigensolver did not converge!");
+                break;
+            case -2: mel::print("ERROR: Discontinuity in spectral norm of wrist jacobian");
+                break;
+            case -3: mel::print("ERROR: Spectral norm of wrist Jacobian matrix too large");
+                break;
+            }
+            break;
+        }
+
+        if (meii_.error_code_ < 0) {
+            stop_ = true;
             break;
         }
 

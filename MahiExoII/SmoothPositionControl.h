@@ -83,9 +83,9 @@ private:
     mel::MahiExoII meii_;
 
     // EXO PARAMETERS
-    int rps_control_mode_ = 0; // 0 = robot joint space (parallel), 1 = anatomical joint space (serial)
+    int rps_control_mode_ = 1; // 0 = robot joint space (parallel), 1 = anatomical joint space (serial)
     mel::char_vec robot_joint_backdrive_ = { 0, 0, 0, 0, 0 }; // 1 = backdrivable, 0 = active
-    mel::char_vec anatomical_joint_backdrive_ = { 1, 1, 1, 1, 1 }; // 1 = backdrivable, 0 = active
+    mel::char_vec anatomical_joint_backdrive_ = { 0, 0, 0, 1, 1 }; // 1 = backdrivable, 0 = active
     mel::double_vec speed_ = { 0.25, 0.25, 0.125, 0.125, 0.0125 };
     //mel::double_vec kp_ = { 50.0, 7.0, 25.0, 30.0, 0.0 };
     //mel::double_vec kd_ = { 0.25, 0.06, 0.05, 0.08, 0.0 };

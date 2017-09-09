@@ -65,6 +65,7 @@ int main(int argc, char * argv[]) {
         q8_mot->enable();
         q8_mot->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
         q8_mot->disable();
+        delete q8_mot;
         return 0;
     }
 
