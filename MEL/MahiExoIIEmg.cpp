@@ -10,7 +10,7 @@ namespace mel {
 
             std::string num = std::to_string(i);
 
-            emg_electrodes_.push_back(new EmgElectrode("emg_electrode_" + num, configuration.emg_[i]));
+            emg_electrodes_.push_back(new core::EmgElectrode("emg_electrode_" + num, configuration.emg_[i]));
         }
     }
 

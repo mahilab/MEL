@@ -19,6 +19,12 @@
     <Filter Include="Hardware">
       <UniqueIdentifier>{3d560959-9de6-46df-b97f-b54ed78cf2f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Hardware\MAHI Exo-II">
+      <UniqueIdentifier>{b807a9e1-4229-4c29-a27c-c81c838c9755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hardware\OpenWrist">
+      <UniqueIdentifier>{ffb115d4-40ed-4af0-920d-6c8cf378525d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actuator.cpp">
@@ -78,9 +84,6 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="OpenWrist.cpp">
-      <Filter>Hardware</Filter>
-    </ClCompile>
     <ClCompile Include="ExternalApp.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -93,23 +96,26 @@
     <ClCompile Include="MelShare.cpp">
       <Filter>Communications</Filter>
     </ClCompile>
-    <ClCompile Include="MahiExoII.cpp">
-      <Filter>Hardware</Filter>
-    </ClCompile>
     <ClCompile Include="mel_util.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="mel_math.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="MahiExoII.cpp">
+      <Filter>Hardware\MAHI Exo-II</Filter>
+    </ClCompile>
     <ClCompile Include="MahiExoIIEmg.cpp">
-      <Filter>Devices</Filter>
+      <Filter>Hardware\MAHI Exo-II</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoIIEmgFrc.cpp">
-      <Filter>Devices</Filter>
+      <Filter>Hardware\MAHI Exo-II</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoIIFrc.cpp">
-      <Filter>Devices</Filter>
+      <Filter>Hardware\MAHI Exo-II</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenWrist.cpp">
+      <Filter>Hardware\OpenWrist</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +191,6 @@
     <ClInclude Include="Spinlock.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="OpenWrist.h">
-      <Filter>Hardware</Filter>
-    </ClInclude>
     <ClInclude Include="ExternalApp.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -200,20 +203,23 @@
     <ClInclude Include="MelShare.h">
       <Filter>Communications</Filter>
     </ClInclude>
-    <ClInclude Include="MahiExoII.h">
-      <Filter>Hardware</Filter>
-    </ClInclude>
     <ClInclude Include="mel_util.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="MahiExoIIEmg.h">
-      <Filter>Devices</Filter>
-    </ClInclude>
-    <ClInclude Include="MahiExoIIEmgFrc.h">
-      <Filter>Devices</Filter>
+    <ClInclude Include="MahiExoII.h">
+      <Filter>Hardware\MAHI Exo-II</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoIIFrc.h">
-      <Filter>Devices</Filter>
+      <Filter>Hardware\MAHI Exo-II</Filter>
+    </ClInclude>
+    <ClInclude Include="MahiExoIIEmg.h">
+      <Filter>Hardware\MAHI Exo-II</Filter>
+    </ClInclude>
+    <ClInclude Include="MahiExoIIEmgFrc.h">
+      <Filter>Hardware\MAHI Exo-II</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenWrist.h">
+      <Filter>Hardware\OpenWrist</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ namespace mel {
     public:
 
         struct Config : public virtual MahiExoII::Config {
-            std::array<Daq::Ai, 8> emg_; // analog input channels that measure EMG voltages
+            std::array<core::Daq::Ai, 8> emg_; // analog input channels that measure EMG voltages
         };
 
         struct Params : public virtual MahiExoII::Params {
@@ -26,7 +26,7 @@ namespace mel {
 
         // PUBLIC VARIABLES
 
-        std::vector<EmgElectrode*> emg_electrodes_;
+        std::vector<core::EmgElectrode*> emg_electrodes_;
 
     private:
 
