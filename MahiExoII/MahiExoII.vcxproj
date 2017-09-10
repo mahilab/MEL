@@ -158,11 +158,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="FesExperiment.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="MahiExoIIEmg.cpp" />
-    <ClCompile Include="MahiExoIIEmgFrc.cpp" />
-    <ClCompile Include="MahiExoIIFrc.cpp" />
     <ClCompile Include="mahiexoii_util.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -190,11 +187,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="FesExperiment.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="MahiExoIIEmg.h" />
-    <ClInclude Include="MahiExoIIEmgFrc.h" />
-    <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="mahiexoii_util.h" />
     <ClInclude Include="SmoothPositionControl.h" />
     <ClInclude Include="TransparentMode.h" />

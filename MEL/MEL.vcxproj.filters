@@ -102,6 +102,15 @@
     <ClCompile Include="mel_math.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="MahiExoIIEmg.cpp">
+      <Filter>Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="MahiExoIIEmgFrc.cpp">
+      <Filter>Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="MahiExoIIFrc.cpp">
+      <Filter>Devices</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateMachine.h">
@@ -196,6 +205,15 @@
     </ClInclude>
     <ClInclude Include="mel_util.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MahiExoIIEmg.h">
+      <Filter>Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="MahiExoIIEmgFrc.h">
+      <Filter>Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="MahiExoIIFrc.h">
+      <Filter>Devices</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

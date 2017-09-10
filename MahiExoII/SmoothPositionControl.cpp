@@ -1,8 +1,11 @@
 #include "SmoothPositionControl.h"
 #include "Input.h"
+#include "Q8Usb.h"
 #include "mahiexoii_util.h"
 
-SmoothPositionControl::SmoothPositionControl(mel::Clock& clock, mel::Daq* daq, mel::MahiExoII& meii) :
+using namespace mel;
+
+SmoothPositionControl::SmoothPositionControl(Clock& clock, Daq* daq, MahiExoII& meii) :
     StateMachine(5),
     clock_(clock),
     daq_(daq),
@@ -11,21 +14,21 @@ SmoothPositionControl::SmoothPositionControl(mel::Clock& clock, mel::Daq* daq, m
 }
 
 void SmoothPositionControl::wait_for_input() {
-    mel::Input::wait_for_key_press(mel::Input::Key::Space);
+    Input::wait_for_key_press(Input::Key::Space);
 }
 
 bool SmoothPositionControl::check_stop() {
-    return mel::Input::is_key_pressed(mel::Input::Escape) || (mel::Input::is_key_pressed(mel::Input::LControl) && mel::Input::is_key_pressed(mel::Input::C));
+    return Input::is_key_pressed(Input::Escape) || (Input::is_key_pressed(Input::LControl) && Input::is_key_pressed(Input::C));
 }
 
 //-----------------------------------------------------------------------------
 // "INITIALIZATION" STATE FUNCTION
 //-----------------------------------------------------------------------------
-void SmoothPositionControl::sf_init(const mel::NoEventData* data) {
+void SmoothPositionControl::sf_init(const NoEventData* data) {
 
     // enable MEII EMG DAQ
-    mel::print("\nPress Enter to enable MEII EMG Daq <" + daq_->name_ + ">.");
-    mel::Input::wait_for_key_press(mel::Input::Key::Return);
+    print("\nPress Enter to enable MEII EMG Daq <" + daq_->name_ + ">.");
+    Input::wait_for_key_press(Input::Key::Return);
     daq_->enable();
     if (!daq_->is_enabled()) {
         event(ST_STOP);
@@ -39,14 +42,14 @@ void SmoothPositionControl::sf_init(const mel::NoEventData* data) {
         event(ST_STOP);
         return;
     }
-    if (!check_digital_loopback(0, 7)) {
+    if (!Q8Usb::check_digital_loopback(0, 7)) {
         event(ST_STOP);
         return;
     }
 
     // enable MEII
-    mel::print("\nPress Enter to enable MEII.");
-    mel::Input::wait_for_key_press(mel::Input::Key::Return);
+    print("\nPress Enter to enable MEII.");
+    Input::wait_for_key_press(Input::Key::Return);
     meii_.enable();
     if (!meii_.is_enabled()) {
         event(ST_STOP);
@@ -54,9 +57,9 @@ void SmoothPositionControl::sf_init(const mel::NoEventData* data) {
     }
 
     // confirm start of experiment
-    mel::print("\nPress Enter to run Position Control");
-    mel::Input::wait_for_key_press(mel::Input::Key::Return);
-    mel::print("\nRunning Position Control ... ");
+    print("\nPress Enter to run Position Control");
+    Input::wait_for_key_press(Input::Key::Return);
+    print("\nRunning Position Control ... ");
 
     // start the watchdog
     daq_->start_watchdog(0.1);
@@ -77,8 +80,8 @@ void SmoothPositionControl::sf_init(const mel::NoEventData* data) {
 //-----------------------------------------------------------------------------
 // "TRANSPARENT" STATE FUNCTION
 //-----------------------------------------------------------------------------
-void SmoothPositionControl::sf_transparent(const mel::NoEventData* data) {
-    mel::print("Robot Transparent");
+void SmoothPositionControl::sf_transparent(const NoEventData* data) {
+    print("Robot Transparent");
 
     // restart the clock
     clock_.start();
@@ -89,6 +92,8 @@ void SmoothPositionControl::sf_transparent(const mel::NoEventData* data) {
         // read and reload DAQs
         daq_->reload_watchdog();
         daq_->read_all();
+
+        print("meow");
 
         // update robot kinematics
         meii_.update_kinematics();
@@ -127,7 +132,7 @@ void SmoothPositionControl::sf_transparent(const mel::NoEventData* data) {
         event(ST_WAYPOINT);
     }
     else {
-        mel::print("ERROR: State transition undefined. Going to ST_STOP.");
+        print("ERROR: State transition undefined. Going to ST_STOP.");
         event(ST_STOP);
     }
 }
@@ -149,7 +154,8 @@ void SmoothPositionControl::sf_waypoint(const mel::NoEventData* data) {
     goal_pos_ = wp_1_;
 
     // enter the control loop
-    while (!waypoint_reached_ && !stop_) {
+    //while (!waypoint_reached_ && !stop_) {
+    while (!stop_) {
 
         // read and reload DAQs
         daq_->reload_watchdog();
@@ -210,9 +216,22 @@ void SmoothPositionControl::sf_waypoint(const mel::NoEventData* data) {
             }
 
             // set command torques
-            mel::print(pd_torques_);
-            meii_.set_anatomical_joint_torques(commanded_torques_);
 
+            //mel::print(pd_torques_);
+            meii_.set_anatomical_joint_torques(commanded_torques_);
+            switch (meii_.error_code_) {
+            case -1: mel::print("ERROR: Eigensolver did not converge!");
+                break;
+            case -2: mel::print("ERROR: Discontinuity in spectral norm of wrist jacobian");
+                break;
+            case -3: mel::print("ERROR: Spectral norm of wrist Jacobian matrix too large");
+                break;
+            }
+            break;
+        }
+
+        if (meii_.error_code_ < 0) {
+            stop_ = true;
             break;
         }
 

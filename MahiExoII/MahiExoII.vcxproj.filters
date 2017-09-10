@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archived">
+      <UniqueIdentifier>{2d90014a-e929-4d6d-a379-875a8506c4c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,22 +24,10 @@
     <ClCompile Include="main_testing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EmgTraining.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mahiexoii_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MahiExoIIFrc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MahiExoIIEmg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main_emg_training.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MahiExoIIEmgFrc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main_emg_rt_control.cpp">
@@ -48,36 +39,24 @@
     <ClCompile Include="main_fes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FesExperiment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TransparentMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SmoothPositionControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FesExperiment.cpp">
+      <Filter>Archived</Filter>
+    </ClCompile>
+    <ClCompile Include="EmgTraining.cpp">
+      <Filter>Archived</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EmgTraining.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mahiexoii_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MahiExoIIFrc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MahiExoIIEmg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MahiExoIIEmgFrc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EmgRTControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FesExperiment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TransparentMode.h">
@@ -85,6 +64,12 @@
     </ClInclude>
     <ClInclude Include="SmoothPositionControl.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FesExperiment.h">
+      <Filter>Archived</Filter>
+    </ClInclude>
+    <ClInclude Include="EmgTraining.h">
+      <Filter>Archived</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

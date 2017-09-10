@@ -10,13 +10,15 @@
 #include "GuiFlag.h"
 #include <boost/circular_buffer.hpp>
 
-class EmgRTControlData : public mel::EventData {
+using namespace mel;
+
+class EmgRTControlData : public EventData {
 
 public:
 
 };
 
-class EmgRTControl : public mel::StateMachine {
+class EmgRTControl : public StateMachine {
 
 public:
 
@@ -24,7 +26,7 @@ public:
     // CONSTRUCTOR(S) / DESTRUCTOR(S)
     //---------------------------------------------------------------------
 
-    EmgRTControl(mel::Clock& clock, mel::Daq* q8_emg, MahiExoIIEmg& meii, GuiFlag& gui_flag, int input_mode);
+    EmgRTControl(Clock& clock, Daq* q8_emg, MahiExoIIEmg& meii, GuiFlag& gui_flag, int input_mode);
 
 private:
 

@@ -33,6 +33,9 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
+    <ClCompile Include="MahiExoIIEmg.cpp" />
+    <ClCompile Include="MahiExoIIEmgFrc.cpp" />
+    <ClCompile Include="MahiExoIIFrc.cpp" />
     <ClCompile Include="MelShare.cpp" />
     <ClCompile Include="mel_math.cpp" />
     <ClCompile Include="Motor.cpp" />
@@ -61,6 +64,9 @@
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MahiExoII.h" />
+    <ClInclude Include="MahiExoIIEmg.h" />
+    <ClInclude Include="MahiExoIIEmgFrc.h" />
+    <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="MelShare.h" />
     <ClInclude Include="mel_math.h" />
     <ClInclude Include="Mutex.h" />

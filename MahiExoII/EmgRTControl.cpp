@@ -2,6 +2,8 @@
 #include "Input.h"
 #include "Motor.h"
 
+using namespace mel;
+
 EmgRTControl::EmgRTControl(mel::Clock& clock, mel::Daq* q8_emg, MahiExoIIEmg& meii, GuiFlag& gui_flag, int input_mode) :
     StateMachine(9),
     clock_(clock),
@@ -47,7 +49,7 @@ void EmgRTControl::sf_init(const mel::NoEventData* data) {
         event(ST_STOP);
         return;
     }
-    if (!check_digital_loopback(0, 7)) {
+    if (!Q8Usb::check_digital_loopback(0, 7)) {
         event(ST_STOP);
         return;
     }
