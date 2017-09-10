@@ -3,7 +3,7 @@
 
 namespace mel {
 
-    namespace core {
+    namespace util {
 
         StateMachine::StateMachine(int num_states, int initial_state) :
             NUM_STATES(num_states),

@@ -16,14 +16,17 @@
     <Filter Include="Communications">
       <UniqueIdentifier>{5f778315-7578-4869-acfb-360e11ff8643}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Hardware">
-      <UniqueIdentifier>{3d560959-9de6-46df-b97f-b54ed78cf2f4}</UniqueIdentifier>
+    <Filter Include="Exoskeletons">
+      <UniqueIdentifier>{04c26c6b-4f31-43bd-a662-83f44a83df8a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Hardware\MAHI Exo-II">
+    <Filter Include="Exoskeletons\MAHI Exo-II">
       <UniqueIdentifier>{b807a9e1-4229-4c29-a27c-c81c838c9755}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Hardware\OpenWrist">
+    <Filter Include="Exoskeletons\OpenWrist">
       <UniqueIdentifier>{ffb115d4-40ed-4af0-920d-6c8cf378525d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Devices">
+      <UniqueIdentifier>{3d560959-9de6-46df-b97f-b54ed78cf2f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -31,10 +34,7 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="AtiMini45.cpp">
-      <Filter>Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="Clock.cpp">
-      <Filter>Core</Filter>
+      <Filter>Devices</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Obsolete</Filter>
@@ -76,12 +76,9 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Q8Usb.cpp">
-      <Filter>Hardware</Filter>
+      <Filter>Devices</Filter>
     </ClCompile>
     <ClCompile Include="Robot.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="StateMachine.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="ExternalApp.cpp">
@@ -103,25 +100,28 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoII.cpp">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoIIEmg.cpp">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoIIEmgFrc.cpp">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoIIFrc.cpp">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClCompile>
     <ClCompile Include="OpenWrist.cpp">
-      <Filter>Hardware\OpenWrist</Filter>
+      <Filter>Exoskeletons\OpenWrist</Filter>
+    </ClCompile>
+    <ClCompile Include="Clock.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StateMachine.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Robot.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -135,15 +135,12 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="AtiMini45.h">
-      <Filter>Hardware</Filter>
+      <Filter>Devices</Filter>
     </ClInclude>
     <ClInclude Include="Q8Usb.h">
-      <Filter>Hardware</Filter>
+      <Filter>Devices</Filter>
     </ClInclude>
     <ClInclude Include="Actuator.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Clock.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Daq.h">
@@ -207,19 +204,25 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoII.h">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoIIFrc.h">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoIIEmg.h">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoIIEmgFrc.h">
-      <Filter>Hardware\MAHI Exo-II</Filter>
+      <Filter>Exoskeletons\MAHI Exo-II</Filter>
     </ClInclude>
     <ClInclude Include="OpenWrist.h">
-      <Filter>Hardware\OpenWrist</Filter>
+      <Filter>Exoskeletons\OpenWrist</Filter>
+    </ClInclude>
+    <ClInclude Include="Clock.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

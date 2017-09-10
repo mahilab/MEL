@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         MahiExoIIEmgFrc::MahiExoIIEmgFrc(Config configuration, Params parameters) :
             MahiExoII(configuration, parameters),

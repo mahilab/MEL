@@ -3,7 +3,7 @@
 
 namespace mel {
 
-    namespace core {
+    namespace util {
 
         class EventData {
         public:

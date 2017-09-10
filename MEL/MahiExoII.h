@@ -13,7 +13,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         class MahiExoII : public core::Exo {
 

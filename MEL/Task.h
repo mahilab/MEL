@@ -38,7 +38,7 @@ namespace mel {
 
     private:
 
-        core::Clock* clock_;  // the Clock associated with this Task and the executing Controller (set automatically by Controller)
+        util::Clock* clock_;  // the Clock associated with this Task and the executing Controller (set automatically by Controller)
 
     };
 

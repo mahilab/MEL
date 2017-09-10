@@ -5,7 +5,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         OpenWrist::OpenWrist(Config configuration, Params parameters) :
             Exo("open_wrist"),
@@ -134,7 +134,7 @@ namespace mel {
             double vel_ref = 90 * math::DEG2RAD;             // desired velocity
             std::vector<double> stored_positions;      // stores past positions
             stored_positions.reserve(100000);
-            core::Clock clock(1000);
+            util::Clock clock(1000);
 
             std::array<double, 3> sat_torques = { 2.0, 0.5, 1.0 }; // temporary saturation torques
 
@@ -266,7 +266,7 @@ namespace mel {
 
         void OpenWrist::transparency_mode() {
 
-            core::Clock clock(1000);
+            util::Clock clock(1000);
             bool stop = false;
 
             // enable DAQs, zero encoders, and start watchdog

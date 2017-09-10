@@ -5,7 +5,7 @@ namespace mel {
     bool Controller::stop_ = false;
     bool Controller::pause_ = false;
 
-    Controller::Controller(core::Clock& clock) :
+    Controller::Controller(util::Clock& clock) :
         clock_(clock),
         stop_time_(-1)
     {

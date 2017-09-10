@@ -4,7 +4,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         class MahiExoIIEmgFrc : public MahiExoIIEmg, public MahiExoIIFrc {
 

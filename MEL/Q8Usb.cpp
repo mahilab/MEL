@@ -9,7 +9,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace dev {
 
         Q8Usb::Q8Usb(uint32 id,
             channel_vec ai_channels,
@@ -506,7 +506,7 @@ namespace mel {
             core::Daq* q8_temp = new Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
 
             // create clock
-            core::Clock clock(100);
+            util::Clock clock(100);
 
             dsignal di_signal = 0;
             dsignal do_signal = 0;

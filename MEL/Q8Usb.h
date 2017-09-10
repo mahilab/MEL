@@ -6,7 +6,7 @@ typedef struct tag_card * t_card;
 
 namespace mel {
 
-    namespace hdw {
+    namespace dev {
 
         class Q8Usb : public core::Daq {
 

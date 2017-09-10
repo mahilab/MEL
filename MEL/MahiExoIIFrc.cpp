@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         MahiExoIIFrc::MahiExoIIFrc(Config configuration, Params parameters) :
             MahiExoII(configuration, parameters)
@@ -11,7 +11,7 @@ namespace mel {
             for (int i = 0; i < 6; ++i) {
                 ai_channels.push_back(configuration.wrist_force_sensor_[i]);
             }
-            wrist_force_sensor_ = new hdw::AtiMini45("wrist_force_sensor", ai_channels, parameters.calib_mat_);
+            wrist_force_sensor_ = new dev::AtiMini45("wrist_force_sensor", ai_channels, parameters.calib_mat_);
         }
 
     }

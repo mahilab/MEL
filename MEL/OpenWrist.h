@@ -8,7 +8,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         class OpenWrist : public core::Exo {
 

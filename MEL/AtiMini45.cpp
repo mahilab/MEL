@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace dev {
 
         AtiMini45::AtiMini45() :
             ForceSensor(),

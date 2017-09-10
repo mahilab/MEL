@@ -2,7 +2,7 @@
 
 namespace mel {
 
-    namespace core {
+    namespace util {
 
         const double Clock::NS2S = 1.0 / 1000000000.0;
         const std::chrono::high_resolution_clock::time_point Clock::global_start_ = std::chrono::high_resolution_clock::now();

@@ -4,7 +4,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         class MahiExoIIEmg : public virtual MahiExoII {
 

@@ -6,7 +6,7 @@
 
 namespace mel {
 
-    namespace core {
+    namespace util {
 
         class Clock {
 

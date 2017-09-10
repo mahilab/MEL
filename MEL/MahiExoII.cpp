@@ -5,7 +5,7 @@
 /*
 namespace mel {
 
-    namespace hdw {
+    namespace exo {
 
         MahiExoII::MahiExoII(Config configuration, Params parameters) :
             Exo("mahi_exo_ii"),

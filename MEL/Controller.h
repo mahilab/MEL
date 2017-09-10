@@ -13,7 +13,7 @@ namespace mel {
 
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
-        Controller(core::Clock& clock);
+        Controller(util::Clock& clock);
 
         // PUBLIC FUNCTIONS
 
@@ -32,7 +32,7 @@ namespace mel {
 
         // TIME KEEPING
 
-        core::Clock& clock_;     ///< the clock bound to the Controller
+        util::Clock& clock_;     ///< the clock bound to the Controller
         uint32 stop_time_; ///< the time at which the Controller will end the stepping loop (-1 = inf)
 
         // SIGNAL HANDLING

@@ -3,7 +3,7 @@
 
 namespace mel {
 
-    namespace hdw {
+    namespace dev {
 
         class AtiMini45 : public core::ForceSensor {
 
