@@ -3,48 +3,52 @@
 
 namespace mel {
 
-    class Device {
+    namespace core {
 
-    public:
+        class Device {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR / DESTRUCTOR
-        //---------------------------------------------------------------------
+        public:
 
-        Device(std::string name) : name_(name), enabled_(false) {}
-        virtual ~Device() { }
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR / DESTRUCTOR
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
+            Device(std::string name) : name_(name), enabled_(false) {}
+            virtual ~Device() { }
 
-        /// This function should enable the Device and set enaled_ = true
-        virtual void enable() {
-            enabled_ = true;
-        }
-        /// This function should disable the Devie and set enabled_ = false
-        virtual void disable() {
-            enabled_ = false;
-        }
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-        virtual bool is_enabled() {
-            return enabled_;
-        }
+            /// This function should enable the Device and set enaled_ = true
+            virtual void enable() {
+                enabled_ = true;
+            }
+            /// This function should disable the Devie and set enabled_ = false
+            virtual void disable() {
+                enabled_ = false;
+            }
 
-        //---------------------------------------------------------------------
-        // PUBLIC VARIABLES
-        //---------------------------------------------------------------------
+            virtual bool is_enabled() {
+                return enabled_;
+            }
 
-        std::string name_; ///< The Device name
+            //---------------------------------------------------------------------
+            // PUBLIC VARIABLES
+            //---------------------------------------------------------------------
 
-    protected:
+            std::string name_; ///< The Device name
 
-        //---------------------------------------------------------------------
-        // PROTECTED VARIABLES
-        //---------------------------------------------------------------------
+        protected:
 
-        bool enabled_ = false; ///< The Device enable status
+            //---------------------------------------------------------------------
+            // PROTECTED VARIABLES
+            //---------------------------------------------------------------------
 
-    };
+            bool enabled_ = false; ///< The Device enable status
+
+        };
+
+    }
 
 }

@@ -27,7 +27,7 @@
 
 namespace mel {
 
-    namespace share {
+    namespace comm {
 
         //---------------------------------------------------------------------
         // BASE READ/WRITE FUNCTIONS (FORM BASIS OF ALL OTHER FUNCTIONS)
@@ -42,18 +42,18 @@ namespace mel {
             const std::string& mutex_name)
         {
             int* size;
-            volatile T* data;
-            Mutex mutex(mutex_name, Mutex::Mode::OPEN);
+            volatile T* data;            
+            util::Mutex mutex(mutex_name, util::Mutex::Mode::OPEN);
             switch (mutex.try_lock()) {
-            case  Mutex::Result::NOT_OPEN:
+            case  util::Mutex::Result::NOT_OPEN:
                 return -2;
-            case  Mutex::Result::LOCK_ABANDONED:
+            case  util::Mutex::Result::LOCK_ABANDONED:
                 return -3;
-            case  Mutex::Result::LOCK_TIMEOUT:
+            case  util::Mutex::Result::LOCK_TIMEOUT:
                 return -4;
-            case  Mutex::Result::LOCK_FAILED:
+            case  util::Mutex::Result::LOCK_FAILED:
                 return -5;
-            case Mutex::Result::LOCK_ACQUIRED:
+            case util::Mutex::Result::LOCK_ACQUIRED:
                 size = static_cast<int*>(region_size.get_address());
                 if (buffer_size > 0) {
                     data = static_cast<T*>(region_data.get_address());
@@ -62,7 +62,7 @@ namespace mel {
                     }
                 }
                 switch (mutex.release()) {
-                case Mutex::Result::RELEASE_FAILED:
+                case util::Mutex::Result::RELEASE_FAILED:
                     return -6;
                 }
                 return *size;
@@ -79,17 +79,17 @@ namespace mel {
         {
             int* size;
             volatile T* data;
-            Mutex mutex(mutex_name, Mutex::Mode::OPEN);
+            util::Mutex mutex(mutex_name, util::Mutex::Mode::OPEN);
             switch (mutex.try_lock()) {
-            case  Mutex::Result::NOT_OPEN:
+            case  util::Mutex::Result::NOT_OPEN:
                 return -2;
-            case  Mutex::Result::LOCK_ABANDONED:
+            case  util::Mutex::Result::LOCK_ABANDONED:
                 return -3;
-            case  Mutex::Result::LOCK_TIMEOUT:
+            case  util::Mutex::Result::LOCK_TIMEOUT:
                 return -4;
-            case  Mutex::Result::LOCK_FAILED:
+            case  util::Mutex::Result::LOCK_FAILED:
                 return -5;
-            case  Mutex::Result::LOCK_ACQUIRED:
+            case  util::Mutex::Result::LOCK_ACQUIRED:
                 size = static_cast<int*>(region_size.get_address());
                 if (buffer_size > 0) {
                     data = static_cast<T*>(region_data.get_address());
@@ -99,7 +99,7 @@ namespace mel {
                     }
                 }
                 switch (mutex.release()) {
-                case Mutex::Result::RELEASE_FAILED:
+                case util::Mutex::Result::RELEASE_FAILED:
                     return -6;
                 }
                 return *size;
@@ -260,6 +260,7 @@ namespace mel {
                 return  get_map_size(region_size_, mutex_name_);
             }
 
+            /// Reads a string message from the MELShare
             std::string read_message() {
                 int message_size = get_size();
                 std::vector<char> message_chars(message_size);
@@ -267,12 +268,13 @@ namespace mel {
                 return std::string(message_chars.begin(), message_chars.end());
             }
 
+            /// Writes a string message to the MELShare
             void write_message(const std::string& message) {
                 std::vector<char> message_chars(message.begin(), message.end());
                 write(message_chars);
             }
 
-            std::string name_;
+            std::string name_; ///< The name of the MELShare
 
         private:
 
@@ -285,7 +287,7 @@ namespace mel {
             boost::interprocess::mapped_region region_data_;
             boost::interprocess::mapped_region region_size_;
             std::string mutex_name_;
-            Mutex mutex_;
+            util::Mutex mutex_;
         };
 
  

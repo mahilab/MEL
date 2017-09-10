@@ -1,88 +1,88 @@
 #pragma once
 #include <string>
 
-
-
 namespace mel {
 
+    namespace core {
 
-    class EventData {
-    public:
-        virtual ~EventData() {}
-    };
+        class EventData {
+        public:
+            virtual ~EventData() {}
+        };
 
-    typedef EventData NoEventData;
+        typedef EventData NoEventData;
 
-    class StateMachine;
+        class StateMachine;
 
-    class StateBase {
-    public:
-        virtual void invoke_state_action(StateMachine* sm, const EventData* data) const = 0;
-    };
+        class StateBase {
+        public:
+            virtual void invoke_state_action(StateMachine* sm, const EventData* data) const = 0;
+        };
 
-    template <class SM, class Data, void (SM::*Func)(const Data*)>
-    class StateAction : public StateBase
-    {
-    public:
-
-        virtual void invoke_state_action(StateMachine* sm, const EventData* data) const
+        template <class SM, class Data, void (SM::*Func)(const Data*)>
+        class StateAction : public StateBase
         {
-            // Downcast the state machine and event data to the correct derived type
-            SM* derivedSM = static_cast<SM*>(sm);
+        public:
 
-            const Data* derivedData = dynamic_cast<const Data*>(data);
+            virtual void invoke_state_action(StateMachine* sm, const EventData* data) const
+            {
+                // Downcast the state machine and event data to the correct derived type
+                SM* derivedSM = static_cast<SM*>(sm);
 
-            // Call the state function
-            (derivedSM->*Func)(derivedData);
-        }
-    };
+                const Data* derivedData = dynamic_cast<const Data*>(data);
 
-    struct StateMapRow
-    {
-        const StateBase* const state;
-    };
+                // Call the state function
+                (derivedSM->*Func)(derivedData);
+            }
+        };
 
-    class StateMachine {
+        struct StateMapRow
+        {
+            const StateBase* const state;
+        };
 
-    public:
+        class StateMachine {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
+        public:
 
-        StateMachine(int num_states, int initial_state = 0);
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
+            StateMachine(int num_states, int initial_state = 0);
 
-        int get_current_state() { return current_state_; }
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-        int get_num_states() { return NUM_STATES; }
+            int get_current_state() { return current_state_; }
 
-        void execute();
+            int get_num_states() { return NUM_STATES; }
 
-    protected:
+            void execute();
 
-        void event(int new_state, const EventData* data = nullptr);
+        protected:
 
-    private:
+            void event(int new_state, const EventData* data = nullptr);
 
-        const int NUM_STATES;
+        private:
 
-        int current_state_;
+            const int NUM_STATES;
 
-        int new_state_;
+            int current_state_;
 
-        bool event_generated_;
+            int new_state_;
 
-        const EventData* event_data_;
+            bool event_generated_;
 
-        virtual const StateMapRow* get_state_map() = 0;
+            const EventData* event_data_;
 
-        void set_current_state(int new_state) { current_state_ = new_state; }
+            virtual const StateMapRow* get_state_map() = 0;
 
+            void set_current_state(int new_state) { current_state_ = new_state; }
 
-    };
+        };
+
+    }
 
 }

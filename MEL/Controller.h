@@ -3,7 +3,7 @@
 #include <csignal>
 #include "Task.h"
 #include "Clock.h"
-#include "util.h"
+#include "mel_util.h"
 
 namespace mel {
 
@@ -13,7 +13,7 @@ namespace mel {
 
         // CONSTRUCTOR(S) / DESTRUCTOR(S)
 
-        Controller(Clock& clock);
+        Controller(core::Clock& clock);
 
         // PUBLIC FUNCTIONS
 
@@ -32,7 +32,7 @@ namespace mel {
 
         // TIME KEEPING
 
-        Clock& clock_;     ///< the clock bound to the Controller
+        core::Clock& clock_;     ///< the clock bound to the Controller
         uint32 stop_time_; ///< the time at which the Controller will end the stepping loop (-1 = inf)
 
         // SIGNAL HANDLING

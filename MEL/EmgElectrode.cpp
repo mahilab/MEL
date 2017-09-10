@@ -2,21 +2,25 @@
 
 namespace mel {
 
-    EmgElectrode::EmgElectrode() :
-        Device("emg_electrode"),
-        voltage_(0.0)
-    { }
+    namespace core {
 
-    EmgElectrode::EmgElectrode(std::string name, Daq::Ai ai_channel) :
-        Device(name),
-        ai_channel_(ai_channel),
-        voltage_(0.0)
-    { }
+        EmgElectrode::EmgElectrode() :
+            Device("emg_electrode"),
+            voltage_(0.0)
+        { }
 
-    double EmgElectrode::get_voltage() {
+        EmgElectrode::EmgElectrode(std::string name, Daq::Ai ai_channel) :
+            Device(name),
+            ai_channel_(ai_channel),
+            voltage_(0.0)
+        { }
 
-        voltage_ = ai_channel_.get_voltage();
+        double EmgElectrode::get_voltage() {
 
-        return voltage_;
+            voltage_ = ai_channel_.get_voltage();
+
+            return voltage_;
+        }
+
     }
 }

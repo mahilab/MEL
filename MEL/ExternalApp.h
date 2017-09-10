@@ -1,23 +1,26 @@
 #pragma once
 #include <string>
 
-
 namespace mel {
 
-    class ExternalApp {
+    namespace util {
 
-    public:
+        class ExternalApp {
 
-        /// Default constructor. #name is for MEL only. The path should be an
-        /// absoulute path and include the filename and extension. For example
-        /// "C:\\dev\\Python27\\python.exe". Use double backslashes only.
-        ExternalApp(std::string name, std::string path);
+        public:
 
-        /// Launches the external app *.exe at the specified path location
-        void launch();
+            /// Default constructor. #name is for MEL only. The path should be an
+            /// absoulute path and include the filename and extension. For example
+            /// "C:\\dev\\Python27\\python.exe". Use double backslashes only.
+            ExternalApp(std::string name, std::string path);
 
-        std::string name_; ///< name of the application (only used in MEL)
-        std::string path_; ///< the full path to the application including the app filename (eg  .../application.exe)
-    };
+            /// Launches the external app *.exe at the specified path location
+            void launch();
+
+            std::string name_; ///< name of the application (only used in MEL)
+            std::string path_; ///< the full path to the application including the app filename (eg  .../application.exe)
+        };
+
+    }
 
 }

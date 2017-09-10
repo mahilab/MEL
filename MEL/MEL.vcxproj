@@ -34,6 +34,7 @@
     <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
     <ClCompile Include="MelShare.cpp" />
+    <ClCompile Include="mel_math.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="Mutex.cpp" />
     <ClCompile Include="OpenWrist.cpp" />
@@ -46,7 +47,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ExternalApp.cpp" />
-    <ClCompile Include="util.cpp" />
+    <ClCompile Include="mel_util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actuator.h" />
@@ -81,7 +82,7 @@
     <ClInclude Include="Q8Usb.h" />
     <ClInclude Include="Robot.h" />
     <ClInclude Include="ExternalApp.h" />
-    <ClInclude Include="util.h" />
+    <ClInclude Include="mel_util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

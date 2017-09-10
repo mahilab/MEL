@@ -4,48 +4,53 @@
 
 namespace mel {
 
-    class Encoder : public PositionSensor {
+    namespace core {
 
-    public:        
+        class Encoder : public PositionSensor {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
+        public:
 
-        Encoder();
-        Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel);
-        Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel);
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
+            Encoder();
+            Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel);
+            Encoder(std::string name, double counts_per_unit, Daq::Encoder encoder_channel, Daq::EncRate encrate_channel);
 
-        /// Converts encoder count to encoder position in [unit], implicity defined by counts_per_unit_
-        double get_position() override;   
-        /// Converts encoder count rate to encoder velocity in [unit/s], implicity defined by counts_per_unit_;
-        double get_velocity() override;   
-        ///< Zeros the encoder position to the current location
-        void zero();        
-        /// Zeros the encoder offset_units from the current location
-        void offset(double offset_units); 
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC VARIABLES
-        //---------------------------------------------------------------------
+            /// Converts encoder count to encoder position in [unit], implicity defined by counts_per_unit_
+            double get_position() override;
+            /// Converts encoder count rate to encoder velocity in [unit/s], implicity defined by counts_per_unit_;
+            double get_velocity() override;
+            ///< Zeros the encoder position to the current location
+            void zero();
+            /// Zeros the encoder offset_units from the current location
+            void offset(double offset_units);
 
-        double counts_per_unit_; ///< the number of counts per one [unit] (e.g. 500 [counts/rev] OR 500  / ( 2 * PI ) [counts/rad])
+            //---------------------------------------------------------------------
+            // PUBLIC VARIABLES
+            //---------------------------------------------------------------------
 
-    private:        
+            double counts_per_unit_; ///< the number of counts per one [unit] (e.g. 500 [counts/rev] OR 500  / ( 2 * PI ) [counts/rad])
 
-        //---------------------------------------------------------------------
-        // PRIVATE VARIABLES
-        //---------------------------------------------------------------------
+        private:
 
-        Daq::Encoder encoder_channel_; ///< the DAQ encoder channel bound to this Encoder
-        Daq::EncRate encrate_channel_; ///< the DAQ encoder rate channel bound to this Encoder (only used if if velocity_enabled_ = true)
+            //---------------------------------------------------------------------
+            // PRIVATE VARIABLES
+            //---------------------------------------------------------------------
 
-        double count_; ///< stores the encoder count since the last call to get_position()
-        double rate_;  ///< stores the encoder rate since the last call to get_velocity()
+            Daq::Encoder encoder_channel_; ///< the DAQ encoder channel bound to this Encoder
+            Daq::EncRate encrate_channel_; ///< the DAQ encoder rate channel bound to this Encoder (only used if if velocity_enabled_ = true)
 
-    };
+            double count_; ///< stores the encoder count since the last call to get_position()
+            double rate_;  ///< stores the encoder rate since the last call to get_velocity()
+
+        };
+
+    }
+
 }

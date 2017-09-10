@@ -2,30 +2,31 @@
 
 namespace mel {
 
-    namespace share {
+    namespace comm {
 
         int get_map_size(const boost::interprocess::mapped_region& region_size,
             const std::string& mutex_name)
         {
             int* size;
-            Mutex mutex(mutex_name, Mutex::Mode::OPEN);
+            util::Mutex mutex(mutex_name, util::Mutex::Mode::OPEN);
             switch (mutex.try_lock()) {
-            case  Mutex::Result::NOT_OPEN:
+            case  util::Mutex::Result::NOT_OPEN:
                 return -2;
-            case  Mutex::Result::LOCK_ABANDONED:
+            case  util::Mutex::Result::LOCK_ABANDONED:
                 return -3;
-            case  Mutex::Result::LOCK_TIMEOUT:
+            case  util::Mutex::Result::LOCK_TIMEOUT:
                 return -4;
-            case  Mutex::Result::LOCK_FAILED:
+            case  util::Mutex::Result::LOCK_FAILED:
                 return -5;
-            case Mutex::Result::LOCK_ACQUIRED:
+            case util::Mutex::Result::LOCK_ACQUIRED:
                 size = static_cast<int*>(region_size.get_address());
                 switch (mutex.release()) {
-                case Mutex::Result::RELEASE_FAILED:
+                case util::Mutex::Result::RELEASE_FAILED:
                     return -6;
                 }
                 return *size;
             }
+            return -5;
         }
 
         int get_map_size(const std::string& name) {
@@ -62,7 +63,7 @@ namespace mel {
             bytes_data_(bytes),
             bytes_size_(4),
             mutex_name_(std::string(name) + "_mutex"),
-            mutex_(Mutex(mutex_name_,Mutex::Mode::CREATE))
+            mutex_(util::Mutex(mutex_name_, util::Mutex::Mode::CREATE))
         {
             try {
                 std::string name_size_temp = name + "_size";

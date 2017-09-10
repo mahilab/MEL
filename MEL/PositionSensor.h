@@ -3,40 +3,45 @@
 
 namespace mel {
 
-    class PositionSensor : public Device {
+    namespace core {
 
-    public:
+        class PositionSensor : public Device {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
+        public:
 
-        PositionSensor();
-        PositionSensor(std::string name, bool velocity_enabled);
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
+            PositionSensor();
+            PositionSensor(std::string name, bool velocity_enabled);
 
-        /// This function should return the position of the PositionSensor
-        virtual double get_position() = 0;
-        /// This function should return the velocity of the PositionSensor
-        virtual double get_velocity();
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-    protected:
+            /// This function should return the position of the PositionSensor
+            virtual double get_position() = 0;
+            /// This function should return the velocity of the PositionSensor
+            virtual double get_velocity();
 
-        //---------------------------------------------------------------------
-        // PROTECTED VARIABLES
-        //---------------------------------------------------------------------
+        protected:
 
-        bool velocity_enabled_; ///< whether or not this PositionSensor enables velocity measurement
+            //---------------------------------------------------------------------
+            // PROTECTED VARIABLES
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // STATE VARIABLES
-        //---------------------------------------------------------------------
+            bool velocity_enabled_; ///< whether or not this PositionSensor enables velocity measurement
 
-        double position_; ///< stores the PositionSensor position since the last call to get_position()
-        double velocity_; ///< stores the PositionSensor velocity since the last call to get_velocity()
+            //---------------------------------------------------------------------
+            // STATE VARIABLES
+            //---------------------------------------------------------------------
 
-    };
+            double position_; ///< stores the PositionSensor position since the last call to get_position()
+            double velocity_; ///< stores the PositionSensor velocity since the last call to get_velocity()
+
+        };
+
+    }
+
 }

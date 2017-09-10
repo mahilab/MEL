@@ -1,6 +1,6 @@
 #include <iostream>
 #include <boost/program_options.hpp>
-#include "util.h"
+#include "mel_util.h"
 #include "MelShare.h"
 #include "Clock.h"
 #include "Integrator.h"
@@ -8,6 +8,7 @@
 #include "Input.h"
 #include <cmath>
 #include <random>
+#include "mel_math.h"
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -29,7 +30,8 @@ int main(int argc, char * argv[]) {
         ("melshare-data", "example demonstrating how to use MELShare for two way data sharing with C# or Python")
         ("melshare-msg", "example demonstrating how to send and recieve string messages over MELShare")
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
-        ("external", "example of how to launch an external app or game from C++");
+        ("external", "example of how to launch an external app or game from C++")
+        ("clock", "clock testing");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -38,7 +40,7 @@ int main(int argc, char * argv[]) {
     // running "Examples.exe --help" at the command line will produce a nicely
     // formatted list of program options
     if (var_map.count("help")) {
-        mel::print(desc);
+        mel::util::print(desc);
         return 0;
     }
 
@@ -52,9 +54,9 @@ int main(int argc, char * argv[]) {
         // note that on Windows, the shared memory maps will only stay active for as long as
         // these instances stay in scope, so create them inside of your main loop or inside of a
         // class isntance that you expect to stay alive for the duration of the program (e.g. OpenWrist or ME-II).
-        mel::share::MelShare map0("map0");
-        mel::share::MelShare map1("map1");
-        mel::share::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
+        mel::comm::MelShare map0("map0");
+        mel::comm::MelShare map1("map1");
+        mel::comm::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
 
         // create new data containers to write to map (vectors, STL arrays, and C-style arrays can be used)
         std::vector<char> my_chars = { 'a','b','c' }; // STL vector
@@ -66,13 +68,13 @@ int main(int argc, char * argv[]) {
 
         // write the data to the maps
         map0.write(my_chars); // non-static version called using dot operator on a MelShare instance (fastest method)
-        mel::share::write_map("map1", my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
+        mel::comm::write_map("map1", my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
         map2.write(my_doubles, 10); // C-style arrays can be used with both non-static and static versions, but you must input size manually
 
-        mel::print("Wrote: ");
-        std::cout << "map0:    ";  mel::print(my_chars);
-        std::cout << "map1:    ";  mel::print(my_ints);
-        std::cout << "map2:    ";  mel::print(my_doubles, 10, true);
+        mel::util::print("Wrote: ");
+        std::cout << "map0:    ";  mel::util::print(my_chars);
+        std::cout << "map1:    ";  mel::util::print(my_ints);
+        std::cout << "map2:    ";  mel::util::print(my_doubles, 10, true);
 
         std::cout << "Run Python or C# code, then press ENTER to receive new values.";
         getchar();
@@ -89,12 +91,12 @@ int main(int argc, char * argv[]) {
         // read the altered data from the maps
         map0.read(my_chars);
         map1.read(my_doubles, 10); // this demonstrates that we can read doubles from a map that previously wrote ints
-        mel::share::read_map("map2", my_ints_bigger); // and vice-versa
+        mel::comm::read_map("map2", my_ints_bigger); // and vice-versa
 
-        mel::print("Read: ");
-        std::cout << "map0:    ";  mel::print(my_chars);
-        std::cout << "map1:    ";  mel::print(my_doubles, 10, true);
-        std::cout << "map2:    ";  mel::print(my_ints_bigger);
+        mel::util::print("Read: ");
+        std::cout << "map0:    ";  mel::util::print(my_chars);
+        std::cout << "map1:    ";  mel::util::print(my_doubles, 10, true);
+        std::cout << "map2:    ";  mel::util::print(my_ints_bigger);
 
         return 0;
     }
@@ -105,10 +107,10 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("melshare-msg")) {
         // create a MELShare
-        mel::share::MelShare messenger("messenger");
+        mel::comm::MelShare messenger("messenger");
         messenger.write_message("this is a message being sent to unity");
         getchar();
-        mel::print(messenger.read_message());
+        mel::util::print(messenger.read_message());
     }
 
     //-------------------------------------------------------------------------
@@ -125,10 +127,10 @@ int main(int argc, char * argv[]) {
         // MELShare. While bidirectional communcation over a single MELShare map is possible 
         // with the read_write() functions, it can be tricky to get the timing right. 
         // It's best to just keep two maps open for this purpose.
-        mel::share::MelShare integrals("integrals");
-        mel::share::MelShare cpp2py("cpp2py");
-        mel::share::MelShare py2cpp_ampl("py2cpp_ampl");
-        mel::share::MelShare py2cpp_freq("py2cpp_freq");
+        mel::comm::MelShare integrals("integrals");
+        mel::comm::MelShare cpp2py("cpp2py");
+        mel::comm::MelShare py2cpp_ampl("py2cpp_ampl");
+        mel::comm::MelShare py2cpp_freq("py2cpp_freq");
 
         // create the data buffers for each map
         std::array<double, 4> integrals_data = { 0, 0, 0, 0 };
@@ -137,10 +139,10 @@ int main(int argc, char * argv[]) {
         std::array<double, 4> py2cpp_freq_data = { 0.4, 0.6, 0.8, 1.0 };
 
         // create a MEL Integrator for doing some integration. note the initial value 5
-        mel::Integrator integrator = mel::Integrator(5, mel::Integrator::Technique::Trapezoidal);
+        mel::math::Integrator integrator = mel::math::Integrator(5, mel::math::Integrator::Technique::Trapezoidal);
 
         // create a MEL Clock to control the rate of our data generating loop
-        mel::Clock clock(1000); // 1000 Hz clock
+        mel::core::Clock clock(1000); // 1000 Hz clock
 
         // In this example, we will have the data in cpp2py be a funcion of the data
         // from py2cpp. Specifically, we will generate some periodic data, and use
@@ -170,10 +172,10 @@ int main(int argc, char * argv[]) {
             py2cpp_freq.read(py2cpp_freq_data);
 
             // generate new data for cpp2py
-            cpp2py_data[0] = mel::sin_wave(py2cpp_ampl_data[0], py2cpp_freq_data[0], clock.time());
-            cpp2py_data[1] = mel::square_wave(py2cpp_ampl_data[1], py2cpp_freq_data[1], clock.time());;
-            cpp2py_data[2] = mel::triangle_wave(py2cpp_ampl_data[2], py2cpp_freq_data[2], clock.time());
-            cpp2py_data[3] = mel::sawtooth_wave(py2cpp_ampl_data[3], py2cpp_freq_data[3], clock.time());
+            cpp2py_data[0] = mel::math::sin_wave(py2cpp_ampl_data[0], py2cpp_freq_data[0], clock.time());
+            cpp2py_data[1] = mel::math::square_wave(py2cpp_ampl_data[1], py2cpp_freq_data[1], clock.time());;
+            cpp2py_data[2] = mel::math::triangle_wave(py2cpp_ampl_data[2], py2cpp_freq_data[2], clock.time());
+            cpp2py_data[3] = mel::math::sawtooth_wave(py2cpp_ampl_data[3], py2cpp_freq_data[3], clock.time());
 
             // write cpp2py
             cpp2py.write(cpp2py_data);
@@ -188,10 +190,27 @@ int main(int argc, char * argv[]) {
     //-------------------------------------------------------------------------
 
     if (var_map.count("external")) {
-        mel::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
+        mel::util::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
         my_app.launch();
     }
 
+    if (var_map.count("clock")) {
+
+        std::chrono::high_resolution_clock::time_point start, stop;
+
+        mel::util::enable_realtime();
+       
+        for (int i = 0; i < 1000; i++) {
+            mel::core::Clock clock(1000);
+            clock.start();
+            start = std::chrono::high_resolution_clock::now();
+            clock.wait();
+            stop = std::chrono::high_resolution_clock::now();
+            auto duration = stop - start;
+            mel::util::print(duration.count() * 1.0 / 1000000000.0);
+        }
+
+    }
 }
 
 

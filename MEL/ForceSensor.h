@@ -4,41 +4,46 @@
 
 namespace mel {
 
-    class ForceSensor : public Device {
+    namespace core {
 
-    public:
+        class ForceSensor : public Device {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
+        public:
 
-        ForceSensor();
-        ForceSensor(std::string name, std::vector<Daq::Ai> ai_channels);
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
-        
-        virtual double_vec get_forces() = 0;
+            ForceSensor();
+            ForceSensor(std::string name, std::vector<Daq::Ai> ai_channels);
 
-    protected:
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PROTECTED VARIABLES
-        //---------------------------------------------------------------------
+            virtual double_vec get_forces() = 0;
 
-        std::vector<Daq::Ai> ai_channels_; // the DAQ analog input channels bound to this sensor
+        protected:
 
-        int num_channels_;
+            //---------------------------------------------------------------------
+            // PROTECTED VARIABLES
+            //---------------------------------------------------------------------
 
-        double_vec forces_;
-        double_vec voltages_;
+            std::vector<Daq::Ai> ai_channels_; // the DAQ analog input channels bound to this sensor
 
-        //---------------------------------------------------------------------
-        // PROTECTED FUNCTIONS
-        //---------------------------------------------------------------------
+            int num_channels_;
 
-        double_vec get_voltages();
+            double_vec forces_;
+            double_vec voltages_;
 
-    };
+            //---------------------------------------------------------------------
+            // PROTECTED FUNCTIONS
+            //---------------------------------------------------------------------
+
+            double_vec get_voltages();
+
+        };
+
+    }
+
 }

@@ -4,32 +4,37 @@
 
 namespace mel {
 
-    class EmgElectrode : public Device {
+    namespace core {
 
-    public:
+        class EmgElectrode : public Device {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
+        public:
 
-        EmgElectrode();
-        EmgElectrode(std::string name, Daq::Ai ai_channel);
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
+            EmgElectrode();
+            EmgElectrode(std::string name, Daq::Ai ai_channel);
 
-        double get_voltage();
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-    private:
+            double get_voltage();
 
-        //---------------------------------------------------------------------
-        // PRIVATE VARIABLES
-        //---------------------------------------------------------------------
-        
-        Daq::Ai ai_channel_; // the DAQ analog input channel bound to this electrode
+        private:
 
-        double voltage_;
+            //---------------------------------------------------------------------
+            // PRIVATE VARIABLES
+            //---------------------------------------------------------------------
 
-    };
+            Daq::Ai ai_channel_; // the DAQ analog input channel bound to this electrode
+
+            double voltage_;
+
+        };
+
+    }
+
 }

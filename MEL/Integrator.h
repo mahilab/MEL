@@ -1,39 +1,42 @@
 #pragma once
-#include "util.h"
+#include "mel_util.h"
 
 namespace mel {
 
-    class Integrator {
+    namespace math {
 
-    public:
+        class Integrator {
 
-        enum class Technique { Trapezoidal = 0, Simpsons = 1 };
+        public:
 
-        Integrator(double initial_value, Technique technique = Technique::Trapezoidal);
+            enum class Technique { Trapezoidal = 0, Simpsons = 1 };
 
-        /// Integrats x with respect to t
-        double integrate(double x, double t);
-        /// Resets the integrators
-        void reset(double initial_value);
+            Integrator(double initial_value, Technique technique = Technique::Trapezoidal);
 
-    private:
+            /// Integrats x with respect to t
+            double integrate(double x, double t);
+            /// Resets the integrators
+            void reset(double initial_value);
 
-        // integration technique to be used
-        Technique technique_;
+        private:
 
-        // history
-        uint32 step_count_ = 0;
+            // integration technique to be used
+            Technique technique_;
 
-        // previous state(s)
-        double last_last_x_ = 0.0;
-        double last_last_t_ = 0.0;
-        double last_x_ = 0.0;
-        double last_t_ = 0.0;
+            // history
+            uint32 step_count_ = 0;
 
-        // integrated value
-        double integral_ = 0.0;
+            // previous state(s)
+            double last_last_x_ = 0.0;
+            double last_last_t_ = 0.0;
+            double last_x_ = 0.0;
+            double last_t_ = 0.0;
 
+            // integrated value
+            double integral_ = 0.0;
 
-    };
+        };
+
+    }
 
 }

@@ -3,31 +3,35 @@
 
 namespace mel {
 
-    class AtiMini45 : public ForceSensor {
+    namespace hdw {
 
-    public:
+        class AtiMini45 : public core::ForceSensor {
 
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
+        public:
 
-        AtiMini45();
-        AtiMini45(std::string name, std::vector<Daq::Ai> ai_channels, array_2D<double,6,6> calib_mat);
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
 
-        //---------------------------------------------------------------------
-        // PUBLIC FUNCTIONS
-        //---------------------------------------------------------------------
+            AtiMini45();
+            AtiMini45(std::string name, std::vector<core::Daq::Ai> ai_channels, util::array_2D<double, 6, 6> calib_mat);
 
-        double_vec get_forces() override;
+            //---------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //---------------------------------------------------------------------
 
-    private:
+            double_vec get_forces() override;
 
-        //---------------------------------------------------------------------
-        // PRIVATE VARIABLES
-        //---------------------------------------------------------------------
+        private:
 
-        array_2D<double,6,6> calib_mat_;
+            //---------------------------------------------------------------------
+            // PRIVATE VARIABLES
+            //---------------------------------------------------------------------
 
-    };
+            util::array_2D<double, 6, 6> calib_mat_;
+
+        };
+
+    }
 
 }

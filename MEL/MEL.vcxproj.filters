@@ -4,9 +4,6 @@
     <Filter Include="Core">
       <UniqueIdentifier>{e1af6637-7c52-4809-ae0c-9564761f64c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Devices">
-      <UniqueIdentifier>{3d560959-9de6-46df-b97f-b54ed78cf2f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Obsolete">
       <UniqueIdentifier>{9434d7ed-0097-4caf-9517-604ab2e82e9e}</UniqueIdentifier>
     </Filter>
@@ -19,13 +16,16 @@
     <Filter Include="Communications">
       <UniqueIdentifier>{5f778315-7578-4869-acfb-360e11ff8643}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Hardware">
+      <UniqueIdentifier>{3d560959-9de6-46df-b97f-b54ed78cf2f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actuator.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="AtiMini45.cpp">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
     </ClCompile>
     <ClCompile Include="Clock.cpp">
       <Filter>Core</Filter>
@@ -70,10 +70,7 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Q8Usb.cpp">
-      <Filter>Devices</Filter>
-    </ClCompile>
-    <ClCompile Include="util.cpp">
-      <Filter>Utility</Filter>
+      <Filter>Hardware</Filter>
     </ClCompile>
     <ClCompile Include="Robot.cpp">
       <Filter>Core</Filter>
@@ -82,7 +79,7 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="OpenWrist.cpp">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
     </ClCompile>
     <ClCompile Include="ExternalApp.cpp">
       <Filter>Utility</Filter>
@@ -97,7 +94,13 @@
       <Filter>Communications</Filter>
     </ClCompile>
     <ClCompile Include="MahiExoII.cpp">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="mel_util.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="mel_math.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,10 +120,10 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="AtiMini45.h">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
     </ClInclude>
     <ClInclude Include="Q8Usb.h">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
     </ClInclude>
     <ClInclude Include="Actuator.h">
       <Filter>Core</Filter>
@@ -164,9 +167,6 @@
     <ClInclude Include="Controller.h">
       <Filter>Obsolete</Filter>
     </ClInclude>
-    <ClInclude Include="util.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="PdController.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -177,7 +177,7 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="OpenWrist.h">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
     </ClInclude>
     <ClInclude Include="ExternalApp.h">
       <Filter>Utility</Filter>
@@ -192,7 +192,10 @@
       <Filter>Communications</Filter>
     </ClInclude>
     <ClInclude Include="MahiExoII.h">
-      <Filter>Devices</Filter>
+      <Filter>Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="mel_util.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
