@@ -2,7 +2,9 @@
 #include "Input.h"
 #include "mahiexoii_util.h"
 
-TransparentMode::TransparentMode(mel::Clock& clock, mel::Daq* daq, mel::MahiExoII& meii) :
+using namespace mel;
+
+TransparentMode::TransparentMode(Clock& clock, Daq* daq, MahiExoII& meii) :
     StateMachine(3),
     clock_(clock),
     daq_(daq),
@@ -39,7 +41,7 @@ void TransparentMode::sf_init(const mel::NoEventData* data) {
         event(ST_STOP);
         return;
     }
-    if (!check_digital_loopback(0, 7)) {
+    if (!Q8Usb::check_digital_loopback(0, 7)) {
         event(ST_STOP);
         return;
     }

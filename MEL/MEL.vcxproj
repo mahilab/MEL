@@ -19,9 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\MahiExoII\MahiExoIIEmg.cpp" />
-    <ClCompile Include="..\MahiExoII\MahiExoIIEmgFrc.cpp" />
-    <ClCompile Include="..\MahiExoII\MahiExoIIFrc.cpp" />
     <ClCompile Include="Actuator.cpp" />
     <ClCompile Include="AtiMini45.cpp" />
     <ClCompile Include="Clock.cpp" />
@@ -36,6 +33,9 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
+    <ClCompile Include="MahiExoIIEmg.cpp" />
+    <ClCompile Include="MahiExoIIEmgFrc.cpp" />
+    <ClCompile Include="MahiExoIIFrc.cpp" />
     <ClCompile Include="MelShare.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="Mutex.cpp" />
@@ -52,9 +52,6 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\MahiExoII\MahiExoIIEmg.h" />
-    <ClInclude Include="..\MahiExoII\MahiExoIIEmgFrc.h" />
-    <ClInclude Include="..\MahiExoII\MahiExoIIFrc.h" />
     <ClInclude Include="Actuator.h" />
     <ClInclude Include="AtiMini45.h" />
     <ClInclude Include="Clock.h" />
@@ -66,6 +63,9 @@
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MahiExoII.h" />
+    <ClInclude Include="MahiExoIIEmg.h" />
+    <ClInclude Include="MahiExoIIEmgFrc.h" />
+    <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="MelShare.h" />
     <ClInclude Include="mel_math.h" />
     <ClInclude Include="Mutex.h" />

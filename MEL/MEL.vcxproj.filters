@@ -99,13 +99,13 @@
     <ClCompile Include="MahiExoII.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
-    <ClCompile Include="..\MahiExoII\MahiExoIIEmg.cpp">
+    <ClCompile Include="MahiExoIIEmg.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
-    <ClCompile Include="..\MahiExoII\MahiExoIIEmgFrc.cpp">
+    <ClCompile Include="MahiExoIIEmgFrc.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
-    <ClCompile Include="..\MahiExoII\MahiExoIIFrc.cpp">
+    <ClCompile Include="MahiExoIIFrc.cpp">
       <Filter>Devices</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,13 +203,13 @@
     <ClInclude Include="MahiExoII.h">
       <Filter>Devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\MahiExoII\MahiExoIIEmg.h">
+    <ClInclude Include="MahiExoIIEmg.h">
       <Filter>Devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\MahiExoII\MahiExoIIEmgFrc.h">
+    <ClInclude Include="MahiExoIIEmgFrc.h">
       <Filter>Devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\MahiExoII\MahiExoIIFrc.h">
+    <ClInclude Include="MahiExoIIFrc.h">
       <Filter>Devices</Filter>
     </ClInclude>
   </ItemGroup>

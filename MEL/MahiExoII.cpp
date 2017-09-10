@@ -14,21 +14,21 @@ namespace mel {
             std::string num = std::to_string(i);
 
             // construct encoders
-            mel::PositionSensor* encoder = new mel::Encoder("encoder_" + num,
-                params_.encoder_res_[i] / (2 * mel::PI),
+            PositionSensor* encoder = new Encoder("encoder_" + num,
+                params_.encoder_res_[i] / (2 * PI),
                 config_.encoder_[i],
                 config_.encrate_[i]);
 
             position_sensors_.push_back(encoder);
 
             // construct motors
-            mel::Actuator* motor = new mel::Motor("motor_" + num,
+            Actuator* motor = new Motor("motor_" + num,
                 params_.kt_[i],
                 params_.amp_gains_[i],
                 config_.command_[i],
                 config_.enable_[i],
-                mel::Actuator::EnableMode::Low,
-                mel::Daq::Ai(),
+                Actuator::EnableMode::Low,
+                Daq::Ai(),
                 params_.motor_continuous_current_limits_[i],
                 params_.motor_peak_current_limits_[i],
                 params_.motor_i2t_times_[i]);
@@ -36,7 +36,7 @@ namespace mel {
             actuators_.push_back(motor);
 
             // construct joints
-            mel::Joint* joint = new mel::Joint("joint_" + num,
+            Joint* joint = new Joint("joint_" + num,
                 encoder,
                 params_.eta_[i],
                 motor,
@@ -55,7 +55,7 @@ namespace mel {
             anatomical_joint_torques_.push_back(0);
         }
 
-        qp_0_ << mel::PI / 4, mel::PI / 4, mel::PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
+        qp_0_ << PI / 4, PI / 4, PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
         selector_mat_.bottomRows(3) = Eigen::MatrixXd::Identity(3, 3);
     }
 
@@ -180,13 +180,13 @@ namespace mel {
 
     }
 
-    void MahiExoII::set_anatomical_joint_torques(mel::double_vec new_torques, int error_code) {
+    void MahiExoII::set_anatomical_joint_torques(double_vec new_torques, int error_code) {
 
         // set torques for first two anatomical joints, which have actuators
         joints_[0]->set_torque(new_torques[0]);
         joints_[1]->set_torque(new_torques[1]);
 
-        mel::uint8_vec select_q = { 3,4,5 }; // indexing of qp                                  
+        uint8_vec select_q = { 3,4,5 }; // indexing of qp                                  
         // build selection matrix
         A_ = Eigen::MatrixXd::Zero(3, 12);
         A_(0, select_q[0]) = 1;
@@ -208,7 +208,7 @@ namespace mel {
             error_code_ = -1;
         }
         Eigen::EigenSolver<Eigen::Matrix3d>::EigenvalueType lambda = eigensolver.eigenvalues();
-        mel::double_vec lambda_abs;
+        double_vec lambda_abs;
         for (int i = 0; i < 3; ++i) {
             lambda_abs.push_back(std::abs(lambda(i)));
         }
@@ -256,12 +256,13 @@ namespace mel {
     // PRIVATE KINEMATICS FUNCTIONS
     //-----------------------------------------------------------------------------
 
-    void MahiExoII::forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out) {
-        Eigen::VectorXd qp;
+    void MahiExoII::forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out) {
+        Eigen::VectorXd qp = Eigen::VectorXd::Zero(12);
+        Eigen::MatrixXd jac_fk = Eigen::MatrixXd::Zero(3, 3);
         forward_kinematics(q_par_in, q_ser_out, qp);
     }
 
-    void MahiExoII::forward_kinematics(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out) {
+    void MahiExoII::forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& jac_fk) {
 
         qp_out = solve_kinematics(select_q_par_, q_par_in, max_it_, tol_);
 
@@ -274,38 +275,25 @@ namespace mel {
 
     }
 
-    void MahiExoII::forward_kinematics_velocity(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out) {
+    void MahiExoII::forward_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out) {
         Eigen::VectorXd qp, qp_dot;
         forward_kinematics_velocity(q_par_in, q_ser_out, qp, q_par_dot_in, q_ser_dot_out, qp_dot);
     }
 
-    void MahiExoII::forward_kinematics_velocity(Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out) {
+    void MahiExoII::forward_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out) {
 
         forward_kinematics(q_par_in, q_ser_out, qp_out);
 
-        //mel::uint8_vec select_q = { 3,4,5 }; // indexing of qp_
-
-        // build selection matrix
-        //A_ = Eigen::MatrixXd::Zero(3, 12);
-        //A_(0, select_q[0]) = 1;
-        //A_(1, select_q[1]) = 1;
-        //A_(2, select_q[2]) = 1;
-
-        //psi_d_qp_update(qp_);
-        //Eigen::MatrixXd rho = psi_d_qp_.fullPivLu().solve(selector_mat_);
-
         qp_dot_out = rho_fk_ * q_par_dot_in;
         q_ser_dot_out = jac_fk_ * q_par_dot_in;
-        //q_ser_dot_out << qp_dot_out(6), qp_dot_out(7), qp_dot_out(9);
-
     }
 
-    void MahiExoII::inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out) {
+    void MahiExoII::inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out) {
         Eigen::VectorXd qp;
         inverse_kinematics(q_ser_in, q_par_out, qp);
     }
 
-    void MahiExoII::inverse_kinematics(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out) {
+    void MahiExoII::inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out) {
 
         qp_out = solve_kinematics(select_q_ser_, q_ser_in, max_it_, tol_);
 
@@ -318,32 +306,35 @@ namespace mel {
 
     }
 
-    void MahiExoII::inverse_kinematics_velocity(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out) {
+    void MahiExoII::inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out) {
         Eigen::VectorXd qp, qp_dot;
         inverse_kinematics_velocity(q_ser_in, q_par_out, qp, q_ser_dot_in, q_par_dot_out, qp_dot);
     }
 
-    void MahiExoII::inverse_kinematics_velocity(Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out) {
+    void MahiExoII::inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out) {
 
         inverse_kinematics(q_ser_in, q_par_out, qp_out);
 
         qp_dot_out = rho_ik_ * q_ser_dot_in;
         q_par_dot_out = jac_ik_ * q_ser_dot_in;
-
     }
 
 
-    Eigen::VectorXd MahiExoII::solve_kinematics(mel::uint8_vec select_q, Eigen::VectorXd& qs, mel::uint32 max_it, double tol) {
+    Eigen::VectorXd MahiExoII::solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, uint32 max_it, double tol) {
 
         // build selection matrix
-        A_ = Eigen::MatrixXd::Zero(3, 12);
-        A_(0, select_q[0]) = 1;
-        A_(1, select_q[1]) = 1;
-        A_(2, select_q[2]) = 1;
+        Eigen::MatrixXd A = Eigen::MatrixXd::Zero(3, 12);
+        for (int i = 0; i < 3; ++i) {
+            A(i, select_q[i]) = 1;
+        }
 
         // declare and initialize variable containing solution
         Eigen::VectorXd qp;
         qp = qp_0_;
+
+        // initialize temporary variables containing constraints
+        Eigen::VectorXd phi = Eigen::VectorXd::Zero(9);
+        Eigen::VectorXd psi = Eigen::VectorXd::Zero(12);
 
         // declare and initialize variables for keeping track of error
         double err = 2 * tol;
@@ -354,11 +345,11 @@ namespace mel {
 
         // run no more than max_it iterations of updating the solution for qp_
         // exit loop once the error is below the input tolerance
-        mel::uint32 it = 0;
+        uint32 it = 0;
         while (it < max_it && err > tol) {
-            psi_update(qs, qp); // calculate 9 constraints and tracking error on specified qs_
+            psi_update(A, qs, qp, phi, psi); // calculate 9 constraints and tracking error on specified qs_
             psi_d_qp_update(qp); // derivative of psi w.r.t. qp, giving a 12x12 matrix      
-            qp -= psi_d_qp_.fullPivLu().solve(psi_);
+            qp -= psi_d_qp_.fullPivLu().solve(psi);
 
             // update the error (don't know why it's like this, but it seems to work)
             err = 0;
@@ -395,56 +386,41 @@ namespace mel {
     }
 
 
-    void MahiExoII::psi_update(Eigen::VectorXd& qs, Eigen::VectorXd& qp) {
-        psi_.head(9) = phi_func(qp);
-        psi_.tail(3) = A_*qp - qs;
-        //psi_.tail(3) = a_func(qp) - qs;
+    void MahiExoII::psi_update(const Eigen::MatrixXd& A, const Eigen::VectorXd& qs, const Eigen::VectorXd& qp, Eigen::VectorXd& phi, Eigen::VectorXd& psi) {
+        psi.head(9) = phi_update(qp, phi);
+        psi.tail(3) = A*qp - qs;
     }
 
-    /*Eigen::VectorXd MahiExoII::a_func(Eigen::VectorXd& qp) {
-        return A_*qp;
-    }*/
 
-    void MahiExoII::psi_d_qp_update(Eigen::VectorXd& qp) {
-        psi_d_qp_.block<9, 12>(0, 0) = phi_d_qp_func(qp);
-        psi_d_qp_.block<3, 12>(9, 0) = A_;
+    void MahiExoII::psi_d_qp_update(const Eigen::VectorXd& qp, Eigen::MatrixXd& psi_d_qp) {
+        psi_d_qp.block<9, 12>(0, 0) = phi_d_qp_update(qp);
+        psi_d_qp.block<3, 12>(9, 0) = A;
     }
 
-    Eigen::VectorXd MahiExoII::phi_func(Eigen::VectorXd& qp) {
-
-        Eigen::VectorXd phi = Eigen::VectorXd::Zero(9);
+    void MahiExoII::phi_update(const Eigen::VectorXd& qp, Eigen::VectorXd& phi) {
 
         phi << qp[3] * sin(qp[0]) - qp[9] - r_*cos(alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*sin(alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
             R_*cos(alpha5_) - qp[10] - a56_*sin(alpha5_) - qp[3] * cos(alpha5_)*cos(qp[0]) - r_*cos(alpha13_)*cos(qp[7])*cos(qp[8]) + r_*cos(qp[7])*sin(alpha13_)*sin(qp[8]),
             a56_*cos(alpha5_) - qp[11] + R_*sin(alpha5_) - qp[3] * sin(alpha5_)*cos(qp[0]) - r_*cos(alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin(alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
-            qp[4] * sin(qp[1]) - qp[9] - r_*cos(alpha13_ - (2 * mel::PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*sin(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
-            R_*cos(alpha5_ - (2 * mel::PI) / 3) - qp[10] - a56_*sin(alpha5_ - (2 * mel::PI) / 3) - qp[4] * cos(alpha5_ - (2 * mel::PI) / 3)*cos(qp[1]) - r_*cos(qp[7])*cos(qp[8])*cos(alpha13_ - (2 * mel::PI) / 3) + r_*cos(qp[7])*sin(qp[8])*sin(alpha13_ - (2 * mel::PI) / 3),
-            a56_*cos(alpha5_ - (2 * mel::PI) / 3) - qp[11] + R_*sin(alpha5_ - (2 * mel::PI) / 3) - qp[4] * cos(qp[1])*sin(alpha5_ - (2 * mel::PI) / 3) - r_*cos(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
-            qp[5] * sin(qp[2]) - qp[9] - r_*cos((2 * mel::PI) / 3 + alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*sin((2 * mel::PI) / 3 + alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
-            R_*cos((2 * mel::PI) / 3 + alpha5_) - qp[10] - a56_*sin((2 * mel::PI) / 3 + alpha5_) - qp[5] * cos((2 * mel::PI) / 3 + alpha5_)*cos(qp[2]) - r_*cos(qp[7])*cos(qp[8])*cos((2 * mel::PI) / 3 + alpha13_) + r_*cos(qp[7])*sin(qp[8])*sin((2 * mel::PI) / 3 + alpha13_),
-            a56_*cos((2 * mel::PI) / 3 + alpha5_) - qp[11] + R_*sin((2 * mel::PI) / 3 + alpha5_) - qp[5] * cos(qp[2])*sin((2 * mel::PI) / 3 + alpha5_) - r_*cos((2 * mel::PI) / 3 + alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin((2 * mel::PI) / 3 + alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8]));
-
-        return phi;
-
+            qp[4] * sin(qp[1]) - qp[9] - r_*cos(alpha13_ - (2 * PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*sin(alpha13_ - (2 * PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
+            R_*cos(alpha5_ - (2 * PI) / 3) - qp[10] - a56_*sin(alpha5_ - (2 * PI) / 3) - qp[4] * cos(alpha5_ - (2 * PI) / 3)*cos(qp[1]) - r_*cos(qp[7])*cos(qp[8])*cos(alpha13_ - (2 * PI) / 3) + r_*cos(qp[7])*sin(qp[8])*sin(alpha13_ - (2 * PI) / 3),
+            a56_*cos(alpha5_ - (2 * PI) / 3) - qp[11] + R_*sin(alpha5_ - (2 * PI) / 3) - qp[4] * cos(qp[1])*sin(alpha5_ - (2 * PI) / 3) - r_*cos(alpha13_ - (2 * PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin(alpha13_ - (2 * PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])),
+            qp[5] * sin(qp[2]) - qp[9] - r_*cos((2 * PI) / 3 + alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*sin((2 * PI) / 3 + alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])),
+            R_*cos((2 * PI) / 3 + alpha5_) - qp[10] - a56_*sin((2 * PI) / 3 + alpha5_) - qp[5] * cos((2 * PI) / 3 + alpha5_)*cos(qp[2]) - r_*cos(qp[7])*cos(qp[8])*cos((2 * PI) / 3 + alpha13_) + r_*cos(qp[7])*sin(qp[8])*sin((2 * PI) / 3 + alpha13_),
+            a56_*cos((2 * PI) / 3 + alpha5_) - qp[11] + R_*sin((2 * PI) / 3 + alpha5_) - qp[5] * cos(qp[2])*sin((2 * PI) / 3 + alpha5_) - r_*cos((2 * PI) / 3 + alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin((2 * PI) / 3 + alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8]));
     }
 
-    Eigen::MatrixXd MahiExoII::phi_d_qp_func(Eigen::VectorXd& qp) {
-
-        Eigen::MatrixXd phi_d_qp = Eigen::MatrixXd::Zero(9, 12);
+    void MahiExoII::phi_d_qp_update(const Eigen::VectorXd& qp, Eigen::MatrixXd& phi_d_qp) {
 
         phi_d_qp << qp[3] * cos(qp[0]), 0, 0, sin(qp[0]), 0, 0, -r_*cos(alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin(alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[6])*cos(alpha13_)*cos(qp[7])*cos(qp[8]) - r_*cos(qp[6])*cos(qp[7])*sin(alpha13_)*sin(qp[8]), r_*sin(alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*cos(alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
             qp[3] * cos(alpha5_)*sin(qp[0]), 0, 0, -cos(alpha5_)*cos(qp[0]), 0, 0, 0, r_*cos(alpha13_)*cos(qp[8])*sin(qp[7]) - r_*sin(alpha13_)*sin(qp[7])*sin(qp[8]), r_*cos(alpha13_)*cos(qp[7])*sin(qp[8]) + r_*cos(qp[7])*cos(qp[8])*sin(alpha13_), 0, -1, 0,
             qp[3] * sin(alpha5_)*sin(qp[0]), 0, 0, -sin(alpha5_)*cos(qp[0]), 0, 0, r_*cos(alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r_*sin(alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[7])*sin(qp[6])*sin(alpha13_)*sin(qp[8]) - r_*cos(alpha13_)*cos(qp[7])*cos(qp[8])*sin(qp[6]), r_*sin(alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*cos(alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1,
-            0, qp[4] * cos(qp[1]), 0, 0, sin(qp[1]), 0, -r_*cos(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[6])*cos(qp[7])*cos(qp[8])*cos(alpha13_ - (2 * mel::PI) / 3) - r_*cos(qp[6])*cos(qp[7])*sin(qp[8])*sin(alpha13_ - (2 * mel::PI) / 3), r_*sin(alpha13_ - (2 * mel::PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*cos(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
-            0, qp[4] * cos(alpha5_ - (2 * mel::PI) / 3)*sin(qp[1]), 0, 0, -cos(alpha5_ - (2 * mel::PI) / 3)*cos(qp[1]), 0, 0, r_*cos(qp[8])*cos(alpha13_ - (2 * mel::PI) / 3)*sin(qp[7]) - r_*sin(qp[7])*sin(qp[8])*sin(alpha13_ - (2 * mel::PI) / 3), r_*cos(qp[7])*cos(qp[8])*sin(alpha13_ - (2 * mel::PI) / 3) + r_*cos(qp[7])*cos(alpha13_ - (2 * mel::PI) / 3)*sin(qp[8]), 0, -1, 0,
-            0, qp[4] * sin(alpha5_ - (2 * mel::PI) / 3)*sin(qp[1]), 0, 0, -cos(qp[1])*sin(alpha5_ - (2 * mel::PI) / 3), 0, r_*cos(alpha13_ - (2 * mel::PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r_*sin(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[7])*sin(qp[6])*sin(qp[8])*sin(alpha13_ - (2 * mel::PI) / 3) - r_*cos(qp[7])*cos(qp[8])*cos(alpha13_ - (2 * mel::PI) / 3)*sin(qp[6]), r_*sin(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*cos(alpha13_ - (2 * mel::PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1,
-            0, 0, qp[5] * cos(qp[2]), 0, 0, sin(qp[2]), -r_*cos((2 * mel::PI) / 3 + alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin((2 * mel::PI) / 3 + alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[6])*cos(qp[7])*cos(qp[8])*cos((2 * mel::PI) / 3 + alpha13_) - r_*cos(qp[6])*cos(qp[7])*sin(qp[8])*sin((2 * mel::PI) / 3 + alpha13_), r_*sin((2 * mel::PI) / 3 + alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*cos((2 * mel::PI) / 3 + alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
-            0, 0, qp[5] * cos((2 * mel::PI) / 3 + alpha5_)*sin(qp[2]), 0, 0, -cos((2 * mel::PI) / 3 + alpha5_)*cos(qp[2]), 0, r_*cos(qp[8])*cos((2 * mel::PI) / 3 + alpha13_)*sin(qp[7]) - r_*sin(qp[7])*sin(qp[8])*sin((2 * mel::PI) / 3 + alpha13_), r_*cos(qp[7])*cos(qp[8])*sin((2 * mel::PI) / 3 + alpha13_) + r_*cos(qp[7])*cos((2 * mel::PI) / 3 + alpha13_)*sin(qp[8]), 0, -1, 0,
-            0, 0, qp[5] * sin((2 * mel::PI) / 3 + alpha5_)*sin(qp[2]), 0, 0, -cos(qp[2])*sin((2 * mel::PI) / 3 + alpha5_), r_*cos((2 * mel::PI) / 3 + alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r_*sin((2 * mel::PI) / 3 + alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[7])*sin(qp[6])*sin(qp[8])*sin((2 * mel::PI) / 3 + alpha13_) - r_*cos(qp[7])*cos(qp[8])*cos((2 * mel::PI) / 3 + alpha13_)*sin(qp[6]), r_*sin((2 * mel::PI) / 3 + alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*cos((2 * mel::PI) / 3 + alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1;
-
-        return phi_d_qp;
-
+            0, qp[4] * cos(qp[1]), 0, 0, sin(qp[1]), 0, -r_*cos(alpha13_ - (2 * PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin(alpha13_ - (2 * PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[6])*cos(qp[7])*cos(qp[8])*cos(alpha13_ - (2 * PI) / 3) - r_*cos(qp[6])*cos(qp[7])*sin(qp[8])*sin(alpha13_ - (2 * PI) / 3), r_*sin(alpha13_ - (2 * PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*cos(alpha13_ - (2 * PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
+            0, qp[4] * cos(alpha5_ - (2 * PI) / 3)*sin(qp[1]), 0, 0, -cos(alpha5_ - (2 * PI) / 3)*cos(qp[1]), 0, 0, r_*cos(qp[8])*cos(alpha13_ - (2 * PI) / 3)*sin(qp[7]) - r_*sin(qp[7])*sin(qp[8])*sin(alpha13_ - (2 * PI) / 3), r_*cos(qp[7])*cos(qp[8])*sin(alpha13_ - (2 * PI) / 3) + r_*cos(qp[7])*cos(alpha13_ - (2 * PI) / 3)*sin(qp[8]), 0, -1, 0,
+            0, qp[4] * sin(alpha5_ - (2 * PI) / 3)*sin(qp[1]), 0, 0, -cos(qp[1])*sin(alpha5_ - (2 * PI) / 3), 0, r_*cos(alpha13_ - (2 * PI) / 3)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r_*sin(alpha13_ - (2 * PI) / 3)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[7])*sin(qp[6])*sin(qp[8])*sin(alpha13_ - (2 * PI) / 3) - r_*cos(qp[7])*cos(qp[8])*cos(alpha13_ - (2 * PI) / 3)*sin(qp[6]), r_*sin(alpha13_ - (2 * PI) / 3)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*cos(alpha13_ - (2 * PI) / 3)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1,
+            0, 0, qp[5] * cos(qp[2]), 0, 0, sin(qp[2]), -r_*cos((2 * PI) / 3 + alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*sin((2 * PI) / 3 + alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[6])*cos(qp[7])*cos(qp[8])*cos((2 * PI) / 3 + alpha13_) - r_*cos(qp[6])*cos(qp[7])*sin(qp[8])*sin((2 * PI) / 3 + alpha13_), r_*sin((2 * PI) / 3 + alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) - r_*cos((2 * PI) / 3 + alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), -1, 0, 0,
+            0, 0, qp[5] * cos((2 * PI) / 3 + alpha5_)*sin(qp[2]), 0, 0, -cos((2 * PI) / 3 + alpha5_)*cos(qp[2]), 0, r_*cos(qp[8])*cos((2 * PI) / 3 + alpha13_)*sin(qp[7]) - r_*sin(qp[7])*sin(qp[8])*sin((2 * PI) / 3 + alpha13_), r_*cos(qp[7])*cos(qp[8])*sin((2 * PI) / 3 + alpha13_) + r_*cos(qp[7])*cos((2 * PI) / 3 + alpha13_)*sin(qp[8]), 0, -1, 0,
+            0, 0, qp[5] * sin((2 * PI) / 3 + alpha5_)*sin(qp[2]), 0, 0, -cos(qp[2])*sin((2 * PI) / 3 + alpha5_), r_*cos((2 * PI) / 3 + alpha13_)*(sin(qp[6])*sin(qp[8]) - cos(qp[6])*cos(qp[8])*sin(qp[7])) + r_*sin((2 * PI) / 3 + alpha13_)*(cos(qp[8])*sin(qp[6]) + cos(qp[6])*sin(qp[7])*sin(qp[8])), r_*cos(qp[7])*sin(qp[6])*sin(qp[8])*sin((2 * PI) / 3 + alpha13_) - r_*cos(qp[7])*cos(qp[8])*cos((2 * PI) / 3 + alpha13_)*sin(qp[6]), r_*sin((2 * PI) / 3 + alpha13_)*(cos(qp[6])*sin(qp[8]) + cos(qp[8])*sin(qp[6])*sin(qp[7])) - r_*cos((2 * PI) / 3 + alpha13_)*(cos(qp[6])*cos(qp[8]) - sin(qp[6])*sin(qp[7])*sin(qp[8])), 0, 0, -1;
     }
-
 }
 
