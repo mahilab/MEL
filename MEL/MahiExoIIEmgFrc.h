@@ -4,23 +4,28 @@
 
 namespace mel {
 
-    class MahiExoIIEmgFrc : public MahiExoIIEmg, public MahiExoIIFrc {
+    namespace hdw {
 
-    public:
+        class MahiExoIIEmgFrc : public MahiExoIIEmg, public MahiExoIIFrc {
 
-        struct Config : public MahiExoIIEmg::Config, public MahiExoIIFrc::Config {
+        public:
 
+            struct Config : public MahiExoIIEmg::Config, public MahiExoIIFrc::Config {
+
+            };
+
+            struct Params : public MahiExoIIEmg::Params, public MahiExoIIFrc::Params {
+
+            };
+
+
+            //---------------------------------------------------------------------
+            // CONSTRUCTOR(S) / DESTRUCTOR(S)
+            //---------------------------------------------------------------------
+
+            MahiExoIIEmgFrc(Config configuration, Params parameters = Params());
         };
 
-        struct Params : public MahiExoIIEmg::Params, public MahiExoIIFrc::Params {
+    }
 
-        };
-
-
-        //---------------------------------------------------------------------
-        // CONSTRUCTOR(S) / DESTRUCTOR(S)
-        //---------------------------------------------------------------------
-
-        MahiExoIIEmgFrc(Config configuration, Params parameters = Params());
-    };
 }
