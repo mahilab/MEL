@@ -32,7 +32,6 @@
     <ClCompile Include="ForceSensor.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Integrator.cpp" />
-    <ClCompile Include="IpAddress.cpp" />
     <ClCompile Include="MahiExoII.cpp" />
     <ClCompile Include="MahiExoIIEmg.cpp" />
     <ClCompile Include="MahiExoIIEmgFrc.cpp" />
@@ -47,14 +46,11 @@
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
     <ClCompile Include="Robot.cpp" />
-    <ClCompile Include="Socket.cpp" />
-    <ClCompile Include="SocketSelector.cpp" />
     <ClCompile Include="StateMachine.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ExternalApp.cpp" />
     <ClCompile Include="mel_util.cpp" />
-    <ClCompile Include="UdpSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actuator.h" />
@@ -67,7 +63,6 @@
     <ClInclude Include="GuiFlag.h" />
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="IpAddress.h" />
     <ClInclude Include="MahiExoII.h" />
     <ClInclude Include="MahiExoIIEmg.h" />
     <ClInclude Include="MahiExoIIEmgFrc.h" />
@@ -77,10 +72,6 @@
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="OpenWrist.h" />
     <ClInclude Include="PdController.h" />
-    <ClInclude Include="Socket.hpp" />
-    <ClInclude Include="SocketHandle.h" />
-    <ClInclude Include="SocketImpl.h" />
-    <ClInclude Include="SocketSelector.h" />
     <ClInclude Include="Spinlock.h" />
     <ClInclude Include="StateMachine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -98,7 +89,6 @@
     <ClInclude Include="Robot.h" />
     <ClInclude Include="ExternalApp.h" />
     <ClInclude Include="mel_util.h" />
-    <ClInclude Include="UdpSocket.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

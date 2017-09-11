@@ -200,6 +200,6 @@ If you are on Windows and using Visual Studio, building MEL is fairly straight-f
     - **Linker >> Input >> Additional Dependencies**
         - add: *MEL.lib;*
 
-3. Your project should now be configured to use MEL! For usage examples, check out the [Examples project](https://github.com/epezent/MEL/tree/master/Examples), the official MEL documentation, or the [OpenWrist](https://github.com/epezent/OpenWrist) and MAHI Exo-II repositories.
+3. Your project should now be configured to use MEL! For usage examples, check out the [Examples project](https://github.com/epezent/MEL/tree/master/Examples), the official MEL documentation, or the [OpenWrist](https://github.com/epezent/OpenWrist) and [MAHI Exo-II](https://github.com/craigmc707/MEII) repositories.
 
 
