@@ -189,16 +189,33 @@ If you are on Windows and using Visual Studio, building MEL is fairly straight-f
 
 ## Using MEL In Your Projects (Windows 64-bit)
 
-1. If you are starting a new project, first create a new Visual Studio solution. Go to **File >> New >> Project**. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know how these work and want to use them). Note that you could optionally add a new Project to your MEL solution instead of creating a new one, but this is not recommended.
+1. If you are starting a new project, first create a new Visual Studio solution and project. Go to **File >> New >> Project**. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know what they are and want to use them).
 
-2. Right-click your project in the Solution Explorer and select **Properties**. Make the following changes/additions:
+2. There are a few ways to link your project against MEL. If you plan to make changes to the MEL source code yourself, follow **(A)** to add the MEL project to your VS solution. This way any changes you make to MEL will be reflected in your project, and MEL will rebuild when you attempt to build your project. If you want to use MEL, you can simply include MEL as you would any other library **(B)**.
 
-    - **C/C++ >> General >> Additional Include Directories**
-        - add: *path-to-your-MEL-repository\MEL;C:\dev\boost_1_64_0\;C:\dev\eigen;*
-    - **Linker >> General >> Additional Library Directories**
-        - add: *path-to-your-MEL-repository\bin;C:\dev\boost_1_64_0\lib64-msvc-14.1;*
-    - **Linker >> Input >> Additional Dependencies**
-        - add: *MEL.lib;*
+    **METHOD A: Add the MEL Project to Your Solution**
+
+    - With your solution open, go to **File >> Add >> Existing Project...** and navigate to **path-to-your-MEL-repository/MEL/MEL.vcxproj**
+
+    - Right-click *your* project in the Solution Explorer and select **Add >> Reference...** and check MEL
+
+    - Right-click *your* project in the Solution Explorer and select **Properties**. Make the following changes/additions:
+
+        - **C/C++ >> General >> Additional Include Directories**
+            - add: *path-to-your-MEL-repository\MEL;C:\dev\boost_1_64_0\;C:\dev\eigen;
+        - **Linker >> General >> Additional Library Directories**
+            - add: *path-to-your-MEL-repository\bin;C:\dev\boost_1_64_0\lib64-msvc-14.1;*
+
+    **METHOD B: Link MEL.lib to Your Project**
+
+    - Right-click *your* project in the Solution Explorer and select **Properties**. Make the following changes/additions:
+
+        - **C/C++ >> General >> Additional Include Directories**
+            - add: *path-to-your-MEL-repository\MEL;C:\dev\boost_1_64_0\;C:\dev\eigen;*
+        - **Linker >> General >> Additional Library Directories**
+            - add: *path-to-your-MEL-repository\bin;C:\dev\boost_1_64_0\lib64-msvc-14.1;*
+        - **Linker >> Input >> Additional Dependencies**
+            - add: *MEL.lib;*
 
 3. Your project should now be configured to use MEL! For usage examples, check out the [Examples project](https://github.com/epezent/MEL/tree/master/Examples), the official MEL documentation, or the [OpenWrist](https://github.com/epezent/OpenWrist) and [MAHI Exo-II](https://github.com/craigmc707/MEII) repositories.
 

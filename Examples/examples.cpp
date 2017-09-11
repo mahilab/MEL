@@ -142,7 +142,7 @@ int main(int argc, char * argv[]) {
         mel::math::Integrator integrator = mel::math::Integrator(5, mel::math::Integrator::Technique::Trapezoidal);
 
         // create a MEL Clock to control the rate of our data generating loop
-        mel::core::Clock clock(1000); // 1000 Hz clock
+        mel::util::Clock clock(1000); // 1000 Hz clock
 
         // In this example, we will have the data in cpp2py be a funcion of the data
         // from py2cpp. Specifically, we will generate some periodic data, and use
@@ -201,7 +201,7 @@ int main(int argc, char * argv[]) {
         mel::util::enable_realtime();
        
         for (int i = 0; i < 1000; i++) {
-            mel::core::Clock clock(1000);
+            mel::util::Clock clock(1000);
             clock.start();
             start = std::chrono::high_resolution_clock::now();
             clock.wait();
