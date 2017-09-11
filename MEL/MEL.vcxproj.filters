@@ -120,6 +120,18 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="IpAddress.cpp">
+      <Filter>Communications</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>Communications</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpSocket.cpp">
+      <Filter>Communications</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketSelector.cpp">
+      <Filter>Communications</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Robot.h">
@@ -223,6 +235,24 @@
     </ClInclude>
     <ClInclude Include="StateMachine.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.hpp">
+      <Filter>Communications</Filter>
+    </ClInclude>
+    <ClInclude Include="IpAddress.h">
+      <Filter>Communications</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketHandle.h">
+      <Filter>Communications</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketSelector.h">
+      <Filter>Communications</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketImpl.h">
+      <Filter>Communications</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpSocket.h">
+      <Filter>Communications</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
