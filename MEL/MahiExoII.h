@@ -55,17 +55,20 @@ namespace mel {
             // PUBLIC FUNCTIONS
             //-------------------------------------------------------------------------
 
-            // kinematics functions
+            // update robot kinematics from encoder readings
             void update_kinematics();
+
+            // forward kinematics utility functions
             void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out);
             void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out);
             void forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out);
             void forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out, double_vec& qp_dot_out);
+            
+            // inverse kinematics utility functions
             void inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out);
             void inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out);
             void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out);
             void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out);
-
 
             // inherited virtual functions from Exo class to be implemented
             void set_anatomical_joint_torques(double_vec new_torques, int error_code = 0) override;
@@ -113,23 +116,19 @@ namespace mel {
             const double alpha5_ = 0.094516665054824;
             const double alpha13_ = math::DEG2RAD * 5;
 
-            // kinematics variables
+            // continuously updated kinematics variables
             Eigen::VectorXd qp_ = Eigen::VectorXd::Zero(12);
-            Eigen::VectorXd qp_0_ = Eigen::VectorXd::Zero(12);
             Eigen::VectorXd q_par_ = Eigen::VectorXd::Zero(3);
             Eigen::VectorXd q_ser_ = Eigen::VectorXd::Zero(3);
             Eigen::VectorXd qp_dot_ = Eigen::VectorXd::Zero(12);
             Eigen::VectorXd q_par_dot_ = Eigen::VectorXd::Zero(3);
             Eigen::VectorXd q_ser_dot_ = Eigen::VectorXd::Zero(3);
-            //Eigen::MatrixXd A_ = Eigen::MatrixXd::Zero(3,12);
-            //Eigen::VectorXd psi_ = Eigen::VectorXd::Zero(12);
-            //Eigen::MatrixXd psi_d_qp_ = Eigen::MatrixXd::Zero(12, 12);
             Eigen::MatrixXd rho_fk_ = Eigen::MatrixXd::Zero(12, 3);
             Eigen::MatrixXd jac_fk_ = Eigen::MatrixXd::Zero(3, 3);
-            Eigen::MatrixXd rho_ik_ = Eigen::MatrixXd::Zero(12, 3);
-            Eigen::MatrixXd jac_ik_ = Eigen::MatrixXd::Zero(3, 3);
-            //Eigen::MatrixXd rho_ = Eigen::MatrixXd::Zero(12, 3);
-            Eigen::MatrixXd selector_mat_ = Eigen::MatrixXd::Zero(12, 3);
+            //Eigen::MatrixXd rho_ik_ = Eigen::MatrixXd::Zero(12, 3);
+            //Eigen::MatrixXd jac_ik_ = Eigen::MatrixXd::Zero(3, 3);
+
+            // kinematics solver setup variables
             const uint32 max_it_ = 10;
             const double tol_ = 1e-12;
             const uint8_vec select_q_par_ = { 3, 4, 5 };
@@ -143,19 +142,34 @@ namespace mel {
             // PRIVATE FUNCTIONS
             //-------------------------------------------------------------------------
 
-            // kinematics functions
+            // forward kinematics functions
             void forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out);
-            void forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& jac_fk);
+            void forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out);
+            void forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::MatrixXd& jac_fk);
+            void forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::MatrixXd& jac_fk);
+            void forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_fk, Eigen::MatrixXd& jac_fk);
+            void forward_kinematics_velocity(const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out);
             void forward_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out);
+            void forward_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::MatrixXd& jac_fk, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out);
             void forward_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out);
+            void forward_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_fk, Eigen::MatrixXd& jac_fk, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out);
+            
+            // inverse kinematics functions
             void inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out);
             void inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out);
+            void inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::MatrixXd& jac_ik);
+            void inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::MatrixXd& jac_ik);
+            void inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_ik, Eigen::MatrixXd& jac_ik);
+            void inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out);
             void inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out);
+            void inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::MatrixXd& jac_ik, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out);
             void inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out);
+            void inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_ik, Eigen::MatrixXd& jac_ik, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out);
 
-            Eigen::VectorXd solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, uint32 max_it, double tol);
+            // general kinematics functions
+            void solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, Eigen::MatrixXd& jac, uint32 max_it, double tol);
             void psi_update(const Eigen::MatrixXd& A, const Eigen::VectorXd& qs, const Eigen::VectorXd& qp, Eigen::VectorXd& phi, Eigen::VectorXd& psi);
-            void psi_d_qp_update(const Eigen::VectorXd& qp, Eigen::MatrixXd& psi_d_qp);
+            void psi_d_qp_update(const Eigen::MatrixXd& A, const Eigen::VectorXd& qp, Eigen::MatrixXd& phi_d_qp, Eigen::MatrixXd& psi_d_qp);
             void phi_update(const Eigen::VectorXd& qp, Eigen::VectorXd& phi);
             void phi_d_qp_update(const Eigen::VectorXd& qp, Eigen::MatrixXd& phi_d_qp);
 
