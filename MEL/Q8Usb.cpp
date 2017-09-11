@@ -234,7 +234,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no analog input channels were passed to the constructor." << std::endl;
+                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no analog input channels were passed to the constructor." << std::endl;
             }
         }
 
@@ -245,7 +245,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no digital input channels were passed to the constructor." << std::endl;
+                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no digital input channels were passed to the constructor." << std::endl;
             }
         }
 
@@ -256,7 +256,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no encoder channels were passed to the constructor." << std::endl;
+                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no encoder channels were passed to the constructor." << std::endl;
             }
         }
 
@@ -267,7 +267,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Either Q8 USB " << id_ << "has not been activated, or no encoder channels were passed to the constructor." << std::endl;
+                std::cout << "ERROR: Either Q8 USB " << id_ << "has not been enabled, or no encoder channels were passed to the constructor." << std::endl;
             }
         }
 
@@ -286,7 +286,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
+                std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
             }
         }
 
@@ -297,7 +297,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been activated, or no analog output channels were passed to the constructor." << std::endl;
+                std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no analog output channels were passed to the constructor." << std::endl;
             }
         }
 
@@ -308,7 +308,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Either Q8 USB " << id_ << "has not been activated, or no digital output channels were passed to the constructor." << std::endl;
+                std::cout << "ERROR: Either Q8 USB " << id_ << "has not been enabled, or no digital output channels were passed to the constructor." << std::endl;
             }
         }
 
@@ -327,7 +327,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
+                std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
             }
         }
 
@@ -338,7 +338,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
+                std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
             }
         }
 
@@ -349,7 +349,7 @@ namespace mel {
                     print_quarc_error(result);
             }
             else {
-                std::cout << "ERROR: Q8 USB " << id_ << " has not been activated." << std::endl;
+                std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
             }
         }
 
@@ -360,6 +360,76 @@ namespace mel {
             result = hil_watchdog_clear(q8_usb_);
             if (result < 0)
                 print_quarc_error(result);
+        }
+
+        void Q8Usb::benchmark(uint32 samples) {
+
+            if (enabled_) {
+
+                util::print("Benchmarking Q8 USB " + std::to_string(id_) + " with " + std::to_string(samples) + " samples.");
+
+                double start, stop;
+
+                // analog input benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    read_analogs();
+                stop = util::Clock::global_time();
+                util::print("AI: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // analog output benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    write_analogs();
+                stop = util::Clock::global_time();
+                util::print("AO: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // digital input benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    read_digitals();
+                stop = util::Clock::global_time();
+                util::print("DI: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // digital output benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    write_digitals();
+                stop = util::Clock::global_time();
+                util::print("DO: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // encoder benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    read_encoders();
+                stop = util::Clock::global_time();
+                util::print("ENCODER: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // encrate benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    read_encrates();
+                stop = util::Clock::global_time();
+                util::print("ENCRATE: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // read all benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    read_all();
+                stop = util::Clock::global_time();
+                util::print("READ ALL: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+                // write all benchmark
+                start = util::Clock::global_time();
+                for (uint32 i = 0; i < samples; i++)
+                    write_all();
+                stop = util::Clock::global_time();
+                util::print("WRITE ALL: " + std::to_string(stop - start) + "s (" + std::to_string((int)(samples / (util::Clock::global_time() - start))) + " Hz)");
+
+            }
+            else {
+                std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
+            }
         }
 
         void Q8Usb::set_ai_voltage_ranges(voltage_vec min_voltages, voltage_vec max_voltages) {

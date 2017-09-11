@@ -133,6 +133,8 @@ namespace mel {
             void start_watchdog(double watchdog_timeout) override;
             void stop_watchdog() override;
 
+            void benchmark(uint32 samples) override;
+
             double get_encoder_rate(channel channel_number) override {
                 channel_number += 14000;
                 return Daq::get_encoder_rate(channel_number);

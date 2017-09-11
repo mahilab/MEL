@@ -9,6 +9,7 @@
 #include <cmath>
 #include <random>
 #include "mel_math.h"
+#include "Q8Usb.h"
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -31,6 +32,7 @@ int main(int argc, char * argv[]) {
         ("melshare-msg", "example demonstrating how to send and recieve string messages over MELShare")
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
         ("external", "example of how to launch an external app or game from C++")
+        ("q8", "example demonstrating how to set up a Q8 USB and becnhmark it's read/write speed")
         ("clock", "clock testing");
 
     boost::program_options::variables_map var_map;
@@ -192,6 +194,33 @@ int main(int argc, char * argv[]) {
     if (var_map.count("external")) {
         mel::util::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
         my_app.launch();
+    }
+
+    //-------------------------------------------------------------------------
+    // Q8 USB EXAMPLE:    >Examples.exe --q8
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("q8")) {
+
+        mel::uint32 id = 0;
+
+        mel::channel_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        mel::channel_vec  ao_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        mel::channel_vec  di_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        mel::channel_vec  do_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        mel::channel_vec enc_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+
+        mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+
+        mel::util::print("Press ENTER to enable this Q8 USB", false);
+        getchar();
+        q8->enable();
+
+        mel::util::print("Press ENTER to benchmark this Q8 USB", false);
+        getchar();
+        q8->benchmark(1000000);
+
+        q8->disable();
     }
 
     if (var_map.count("clock")) {
