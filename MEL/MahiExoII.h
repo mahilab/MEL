@@ -59,16 +59,16 @@ namespace mel {
             void update_kinematics();
 
             // forward kinematics utility functions
-            void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out);
-            void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out);
-            void forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out);
-            void forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out, double_vec& qp_dot_out);
+            void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out) const;
+            void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out) const;
+            void forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out) const;
+            void forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out, double_vec& qp_dot_out) const;
             
             // inverse kinematics utility functions
-            void inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out);
-            void inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out);
-            void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out);
-            void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out);
+            void inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out) const;
+            void inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) const;
+            void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) const;
+            void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const;
 
             // inherited virtual functions from Exo class to be implemented
             void set_anatomical_joint_torques(double_vec new_torques, int error_code = 0) override;
@@ -81,7 +81,7 @@ namespace mel {
             const Params params_;
 
             std::array<core::PdController, 5> robot_joint_pd_controllers_ = {
-                core::PdController(50.0, 0.25),
+                core::PdController(80.0, 1.5), // tuned 9/11/2017
                 core::PdController(7.0, 0.06),
                 core::PdController(1000.0, 1.0),
                 core::PdController(1000.0, 1.0),
@@ -89,7 +89,7 @@ namespace mel {
             };
 
             std::array<core::PdController, 5> anatomical_joint_pd_controllers_ = {
-                core::PdController(50.0, 0.25),
+                core::PdController(80.0, 1.5), // tuned 9/11/2017
                 core::PdController(7.0, 0.06),
                 core::PdController(25.0, 0.05),
                 core::PdController(30.0, 0.08),
@@ -110,11 +110,11 @@ namespace mel {
             //-------------------------------------------------------------------------
 
             // geometric parameters
-            const double R_ = 0.1044956;
-            const double r_ = 0.05288174521;
-            const double a56_ = 0.0268986 - 0.0272820;
-            const double alpha5_ = 0.094516665054824;
-            const double alpha13_ = math::DEG2RAD * 5;
+            static const double R_;
+            static const double r_;
+            static const double a56_;
+            static const double alpha5_;
+            static const double alpha13_;
 
             // continuously updated kinematics variables
             Eigen::VectorXd qp_ = Eigen::VectorXd::Zero(12);
@@ -167,7 +167,7 @@ namespace mel {
             void inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_ik, Eigen::MatrixXd& jac_ik, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out) const;
 
             // general kinematics functions
-            void solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, Eigen::MatrixXd& jac, uint32 max_it, double tol) const;
+            void solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, uint32 max_it, double tol) const;
             void psi_update(const Eigen::MatrixXd& A, const Eigen::VectorXd& qs, const Eigen::VectorXd& qp, Eigen::VectorXd& phi, Eigen::VectorXd& psi) const;
             void psi_d_qp_update(const Eigen::MatrixXd& A, const Eigen::VectorXd& qp, Eigen::MatrixXd& phi_d_qp, Eigen::MatrixXd& psi_d_qp) const;
             void phi_update(const Eigen::VectorXd& qp, Eigen::VectorXd& phi) const;

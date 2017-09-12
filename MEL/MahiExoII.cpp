@@ -6,6 +6,23 @@ namespace mel {
 
     namespace exo {
 
+        //-------------------------------------------------------------------------
+        // STATIC VARIABLES
+        //-------------------------------------------------------------------------
+
+        // geometric parameters
+        const double MahiExoII::R_ = 0.1044956;
+        const double MahiExoII::r_ = 0.05288174521;
+        const double MahiExoII::a56_ = 0.0268986 - 0.0272820;
+        const double MahiExoII::alpha5_ = 0.094516665054824;
+        const double MahiExoII::alpha13_ = math::DEG2RAD * 5;
+
+
+
+        //-------------------------------------------------------------------------
+        // CONSTRUCTOR / DESTRUCTOR
+        //-------------------------------------------------------------------------
+
         MahiExoII::MahiExoII(Config configuration, Params parameters) :
             Exo("mahi_exo_ii"),
             config_(configuration),
@@ -74,7 +91,7 @@ namespace mel {
             q_par_ << joints_[2]->get_position(), joints_[3]->get_position(), joints_[4]->get_position();
             q_par_dot_ << joints_[2]->get_velocity(), joints_[3]->get_velocity(), joints_[4]->get_velocity();
 
-            // run forward kinematics solver to update q_ser and qp_ (q prime), which contains all 12 RPS positions
+            // run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
             forward_kinematics_velocity(q_par_, q_ser_, qp_, rho_fk_, jac_fk_, q_par_dot_, q_ser_dot_, qp_dot_);
 
             // get positions from first two anatomical joints, which have encoders
@@ -82,101 +99,18 @@ namespace mel {
             anatomical_joint_positions_[1] = joints_[1]->get_position(); // forearm pronation/supination
 
             // get positions from forward kinematics solver for three wrist anatomical joints 
-            anatomical_joint_positions_[2] = qp_(6); // wrist flexion/extension
-            anatomical_joint_positions_[3] = qp_(7); // wrist radial/ulnar deviation
-            anatomical_joint_positions_[4] = qp_(9); // arm translation
+            anatomical_joint_positions_[2] = q_ser_[0]; // wrist flexion/extension
+            anatomical_joint_positions_[3] = q_ser_[1]; // wrist radial/ulnar deviation
+            anatomical_joint_positions_[4] = q_ser_[2]; // arm translation
 
             // get velocities from first two anatomical joints, which have encoders
             anatomical_joint_velocities_[0] = joints_[0]->get_velocity(); // elbow flexion/extension
             anatomical_joint_velocities_[1] = joints_[1]->get_velocity(); // forearm pronation/supination
 
             // get velocities from forward kinematics solver for three wrist anatomical joints 
-            anatomical_joint_velocities_[2] = qp_dot_(6); // wrist flexion/extension
-            anatomical_joint_velocities_[3] = qp_dot_(7); // wrist radial/ulnar deviation
-            anatomical_joint_velocities_[4] = qp_dot_(9); // arm translation
-        }
-
-        void MahiExoII::forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out) {
-            double_vec qp;
-            forward_kinematics(q_par_in, q_ser_out, qp);
-        }
-
-        void MahiExoII::forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out) {
-
-            Eigen::VectorXd q_par_in_eig = math::stdv2eigenv(q_par_in);
-            Eigen::VectorXd q_ser_out_eig = Eigen::VectorXd::Zero(3);
-            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
-
-            forward_kinematics(q_par_in_eig, q_ser_out_eig, qp_out_eig);
-
-            q_ser_out = math::eigenv2stdv(q_ser_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
-
-        }
-
-        void MahiExoII::forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out) {
-            double_vec qp, qp_dot;
-            forward_kinematics_velocity(q_par_in, q_ser_out, qp, q_par_dot_in, q_ser_dot_out, qp_dot);
-        }
-
-
-        void MahiExoII::forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out, double_vec& qp_dot_out) {
-
-            Eigen::VectorXd q_par_in_eig = math::stdv2eigenv(q_par_in);
-            Eigen::VectorXd q_ser_out_eig = Eigen::VectorXd::Zero(3);
-            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
-            Eigen::VectorXd q_par_dot_in_eig = math::stdv2eigenv(q_par_dot_in);
-            Eigen::VectorXd q_ser_dot_out_eig = Eigen::VectorXd::Zero(3);
-            Eigen::VectorXd qp_dot_out_eig = Eigen::VectorXd::Zero(12);
-
-            forward_kinematics_velocity(q_par_in_eig, q_ser_out_eig, qp_out_eig, q_par_dot_in_eig, q_ser_dot_out_eig, qp_dot_out_eig);
-
-            q_ser_out = math::eigenv2stdv(q_ser_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
-            q_ser_dot_out = math::eigenv2stdv(q_ser_dot_out_eig);
-            qp_dot_out = math::eigenv2stdv(qp_dot_out_eig);
-
-        }
-
-        void MahiExoII::inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out) {
-            double_vec qp;
-            inverse_kinematics(q_ser_in, q_par_out, qp);
-        }
-
-        void MahiExoII::inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) {
-
-            Eigen::VectorXd q_ser_in_eig = math::stdv2eigenv(q_ser_in);
-            Eigen::VectorXd q_par_out_eig = Eigen::VectorXd::Zero(3);
-            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
-
-            inverse_kinematics(q_ser_in_eig, q_par_out_eig, qp_out_eig);
-
-            q_par_out = math::eigenv2stdv(q_par_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
-
-        }
-
-        void MahiExoII::inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) {
-            double_vec qp, qp_dot;
-            inverse_kinematics_velocity(q_ser_in, q_par_out, qp, q_ser_dot_in, q_par_dot_out, qp_dot);
-        }
-
-        void MahiExoII::inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) {
-
-            Eigen::VectorXd q_ser_in_eig = math::stdv2eigenv(q_ser_in);
-            Eigen::VectorXd q_par_out_eig = Eigen::VectorXd::Zero(3);
-            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
-            Eigen::VectorXd q_ser_dot_in_eig = math::stdv2eigenv(q_ser_dot_in);
-            Eigen::VectorXd q_par_dot_out_eig = Eigen::VectorXd::Zero(3);
-            Eigen::VectorXd qp_dot_out_eig = Eigen::VectorXd::Zero(12);
-
-            inverse_kinematics_velocity(q_ser_in_eig, q_par_out_eig, qp_out_eig, q_ser_dot_in_eig, q_par_dot_out_eig, qp_dot_out_eig);
-
-            q_par_out = math::eigenv2stdv(q_par_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
-            q_par_dot_out = math::eigenv2stdv(q_par_dot_out_eig);
-            qp_dot_out = math::eigenv2stdv(qp_dot_out_eig);
-
+            anatomical_joint_velocities_[2] = q_ser_dot_[0]; // wrist flexion/extension
+            anatomical_joint_velocities_[3] = q_ser_dot_[1]; // wrist radial/ulnar deviation
+            anatomical_joint_velocities_[4] = q_ser_dot_[2]; // arm translation
         }
 
         void MahiExoII::set_anatomical_joint_torques(double_vec new_torques, int error_code) {
@@ -235,8 +169,95 @@ namespace mel {
             joints_[2]->set_torque(par_torques(0));
             joints_[3]->set_torque(par_torques(1));
             joints_[4]->set_torque(par_torques(2));
+            //std::cout << jac_fk_.transpose() << std::endl;
 
         }
+
+
+        void MahiExoII::forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out) const {
+            double_vec qp;
+            forward_kinematics(q_par_in, q_ser_out, qp);
+        }
+
+        void MahiExoII::forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out) const {
+
+            Eigen::VectorXd q_par_in_eig = math::stdv2eigenv(q_par_in);
+            Eigen::VectorXd q_ser_out_eig = Eigen::VectorXd::Zero(3);
+            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
+
+            forward_kinematics(q_par_in_eig, q_ser_out_eig, qp_out_eig);
+
+            q_ser_out = math::eigenv2stdv(q_ser_out_eig);
+            qp_out = math::eigenv2stdv(qp_out_eig);
+
+        }
+
+        void MahiExoII::forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out) const {
+            double_vec qp, qp_dot;
+            forward_kinematics_velocity(q_par_in, q_ser_out, qp, q_par_dot_in, q_ser_dot_out, qp_dot);
+        }
+
+
+        void MahiExoII::forward_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out, double_vec& qp_dot_out) const {
+
+            Eigen::VectorXd q_par_in_eig = math::stdv2eigenv(q_par_in);
+            Eigen::VectorXd q_ser_out_eig = Eigen::VectorXd::Zero(3);
+            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
+            Eigen::VectorXd q_par_dot_in_eig = math::stdv2eigenv(q_par_dot_in);
+            Eigen::VectorXd q_ser_dot_out_eig = Eigen::VectorXd::Zero(3);
+            Eigen::VectorXd qp_dot_out_eig = Eigen::VectorXd::Zero(12);
+
+            forward_kinematics_velocity(q_par_in_eig, q_ser_out_eig, qp_out_eig, q_par_dot_in_eig, q_ser_dot_out_eig, qp_dot_out_eig);
+
+            q_ser_out = math::eigenv2stdv(q_ser_out_eig);
+            qp_out = math::eigenv2stdv(qp_out_eig);
+            q_ser_dot_out = math::eigenv2stdv(q_ser_dot_out_eig);
+            qp_dot_out = math::eigenv2stdv(qp_dot_out_eig);
+
+        }
+
+        void MahiExoII::inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out) const {
+            double_vec qp;
+            inverse_kinematics(q_ser_in, q_par_out, qp);
+        }
+
+        void MahiExoII::inverse_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) const {
+
+            Eigen::VectorXd q_ser_in_eig = math::stdv2eigenv(q_ser_in);
+            Eigen::VectorXd q_par_out_eig = Eigen::VectorXd::Zero(3);
+            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
+
+            inverse_kinematics(q_ser_in_eig, q_par_out_eig, qp_out_eig);
+
+            q_par_out = math::eigenv2stdv(q_par_out_eig);
+            qp_out = math::eigenv2stdv(qp_out_eig);
+
+        }
+
+        void MahiExoII::inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) const {
+            double_vec qp, qp_dot;
+            inverse_kinematics_velocity(q_ser_in, q_par_out, qp, q_ser_dot_in, q_par_dot_out, qp_dot);
+        }
+
+        void MahiExoII::inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const {
+
+            Eigen::VectorXd q_ser_in_eig = math::stdv2eigenv(q_ser_in);
+            Eigen::VectorXd q_par_out_eig = Eigen::VectorXd::Zero(3);
+            Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(12);
+            Eigen::VectorXd q_ser_dot_in_eig = math::stdv2eigenv(q_ser_dot_in);
+            Eigen::VectorXd q_par_dot_out_eig = Eigen::VectorXd::Zero(3);
+            Eigen::VectorXd qp_dot_out_eig = Eigen::VectorXd::Zero(12);
+
+            inverse_kinematics_velocity(q_ser_in_eig, q_par_out_eig, qp_out_eig, q_ser_dot_in_eig, q_par_dot_out_eig, qp_dot_out_eig);
+
+            q_par_out = math::eigenv2stdv(q_par_out_eig);
+            qp_out = math::eigenv2stdv(qp_out_eig);
+            q_par_dot_out = math::eigenv2stdv(q_par_dot_out_eig);
+            qp_dot_out = math::eigenv2stdv(qp_dot_out_eig);
+
+        }
+
+        
 
         //-----------------------------------------------------------------------------
         // PRIVATE KINEMATICS FUNCTIONS
@@ -269,8 +290,11 @@ namespace mel {
         }
 
         void MahiExoII::forward_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_fk, Eigen::MatrixXd& jac_fk) const {
-            solve_kinematics(select_q_par_, q_par_in, qp_out, rho_fk, jac_fk, max_it_, tol_);
+            solve_kinematics(select_q_par_, q_par_in, qp_out, rho_fk, max_it_, tol_);
             q_ser_out << qp_out(select_q_ser_[0]), qp_out(select_q_ser_[1]), qp_out(select_q_ser_[2]);
+            for (int i = 0; i < 3; ++i) {
+                jac_fk.row(i) = rho_fk.row(select_q_ser_[i]);
+            }
         }
 
         void MahiExoII::forward_kinematics_velocity(const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out) const {
@@ -341,8 +365,11 @@ namespace mel {
         }
 
         void MahiExoII::inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_ik, Eigen::MatrixXd& jac_ik) const {
-            solve_kinematics(select_q_ser_, q_ser_in, qp_out, rho_ik, jac_ik, max_it_, tol_);
+            solve_kinematics(select_q_ser_, q_ser_in, qp_out, rho_ik, max_it_, tol_);
             q_par_out << qp_out(select_q_par_[0]), qp_out(select_q_par_[1]), qp_out(select_q_par_[2]);
+            for (int i = 0; i < 3; ++i) {
+                jac_ik.row(i) = rho_ik.row(select_q_par_[i]);
+            }
         }
 
         void MahiExoII::inverse_kinematics_velocity(const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out) const {
@@ -385,7 +412,7 @@ namespace mel {
 
 
 
-        void MahiExoII::solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, Eigen::MatrixXd& jac, uint32 max_it, double tol) const {
+        void MahiExoII::solve_kinematics(uint8_vec select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, uint32 max_it, double tol) const {
 
             // build selection matrix
             Eigen::MatrixXd A = Eigen::MatrixXd::Zero(3, 12);
@@ -450,9 +477,7 @@ namespace mel {
             }
 
             rho = psi_d_qp.fullPivLu().solve(rho_rhs);
-            for (int i = 0; i < 3; ++i) {
-                jac.row(i) = rho.row(select_q[i]);
-            }
+            
         }
 
 
