@@ -2,6 +2,8 @@
 #include <vector>
 #include <Eigen\Dense>
 #include <Eigen\StdVector>
+#include <limits>
+#include <cmath>
 
 namespace mel {
 
@@ -11,8 +13,9 @@ namespace mel {
         // CONSTANTS
         //-------------------------------------------------------------------------
 
-        const double PI  = 3.14159265358979E+00;  ///< pi
-        const double INF = HUGE_VAL; ///< constant representing positive infinity
+        const double PI  = 3.14159265358979E+00;                     ///< pi
+        const double EPS = std::numeric_limits<double>::epsilon();   ///< smallest double such that 1.0 + EPS != 1.0
+        const double INF = std::numeric_limits<double>::infinity();  ///< constant representing positive infinity (negative infinifty is just -INF)
 
         //-------------------------------------------------------------------------
         // CONVERSION FACTORS
@@ -33,10 +36,34 @@ namespace mel {
             return (T(0) < val) - (val < T(0));
         }
 
-        double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
-        double saturate(double value, double max, double min);
-        double saturate(double value, double abs_max);
+        /// Clamps value between min and max
+        template <typename T>
+        T saturate(T value, T max, T min) {
+            if (value > max)
+                return max;
+            else if (value < min)
+                return min;
+            else
+                return value;
+        }
+        /// Clamps value between -abs_max and +abs_max
+        template <typename T>
+        T saturate(T value, T abs_max) {
+            abs_max = std::abs(abs_max);
+            return saturate(value, abs_max, -abs_max);
+        }
 
+        /// Returns true if a and b are approximately equal to each other within machine precision
+        template <typename T>
+        bool approx_equal(T a, T b) {
+            return std::abs(a - b) < std::numeric_limits<T>::epsilon();
+        }
+        /// Returns true if a and b are approximately equal to each other within the specified tolerance
+        template <typename T>
+        bool approx_equal(T a, T b, T tolerance) {
+            return std::abs(a - b) < tolerance;
+        }
+        
         /// Returns a linearly spaced vector with #n elements between #a and #b. The type returned will
         /// be the same as the type passed in. Be mindful of this; linspace(0,3,3) will return [0,1,3], 
         /// whereas linespace(0.0, 3.0, 3) will return [0.0, 1.5, 3.0]
@@ -54,13 +81,16 @@ namespace mel {
             return out;
         }
 
+        /// Computes a proportial-derivative control effort given gains, reference state, and current state
+        double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
+
         //--------------------------------------------------------------------------
-        // WAVEFORMS
+        // CYCLIC WAVEFORMS
         //--------------------------------------------------------------------------
 
-        double sin_wave(double amplitude, double frequency, double t);
-        double cos_wave(double amplitude, double frequency, double t);
-        double square_wave(double amplitude, double frequency, double t);
+        double      sin_wave(double amplitude, double frequency, double t);
+        double      cos_wave(double amplitude, double frequency, double t);
+        double   square_wave(double amplitude, double frequency, double t);
         double triangle_wave(double amplitude, double frequency, double t);
         double sawtooth_wave(double amplitude, double frequency, double t);
 

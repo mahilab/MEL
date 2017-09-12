@@ -8,19 +8,7 @@ namespace mel {
             return kp * (x_ref - x) + kd * (xd_ref - xd);
         }
 
-        double saturate(double value, double max, double min) {
-            if (value > max)
-                return max;
-            else if (value < min)
-                return min;
-            else
-                return value;
-        }
 
-        double saturate(double value, double abs_max) {
-            abs_max = abs(abs_max);
-            return saturate(value, abs_max, -abs_max);
-        }
 
         double sin_wave(double amplitude, double frequency, double t) {
             return amplitude * sin(2 * PI * frequency * t);
