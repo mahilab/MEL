@@ -52,7 +52,7 @@ namespace mel {
             peak_current_limit_(peak_current_limit),
             i2t_time_(i2t_time),
             current_limit_mode_(CurrentLimitMode::I2T),
-            has_current_limit_(true),
+            has_current_limit_(false),
             has_current_sense_(true)
         { }
 

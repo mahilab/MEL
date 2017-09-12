@@ -332,11 +332,7 @@ namespace mel {
             forward_kinematics(q_par_in, q_ser_out, qp_out, rho_fk, jac_fk);
             qp_dot_out = rho_fk * q_par_dot_in;
             q_ser_dot_out = jac_fk * q_par_dot_in;
-        }
-
-        
-
-
+        }    
 
         void MahiExoII::inverse_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out) const {
             Eigen::VectorXd qp = Eigen::VectorXd::Zero(12);
