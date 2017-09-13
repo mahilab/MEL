@@ -324,24 +324,30 @@ int main(int argc, char * argv[]) {
         // disable hardware and cleanup
         ow.disable();
         q8->disable();
-        mel::util::enable_realtime();
+        mel::util::disable_realtime();
         delete q8;
     }   
 
     //-------------------------------------------------------------------------
-    // CLOCK WAIT EXAMPLE:    >Examples.exe --clock
+    // CLOCK BENCHMARK:    >Examples.exe --clock
     //-------------------------------------------------------------------------
 
     if (var_map.count("clock")) {
 
+        mel::uint32 seconds   = 1;
+        mel::uint32 frequency = 1000;
+
         double mean, stddev;
 
-        mel::util::Clock clock(1000);
+        mel::util::Clock clock(frequency);
         mel::util::enable_realtime();
 
+        mel::util::print("Benchmarking Clock for " + std::to_string(static_cast<int>(seconds)) + " second(s) at " + std::to_string(frequency) + " Hz.");
+
         // accurate wait (default)
+        mel::util::print("Accurate Wait:    ", false);
         clock.start();
-        while (clock.time() < 30.0) {
+        while (clock.time() < (double)seconds) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.wait();
@@ -349,11 +355,13 @@ int main(int argc, char * argv[]) {
         }
         mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
         stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print("Accurate Wait: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms");
+        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
 
         // efficient wait
+        mel::util::print("Efficient Wait:   ", false);
         clock.start();
-        while (clock.time() < 30.0) {
+        while (clock.time() < (double)seconds) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.efficient_wait();
@@ -361,11 +369,13 @@ int main(int argc, char * argv[]) {
         }
         mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
         stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print("Efficient Wait: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms");
+        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
 
         // efficient wait
+        mel::util::print("Hybrid Wait:      ", false);
         clock.start();
-        while (clock.time() < 30.0) {
+        while (clock.time() < (double)seconds) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.hybrid_wait();
@@ -373,7 +383,8 @@ int main(int argc, char * argv[]) {
         }
         mean =   mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
         stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print("Hybrid Wait: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms");
+        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
 
         mel::util::disable_realtime();
     }
