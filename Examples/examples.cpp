@@ -334,7 +334,7 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("clock")) {
 
-        mel::uint32 seconds   = 1;
+        mel::uint32 seconds   = 60;
         mel::uint32 frequency = 1000;
 
         double mean, stddev;
