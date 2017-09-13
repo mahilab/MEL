@@ -25,22 +25,24 @@ namespace mel {
             /// Starts or restarts the clock timer and clears the log. This should be called before the wait loop starts.
             void start();
             /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
-            /// execution time less than the fixed step time (delta time) of the clock. This is a hybrid of accurate_wait()
-            /// and efficient_wait(). It uses efficient_wait() for 75% of the remaining wait time, and accurate_wait() for
-            /// the remaining 10%. It's performance cost is closest to efficient_wait(), and it's accuracy is nearly as good
-            /// as accurate_wait(). 
+            /// execution time less than the fixed step time (delta time) of the clock. This is the most accurate wait
+            /// function in MEL, but uses significantly system resources that efficient_wait() and hybrid_wait(). It may cause other 
+            /// programs on the same machine to lag.
             void wait();
             /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
-            /// execution time less than the fixed step time (delta time) of the clock. This is a significantly more accurate
-            /// version of efficient_wait(), but also uses significantly system resources and may cause other programs to lag.
-            /// Use this if you aren't running real-time visualizations (e.g. Unity) on the same machine, or if your control
-            /// algorithm depends on very accurate sampling rates (e.g. Kalman filter).
-            void accurate_wait();
-            /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
             /// execution time less than the fixed step time (delta time) of the clock. This is a significantly less accurate
-            /// version of accurate_wait(), but uses fewer system resources. Use this if you are running real-time visualizations
-            /// (e.g. Unity) on the same machine.
+            /// version of wait(), but uses fewer system resources. It is only capable of waiting for periods down to 0.5 - 0.75 ms. 
+            /// It is HIGHLY reccommended to call util::enable_realtime() if using this waiting function, otherwise Window's thread 
+            /// scheduler may not switch fast enough.
             void efficient_wait();
+            /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
+            /// execution time less than the fixed step time (delta time) of the clock. This is a hybrid of wait() and
+            /// efficient_wait(). It uses efficient_wait() for 75% of the remaining wait time, and accurate_wait() for
+            /// the remaining 25%. It's performance cost is closest to efficient_wait(), and it's accuracy is nearly as good
+            /// as accurate_wait(). It is only capable of waiting for periods down to 0.5 - 0.75 ms. It is HIGHLY reccommended 
+            /// to call util::enable_realtime() if using this waiting function, otherwise Window's thread scheduler may not 
+            /// switch fast enough.
+            void hybrid_wait();
             /// Retruns the number of ticks or steps that have occured since that clock was started.
             /// This should only be called inside of a loop also calling the wait() function.
             uint32 tick();
@@ -83,7 +85,9 @@ namespace mel {
             // PRIVATE FUNCTIONS
             //---------------------------------------------------------------------
 
-            void usleep(uint64 microseconds);
+            /// Puts the thread to sleep so other processes can execute. A higher
+            /// resolution version of std::this_thread::sleep_for() or Windows.h Sleep(). 
+            void usleep(int64 microseconds);
 
             //---------------------------------------------------------------------
             // STATIC VAIRABLES / FUNCTIONS

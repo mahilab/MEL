@@ -16,10 +16,12 @@ namespace mel {
         const std::string get_ymdhms();  ///< Get current date/time, format is YYYY-MM-DD.HH:mm:ss
         std::string get_last_windows_error_message();
 
-        /// Enables soft realtime scheduling performance. The program must be run 'As Administrator'
+        /// Enables soft realtime performance. The program must be run 'As Administrator'
         /// to obtain the REALTIME priority policy. Otherwise, it will default to HIGH priority policy, 
         /// which is still higher than typical Windows applications (NORMAL in most cases).
         void enable_realtime();
+        ///  Disables soft realtime performance.
+        void disable_realtime();
 
         //-------------------------------------------------------------------------
         // PRINTING AND FORMATTING FUNCTIONS

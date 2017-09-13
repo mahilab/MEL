@@ -187,7 +187,7 @@ int main(int argc, char * argv[]) {
             cpp2py.write(cpp2py_data);
 
             // wait the clock
-            clock.accurate_wait();
+            clock.wait();
         }
     }
 
@@ -316,7 +316,7 @@ int main(int argc, char * argv[]) {
             q8->write_all();
 
             // wait for the next clock tick
-            clock.wait();
+            clock.hybrid_wait();
 
             clock.log();
         }
@@ -324,6 +324,7 @@ int main(int argc, char * argv[]) {
         // disable hardware and cleanup
         ow.disable();
         q8->disable();
+        mel::util::enable_realtime();
         delete q8;
     }   
 
@@ -336,27 +337,15 @@ int main(int argc, char * argv[]) {
         mel::util::Clock clock(1000);
         mel::util::enable_realtime();
 
-        // hybrid wait (default)
+        // accurate wait (default)
         clock.start();
         while (clock.time() < 1.0) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.wait();
             clock.log();
-            mel::util::print(clock.time());
         }
         clock.save_log();
-
-        // accurate wait
-        clock.start();
-        while (clock.time() < 1.0) {
-            // fake busy code
-            mel::util::Clock::wait_for(0.0001);
-            clock.accurate_wait();
-            clock.log();
-        }
-        clock.save_log();
-
 
         // efficient wait
         clock.start();
@@ -367,6 +356,19 @@ int main(int argc, char * argv[]) {
             clock.log();
         }
         clock.save_log();
+
+
+        // efficient wait
+        clock.start();
+        while (clock.time() < 1.0) {
+            // fake busy code
+            mel::util::Clock::wait_for(0.0001);
+            clock.hybrid_wait();
+            clock.log();
+        }
+        clock.save_log();
+
+        mel::util::disable_realtime();
     }
 
     //-------------------------------------------------------------------------
