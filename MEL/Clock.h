@@ -53,6 +53,8 @@ namespace mel {
             void log();
             /// Saves the clock log to ./clock_logs/
             void save_log();
+            /// Benchmarks the clock on the current system and outputs results
+            void benchmark();
 
             //---------------------------------------------------------------------
             // PUBLIC VARIABLES

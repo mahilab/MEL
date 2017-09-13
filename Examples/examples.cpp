@@ -253,9 +253,9 @@ int main(int argc, char * argv[]) {
         mel::dev::Q8Usb::Options options_q8;
         options_q8.update_rate_ = mel::dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
         options_q8.decimation_ = 1;
-        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
-        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
-        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +1.912, 18.43, 0, -1, 0, 1000);
+        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
 
         // initialize Q8 object as DAQ pointer (polymorphism)
         mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
@@ -275,10 +275,10 @@ int main(int argc, char * argv[]) {
         // create a 1000 Hz Clock to run our controller on
         mel::util::Clock clock(1000);
 
-        // create some PD controllers
-        mel::core::PdController pd0(25, 1.15); // joint 0 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd1(20, 1.00); // joint 1 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd2(20, 0.25);  // joint 2 ( Nm/rad , Nm-s/rad )
+        // create some PD controllers that fill like springs
+        mel::core::PdController pd0(10, 0.05); // joint 0 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd1(10, 0.05); // joint 1 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd2(10, 0.025);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
         mel::util::Input::prompt("Press ENTER to start the controller.", mel::util::Input::Return);
@@ -305,7 +305,7 @@ int main(int argc, char * argv[]) {
             ow.update_state_map();
 
             // check joint limits and react if necessary
-            if (ow.check_all_joint_position_limits() || ow.check_all_joint_torque_limits())
+            if (ow.check_all_joint_limits())
                 break;
 
             // check for user request to stop
@@ -324,49 +324,67 @@ int main(int argc, char * argv[]) {
         // disable hardware and cleanup
         ow.disable();
         q8->disable();
-        mel::util::enable_realtime();
+        mel::util::disable_realtime();
         delete q8;
     }   
 
     //-------------------------------------------------------------------------
-    // CLOCK WAIT EXAMPLE:    >Examples.exe --clock
+    // CLOCK BENCHMARK:    >Examples.exe --clock
     //-------------------------------------------------------------------------
 
     if (var_map.count("clock")) {
 
-        mel::util::Clock clock(1000);
+        mel::uint32 seconds   = 60;
+        mel::uint32 frequency = 1000;
+
+        double mean, stddev;
+
+        mel::util::Clock clock(frequency);
         mel::util::enable_realtime();
 
+        mel::util::print("Benchmarking Clock for " + std::to_string(static_cast<int>(seconds)) + " second(s) at " + std::to_string(frequency) + " Hz.");
+
         // accurate wait (default)
+        mel::util::print("Accurate Wait:    ", false);
         clock.start();
-        while (clock.time() < 1.0) {
+        while (clock.time() < (double)seconds) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.wait();
             clock.log();
         }
-        clock.save_log();
+        mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
 
         // efficient wait
+        mel::util::print("Efficient Wait:   ", false);
         clock.start();
-        while (clock.time() < 1.0) {
+        while (clock.time() < (double)seconds) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.efficient_wait();
             clock.log();
         }
-        clock.save_log();
-
+        mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
 
         // efficient wait
+        mel::util::print("Hybrid Wait:      ", false);
         clock.start();
-        while (clock.time() < 1.0) {
+        while (clock.time() < (double)seconds) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.hybrid_wait();
             clock.log();
         }
-        clock.save_log();
+        mean =   mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
 
         mel::util::disable_realtime();
     }
@@ -385,8 +403,8 @@ int main(int argc, char * argv[]) {
         log.add_row(mel::math::linspace(6, 10, 5));
         log.add_row(mel::math::linspace(11, 15, 5));
 
-        mel::util::print("Row 1: ", false); mel::util::print(log.get_row(1));
-        mel::util::print("Col A: ", false); mel::util::print(log.get_col("A"));
+        mel::util::print("Row 1: ", false); mel::util::print(mel::math::mean(log.get_row(1)));
+        mel::util::print("Col A: ", false); mel::util::print(mel::math::stddev_p(log.get_col("A")));
 
         log.save_data("my_log", "my_logs", true);     
 
