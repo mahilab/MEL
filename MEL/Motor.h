@@ -96,7 +96,6 @@ namespace mel {
 
             double current_; ///< stores the desired Motor current since the last call to set_current()
             double limited_current_;
-            bool has_current_limit_; ///< whether or not the Motor should enforce a current limit
 
             double current_sense_; ///< store the measured current since the last call to get_current_sense()       
             bool has_current_sense_; ///< whether or not the Motor comes with current sensing, i.e., whether or not the ai_channel is provided 

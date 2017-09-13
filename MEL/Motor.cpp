@@ -18,7 +18,6 @@ namespace mel {
             peak_current_limit_(hard_current_limit),
             i2t_time_(0.0),
             current_limit_mode_(CurrentLimitMode::Saturate),
-            has_current_limit_(true),
             has_current_sense_(false)
         { }
 
@@ -35,7 +34,6 @@ namespace mel {
             peak_current_limit_(peak_current_limit),
             i2t_time_(i2t_time),
             current_limit_mode_(CurrentLimitMode::I2T),
-            has_current_limit_(true),
             has_current_sense_(false)
         { }
 
@@ -52,7 +50,6 @@ namespace mel {
             peak_current_limit_(peak_current_limit),
             i2t_time_(i2t_time),
             current_limit_mode_(CurrentLimitMode::I2T),
-            has_current_limit_(false),
             has_current_sense_(true)
         { }
 
@@ -69,7 +66,6 @@ namespace mel {
             peak_current_limit_(hard_current_limit),
             i2t_time_(0.0),
             current_limit_mode_(CurrentLimitMode::Saturate),
-            has_current_limit_(true),
             has_current_sense_(true)
         { }           
 
@@ -121,17 +117,16 @@ namespace mel {
 
             current_ = new_current;
 
-            if (has_current_limit_) {
-                if (current_limit_mode_ == CurrentLimitMode::Saturate)
-                    limit_current_saturate();
-                else if (current_limit_mode_ == CurrentLimitMode::I2T)
-                    limit_current_i2t();
-                ao_channel_.set_voltage(limited_current_ / amp_gain_);
+            if (current_limit_mode_ == CurrentLimitMode::Saturate) {
+                limit_current_saturate();
+            }
+            else if (current_limit_mode_ == CurrentLimitMode::I2T) {
+                limit_current_i2t();
             }
             else {
-                ao_channel_.set_voltage(current_ / amp_gain_);
+                limited_current_ = current_;
             }
-
+            ao_channel_.set_voltage(limited_current_ / amp_gain_);   
         }
 
         double Motor::get_current_command() {
@@ -151,9 +146,9 @@ namespace mel {
         }
 
         void Motor::limit_current_saturate() {
+            limited_current_ = math::saturate(current_, continuous_current_limit_);
             if (abs(current_) > continuous_current_limit_) {
-                util::print("WARNING: Motor " + util::namify(name_) + " command current exceeded the hard current limit " + std::to_string(continuous_current_limit_) + " with a value of " + std::to_string(current_) + ".");
-                limited_current_ = math::saturate(current_, continuous_current_limit_);
+                util::print("WARNING: Motor " + util::namify(name_) + " command current exceeded the hard current limit " + std::to_string(continuous_current_limit_) + " with a value of " + std::to_string(current_) + ".");  
             }
         }
 

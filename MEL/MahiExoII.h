@@ -32,6 +32,7 @@ namespace mel {
 
             struct Params {
                 std::array<double, 5> kt_ = { 0.127, 0.0603, 0.175, 0.175, 0.175 }; ///< motor torque constants [N-m/A]
+                std::array<double, 5> motor_hard_current_limits_ = { 8.0, 4.0, 0.75, 0.75, 0.75 }; ///< motor continuous current limits [A]
                 std::array<double, 5> motor_continuous_current_limits_ = { 6.0, 3.17, 0.626, 0.626, 0.626 }; ///< motor continuous current limits [A]
                 std::array<double, 5> motor_peak_current_limits_ = { 18.0, 18.0, 1.8, 1.8, 1.8 }; ///< motor peak current limits [A]
                 std::array<double, 5> motor_i2t_times_ = { 2, 2, 2, 2, 2 }; ///< motor i^2*t times [s]
@@ -80,6 +81,9 @@ namespace mel {
             const Config config_;
             const Params params_;
 
+            static const int N_aj_; // number of anatomical joints
+            static const int N_rj_; // number of robotic joints
+
             std::array<core::PdController, 5> robot_joint_pd_controllers_ = {
                 core::PdController(80.0, 1.5), // tuned 9/11/2017
                 core::PdController(7.0, 0.06),
@@ -90,7 +94,7 @@ namespace mel {
 
             std::array<core::PdController, 5> anatomical_joint_pd_controllers_ = {
                 core::PdController(80.0, 1.5), // tuned 9/11/2017
-                core::PdController(7.0, 0.06),
+                core::PdController(10.0, 0.06),
                 core::PdController(25.0, 0.05),
                 core::PdController(30.0, 0.08),
                 core::PdController(0.0, 0.0)
@@ -102,6 +106,7 @@ namespace mel {
             // PROTECTED VARIABLES
             //-------------------------------------------------------------------------
 
+            
 
         private:
 

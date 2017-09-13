@@ -11,6 +11,8 @@ namespace mel {
         //-------------------------------------------------------------------------
 
         // geometric parameters
+        const int MahiExoII::N_aj_ = 5;
+        const int MahiExoII::N_rj_ = 5;
         const double MahiExoII::R_ = 0.1044956;
         const double MahiExoII::r_ = 0.05288174521;
         const double MahiExoII::a56_ = 0.0268986 - 0.0272820;
@@ -29,7 +31,7 @@ namespace mel {
             params_(parameters)
         {
 
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < N_rj_; ++i) {
 
                 std::string num = std::to_string(i);
 
@@ -48,6 +50,7 @@ namespace mel {
                     config_.command_[i],
                     config_.enable_[i],
                     core::Actuator::EnableMode::Low,
+                    //params_.motor_hard_current_limits_[i]);
                     params_.motor_continuous_current_limits_[i],
                     params_.motor_peak_current_limits_[i],
                     params_.motor_i2t_times_[i]);
@@ -68,7 +71,7 @@ namespace mel {
                 joints_.push_back(joint);
             }
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < N_aj_; i++) {
                 anatomical_joint_positions_.push_back(0);
                 anatomical_joint_velocities_.push_back(0);
                 anatomical_joint_torques_.push_back(0);
