@@ -9,36 +9,48 @@ CURVE_COLORS:
   - [166, 206, 227]
   - [251, 154, 153]
   - [178, 223, 138]
+  - [255, 0, 255]
+  - [0, 255, 0]
+  - [85, 255, 255]
+  - [85, 0, 0]
+  - [0, 85, 0]
+  - [0, 0, 127]
 CURVE_LINES:
-  ow_state: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
+  ow_state: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid,
+    Solid, Solid, Solid, Solid, Solid]
 CURVE_SIZES:
-  ow_state: [1, 1, 1, 1, 1, 1, 1, 1, 1]
+  ow_state: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 DATA_NAMES:
   ow_state: [Joint 0 Position, Joint 1 Position, Joint 2 Position, Joint 0 Velocity,
     Joint 1 Velocity, Joint 2 Velocity, Command Torque 0, Command Torque 1, Command
-      Torque 2]
-GRID_COLS: 4
+      Torque 2, Command Current 0, Command Current 1, Command Current 2, Sensed Current
+      0, Sensed Current 1, Sensed Current 2]
+GRID_COLS: 3
 GRID_ROWS: 3
 MELSHARE_MODES: {ow_state: Read Only}
 MELSHARE_NAMES: [ow_state]
-MELSHARE_SIZES: {ow_state: 9}
+MELSHARE_SIZES: {ow_state: 15}
 SCOPE_FILTERS:
-- ow_state: [true, false, false, false, false, false, false, false, false]
-- ow_state: [false, true, false, false, false, false, false, false, false]
-- ow_state: [false, false, true, false, false, false, false, false, false]
-- ow_state: [true, true, true, false, false, false, false, false, false]
-- ow_state: [false, false, false, true, false, false, false, false, false]
-- ow_state: [false, false, false, false, true, false, false, false, false]
-- ow_state: [false, false, false, false, false, true, false, false, false]
-- ow_state: [false, false, false, true, true, true, false, false, false]
-- ow_state: [false, false, false, false, false, false, true, false, false]
-- ow_state: [false, false, false, false, false, false, false, true, false]
-- ow_state: [false, false, false, false, false, false, false, false, true]
-- ow_state: [false, false, false, false, false, false, true, true, true]
-SCOPE_LEGENDS: [false, false, false, false, false, false, false, false, false, false,
-  false, false]
-SCOPE_MODES: [Scope, Scope, Scope, I/O, Scope, Scope, Scope, I/O, Scope, Scope, Scope,
-  I/O]
+- ow_state: [true, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false]
+- ow_state: [false, true, false, false, false, false, false, false, false, false,
+    false, false, false, false, false]
+- ow_state: [false, false, true, false, false, false, false, false, false, false,
+    false, false, false, false, false]
+- ow_state: [false, false, false, true, false, false, false, false, false, false,
+    false, false, false, false, false]
+- ow_state: [false, false, false, false, true, false, false, false, false, false,
+    false, false, false, false, false]
+- ow_state: [false, false, false, false, false, true, false, false, false, false,
+    false, false, false, false, false]
+- ow_state: [false, false, false, false, false, false, false, false, false, true,
+    false, false, true, false, false]
+- ow_state: [false, false, false, false, false, false, false, false, false, false,
+    true, false, false, true, false]
+- ow_state: [false, false, false, false, false, false, false, false, false, false,
+    false, true, false, false, true]
+SCOPE_LEGENDS: [false, false, false, false, false, false, true, true, true]
+SCOPE_MODES: [Scope, Scope, Scope, Scope, Scope, Scope, Scope, Scope, Scope]
 SCOPE_RANGES:
 - [-1.0, 1.0]
 - [-1.0, 1.0]
@@ -49,10 +61,7 @@ SCOPE_RANGES:
 - [-1.0, 1.0]
 - [-1.0, 1.0]
 - [-1.0, 1.0]
-- [-10.0, 10.0]
-- [-1.0, 1.0]
-- [-1.0, 1.0]
 SCOPE_TITLES: ['Joint 0 Position [rad]', 'Joint 1 Position [rad]', 'Joint 2 Position
-    [rad]', Monitor, 'Joint 0 Velocity  [rad/s]', 'Joint 1 Velocity  [rad/s]', 'Joint
-    2 Velocity  [rad/s]', Control Gains, scope_8, scope_9, scope_10, scope_11]
+    [rad]', 'Joint 0 Velocity  [rad/s]', 'Joint 1 Velocity  [rad/s]', 'Joint 2 Velocity  [rad/s]',
+  'Joint 0 Current  [A]', 'Joint 1 Current  [A]', 'Joint 2 Current  [A]']
 theme: Dark

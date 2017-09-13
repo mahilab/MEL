@@ -1,4 +1,5 @@
 #pragma once
+#include <string>   
 
 namespace mel {
 
@@ -129,6 +130,12 @@ namespace mel {
             /// \brief Wait for key to be pressed while console window has focus
             /// \param key Key to check
             static void wait_for_key_press(Input::Key key);
+
+            /// \brief Tells compiler to ignore traditional CTRL-C signals from the console            
+            static void ignore_ctrl_c();
+
+            /// \brief Displays #message in the console and blocks until #key is pressed
+            static void prompt(std::string message, Input::Key key);
 
         };
 

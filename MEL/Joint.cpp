@@ -89,9 +89,14 @@ namespace mel {
             actuator_->set_torque(actuator_transmission_ * torque_);
         }
 
+        void Joint::add_torque(double additional_torque) {
+            torque_ += additional_torque;
+            set_torque(torque_);
+        }
+
         bool Joint::check_torque_limit() {
             bool exceeded = false;
-            if (has_torque_limit_ && abs(torque_) > torque_limit_) {
+            if (has_torque_limit_ && std::abs(torque_) > torque_limit_) {
                 util::print("WARNING: Joint " + util::namify(name_) + " command torque exceeded the torque limit " + std::to_string(torque_limit_) + " with a value of " + std::to_string(torque_) + ".");
                 exceeded = true;
             }

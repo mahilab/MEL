@@ -25,8 +25,22 @@ namespace mel {
             /// Starts or restarts the clock timer and clears the log. This should be called before the wait loop starts.
             void start();
             /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
-            /// execution time less than the fixed step time (delta time) of the clock.         
+            /// execution time less than the fixed step time (delta time) of the clock. This is a hybrid of accurate_wait()
+            /// and efficient_wait(). It uses efficient_wait() for 75% of the remaining wait time, and accurate_wait() for
+            /// the remaining 10%. It's performance cost is closest to efficient_wait(), and it's accuracy is nearly as good
+            /// as accurate_wait(). 
             void wait();
+            /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
+            /// execution time less than the fixed step time (delta time) of the clock. This is a significantly more accurate
+            /// version of efficient_wait(), but also uses significantly system resources and may cause other programs to lag.
+            /// Use this if you aren't running real-time visualizations (e.g. Unity) on the same machine, or if your control
+            /// algorithm depends on very accurate sampling rates (e.g. Kalman filter).
+            void accurate_wait();
+            /// Blocks execution until the current clock tick is over. This should be placed in a loop that has a normal
+            /// execution time less than the fixed step time (delta time) of the clock. This is a significantly less accurate
+            /// version of accurate_wait(), but uses fewer system resources. Use this if you are running real-time visualizations
+            /// (e.g. Unity) on the same machine.
+            void efficient_wait();
             /// Retruns the number of ticks or steps that have occured since that clock was started.
             /// This should only be called inside of a loop also calling the wait() function.
             uint32 tick();
@@ -65,6 +79,12 @@ namespace mel {
             double                   elapsed_ideal_;   ///< the ideal ammount of time that has elapsed since the clock started        
 
             util::DataLog log_; ///< the clock DataLog
+
+            //---------------------------------------------------------------------
+            // PRIVATE FUNCTIONS
+            //---------------------------------------------------------------------
+
+            void usleep(uint64 microseconds);
 
             //---------------------------------------------------------------------
             // STATIC VAIRABLES / FUNCTIONS

@@ -26,15 +26,15 @@ namespace mel {
                 Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode,
                 double continuous_current_limit, double peak_current_limit, double i2t_time);
 
-            /// Constructor for I2T current limitied motor with DO enable/disable channel and current sensing
-            Motor(std::string name, double kt, double amp_gain,
-                Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
-                double continuous_current_limit, double peak_current_limit, double i2t_time);
-
             /// Constructor for hard current limitied motor with DO enable/disable channel and current sensing
             Motor(std::string name, double kt, double amp_gain,
                 Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
                 double hard_current_limit);
+
+            /// Constructor for I2T current limitied motor with DO enable/disable channel and current sensing
+            Motor(std::string name, double kt, double amp_gain,
+                Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
+                double continuous_current_limit, double peak_current_limit, double i2t_time);
 
             //---------------------------------------------------------------------
             // PUBLIC FUNCTIONS
@@ -84,6 +84,7 @@ namespace mel {
 
             void limit_current_saturate();
             void limit_current_i2t();
+            void reset_i2t_limiter();
 
             //---------------------------------------------------------------------
             // PRIVATE VARIABLES

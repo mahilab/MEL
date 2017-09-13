@@ -37,10 +37,12 @@ namespace mel {
             double get_position();
             /// Converts PositionSensor velocity to RobotJoint velocity
             double get_velocity();
-            /// Returns last set joint torque
+            /// Returns the currently set joint torque
             double get_torque();
-            /// Sets the joint torque
+            /// Sets the joint torque to #new_torque
             void set_torque(double new_torque);
+            /// Adds #additional_torque to the currently set torque
+            void add_torque(double additional_torque);
 
             /// Gets current position, checks it against limits, and returns true if min or max exceeded, false otherwise
             bool check_position_limits();
@@ -79,7 +81,7 @@ namespace mel {
             double velocity_; ///< the stored velocity of the Joint since the last call to get_velocity()
             bool has_velocity_limit_; ///< whether or not the Joint should check velocity limits
 
-            double torque_; ///< the stored torque of the Joint since the last call to set_torque()
+            double torque_; ///< the stored torque of the Joint since the last call to set_torque() or add_torque()
             double torque_limit_; ///< the absolute limit on torque that should be allowed to the Joint
 
         };
