@@ -275,10 +275,10 @@ int main(int argc, char * argv[]) {
         // create a 1000 Hz Clock to run our controller on
         mel::util::Clock clock(1000);
 
-        // create some PD controllers that fill like springs
-        mel::core::PdController pd0(10, 0.05); // joint 0 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd1(10, 0.05); // joint 1 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd2(10, 0.025);  // joint 2 ( Nm/rad , Nm-s/rad )
+        // create some PD controllers that fill like light springs
+        mel::core::PdController pd0(5, 0.025); // joint 0 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd1(5, 0.025); // joint 1 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd2(5, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
         mel::util::Input::prompt("Press ENTER to start the controller.", mel::util::Input::Return);

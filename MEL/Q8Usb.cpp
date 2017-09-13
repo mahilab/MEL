@@ -6,6 +6,7 @@
 #include <functional>
 #include <string>
 #include "Clock.h"
+#include <thread>
 
 namespace mel {
 
@@ -69,7 +70,7 @@ namespace mel {
                 t_error result;
                 // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)            
                 for (int attempt = 0; attempt < 10; attempt++) {
-                    std::cout << "Q8 USB " << id_ << ": Activating (Attempt " << attempt + 1 << ") ... ";
+                    std::cout << "Q8 USB " << id_ << ": Enabling (Attempt " << attempt + 1 << ") ... ";
                     result = hil_open("q8_usb", std::to_string(id_).c_str(), &q8_usb_);
                     if (result == 0) {
                         //double temp[3]; // TODO: FIX THIS CRAP
@@ -92,7 +93,7 @@ namespace mel {
 
                 // If all attempts were unsuccessful, display message and terminate the application.
                 if (result != 0) {
-                    std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to activate." << std::endl;
+                    std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to enable." << std::endl;
                     return;
                 }
 
@@ -142,9 +143,6 @@ namespace mel {
             if (enabled_) {
                 t_error result;
 
-                // reset the Q8 board sepcifc options to factory defaults
-                factory_reset();
-
                 // Stop all tasks and monitors (possibly unnecessary)
                 hil_task_stop_all(q8_usb_);
                 hil_monitor_stop_all(q8_usb_);
@@ -161,8 +159,19 @@ namespace mel {
                 // Stop and Clear Watchdog
                 stop_watchdog();
 
+                // Reset the Q8 board sepcifc options to factory defaults
+                factory_reset();
+
+                // Wait a few milliseconds so factory_reset() can finish configuring the FPGA
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+                // Set and write final voltages and states (one more time)
+                ao_voltages_ = ao_final_voltages_;
+                do_signals_ = do_final_signals_;
+                write_all();
+
                 // Close Q8 USB
-                std::cout << "Q8 USB " << id_ << ": Deactivating ... ";
+                std::cout << "Q8 USB " << id_ << ": Disabling ... ";
                 result = hil_close(q8_usb_);
                 if (result != 0) {
                     std::cout << "Failed" << std::endl;
