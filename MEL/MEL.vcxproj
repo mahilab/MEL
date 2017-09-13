@@ -57,6 +57,7 @@
     <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="MelShare.h" />
     <ClInclude Include="mel_math.h" />
+    <ClInclude Include="mel_types.h" />
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="OpenWrist.h" />
     <ClInclude Include="PdController.h" />

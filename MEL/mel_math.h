@@ -3,7 +3,7 @@
 #include <Eigen\Dense>
 #include <Eigen\StdVector>
 #include <limits>
-#include <cmath>
+#include "mel_types.h"
 
 namespace mel {
 
@@ -37,52 +37,34 @@ namespace mel {
         }
 
         /// Clamps value between min and max
-        template <typename T>
-        T saturate(T value, T max, T min) {
-            if (value > max)
-                return max;
-            else if (value < min)
-                return min;
-            else
-                return value;
-        }
+        double saturate(double value, double max, double min);
         /// Clamps value between -abs_max and +abs_max
-        template <typename T>
-        T saturate(T value, T abs_max) {
-            abs_max = std::abs(abs_max);
-            return saturate(value, abs_max, -abs_max);
-        }
+        double saturate(double value, double abs_max);
 
-        /// Returns true if a and b are approximately equal to each other within machine precision
-        template <typename T>
-        bool approx_equal(T a, T b) {
-            return std::abs(a - b) < std::numeric_limits<T>::epsilon();
-        }
-        /// Returns true if a and b are approximately equal to each other within the specified tolerance
-        template <typename T>
-        bool approx_equal(T a, T b, T tolerance) {
-            return std::abs(a - b) < tolerance;
-        }
+        /// Returns true if a and b are approximately equal to each other within a tolerance (machine precision by default)
+        bool approx_equal(double a, double b, double tolerance = EPS);
         
-        /// Returns a linearly spaced vector with #n elements between #a and #b. The type returned will
-        /// be the same as the type passed in. Be mindful of this; linspace(0,3,3) will return [0,1,3], 
-        /// whereas linespace(0.0, 3.0, 3) will return [0.0, 1.5, 3.0]
-        template <typename T>
-        std::vector<T> linspace(T a, T b, int n) {
-            std::vector<T> out(n);
-            double delta = static_cast<double>(b - a) / static_cast<double>(n - 1);
-            double temp =  static_cast<double>(a);
-            out[0] = a;
-            for (int i = 1; i < n - 1; i++) {
-                temp += delta;
-                out[i] = static_cast<T>(temp);
-            }
-            out[n - 1] = b;
-            return out;
-        }
+        /// Returns a linearly spaced vector with #n elements between #a and #b. 
+        std::vector<double> linspace(double a, double b, uint32 n);
 
         /// Computes a proportial-derivative control effort given gains, reference state, and current state
         double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
+
+        //--------------------------------------------------------------------------
+        // STATISTICS
+        //--------------------------------------------------------------------------
+
+        /// Returns the sum of a vector of data
+        double sum(std::vector<double> data);
+
+        /// Returns the mean of a vector of data
+        double mean(std::vector<double> data);
+
+        /// Returns the population standard deviation of a vector of data
+        double stddev_p(std::vector<double> data);
+
+        /// Returns the sample standard deviation of a vector of data
+        double stddev_s(std::vector<double> data);
 
         //--------------------------------------------------------------------------
         // CYCLIC WAVEFORMS

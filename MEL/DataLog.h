@@ -35,7 +35,19 @@ namespace mel {
             DataLog& add_col(std::string column_name);
             /// Adds a row of data to the DataLog. Data indices should match the order in which column headers were added. Call this inside or outside of any control loops.
             void add_row(std::vector<double> row_data);
-            /// Saves all data collected so far to the to the specificed location and filename. Call this outside of any control loops.
+
+            /// Returns the number of columns stored
+            uint32 get_col_count();
+            /// Returns the number of rows stored
+            uint32 get_row_count();
+
+            /// Returns all data in a column
+            std::vector<double> get_col(uint32 index);
+            std::vector<double> get_col(std::string column_name);
+            /// Returns all data in a row
+            std::vector<double> get_row(uint32 index);
+
+             /// Saves all data collected so far to the to the specificed location and filename. Call this outside of any control loops.
             void save_data(std::string filename, std::string directory, bool timestamp = true);
             /// Clears all data collected so far, but keeps the the column header names
             void clear_data();
@@ -59,7 +71,7 @@ namespace mel {
             //---------------------------------------------------------------------
 
             std::vector<std::string> column_names_; ///< vector of column names
-            std::vector<std::vector<double>> data_; ///< vector of rows of data
+            std::vector<std::vector<double>> data_; ///< data[cols][rows]
 
             std::size_t max_rows_; ///< the estimated number of maximum rows that will be saved during the lifetim of the DataLog
             std::size_t num_cols_; ///< column count

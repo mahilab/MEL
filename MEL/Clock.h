@@ -58,6 +58,7 @@ namespace mel {
 
             const uint32 frequency_;  ///< the clock sampling rate in Hz (e.g. 1000 Hz)
             const double delta_time_; ///< the clock fixed step time or fundamental sample time in seconds (e.g. 0.001 seconds)        
+            util::DataLog log_;       ///< the clock DataLog
 
         private:
 
@@ -77,8 +78,6 @@ namespace mel {
             std::chrono::nanoseconds elapsed_exe_;     ///< the actual amount of time that elapsed due to execution during the wait loop
             std::chrono::nanoseconds elapsed_wait_;    ///< the actual amount of time that elapsed due to waiting during the wait loop
             double                   elapsed_ideal_;   ///< the ideal ammount of time that has elapsed since the clock started        
-
-            util::DataLog log_; ///< the clock DataLog
 
             //---------------------------------------------------------------------
             // PRIVATE FUNCTIONS

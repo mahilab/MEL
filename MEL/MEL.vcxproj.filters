@@ -224,5 +224,8 @@
     <ClInclude Include="StateMachine.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="mel_types.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
