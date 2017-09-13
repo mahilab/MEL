@@ -41,7 +41,7 @@ namespace mel {
                 std::array<double, 5> pos_limits_min_ = { -91.5 * math::DEG2RAD, -99 * math::DEG2RAD, 0.050, 0.050, 0.050 }; ///< robot joint position limits in negative direction [rad] or [m]
                 std::array<double, 5> pos_limits_max_ = { 3 * math::DEG2RAD, 108 * math::DEG2RAD, 0.133, 0.133, 0.133 }; ///< robot joint position limits in positive direction [rad] or [m]
                 std::array<double, 5> vel_limits_ = { 250 * math::DEG2RAD, 300 * math::DEG2RAD, 0.4, 0.4, 0.4 }; ///< robot joint velocity limits [rad/s] or [m/s]
-                std::array<double, 5> joint_torque_limits = { 10, 10, 20, 20, 20 }; ///< robot joint torque limits [Nm] or [N]
+                std::array<double, 5> joint_torque_limits = { 10, 10, 50, 50, 50 }; ///< robot joint torque limits [Nm] or [N]
                 std::array<double, 5> amp_gains_ = { 1.8, 1.8, 0.184, 0.184, 0.184 }; ///< motor aplifier gains [A/V]
             };
 
@@ -59,6 +59,12 @@ namespace mel {
             // update robot kinematics from encoder readings
             void update_kinematics();
 
+            double_vec get_wrist_parallel_positions() const;
+            double_vec get_wrist_serial_positions() const;
+
+            // inherited virtual functions from Exo class to be implemented
+            void set_anatomical_joint_torques(double_vec new_torques, int error_code = 0) override;
+
             // forward kinematics utility functions
             void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out) const;
             void forward_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out) const;
@@ -71,8 +77,7 @@ namespace mel {
             void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) const;
             void inverse_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const;
 
-            // inherited virtual functions from Exo class to be implemented
-            void set_anatomical_joint_torques(double_vec new_torques, int error_code = 0) override;
+            
 
             //-------------------------------------------------------------------------
             // PUBLIC VARIABLES
@@ -84,19 +89,31 @@ namespace mel {
             static const int N_aj_; // number of anatomical joints
             static const int N_rj_; // number of robotic joints
 
+            // PD Control
+            double elbow_P_ = 80.0; //80.0; // tuned 9/11/2017
+            double elbow_D_ = 1.25; // 1.50; // tuned 9/11/2017
+            double forearm_P_ = 25.0;
+            double forearm_D_ = 0.20;
+            double prismatic_P_ = 2200.0; // tuned 9//12/2017
+            double prismatic_D_ = 30.0; // tuned 9//12/2017
+            double wrist_fe_P_ = 25.0;
+            double wrist_fe_D_ = 0.05;
+            double wrist_ru_P_ = 30.0;
+            double wrist_ru_D_ = 0.08;
+
             std::array<core::PdController, 5> robot_joint_pd_controllers_ = {
-                core::PdController(80.0, 1.5), // tuned 9/11/2017
-                core::PdController(7.0, 0.06),
-                core::PdController(1000.0, 1.0),
-                core::PdController(1000.0, 1.0),
-                core::PdController(1000.0, 1.0)
+                core::PdController(elbow_P_, elbow_D_),
+                core::PdController(forearm_P_, forearm_D_),
+                core::PdController(prismatic_P_, prismatic_D_),
+                core::PdController(prismatic_P_, prismatic_D_),
+                core::PdController(prismatic_P_, prismatic_D_)
             };
 
             std::array<core::PdController, 5> anatomical_joint_pd_controllers_ = {
-                core::PdController(80.0, 1.5), // tuned 9/11/2017
-                core::PdController(10.0, 0.06),
-                core::PdController(25.0, 0.05),
-                core::PdController(30.0, 0.08),
+                core::PdController(elbow_P_, elbow_D_),
+                core::PdController(forearm_P_, forearm_D_),
+                core::PdController(wrist_fe_P_, wrist_fe_D_),
+                core::PdController(wrist_ru_P_, wrist_ru_D_),
                 core::PdController(0.0, 0.0)
             };
 
@@ -141,6 +158,8 @@ namespace mel {
 
             double spec_norm_prev_ = 0; // debugging
             Eigen::VectorXd q_par_prev_ = Eigen::VectorXd::Zero(3); // debugging        
+
+            
 
 
             //-------------------------------------------------------------------------

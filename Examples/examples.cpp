@@ -334,39 +334,46 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("clock")) {
 
+        double mean, stddev;
+
         mel::util::Clock clock(1000);
         mel::util::enable_realtime();
 
         // accurate wait (default)
         clock.start();
-        while (clock.time() < 1.0) {
+        while (clock.time() < 30.0) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.wait();
             clock.log();
         }
-        clock.save_log();
+        mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        mel::util::print("Accurate Wait: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms");
 
         // efficient wait
         clock.start();
-        while (clock.time() < 1.0) {
+        while (clock.time() < 30.0) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.efficient_wait();
             clock.log();
         }
-        clock.save_log();
-
+        mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        mel::util::print("Efficient Wait: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms");
 
         // efficient wait
         clock.start();
-        while (clock.time() < 1.0) {
+        while (clock.time() < 30.0) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.hybrid_wait();
             clock.log();
         }
-        clock.save_log();
+        mean =   mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        mel::util::print("Hybrid Wait: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms");
 
         mel::util::disable_realtime();
     }
@@ -385,8 +392,8 @@ int main(int argc, char * argv[]) {
         log.add_row(mel::math::linspace(6, 10, 5));
         log.add_row(mel::math::linspace(11, 15, 5));
 
-        mel::util::print("Row 1: ", false); mel::util::print(log.get_row(1));
-        mel::util::print("Col A: ", false); mel::util::print(log.get_col("A"));
+        mel::util::print("Row 1: ", false); mel::util::print(mel::math::mean(log.get_row(1)));
+        mel::util::print("Col A: ", false); mel::util::print(mel::math::stddev_p(log.get_col("A")));
 
         log.save_data("my_log", "my_logs", true);     
 
