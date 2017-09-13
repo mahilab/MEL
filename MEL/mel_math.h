@@ -84,6 +84,8 @@ namespace mel {
 
         Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec);
 
+        double mat_spectral_norm(const Eigen::MatrixXd& mat);
+
     }
 
 }
