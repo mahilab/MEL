@@ -39,22 +39,6 @@ namespace mel {
 
         Motor::Motor(std::string name, double kt, double amp_gain,
             Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
-            double continuous_current_limit, double peak_current_limit, double i2t_time) :
-            Actuator(name, enable_mode),
-            kt_(kt),
-            amp_gain_(amp_gain),
-            ao_channel_(ao_channel),
-            do_channel_(do_channel),
-            ai_channel_(ai_channel),
-            continuous_current_limit_(continuous_current_limit),
-            peak_current_limit_(peak_current_limit),
-            i2t_time_(i2t_time),
-            current_limit_mode_(CurrentLimitMode::I2T),
-            has_current_sense_(true)
-        { }
-
-        Motor::Motor(std::string name, double kt, double amp_gain,
-            Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
             double hard_current_limit) :
             Actuator(name, enable_mode),
             kt_(kt),
@@ -67,14 +51,27 @@ namespace mel {
             i2t_time_(0.0),
             current_limit_mode_(CurrentLimitMode::Saturate),
             has_current_sense_(true)
-        { }           
+        { }
+
+        Motor::Motor(std::string name, double kt, double amp_gain,
+            Daq::Ao ao_channel, Daq::Do do_channel, EnableMode enable_mode, Daq::Ai ai_channel,
+            double continuous_current_limit, double peak_current_limit, double i2t_time) :
+            Actuator(name, enable_mode),
+            kt_(kt),
+            amp_gain_(amp_gain),
+            ao_channel_(ao_channel),
+            do_channel_(do_channel),
+            ai_channel_(ai_channel),
+            continuous_current_limit_(continuous_current_limit),
+            peak_current_limit_(peak_current_limit),
+            i2t_time_(i2t_time),
+            current_limit_mode_(CurrentLimitMode::I2T),
+            has_current_sense_(true)
+        { }         
 
         void Motor::enable() {
             enabled_ = true;
-            double i2t_integrand_ = 0;
-            double i2t_integral_ = 0;
-            double i2t_time_now_ = util::Clock::global_time();
-            double i2t_time_last_ = util::Clock::global_time();
+            reset_i2t_limiter();
             if (enable_mode_ == EnableMode::High) {
                 ao_channel_.set_voltage(0);
                 do_channel_.set_signal(1);
@@ -92,7 +89,7 @@ namespace mel {
 
         void Motor::disable() {
             enabled_ = false;
-
+            reset_i2t_limiter();
             if (enable_mode_ == EnableMode::High) {
                 ao_channel_.set_voltage(0);
                 do_channel_.set_signal(0);
@@ -158,12 +155,19 @@ namespace mel {
             i2t_integral_ = abs(i2t_integrand_ * (i2t_time_now_ - i2t_time_last_) + i2t_integral_);
             if (i2t_integral_ > i2t_time_ * (pow(peak_current_limit_, 2) - pow(continuous_current_limit_, 2))) {
                 limited_current_ = math::saturate(current_, continuous_current_limit_);
-                util::print("WARNING: Motor " + util::namify(name_) + " command current exceeded the I2T current limit: current saturated to " + std::to_string(continuous_current_limit_) + " with a commanded value of " + std::to_string(current_) + ".");
+                util::print("WARNING: Motor " + util::namify(name_) + " command current exceeded the I2T current limit: current saturated to " + std::to_string(continuous_current_limit_) + ".");
             }
             else {
                 limited_current_ = math::saturate(current_, peak_current_limit_);
             }
             i2t_time_last_ = i2t_time_now_;
+        }
+
+        void Motor::reset_i2t_limiter() {
+            i2t_integrand_ = 0.0;
+            i2t_integral_ = 0.0;
+            i2t_time_now_ = util::Clock::global_time();
+            i2t_time_last_ = util::Clock::global_time();
         }
 
         double Motor::get_current_sense() {

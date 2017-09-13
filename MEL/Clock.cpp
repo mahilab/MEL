@@ -1,4 +1,5 @@
 #include "Clock.h"
+#include <Windows.h>
 
 namespace mel {
 
@@ -41,7 +42,17 @@ namespace mel {
             elapsed_exe_ = elapsed_tick_;
             elapsed_wait_ = std::chrono::nanoseconds(0);
 
-            // busy wait until the next tick has been reached        
+            // sleep for 90% of the remaining tick time
+            auto wait_for = std::chrono::duration_cast<std::chrono::microseconds>(tick_time_ - elapsed_exe_);
+            usleep((75 * wait_for.count()) / 100); 
+
+            // update variables post sleep
+            now_ = std::chrono::high_resolution_clock::now();
+            elapsed_tick_ = now_ - start_tick_;
+            elapsed_actual_ = now_ - start_;
+            elapsed_wait_ = elapsed_tick_ - elapsed_exe_;
+
+            // busy wait until the next tick has been reached     
             while (elapsed_tick_ < tick_time_) {
                 now_ = std::chrono::high_resolution_clock::now();
                 elapsed_tick_ = now_ - start_tick_;
@@ -52,6 +63,56 @@ namespace mel {
             // start the next tick
             start_tick_ = std::chrono::high_resolution_clock::now();
         }
+
+        void Clock::accurate_wait() {
+            // increment sample number
+            tick_count_ += 1;
+
+            // update time variables
+            now_ = std::chrono::high_resolution_clock::now();
+            elapsed_tick_ = now_ - start_tick_;
+            elapsed_actual_ = now_ - start_;
+            elapsed_ideal_ = tick_count_ * delta_time_;
+            elapsed_exe_ = elapsed_tick_;
+            elapsed_wait_ = std::chrono::nanoseconds(0);        
+            
+            // busy wait until the next tick has been reached     
+            while (elapsed_tick_ < tick_time_) {
+                now_ = std::chrono::high_resolution_clock::now();
+                elapsed_tick_ = now_ - start_tick_;
+                elapsed_actual_ = now_ - start_;
+                elapsed_wait_ = elapsed_tick_ - elapsed_exe_;
+            }         
+
+            // start the next tick
+            start_tick_ = std::chrono::high_resolution_clock::now();
+        }
+
+        void Clock::efficient_wait() {
+            // increment sample number
+            tick_count_ += 1;
+
+            // update time variables
+            now_ = std::chrono::high_resolution_clock::now();
+            elapsed_tick_ = now_ - start_tick_;
+            elapsed_actual_ = now_ - start_;
+            elapsed_ideal_ = tick_count_ * delta_time_;
+            elapsed_exe_ = elapsed_tick_;
+            elapsed_wait_ = std::chrono::nanoseconds(0);
+
+            // sleep until the next tick has been reached     
+            auto wait_for = std::chrono::duration_cast<std::chrono::microseconds>(tick_time_ - elapsed_exe_);
+            usleep(wait_for.count());
+
+            // update variables post sleep
+            now_ = std::chrono::high_resolution_clock::now();
+            elapsed_tick_ = now_ - start_tick_;
+            elapsed_actual_ = now_ - start_;
+            elapsed_wait_ = elapsed_tick_ - elapsed_exe_;
+
+            // start the next tick
+            start_tick_ = std::chrono::high_resolution_clock::now();
+        }        
 
         uint32 Clock::tick() {
             return tick_count_;
@@ -86,5 +147,16 @@ namespace mel {
             std::chrono::nanoseconds elapsed = now - global_start_;
             return static_cast<double>(elapsed.count()) * NS2S;
         }
+
+        void Clock::usleep(uint64 microseconds) {
+            HANDLE timer;
+            LARGE_INTEGER ft;
+            ft.QuadPart = -(10 * static_cast<int64>(microseconds)); 
+            timer = CreateWaitableTimer(NULL, TRUE, NULL);
+            SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+            WaitForSingleObject(timer, INFINITE);
+            CloseHandle(timer);
+        }
+
     }
 }

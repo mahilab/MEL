@@ -85,7 +85,7 @@ namespace mel {
             //-------------------------------------------------------------------------
 
             comm::MelShare state_map_ = comm::MelShare("ow_state");
-            double_vec state_ = double_vec(12, 0);
+            double_vec state_ = double_vec(15, 0);
 
             const Config config_; ///< this OpenWrist's Config, set during construction
             const Params params_; ///< this OpenWrist's Params, set during construction

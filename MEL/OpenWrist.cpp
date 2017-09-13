@@ -69,15 +69,23 @@ namespace mel {
             state_[0] = joints_[0]->get_position();
             state_[1] = joints_[1]->get_position();
             state_[2] = joints_[2]->get_position();
+
             state_[3] = joints_[0]->get_velocity();
             state_[4] = joints_[1]->get_velocity();
             state_[5] = joints_[2]->get_velocity();
+
             state_[6] = joints_[0]->get_torque();
             state_[7] = joints_[1]->get_torque();
             state_[8] = joints_[2]->get_torque();
-            state_[9] = static_cast<core::Motor*>(joints_[1]->actuator_)->get_current_sense();
-            state_[10] = static_cast<core::Motor*>(joints_[1]->actuator_)->get_current_limited();
-            state_[11] = static_cast<core::Motor*>(joints_[2]->actuator_)->get_current_limited();
+
+            state_[9] = static_cast<core::Motor*>(joints_[0]->actuator_)->get_current_command();
+            state_[10] = static_cast<core::Motor*>(joints_[1]->actuator_)->get_current_command();
+            state_[11] = static_cast<core::Motor*>(joints_[2]->actuator_)->get_current_command();
+
+            state_[12] = static_cast<core::Motor*>(joints_[0]->actuator_)->get_current_sense();
+            state_[13] = static_cast<core::Motor*>(joints_[1]->actuator_)->get_current_sense();
+            state_[14] = static_cast<core::Motor*>(joints_[2]->actuator_)->get_current_sense();
+
             state_map_.write(state_);
         }
 
@@ -250,7 +258,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.wait();
+                clock.accurate_wait();
             }
 
             // disable OpenWrist
@@ -312,7 +320,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.wait();
+                clock.accurate_wait();
             }
 
             // disable OpenWrist

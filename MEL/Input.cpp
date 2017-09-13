@@ -132,6 +132,15 @@ namespace mel {
             return (GetConsoleWindow() == GetForegroundWindow());
         }
 
+        void Input::ignore_ctrl_c() {
+            signal(SIGINT, SIG_IGN);
+        }
+
+        void Input::prompt(std::string message, Input::Key key) {
+            util::print(message);
+            wait_for_key_press(key);
+        }
+
     }
 
 }

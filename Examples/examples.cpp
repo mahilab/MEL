@@ -10,6 +10,8 @@
 #include <random>
 #include "mel_math.h"
 #include "Q8Usb.h"
+#include "OpenWrist.h"
+#include <Windows.h>
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -33,7 +35,8 @@ int main(int argc, char * argv[]) {
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
         ("external", "example of how to launch an external app or game from C++")
         ("q8", "example demonstrating how to set up a Q8 USB and becnhmark it's read/write speed")
-        ("clock", "clock testing");
+        ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
+        ("clock","tests clock wait function performance on your PC");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -183,7 +186,7 @@ int main(int argc, char * argv[]) {
             cpp2py.write(cpp2py_data);
 
             // wait the clock
-            clock.wait();
+            clock.accurate_wait();
         }
     }
 
@@ -221,25 +224,148 @@ int main(int argc, char * argv[]) {
         q8->benchmark(1000000);
 
         q8->disable();
+        delete q8;
     }
+
+    //-------------------------------------------------------------------------
+    // OPENWRIST EXAMPLE:    >Examples.exe --open-wrist
+    //-------------------------------------------------------------------------
+    
+    if (var_map.count("open-wrist")) {
+
+        // tell compiler to ignore CTRL-C signals from console
+        // (we will handle them ourself in responsible way)
+        mel::util::Input::ignore_ctrl_c();
+
+        // enable soft realtime
+        mel::util::enable_realtime();
+
+        // create Q8Usb for OpenWrist
+        mel::uint32 id = 0;
+        mel::channel_vec  ai_channels = { 0, 1, 2 };
+        mel::channel_vec  ao_channels = { 0, 1, 2 };
+        mel::channel_vec  di_channels = { 0, 1, 2 };
+        mel::channel_vec  do_channels = { 0, 1, 2 };
+        mel::channel_vec enc_channels = { 0, 1, 2 };
+
+        // configure the Q8 to run in CurrentMode for us with VoltPAQ-X4
+        mel::dev::Q8Usb::Options options_q8;
+        options_q8.update_rate_ = mel::dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
+        options_q8.decimation_ = 1;
+        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
+        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +1.912, 18.43, 0, -1, 0, 1000);
+
+        // initialize Q8 object as DAQ pointer (polymorphism)
+        mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
+
+        // create OpenWrist object
+        mel::exo::OpenWrist::Config ow_config;
+        for (int i = 0; i < 3; i++) {
+            ow_config.enable_[i] = q8->do_(i);
+            ow_config.command_[i] = q8->ao_(i);
+            ow_config.sense_[i] = q8->ai_(i);
+            ow_config.encoder_[i] = q8->encoder_(i);
+            ow_config.encrate_[i] = q8->encrate_(i);
+            ow_config.amp_gains_[i] = 1;
+        }
+        mel::exo::OpenWrist ow(ow_config);
+
+        // create a 1000 Hz Clock to run our controller on
+        mel::util::Clock clock(1000);
+
+        // create some PD controllers
+        mel::core::PdController pd0(25, 1.15); // joint 0 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd1(20, 1.00); // joint 1 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd2(20, 0.25);  // joint 2 ( Nm/rad , Nm-s/rad )
+
+        // request user input to begin
+        mel::util::Input::prompt("Press ENTER to start the controller.", mel::util::Input::Return);
+
+        // enable hardware
+        q8->enable();
+        q8->start_watchdog(0.1);
+        ow.enable();
+
+        // start the control loop
+        clock.start();
+        while (true) {
+
+            // read and reload Q8
+            q8->read_all();
+            q8->reload_watchdog();
+
+            // do something controlsy
+            ow.joints_[0]->set_torque(pd0.calculate(0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
+            ow.joints_[1]->set_torque(pd1.calculate(0, ow.joints_[1]->get_position(), 0, ow.joints_[1]->get_velocity()));
+            ow.joints_[2]->set_torque(pd2.calculate(0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
+
+            // update the OpenWrist's internal MELShare map so we can use MELScope
+            ow.update_state_map();
+
+            // check joint limits and react if necessary
+            if (ow.check_all_joint_position_limits() || ow.check_all_joint_torque_limits())
+                break;
+
+            // check for user request to stop
+            if (mel::util::Input::is_key_pressed(mel::util::Input::LControl) && mel::util::Input::is_key_pressed(mel::util::Input::C))
+                break;
+
+            // write Q8
+            q8->write_all();
+
+            // wait for the next clock tick
+            clock.wait();
+
+            clock.log();
+        }
+        clock.save_log();
+        // disable hardware and cleanup
+        ow.disable();
+        q8->disable();
+        delete q8;
+    }   
+
+    //-------------------------------------------------------------------------
+    // CLOCK WAIT EXAMPLE:    >Examples.exe --clock
+    //-------------------------------------------------------------------------
 
     if (var_map.count("clock")) {
 
-        std::chrono::high_resolution_clock::time_point start, stop;
-
+        mel::util::Clock clock(1000);
         mel::util::enable_realtime();
-       
-        for (int i = 0; i < 1000; i++) {
-            mel::util::Clock clock(1000);
-            clock.start();
-            start = std::chrono::high_resolution_clock::now();
-            clock.wait();
-            stop = std::chrono::high_resolution_clock::now();
-            auto duration = stop - start;
-            mel::util::print(duration.count() * 1.0 / 1000000000.0);
-        }
 
+        // hybrid wait (default)
+        clock.start();
+        while (clock.time() < 30.0) {
+            // fake busy code
+            mel::util::Clock::wait_for(0.0001);
+            clock.wait();
+            clock.log();
+        }
+        clock.save_log();
+
+        // accurate wait
+        clock.start();
+        while (clock.time() < 30.0) {
+            // fake busy code
+            mel::util::Clock::wait_for(0.0001);
+            clock.accurate_wait();
+            clock.log();
+        }
+        clock.save_log();
+
+        // efficient wait
+        clock.start();
+        while (clock.time() < 30.0) {
+            // fake busy code
+            mel::util::Clock::wait_for(0.0001);
+            clock.efficient_wait();
+            clock.log();
+        }
+        clock.save_log();
     }
+
 }
 
 
