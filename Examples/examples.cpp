@@ -253,9 +253,9 @@ int main(int argc, char * argv[]) {
         mel::dev::Q8Usb::Options options_q8;
         options_q8.update_rate_ = mel::dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
         options_q8.decimation_ = 1;
-        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
-        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, -1.382, 8.030, 0, -1, 0, 1000);
-        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +1.912, 18.43, 0, -1, 0, 1000);
+        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
 
         // initialize Q8 object as DAQ pointer (polymorphism)
         mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
@@ -275,10 +275,10 @@ int main(int argc, char * argv[]) {
         // create a 1000 Hz Clock to run our controller on
         mel::util::Clock clock(1000);
 
-        // create some PD controllers
-        mel::core::PdController pd0(25, 1.15); // joint 0 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd1(20, 1.00); // joint 1 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd2(20, 0.25);  // joint 2 ( Nm/rad , Nm-s/rad )
+        // create some PD controllers that fill like springs
+        mel::core::PdController pd0(10, 0.05); // joint 0 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd1(10, 0.05); // joint 1 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd2(10, 0.025);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
         mel::util::Input::prompt("Press ENTER to start the controller.", mel::util::Input::Return);
@@ -305,7 +305,7 @@ int main(int argc, char * argv[]) {
             ow.update_state_map();
 
             // check joint limits and react if necessary
-            if (ow.check_all_joint_position_limits() || ow.check_all_joint_torque_limits())
+            if (ow.check_all_joint_limits())
                 break;
 
             // check for user request to stop
