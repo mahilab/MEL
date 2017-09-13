@@ -36,7 +36,7 @@ namespace mel {
             return -2 * amplitude / PI * atan(cos(PI * frequency * t) / sin(PI * frequency * t));
         }
 
-        std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec) {
+        std::vector<double> eigenv2stdv(const Eigen::VectorXd& eigen_vec) {
             std::vector<double> std_vec;
             std_vec.resize(eigen_vec.size());
             Eigen::VectorXd::Map(&std_vec[0], eigen_vec.size()) = eigen_vec;

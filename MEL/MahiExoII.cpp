@@ -116,6 +116,16 @@ namespace mel {
             anatomical_joint_velocities_[4] = q_ser_dot_[2]; // arm translation
         }
 
+        double_vec MahiExoII::get_wrist_parallel_positions() const {
+            //double_vec wrist_par_pos = math::eigenv2stdv(q_par_);
+            return math::eigenv2stdv(q_par_);
+        }
+
+        double_vec MahiExoII::get_wrist_serial_positions() const {
+            //double_vec wrist_ser_pos = math::eigenv2stdv(q_ser_);
+            return math::eigenv2stdv(q_ser_);
+        }
+
         void MahiExoII::set_anatomical_joint_torques(double_vec new_torques, int error_code) {
 
             // set torques for first two anatomical joints, which have actuators

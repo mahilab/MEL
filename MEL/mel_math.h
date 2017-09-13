@@ -98,7 +98,7 @@ namespace mel {
         // EIGEN RELATED
         //-------------------------------------------------------------------------
 
-        std::vector<double> eigenv2stdv(Eigen::VectorXd& eigen_vec);
+        std::vector<double> eigenv2stdv(const Eigen::VectorXd& eigen_vec);
 
         Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec);
 
