@@ -258,7 +258,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.accurate_wait();
+                clock.wait();
             }
 
             // disable OpenWrist
@@ -320,7 +320,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.accurate_wait();
+                clock.wait();
             }
 
             // disable OpenWrist

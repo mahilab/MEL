@@ -603,7 +603,7 @@ namespace mel {
                 q8_temp->set_digital_signal(digital_channel, do_signal);
                 q8_temp->write_digitals();
 
-                clock.accurate_wait();
+                clock.wait();
             }
 
             delete q8_temp;

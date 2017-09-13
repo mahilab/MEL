@@ -7,6 +7,8 @@ namespace mel {
 
     namespace util {
 
+        UINT timer_resolution;
+
         const std::string get_ymdhms() {
             time_t     now = time(0);
             struct tm  tstruct;
@@ -39,12 +41,47 @@ namespace mel {
             if (!SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS))
             {
                 dwError = GetLastError();
-                _tprintf(TEXT("Failed to elevate process priority (%d)\n"), dwError);
+                _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), dwError);
             }
             if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL))
             {
                 dwError = GetLastError();
-                _tprintf(TEXT("Failed to elevate thread priority (%d)\n"), dwError);
+                _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), dwError);
+            }
+
+            // set Windows timer resolution to smallest possible
+            TIMECAPS tc;            
+
+            if (timeGetDevCaps(&tc, sizeof(TIMECAPS)) != TIMERR_NOERROR) {
+                util::print("ERROR: Failed to get minimum timer resolution.");
+            }
+
+            timer_resolution = min(max(tc.wPeriodMin, 1), tc.wPeriodMax);
+
+            // begin high resolution timer period
+            if (timeBeginPeriod(timer_resolution) != TIMERR_NOERROR) {
+                util::print("ERROR: Failed to set Windows timer resolution.");
+            }
+        }
+
+        void disable_realtime() {
+            DWORD dwError;
+            if (!SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS))
+            {
+                dwError = GetLastError();
+                _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), dwError);
+            }
+            if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL))
+            {
+                dwError = GetLastError();
+                _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), dwError);
+            }
+
+            // end high resolution timer period
+            if (timer_resolution != 0) {
+                if (timeEndPeriod(timer_resolution) != TIMERR_NOERROR) {
+                    util::print("ERROR: Failed to set Windows timer resolution.");
+                }
             }
         }
 

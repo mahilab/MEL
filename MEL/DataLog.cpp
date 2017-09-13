@@ -43,6 +43,40 @@ namespace mel {
             row_index_ += 1;
         }
 
+        uint32 DataLog::get_col_count() {
+            return static_cast<uint32>(num_cols_);
+        }
+
+        uint32 DataLog::get_row_count() {
+            return row_index_;
+        }
+
+        std::vector<double> DataLog::get_col(uint32 index) {
+            if (index < num_cols_)
+                return std::vector<double>(data_[index].begin(), data_[index].begin() + row_index_);
+            else
+                return std::vector<double>();
+        }
+
+        std::vector<double> DataLog::get_col(std::string column_name) {
+            auto result = std::find(column_names_.begin(), column_names_.end(), column_name);
+            if (result != column_names_.end()) {
+                return std::vector<double>(data_[result - column_names_.begin()].begin(), data_[result - column_names_.begin()].begin() + row_index_);
+            }
+            else {
+                return std::vector<double>();
+            }
+        }
+
+        std::vector<double> DataLog::get_row(uint32 index) {
+            std::vector<double> row(num_cols_);
+            if (index < row_index_) {
+                for (int i = 0; i < num_cols_; ++i)
+                    row[i] = data_[i][index];
+            }
+            return row;
+        }
+
         void DataLog::double_rows() {
             util::print("WARNING: DataLog " + util::namify(name_) + " max rows exceeded. Automatically doubling size. Increase max_rows in the constructor to avoid delays.");
             max_rows_ *= 2;

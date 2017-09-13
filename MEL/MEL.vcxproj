@@ -57,6 +57,7 @@
     <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="MelShare.h" />
     <ClInclude Include="mel_math.h" />
+    <ClInclude Include="mel_types.h" />
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="OpenWrist.h" />
     <ClInclude Include="PdController.h" />
@@ -127,7 +128,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>hil.lib;quanser_runtime.lib;quanser_common.lib;legacy_stdio_definitions.lib</AdditionalDependencies>
+      <AdditionalDependencies>hil.lib;quanser_runtime.lib;quanser_common.lib;legacy_stdio_definitions.lib;winmm.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>C:\dev\quarc\lib\win64;C:\dev\boost_1_64_0\lib64-msvc-14.1</AdditionalLibraryDirectories>

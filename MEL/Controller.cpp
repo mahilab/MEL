@@ -57,7 +57,7 @@ namespace mel {
                 (*it)->step();
 
             // wait for the next clock tick
-            clock_.accurate_wait();
+            clock_.wait();
         }
 
         // stop the stop Tasks(s)

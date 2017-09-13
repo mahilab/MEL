@@ -3,50 +3,9 @@
 #include <array>
 #include <iostream>
 #include <string>
+#include "mel_types.h"
 
 namespace mel {
-
-    //-------------------------------------------------------------------------
-    // TYPEDEF BASIC TYPES
-    //-------------------------------------------------------------------------
-
-    typedef             char  int8;   ///<           -127 to +127
-    typedef unsigned    char uint8;   ///<              0 to +255
-    typedef            short  int16;  ///<        -32,767 to +32,767
-    typedef unsigned   short uint16;  ///<              0 to +65,535
-    typedef              int  int32;  ///< -2,147,483,648 to +2,147,483,647
-    typedef unsigned     int uint32;  ///<              0 to +4,294,967,295
-    typedef signed   __int64 int64;   ///<
-    typedef unsigned __int64 uint64;  ///<
-
-    typedef std::vector<char>   char_vec;
-    typedef std::vector<int8>   int8_vec;
-    typedef std::vector<uint8>  uint8_vec;
-    typedef std::vector<int16>  int16_vec;
-    typedef std::vector<uint16> uint16_vec;
-    typedef std::vector<int32>  int32_vec;
-    typedef std::vector<uint32> uint32_vec;
-    typedef std::vector<double> double_vec;
-
-    //-------------------------------------------------------------------------
-    // TYPDEF MEL TYPES BASED ON DAQ MANUFACTUERER
-    //-------------------------------------------------------------------------
-
-#define QUANSER
-#ifdef QUANSER
-
-    typedef double voltage;
-    typedef int8   dsignal;
-    typedef uint32 channel;
-
-    typedef std::vector<voltage> voltage_vec;
-    typedef std::vector<dsignal> dsignal_vec;
-    typedef std::vector<channel> channel_vec;
-
-#endif
-
-#ifdef NI
-#endif
 
     namespace util {
 
@@ -57,10 +16,12 @@ namespace mel {
         const std::string get_ymdhms();  ///< Get current date/time, format is YYYY-MM-DD.HH:mm:ss
         std::string get_last_windows_error_message();
 
-        /// Enables soft realtime scheduling performance. The program must be run 'As Administrator'
+        /// Enables soft realtime performance. The program must be run 'As Administrator'
         /// to obtain the REALTIME priority policy. Otherwise, it will default to HIGH priority policy, 
         /// which is still higher than typical Windows applications (NORMAL in most cases).
         void enable_realtime();
+        ///  Disables soft realtime performance.
+        void disable_realtime();
 
         //-------------------------------------------------------------------------
         // PRINTING AND FORMATTING FUNCTIONS

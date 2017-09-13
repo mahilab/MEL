@@ -36,7 +36,8 @@ int main(int argc, char * argv[]) {
         ("external", "example of how to launch an external app or game from C++")
         ("q8", "example demonstrating how to set up a Q8 USB and becnhmark it's read/write speed")
         ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
-        ("clock","tests clock wait function performance on your PC");
+        ("clock","tests clock wait function performance on your PC")
+        ("log", "example demonstrating use of DataLog class");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -186,7 +187,7 @@ int main(int argc, char * argv[]) {
             cpp2py.write(cpp2py_data);
 
             // wait the clock
-            clock.accurate_wait();
+            clock.wait();
         }
     }
 
@@ -315,7 +316,7 @@ int main(int argc, char * argv[]) {
             q8->write_all();
 
             // wait for the next clock tick
-            clock.wait();
+            clock.hybrid_wait();
 
             clock.log();
         }
@@ -323,6 +324,7 @@ int main(int argc, char * argv[]) {
         // disable hardware and cleanup
         ow.disable();
         q8->disable();
+        mel::util::enable_realtime();
         delete q8;
     }   
 
@@ -335,9 +337,9 @@ int main(int argc, char * argv[]) {
         mel::util::Clock clock(1000);
         mel::util::enable_realtime();
 
-        // hybrid wait (default)
+        // accurate wait (default)
         clock.start();
-        while (clock.time() < 30.0) {
+        while (clock.time() < 1.0) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.wait();
@@ -345,25 +347,49 @@ int main(int argc, char * argv[]) {
         }
         clock.save_log();
 
-        // accurate wait
-        clock.start();
-        while (clock.time() < 30.0) {
-            // fake busy code
-            mel::util::Clock::wait_for(0.0001);
-            clock.accurate_wait();
-            clock.log();
-        }
-        clock.save_log();
-
         // efficient wait
         clock.start();
-        while (clock.time() < 30.0) {
+        while (clock.time() < 1.0) {
             // fake busy code
             mel::util::Clock::wait_for(0.0001);
             clock.efficient_wait();
             clock.log();
         }
         clock.save_log();
+
+
+        // efficient wait
+        clock.start();
+        while (clock.time() < 1.0) {
+            // fake busy code
+            mel::util::Clock::wait_for(0.0001);
+            clock.hybrid_wait();
+            clock.log();
+        }
+        clock.save_log();
+
+        mel::util::disable_realtime();
+    }
+
+    //-------------------------------------------------------------------------
+    // DATALOG EXAMPLE:    >Examples.exe --data
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("log")) {
+
+        mel::util::DataLog log;
+
+        log.add_col("A").add_col("B").add_col("C").add_col("D").add_col("E");
+        
+        log.add_row(mel::math::linspace(1, 5, 5));
+        log.add_row(mel::math::linspace(6, 10, 5));
+        log.add_row(mel::math::linspace(11, 15, 5));
+
+        mel::util::print("Row 1: ", false); mel::util::print(log.get_row(1));
+        mel::util::print("Col A: ", false); mel::util::print(log.get_col("A"));
+
+        log.save_data("my_log", "my_logs", true);     
+
     }
 
 }
