@@ -18,7 +18,10 @@ namespace mel {
 
         /// Enables soft realtime performance. The program must be run 'As Administrator'
         /// to obtain the REALTIME priority policy. Otherwise, it will default to HIGH priority policy, 
-        /// which is still higher than typical Windows applications (NORMAL in most cases).
+        /// which is still higher than typical Windows applications (NORMAL in most cases). If you want
+        /// your program to require administrator privledges, change the manifest file:
+        ///
+
         void enable_realtime();
         ///  Disables soft realtime performance.
         void disable_realtime();
