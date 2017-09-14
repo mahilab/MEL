@@ -10,7 +10,7 @@ namespace mel {
     namespace util {
 
         //-------------------------------------------------------------------------
-        // UTILITY FUNCTIONS
+        // SYSTEM FUNCTIONS
         //-------------------------------------------------------------------------
 
         const std::string get_ymdhms();  ///< Get current date/time, format is YYYY-MM-DD.HH:mm:ss
@@ -20,11 +20,13 @@ namespace mel {
         /// to obtain the REALTIME priority policy. Otherwise, it will default to HIGH priority policy, 
         /// which is still higher than typical Windows applications (NORMAL in most cases). If you want
         /// your program to require administrator privledges, change the manifest file:
-        ///
-
         void enable_realtime();
         ///  Disables soft realtime performance.
         void disable_realtime();
+
+        /// Puts the thread to sleep so other processes can execute. A higher
+        /// resolution version of std::this_thread::sleep_for() or Windows.h Sleep(). 
+        void usleep(int64 microseconds);
 
         //-------------------------------------------------------------------------
         // PRINTING AND FORMATTING FUNCTIONS

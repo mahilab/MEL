@@ -147,23 +147,6 @@ namespace mel {
             auto now = std::chrono::high_resolution_clock::now();
             std::chrono::nanoseconds elapsed = now - global_start_;
             return static_cast<double>(elapsed.count()) * NS2S;
-        }
-
-        void Clock::usleep(int64 microseconds) {
-            // https://stackoverflow.com/questions/13397571/precise-thread-sleep-needed-max-1ms-error
-            // https://msdn.microsoft.com/en-us/library/windows/desktop/dd743626(v=vs.85).aspx
-            // https://stackoverflow.com/questions/5801813/c-usleep-is-obsolete-workarounds-for-windows-mingw/11470617#11470617
-
-            // create a waitable timer
-            HANDLE timer;
-            LARGE_INTEGER ft;
-            ft.QuadPart = -(10 *microseconds); 
-            timer = CreateWaitableTimer(NULL, TRUE, NULL);
-            SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
-
-            // wait
-            WaitForSingleObject(timer, INFINITE);
-            CloseHandle(timer);
-        }        
+        }     
     }
 }

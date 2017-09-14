@@ -258,7 +258,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.wait();
+                clock.hybrid_wait();
             }
 
             // disable OpenWrist
@@ -314,13 +314,13 @@ namespace mel {
                 }
 
                 // check joint limits
-                if (check_all_joint_limits()) {
+                if (check_all_joint_torque_limits() && check_all_joint_velocity_limits()) {
                     stop = true;
                     break;
                 }
 
                 // wait the clock
-                clock.wait();
+                clock.hybrid_wait();
             }
 
             // disable OpenWrist

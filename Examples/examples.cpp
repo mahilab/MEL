@@ -37,7 +37,8 @@ int main(int argc, char * argv[]) {
         ("q8", "example demonstrating how to set up a Q8 USB and becnhmark it's read/write speed")
         ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
         ("clock","tests clock wait function performance on your PC")
-        ("log", "example demonstrating use of DataLog class");
+        ("log", "example demonstrating use of DataLog class")
+        ("q8-test", "stuff");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -415,6 +416,40 @@ int main(int argc, char * argv[]) {
 
         log.save_data("my_log", "my_logs", true);     
 
+    }
+
+    if (var_map.count("q8-test")) {
+        // tell compiler to ignore CTRL-C signals from console
+        // (we will handle them ourself in responsible way)
+        mel::util::Input::ignore_ctrl_c();
+
+        // enable soft realtime
+        mel::util::enable_realtime();
+
+        // create Q8Usb for OpenWrist
+        mel::uint32 id = 0;
+        mel::channel_vec  ai_channels = { 0, 1, 2 };
+        mel::channel_vec  ao_channels = { 0, 1, 2 };
+        mel::channel_vec  di_channels = { 0, 1, 2 };
+        mel::channel_vec  do_channels = { 0, 1, 2 };
+        mel::channel_vec enc_channels = { 0, 1, 2 };
+
+        // configure the Q8 to run in CurrentMode for us with VoltPAQ-X4
+        mel::dev::Q8Usb::Options options_q8;
+        options_q8.update_rate_ = mel::dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
+        options_q8.decimation_ = 1;
+        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+
+        // initialize Q8 object as DAQ pointer (polymorphism)
+        mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
+
+        for (int i = 0; i < 100; i++) {
+            q8->enable();
+            mel::util::usleep(500000);
+            q8->disable();
+        }
     }
 
 }

@@ -84,14 +84,6 @@ namespace mel {
             double                   elapsed_ideal_;   ///< the ideal ammount of time that has elapsed since the clock started        
 
             //---------------------------------------------------------------------
-            // PRIVATE FUNCTIONS
-            //---------------------------------------------------------------------
-
-            /// Puts the thread to sleep so other processes can execute. A higher
-            /// resolution version of std::this_thread::sleep_for() or Windows.h Sleep(). 
-            void usleep(int64 microseconds);
-
-            //---------------------------------------------------------------------
             // STATIC VAIRABLES / FUNCTIONS
             //---------------------------------------------------------------------
 
