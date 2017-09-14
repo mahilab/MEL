@@ -30,6 +30,7 @@
     <ClCompile Include="Mutex.cpp" />
     <ClCompile Include="OpenWrist.cpp" />
     <ClCompile Include="PdController.cpp" />
+    <ClCompile Include="PerformanceMonitor.cpp" />
     <ClCompile Include="PositionSensor.cpp" />
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Q8Usb.cpp" />
@@ -61,6 +62,7 @@
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="OpenWrist.h" />
     <ClInclude Include="PdController.h" />
+    <ClInclude Include="PerformanceMonitor.h" />
     <ClInclude Include="Spinlock.h" />
     <ClInclude Include="StateMachine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -128,7 +130,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>hil.lib;quanser_runtime.lib;quanser_common.lib;legacy_stdio_definitions.lib;winmm.lib</AdditionalDependencies>
+      <AdditionalDependencies>hil.lib;quanser_runtime.lib;quanser_common.lib;legacy_stdio_definitions.lib;winmm.lib;Pdh.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>C:\dev\quarc\lib\win64;C:\dev\boost_1_64_0\lib64-msvc-14.1</AdditionalLibraryDirectories>
