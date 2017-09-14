@@ -135,7 +135,7 @@ namespace mel {
             static void ignore_ctrl_c();
 
             /// \brief Displays #message in the console and blocks until #key is pressed
-            static void prompt(std::string message, Input::Key key);
+            static void acknowledge(std::string message, Input::Key key);
 
         };
 

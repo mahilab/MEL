@@ -281,7 +281,7 @@ int main(int argc, char * argv[]) {
         mel::core::PdController pd2(5, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
-        mel::util::Input::prompt("Press ENTER to start the controller.", mel::util::Input::Return);
+        mel::util::Input::acknowledge("Press ENTER to start the controller.", mel::util::Input::Return);
 
         // enable hardware
         q8->enable();
@@ -334,12 +334,17 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("clock")) {
 
+
         mel::uint32 seconds   = 10;
         mel::uint32 frequency = 1000;
 
         double mean, stddev;
 
         mel::util::PerformanceMonitor pm;
+
+        mel::util::Input::acknowledge("Press ENTER to start the benchmark.", mel::util::Input::Return);
+
+        mel::util::print(pm.cpu_used_process());
 
         mel::util::Clock clock(frequency);
         mel::util::enable_realtime();

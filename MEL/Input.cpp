@@ -125,7 +125,7 @@ namespace mel {
 
         void Input::wait_for_key_press(Input::Key key) {
             while (!is_key_pressed(key))
-                Sleep(1);
+                Sleep(10);
         }
 
         bool Input::is_console_window_focused() {
@@ -136,10 +136,12 @@ namespace mel {
             signal(SIGINT, SIG_IGN);
         }
 
-        void Input::prompt(std::string message, Input::Key key) {
+        void Input::acknowledge(std::string message, Input::Key key) {
             util::print(message);
             wait_for_key_press(key);
         }
+
+
 
     }
 
