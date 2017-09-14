@@ -120,6 +120,9 @@
     <ClCompile Include="StateMachine.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="PerformanceMonitor.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Robot.h">
@@ -225,6 +228,9 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="mel_types.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="PerformanceMonitor.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>

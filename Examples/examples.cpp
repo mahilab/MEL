@@ -11,7 +11,7 @@
 #include "mel_math.h"
 #include "Q8Usb.h"
 #include "OpenWrist.h"
-#include <Windows.h>
+#include "PerformanceMonitor.h"
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -275,10 +275,10 @@ int main(int argc, char * argv[]) {
         // create a 1000 Hz Clock to run our controller on
         mel::util::Clock clock(1000);
 
-        // create some PD controllers that fill like springs
-        mel::core::PdController pd0(10, 0.05); // joint 0 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd1(10, 0.05); // joint 1 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd2(10, 0.025);  // joint 2 ( Nm/rad , Nm-s/rad )
+        // create some PD controllers that fill like light springs
+        mel::core::PdController pd0(5, 0.025); // joint 0 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd1(5, 0.025); // joint 1 ( Nm/rad , Nm-s/rad )
+        mel::core::PdController pd2(5, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
         mel::util::Input::prompt("Press ENTER to start the controller.", mel::util::Input::Return);
@@ -334,18 +334,20 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("clock")) {
 
-        mel::uint32 seconds   = 60;
+        mel::uint32 seconds   = 10;
         mel::uint32 frequency = 1000;
 
         double mean, stddev;
 
+        mel::util::PerformanceMonitor pm;
+
         mel::util::Clock clock(frequency);
         mel::util::enable_realtime();
-
+        
         mel::util::print("Benchmarking Clock for " + std::to_string(static_cast<int>(seconds)) + " second(s) at " + std::to_string(frequency) + " Hz.");
 
         // accurate wait (default)
-        mel::util::print("Accurate Wait:    ", false);
+        mel::util::print("ACCURATE WAIT:    ", false);
         clock.start();
         while (clock.time() < (double)seconds) {
             // fake busy code
@@ -355,11 +357,11 @@ int main(int argc, char * argv[]) {
         }
         mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
         stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
-        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
+        mel::util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + "  %");
 
         // efficient wait
-        mel::util::print("Efficient Wait:   ", false);
+        mel::util::print("EFFICIENT WAIT:   ", false);
         clock.start();
         while (clock.time() < (double)seconds) {
             // fake busy code
@@ -369,11 +371,11 @@ int main(int argc, char * argv[]) {
         }
         mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
         stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
-        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
+        mel::util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + "  %");
 
         // efficient wait
-        mel::util::print("Hybrid Wait:      ", false);
+        mel::util::print("HYBRID WAIT:      ", false);
         clock.start();
         while (clock.time() < (double)seconds) {
             // fake busy code
@@ -383,8 +385,8 @@ int main(int argc, char * argv[]) {
         }
         mean =   mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
         stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print(std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
-        mel::util::print(std::to_string(mean) + " +/- " + std::to_string(stddev) + " (" + std::to_string(std::abs(1000.0 * clock.delta_time_ - mean)) + ")");
+        mel::util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        mel::util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + " %");
 
         mel::util::disable_realtime();
     }

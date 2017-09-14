@@ -38,7 +38,7 @@ namespace mel {
                 out.resize(n);
                 double delta = (b - a) / (n - 1);
                 out[0] = a;
-                for (int i = 1; i < n - 1; i++) {
+                for (uint32 i = 1; i < n - 1; i++) {
                     out[i] = out[i-1] + delta;
                 }
                 out[n - 1] = b;
