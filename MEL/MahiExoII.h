@@ -90,10 +90,10 @@ namespace mel {
             static const int N_rj_; // number of robotic joints
 
             // PD Control
-            double elbow_P_ = 80.0; //80.0; // tuned 9/11/2017
-            double elbow_D_ = 1.25; // 1.50; // tuned 9/11/2017
-            double forearm_P_ = 25.0;
-            double forearm_D_ = 0.20;
+            double elbow_P_ = 100.0; // tuned 9/13/2017
+            double elbow_D_ = 1.25; // tuned 9/13/2017
+            double forearm_P_ = 28.0; // tuned 9/13/2017
+            double forearm_D_ = 0.20; // tuned 9/13/2017
             double prismatic_P_ = 2200.0; // tuned 9//12/2017
             double prismatic_D_ = 30.0; // tuned 9//12/2017
             double wrist_fe_P_ = 25.0;

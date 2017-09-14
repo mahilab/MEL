@@ -130,6 +130,22 @@ namespace mel {
             return eigen_vec;
         }
 
+        double mat_spectral_norm(const Eigen::MatrixXd& mat) {
+            Eigen::EigenSolver<Eigen::MatrixXd> eigensolver(mat.transpose() * mat, false);
+            if (eigensolver.info() != Eigen::Success) {
+                util::print("ERROR: Eigensolver did not converge in mat_spectral_norm");
+                return 0;
+            }
+            Eigen::EigenSolver<Eigen::MatrixXd>::EigenvalueType lambda = eigensolver.eigenvalues();
+            double_vec lambda_abs(lambda.size(), 0.0);
+            for (int i = 0; i < lambda.size(); ++i) {
+                lambda_abs[i] = std::abs(lambda[i]);
+            }
+            std::vector<double>::iterator lambda_max;
+            lambda_max = std::max_element(lambda_abs.begin(), lambda_abs.end());
+            return std::sqrt(*lambda_max);
+        }
+
     }
 }
 
