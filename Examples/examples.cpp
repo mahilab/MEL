@@ -12,12 +12,15 @@
 #include "Q8Usb.h"
 #include "OpenWrist.h"
 #include "PerformanceMonitor.h"
+#include <iostream>
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
 // does not require any variables from other sections. To run a particular secition,
 // use the appropriate program option argument when running the exe from the 
 // command line.
+
+using namespace mel; // this isn't necessary, but will keep the amount of typing down
 
 int main(int argc, char * argv[]) {
 
@@ -38,7 +41,7 @@ int main(int argc, char * argv[]) {
         ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
         ("clock","tests clock wait function performance on your PC")
         ("log", "example demonstrating use of DataLog class")
-        ("q8-test", "stuff");
+        ("io", "example demonstrating use of print functions and Input class");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -47,7 +50,7 @@ int main(int argc, char * argv[]) {
     // running "Examples.exe --help" at the command line will produce a nicely
     // formatted list of program options
     if (var_map.count("help")) {
-        mel::util::print(desc);
+        util::print(desc);
         return 0;
     }
 
@@ -61,9 +64,9 @@ int main(int argc, char * argv[]) {
         // note that on Windows, the shared memory maps will only stay active for as long as
         // these instances stay in scope, so create them inside of your main loop or inside of a
         // class isntance that you expect to stay alive for the duration of the program (e.g. OpenWrist or ME-II).
-        mel::comm::MelShare map0("map0");
-        mel::comm::MelShare map1("map1");
-        mel::comm::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
+        comm::MelShare map0("map0");
+        comm::MelShare map1("map1");
+        comm::MelShare map2("map2", 80); // 10 doubles * 8 bytes/double
 
         // create new data containers to write to map (vectors, STL arrays, and C-style arrays can be used)
         std::vector<char> my_chars = { 'a','b','c' }; // STL vector
@@ -75,13 +78,13 @@ int main(int argc, char * argv[]) {
 
         // write the data to the maps
         map0.write(my_chars); // non-static version called using dot operator on a MelShare instance (fastest method)
-        mel::comm::write_map("map1", my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
+        comm::write_map("map1", my_ints); // alternately, static version that can be called anywhere if you know the map name (slightly slower)
         map2.write(my_doubles, 10); // C-style arrays can be used with both non-static and static versions, but you must input size manually
 
-        mel::util::print("Wrote: ");
-        std::cout << "map0:    ";  mel::util::print(my_chars);
-        std::cout << "map1:    ";  mel::util::print(my_ints);
-        std::cout << "map2:    ";  mel::util::print(my_doubles, 10, true);
+        util::print("Wrote: ");
+        std::cout << "map0:    ";  util::print(my_chars);
+        std::cout << "map1:    ";  util::print(my_ints);
+        std::cout << "map2:    ";  util::print(my_doubles, 10, true);
 
         std::cout << "Run Python or C# code, then press ENTER to receive new values.";
         getchar();
@@ -98,12 +101,12 @@ int main(int argc, char * argv[]) {
         // read the altered data from the maps
         map0.read(my_chars);
         map1.read(my_doubles, 10); // this demonstrates that we can read doubles from a map that previously wrote ints
-        mel::comm::read_map("map2", my_ints_bigger); // and vice-versa
+        comm::read_map("map2", my_ints_bigger); // and vice-versa
 
-        mel::util::print("Read: ");
-        std::cout << "map0:    ";  mel::util::print(my_chars);
-        std::cout << "map1:    ";  mel::util::print(my_doubles, 10, true);
-        std::cout << "map2:    ";  mel::util::print(my_ints_bigger);
+        util::print("Read: ");
+        std::cout << "map0:    ";  util::print(my_chars);
+        std::cout << "map1:    ";  util::print(my_doubles, 10, true);
+        std::cout << "map2:    ";  util::print(my_ints_bigger);
 
         return 0;
     }
@@ -114,10 +117,10 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("melshare-msg")) {
         // create a MELShare
-        mel::comm::MelShare messenger("messenger");
+        comm::MelShare messenger("messenger");
         messenger.write_message("this is a message being sent to unity");
         getchar();
-        mel::util::print(messenger.read_message());
+        util::print(messenger.read_message());
     }
 
     //-------------------------------------------------------------------------
@@ -134,10 +137,10 @@ int main(int argc, char * argv[]) {
         // MELShare. While bidirectional communcation over a single MELShare map is possible 
         // with the read_write() functions, it can be tricky to get the timing right. 
         // It's best to just keep two maps open for this purpose.
-        mel::comm::MelShare integrals("integrals");
-        mel::comm::MelShare cpp2py("cpp2py");
-        mel::comm::MelShare py2cpp_ampl("py2cpp_ampl");
-        mel::comm::MelShare py2cpp_freq("py2cpp_freq");
+        comm::MelShare integrals("integrals");
+        comm::MelShare cpp2py("cpp2py");
+        comm::MelShare py2cpp_ampl("py2cpp_ampl");
+        comm::MelShare py2cpp_freq("py2cpp_freq");
 
         // create the data buffers for each map
         std::array<double, 4> integrals_data = { 0, 0, 0, 0 };
@@ -146,10 +149,10 @@ int main(int argc, char * argv[]) {
         std::array<double, 4> py2cpp_freq_data = { 0.4, 0.6, 0.8, 1.0 };
 
         // create a MEL Integrator for doing some integration. note the initial value 5
-        mel::math::Integrator integrator = mel::math::Integrator(5, mel::math::Integrator::Technique::Trapezoidal);
+        math::Integrator integrator = math::Integrator(5, math::Integrator::Technique::Trapezoidal);
 
         // create a MEL Clock to control the rate of our data generating loop
-        mel::util::Clock clock(1000); // 1000 Hz clock
+        util::Clock clock(1000); // 1000 Hz clock
 
         // In this example, we will have the data in cpp2py be a funcion of the data
         // from py2cpp. Specifically, we will generate some periodic data, and use
@@ -179,10 +182,10 @@ int main(int argc, char * argv[]) {
             py2cpp_freq.read(py2cpp_freq_data);
 
             // generate new data for cpp2py
-            cpp2py_data[0] = mel::math::sin_wave(py2cpp_ampl_data[0], py2cpp_freq_data[0], clock.time());
-            cpp2py_data[1] = mel::math::square_wave(py2cpp_ampl_data[1], py2cpp_freq_data[1], clock.time());;
-            cpp2py_data[2] = mel::math::triangle_wave(py2cpp_ampl_data[2], py2cpp_freq_data[2], clock.time());
-            cpp2py_data[3] = mel::math::sawtooth_wave(py2cpp_ampl_data[3], py2cpp_freq_data[3], clock.time());
+            cpp2py_data[0] = math::sin_wave(py2cpp_ampl_data[0], py2cpp_freq_data[0], clock.time());
+            cpp2py_data[1] = math::square_wave(py2cpp_ampl_data[1], py2cpp_freq_data[1], clock.time());;
+            cpp2py_data[2] = math::triangle_wave(py2cpp_ampl_data[2], py2cpp_freq_data[2], clock.time());
+            cpp2py_data[3] = math::sawtooth_wave(py2cpp_ampl_data[3], py2cpp_freq_data[3], clock.time());
 
             // write cpp2py
             cpp2py.write(cpp2py_data);
@@ -197,7 +200,7 @@ int main(int argc, char * argv[]) {
     //-------------------------------------------------------------------------
 
     if (var_map.count("external")) {
-        mel::util::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
+        util::ExternalApp my_app("my_python_shell", "C:\\dev\\Python27\\python.exe");
         my_app.launch();
     }
 
@@ -207,21 +210,21 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("q8")) {
 
-        mel::uint32 id = 0;
+        uint32 id = 0;
 
-        mel::channel_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        mel::channel_vec  ao_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        mel::channel_vec  di_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        mel::channel_vec  do_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        mel::channel_vec enc_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        channel_vec  ai_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        channel_vec  ao_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        channel_vec  di_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        channel_vec  do_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        channel_vec enc_channels = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
-        mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
+        core::Daq* q8 = new dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels);
 
-        mel::util::print("Press ENTER to enable this Q8 USB", false);
+        util::print("Press ENTER to enable this Q8 USB", false);
         getchar();
         q8->enable();
 
-        mel::util::print("Press ENTER to benchmark this Q8 USB", false);
+        util::print("Press ENTER to benchmark this Q8 USB", false);
         getchar();
         q8->benchmark(1000000);
 
@@ -237,32 +240,32 @@ int main(int argc, char * argv[]) {
 
         // tell compiler to ignore CTRL-C signals from console
         // (we will handle them ourself in responsible way)
-        mel::util::Input::ignore_ctrl_c();
+        util::Input::ignore_ctrl_c();
 
         // enable soft realtime
-        mel::util::enable_realtime();
+        util::enable_realtime();
 
         // create Q8Usb for OpenWrist
-        mel::uint32 id = 0;
-        mel::channel_vec  ai_channels = { 0, 1, 2 };
-        mel::channel_vec  ao_channels = { 0, 1, 2 };
-        mel::channel_vec  di_channels = { 0, 1, 2 };
-        mel::channel_vec  do_channels = { 0, 1, 2 };
-        mel::channel_vec enc_channels = { 0, 1, 2 };
+        uint32 id = 0;
+        channel_vec  ai_channels = { 0, 1, 2 };
+        channel_vec  ao_channels = { 0, 1, 2 };
+        channel_vec  di_channels = { 0, 1, 2 };
+        channel_vec  do_channels = { 0, 1, 2 };
+        channel_vec enc_channels = { 0, 1, 2 };
 
         // configure the Q8 to run in CurrentMode for us with VoltPAQ-X4
-        mel::dev::Q8Usb::Options options_q8;
-        options_q8.update_rate_ = mel::dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
+        dev::Q8Usb::Options options_q8;
+        options_q8.update_rate_ = dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
         options_q8.decimation_ = 1;
-        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
-        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
-        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[0] = dev::Q8Usb::Options::AoMode(dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[1] = dev::Q8Usb::Options::AoMode(dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        options_q8.ao_modes_[2] = dev::Q8Usb::Options::AoMode(dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
 
         // initialize Q8 object as DAQ pointer (polymorphism)
-        mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
+        core::Daq* q8 = new dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
 
         // create OpenWrist object
-        mel::exo::OpenWrist::Config ow_config;
+        exo::OpenWrist::Config ow_config;
         for (int i = 0; i < 3; i++) {
             ow_config.enable_[i] = q8->do_(i);
             ow_config.command_[i] = q8->ao_(i);
@@ -271,18 +274,18 @@ int main(int argc, char * argv[]) {
             ow_config.encrate_[i] = q8->encrate_(i);
             ow_config.amp_gains_[i] = 1;
         }
-        mel::exo::OpenWrist ow(ow_config);
+        exo::OpenWrist ow(ow_config);
 
         // create a 1000 Hz Clock to run our controller on
-        mel::util::Clock clock(1000);
+        util::Clock clock(1000);
 
         // create some PD controllers that fill like light springs
-        mel::core::PdController pd0(5, 0.025); // joint 0 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd1(5, 0.025); // joint 1 ( Nm/rad , Nm-s/rad )
-        mel::core::PdController pd2(5, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
+        core::PdController pd0(5, 0.025); // joint 0 ( Nm/rad , Nm-s/rad )
+        core::PdController pd1(5, 0.025); // joint 1 ( Nm/rad , Nm-s/rad )
+        core::PdController pd2(5, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
-        mel::util::Input::acknowledge("Press ENTER to start the controller.", mel::util::Input::Return);
+        util::Input::acknowledge("Press ENTER to start the controller.", util::Input::Return);
 
         // enable hardware
         q8->enable();
@@ -310,7 +313,7 @@ int main(int argc, char * argv[]) {
                 break;
 
             // check for user request to stop
-            if (mel::util::Input::is_key_pressed(mel::util::Input::LControl) && mel::util::Input::is_key_pressed(mel::util::Input::C))
+            if (util::Input::is_key_pressed(util::Input::LControl) && util::Input::is_key_pressed(util::Input::C))
                 break;
 
             // write Q8
@@ -325,7 +328,7 @@ int main(int argc, char * argv[]) {
         // disable hardware and cleanup
         ow.disable();
         q8->disable();
-        mel::util::disable_realtime();
+        util::disable_realtime();
         delete q8;
     }   
 
@@ -336,65 +339,65 @@ int main(int argc, char * argv[]) {
     if (var_map.count("clock")) {
 
 
-        mel::uint32 seconds   = 10;
-        mel::uint32 frequency = 1000;
+        uint32 seconds   = 10;
+        uint32 frequency = 1000;
 
         double mean, stddev;
 
-        mel::util::PerformanceMonitor pm;
+        util::PerformanceMonitor pm;
 
-        mel::util::Input::acknowledge("Press ENTER to start the benchmark.", mel::util::Input::Return);
+        util::Input::acknowledge("Press ENTER to start the benchmark.", util::Input::Return);
 
-        mel::util::print(pm.cpu_used_process());
+        util::print(pm.cpu_used_process());
 
-        mel::util::Clock clock(frequency);
-        mel::util::enable_realtime();
+        util::Clock clock(frequency);
+        util::enable_realtime();
         
-        mel::util::print("Benchmarking Clock for " + std::to_string(static_cast<int>(seconds)) + " second(s) at " + std::to_string(frequency) + " Hz.");
+        util::print("Benchmarking Clock for " + std::to_string(static_cast<int>(seconds)) + " second(s) at " + std::to_string(frequency) + " Hz.");
 
         // accurate wait (default)
-        mel::util::print("ACCURATE WAIT:    ", false);
+        util::print("ACCURATE WAIT:    ", false);
         clock.start();
         while (clock.time() < (double)seconds) {
             // fake busy code
-            mel::util::Clock::wait_for(0.0001);
+            util::Clock::wait_for(0.0001);
             clock.wait();
             clock.log();
         }
-        mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
-        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
-        mel::util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + "  %");
+        mean = math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + "  %");
 
         // efficient wait
-        mel::util::print("EFFICIENT WAIT:   ", false);
+        util::print("EFFICIENT WAIT:   ", false);
         clock.start();
         while (clock.time() < (double)seconds) {
             // fake busy code
-            mel::util::Clock::wait_for(0.0001);
+            util::Clock::wait_for(0.0001);
             clock.efficient_wait();
             clock.log();
         }
-        mean = mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
-        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
-        mel::util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + "  %");
+        mean = math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + "  %");
 
         // efficient wait
-        mel::util::print("HYBRID WAIT:      ", false);
+        util::print("HYBRID WAIT:      ", false);
         clock.start();
         while (clock.time() < (double)seconds) {
             // fake busy code
-            mel::util::Clock::wait_for(0.0001);
+            util::Clock::wait_for(0.0001);
             clock.hybrid_wait();
             clock.log();
         }
-        mean =   mel::math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
-        stddev = mel::math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
-        mel::util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
-        mel::util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + " %");
+        mean =   math::mean(clock.log_.get_col("Tick [s]")) * 1000.0;
+        stddev = math::stddev_p(clock.log_.get_col("Tick [s]")) * 1000.0;
+        util::print("Elapsed: " + std::to_string(clock.log_.get_row(clock.log_.get_row_count() - 1)[2]) + " s    ", false);
+        util::print("Avg. Step: " + std::to_string(mean) + " +/- " + std::to_string(stddev) + " ms    CPU: " + std::to_string(pm.cpu_used_process()) + " %");
 
-        mel::util::disable_realtime();
+        util::disable_realtime();
     }
 
     //-------------------------------------------------------------------------
@@ -403,53 +406,56 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("log")) {
 
-        mel::util::DataLog log;
+        util::DataLog log;
 
         log.add_col("A").add_col("B").add_col("C").add_col("D").add_col("E");
         
-        log.add_row(mel::math::linspace(1, 5, 5));
-        log.add_row(mel::math::linspace(6, 10, 5));
-        log.add_row(mel::math::linspace(11, 15, 5));
+        log.add_row(math::linspace(1, 5, 5));
+        log.add_row(math::linspace(6, 10, 5));
+        log.add_row(math::linspace(11, 15, 5));
 
-        mel::util::print("Row 1: ", false); mel::util::print(mel::math::mean(log.get_row(1)));
-        mel::util::print("Col A: ", false); mel::util::print(mel::math::stddev_p(log.get_col("A")));
+        util::print("Row 1: ", false); util::print(math::mean(log.get_row(1)));
+        util::print("Col A: ", false); util::print(math::stddev_p(log.get_col("A")));
 
         log.save_data("my_log", "my_logs", true);     
 
     }
 
-    if (var_map.count("q8-test")) {
-        // tell compiler to ignore CTRL-C signals from console
-        // (we will handle them ourself in responsible way)
-        mel::util::Input::ignore_ctrl_c();
+    //-------------------------------------------------------------------------
+    // IO EXAMPLE:    >Examples.exe --io
+    //-------------------------------------------------------------------------
 
-        // enable soft realtime
-        mel::util::enable_realtime();
+    if (var_map.count("io")) {
 
-        // create Q8Usb for OpenWrist
-        mel::uint32 id = 0;
-        mel::channel_vec  ai_channels = { 0, 1, 2 };
-        mel::channel_vec  ao_channels = { 0, 1, 2 };
-        mel::channel_vec  di_channels = { 0, 1, 2 };
-        mel::channel_vec  do_channels = { 0, 1, 2 };
-        mel::channel_vec enc_channels = { 0, 1, 2 };
+        util::Input::ignore_ctrl_c(); // ignore CTRL+C signals from the command window
 
-        // configure the Q8 to run in CurrentMode for us with VoltPAQ-X4
-        mel::dev::Q8Usb::Options options_q8;
-        options_q8.update_rate_ = mel::dev::Q8Usb::Options::UpdateRate::Fast_8kHz;
-        options_q8.decimation_ = 1;
-        options_q8.ao_modes_[0] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
-        options_q8.ao_modes_[1] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
-        options_q8.ao_modes_[2] = mel::dev::Q8Usb::Options::AoMode(mel::dev::Q8Usb::Options::AoMode::CurrentMode1, 0, +2, 20, 0, -1, 0, 1000);
+        std::vector<int> door_options = { 1,2,3 };
+        std::vector<util::Input::Key> key_options = { util::Input::Num1, util::Input::Num2, util::Input::Num3 };
 
-        // initialize Q8 object as DAQ pointer (polymorphism)
-        mel::core::Daq* q8 = new mel::dev::Q8Usb(id, ai_channels, ao_channels, di_channels, do_channels, enc_channels, options_q8);
+        util::print("Welcome to Let's Make a Deal! I am your host Monty Hall."); // prints a string with a new line
+        util::print("Which door is the car behind? Your options are: ", false);  // prints a string without a new line
+        util::print(door_options); // prints a vector
 
-        for (int i = 0; i < 100; i++) {
-            q8->enable();
-            mel::util::usleep(500000);
-            q8->disable();
+        util::Input::Key key_pressed = util::Input::wait_for_keys(key_options); // wait for valid keys, requires console focus (default)
+
+        switch (key_pressed) {
+        case util::Input::Num1:
+            util::print("Sorry, you pick the goat."); 
+            break;
+        case util::Input::Num2:
+            util::print("Congratulations! You just won a brand new car!");
+            break;
+        case util::Input::Num3:
+            util::print("Uh-oh, looks like your picked a goat!");
+            break;
         }
+
+        int i;
+        std::cin >> i;
+
+        util::print("you entered" + std::to_string(i));
+
+        util::usleep(1000000);
     }
 
 }

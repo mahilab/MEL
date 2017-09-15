@@ -1,5 +1,6 @@
 #pragma once
-#include <string>   
+#include <string>
+#include <vector>
 
 namespace mel {
 
@@ -72,6 +73,7 @@ namespace mel {
                 Dash,         ///< The - key
                 Space,        ///< The Space key
                 Return,       ///< The Return key
+                Enter,        ///< The Enter key
                 BackSpace,    ///< The Backspace key
                 Tab,          ///< The Tabulation key
                 PageUp,       ///< The Page up key
@@ -121,24 +123,40 @@ namespace mel {
             /// \brief Check if a key is pressed and console window has focus
             /// \param key Key to check
             /// \return True if the key is pressed, false otherwise
-            static bool is_key_pressed(Input::Key key);
+            static bool is_key_pressed(Key key);
 
             /// \brief Check if console window has focus
             /// \return True if console window has focus, false otherwise
             static bool is_console_window_focused();
 
-            /// \brief Wait for key to be pressed while console window has focus
-            /// \param key Key to check
-            static void wait_for_key_press(Input::Key key);
-
-            /// \brief Tells compiler to ignore traditional CTRL-C signals from the console            
+            /// \brief Tells compiler to ignore traditional CTRL-C signals from the console
             static void ignore_ctrl_c();
 
+            /// \brief Disables/enables console echo when keys are pressed
+            /// \param enabled
+            static void set_console_echo(bool enabled = true);
+
+            /// \brief Clears the console input buffer so keys pressed during is_key_pressed() are flushed
+            /// THHIS DOESN'T WORK YET
+            static void clear_console_input_buffer();
+
+            /// \brief Wait for key to be pressed while console window has focus
+            /// \param key Key to check
+            static void wait_for_key(Key key, bool require_focus = true);
+
+            /// \brief Waits for any key from a vector of keys and return which key was pressed
+            /// \param keys Keys to check
+            /// \return The Key that was pressed
+            static Key wait_for_keys(std::vector<Key> keys, bool require_focus = true);
+
             /// \brief Displays #message in the console and blocks until #key is pressed
-            static void acknowledge(std::string message, Input::Key key);
+            static void acknowledge(std::string message, Key key);
+
 
         };
 
     }
 
 }
+
+

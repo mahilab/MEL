@@ -108,3 +108,6 @@ namespace mel {
 
 }
 
+// Implementation Resources:
+// mem/ram/cpu: https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
+// cpu: http://www.philosophicalgeek.com/2009/01/03/determine-cpu-usage-of-current-process-c-and-c/
