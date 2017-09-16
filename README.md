@@ -19,6 +19,17 @@
 
 ##   Git / GitHub Setup
 
+**Option 1 (Recommended):**
+
+1. Download and install [git](https://git-scm.com/downloads) for Windows.
+2. Open a command prompt in the directory you would like to clone MEL to and enter the following command:
+
+```
+git clone https://github.com/epezent/MEL
+```
+
+**Option 2:**
+
 1. Download and install [GitHub Desktop](https://desktop.github.com/). Login using your GitHub account once installation is complete.
 
 2. Choose **Clone a repository**
@@ -90,11 +101,11 @@ If you are on Windows and using Visual Studio, building MEL is fairly straight-f
 
 1. If you are starting a new project, first create a new Visual Studio solution and project. Go to **File >> New >> Project**. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know what they are and want to use them).
 
-2. There are a few ways to link your project against MEL. If you plan to make changes to the MEL source code yourself, follow **(A)** to add the MEL project to your VS solution. This way any changes you make to MEL will be reflected in your project, and MEL will rebuild when you attempt to build your project. If you want to use MEL, you can simply include MEL as you would any other library **(B)**.
+2. There are a few ways to link your project against MEL. If you plan to make changes to the MEL source code yourself, follow **(A)** to add the MEL project to your VS solution. This way any changes you make to MEL will be reflected in your project, and MEL will rebuild when you attempt to build your project. If you just want to use MEL as is, you can simply include MEL as you would any other library **(B)**.
 
     **METHOD A: Add the MEL Project to Your Solution**
 
-    - With your solution open, go to **File >> Add >> Existing Project...** and navigate to **path-to-your-MEL-repository/MEL/MEL.vcxproj**
+    - With your solution open, go to **File >> Add >> Existing Project...** and navigate to and select **path-to-your-MEL-repository/MEL/MEL.vcxproj**
 
     - Right-click *your* project in the Solution Explorer and select **Add >> Reference...** and check MEL
 
