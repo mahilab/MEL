@@ -12,11 +12,11 @@
 2. [Installation (Windows 64-bit)](#installation-windows-64-bit)
     - [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
     - [Sublime Text 3 (Optional)](#sublime-text-3-optional)
-3. [Builing MELScope](#building-melscope)
+3. [Building MELScope](#building-melscope)
 
 ## About
 
-MELScope is a realtime signal plotting GUI for MEL. It communicates with MEL driven applications through the **MELShare** communication framework. Using MELScope is simple: First, you create qvMELShare map(s) storing **doubles** of vectors/arrays of doubles in your C++ MEL application to which you write updated values at some specific rate (typically this happens in your control loop). Next, in MELScope you add these MELShare maps by their string name. MELScope will then begin to plot whatever values are stored on the MELShare maps.
+MELScope is a real-time signal plotting GUI for MEL. It communicates with MEL driven applications through the **MELShare** shared memory communication framework. Using MELScope is simple: First, you create qvMELShare map(s) storing **doubles** of vectors/arrays of doubles in your C++ MEL application to which you write updated values at some specific rate (typically this happens in your control loop). Next, in MELScope you add these MELShare maps by their string name. MELScope will then begin to plot whatever values are stored on the MELShare maps.
 
 You can add as many MELShare maps to MELScope as you like. You also have the option of expanding the number of scope widgets, and adding I/O widgets which allow you to receive and send values back to your C++ application (for example, you may use this as an online **controller tunning** mechanism). Using a data matrix selector, you can even name and customize which data is displayed on each widget. You can also change **colors, line styles, ranges, legends and more**. Finally, once you have your MELScope configured the way you like it, you can **save your configuration** for opening later.
 
@@ -24,7 +24,7 @@ A example demonstrating MELShare/MELScope usage can be found in the [Examples](h
 
 ## Installation
 
-###   Python 2.7 + NumPy + PyQt4 + PyQtGraph (Optional)
+###   Python 2.7 + NumPy + PyQt4 + PyQtGraph
 
 **Note:** The MELScope application is written entirely in Python using PyQt4 for GUIs and PyQtGraph for plotting widgets. If you plan to use MELScope or want to develop your own GUIs for MEL programs, follow theses steps to install the Python environment.
 
@@ -76,7 +76,7 @@ A example demonstrating MELShare/MELScope usage can be found in the [Examples](h
 
 ### Sublime Text 3 (Optional)
 
-**Note:** You can optionally install Sublime Text 3 to write Python. Following these directions will turn Sublime into a very awesome, lightweight Python IDE!
+**Note:** You can optionally install Sublime Text 3 to write Python code. Following these directions will turn Sublime into a very awesome, lightweight Python IDE!
 
 1. Download [Sublime Text 3](https://www.sublimetext.com/)
 
