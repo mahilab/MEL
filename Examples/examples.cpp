@@ -129,6 +129,8 @@ int main(int argc, char * argv[]) {
 
     if (var_map.count("melscope")) {
 
+        util::enable_realtime();
+
         // **Open example.scope in MELScope to see this example in action**
 
         // Create our MELShare maps. We will make one map, "integrals", to demonstate
@@ -191,7 +193,7 @@ int main(int argc, char * argv[]) {
             cpp2py.write(cpp2py_data);
 
             // wait the clock
-            clock.wait();
+            clock.hybrid_wait();
         }
     }
 

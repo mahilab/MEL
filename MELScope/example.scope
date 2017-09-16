@@ -53,7 +53,7 @@ SCOPE_FILTERS:
   integrals: [true, false, false, false]
   py2cpp_ampl: [true, true, true, true]
   py2cpp_freq: [true, true, true, true]
-SCOPE_LEGENDS: [true, true, false]
+SCOPE_LEGENDS: [true, false, false]
 SCOPE_MODES: [Scope, Scope, I/O]
 SCOPE_RANGES:
 - [-6.0, 8.0]

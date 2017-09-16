@@ -4,9 +4,6 @@
     <Filter Include="Core">
       <UniqueIdentifier>{e1af6637-7c52-4809-ae0c-9564761f64c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Obsolete">
-      <UniqueIdentifier>{9434d7ed-0097-4caf-9517-604ab2e82e9e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Math">
       <UniqueIdentifier>{20da9e67-8912-41a7-b196-105693f1f782}</UniqueIdentifier>
     </Filter>
@@ -28,6 +25,12 @@
     <Filter Include="Devices">
       <UniqueIdentifier>{3d560959-9de6-46df-b97f-b54ed78cf2f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{1dc13621-02eb-4f94-948d-6befcbd32565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Legacy">
+      <UniqueIdentifier>{9434d7ed-0097-4caf-9517-604ab2e82e9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actuator.cpp">
@@ -37,7 +40,7 @@
       <Filter>Devices</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
-      <Filter>Obsolete</Filter>
+      <Filter>Legacy</Filter>
     </ClCompile>
     <ClCompile Include="Daq.cpp">
       <Filter>Core</Filter>
@@ -177,10 +180,10 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Task.h">
-      <Filter>Obsolete</Filter>
+      <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
-      <Filter>Obsolete</Filter>
+      <Filter>Legacy</Filter>
     </ClInclude>
     <ClInclude Include="PdController.h">
       <Filter>Core</Filter>

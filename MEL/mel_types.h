@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <Eigen/Core>
 
 namespace mel {
 
@@ -46,5 +47,31 @@ namespace mel {
 
     #ifdef NI
     #endif
+
+    //-------------------------------------------------------------------------
+    // TYPEDEF EIGEN
+    //-------------------------------------------------------------------------
+
+    namespace math {
+
+        typedef ::Eigen::Matrix< double, ::Eigen::Dynamic, 1 > Vector;
+
+        typedef ::Eigen::Matrix< double, 2, 1 > Vector2;
+
+        typedef ::Eigen::Matrix< double, 3, 1 > Vector3;
+
+        typedef ::Eigen::Matrix< double, 4, 1 > Vector4;
+
+        typedef ::Eigen::Matrix< double, 6, 1 > Vector6;
+
+    }
+
+    namespace mdl {
+
+        typedef ::Eigen::Transform< double, 3, ::Eigen::Affine > Transform;
+
+        typedef ::Eigen::Translation< double, 3 > Translation;
+
+    }
 
 }
