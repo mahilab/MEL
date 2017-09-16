@@ -22,6 +22,8 @@ You can add as many MELShare maps to MELScope as you like. You also have the opt
 
 A example demonstrating MELShare/MELScope usage can be found in the [Examples](https://github.com/epezent/MEL/tree/master/Examples) project, and corresponds with the saved MELScope configuration **examples.scope** in this directory (see above).
 
+**Note:** MELScope will **NOT** run without the accompanying **MELShare.dll** file. Either download the precompiled version in this directory, or [build it yourself](https://github.com/epezent/MEL/tree/master/MELShareDLL).
+
 ## Installation
 
 ###   Python 2.7 + NumPy + PyQt4 + PyQtGraph
