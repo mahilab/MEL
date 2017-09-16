@@ -1,5 +1,7 @@
 # MELScope
 
+![MELScpe](https://github.com/epezent/MEL/blob/master/MELScope/screenshot.png)
+
 ## Developers
 
 - [Evan Pezent](http://evanpezent.com) (epezent@rice.edu)
@@ -16,7 +18,7 @@
 
 MELScope is a realtime signal plotting GUI for MEL. It communicates with MEL driven applications through the **MELShare** communication framework. Using MELScope is simple: First, you create qvMELShare map(s) storing **doubles** of vectors/arrays of doubles in your C++ MEL application to which you write updated values at some specific rate (typically this happens in your control loop). Next, in MELScope you add these MELShare maps by their string name. MELScope will then begin to plot whatever values are stored on the MELShare maps.
 
-You can add as many MELShare maps to MELScope as you like. You also have the option of expanding the number of scope widgets, and adding I/O widgets which allow you to receive and send values back to your C++ application (for example, you may use this as an online controller tunning mechanism). Using a data matrix selector, you can even name and customize which data is displayed on each widget. You can also change colors, line styles, ranges, legends and more. Finally, once you have your MELScope configured the way you like it, you can save your configuration for opening later.
+You can add as many MELShare maps to MELScope as you like. You also have the option of expanding the number of scope widgets, and adding I/O widgets which allow you to receive and send values back to your C++ application (for example, you may use this as an online **controller tunning** mechanism). Using a data matrix selector, you can even name and customize which data is displayed on each widget. You can also change **colors, line styles, ranges, legends and more**. Finally, once you have your MELScope configured the way you like it, you can **save your configuration** for opening later.
 
 A example demonstrating MELShare/MELScope usage can be found in the [Examples](https://github.com/epezent/MEL/tree/master/Examples) project, and corresponds with the saved MELScope configuration **examples.scope** in this directory (see above).
 
