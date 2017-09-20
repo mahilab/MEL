@@ -282,9 +282,9 @@ int main(int argc, char * argv[]) {
         util::Clock clock(1000);
 
         // create some PD controllers that fill like light springs
-        core::PdController pd0(5, 0.025); // joint 0 ( Nm/rad , Nm-s/rad )
-        core::PdController pd1(5, 0.025); // joint 1 ( Nm/rad , Nm-s/rad )
-        core::PdController pd2(5, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
+        core::PdController pd0(2, 0.0125); // joint 0 ( Nm/rad , Nm-s/rad )
+        core::PdController pd1(1, 0.0125); // joint 1 ( Nm/rad , Nm-s/rad )
+        core::PdController pd2(1, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
         util::Input::acknowledge("Press ENTER to start the controller.", util::Input::Return);
@@ -307,6 +307,10 @@ int main(int argc, char * argv[]) {
             ow.joints_[1]->set_torque(pd1.calculate(0, ow.joints_[1]->get_position(), 0, ow.joints_[1]->get_velocity()));
             ow.joints_[2]->set_torque(pd2.calculate(0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
 
+            ow.joints_[0]->add_torque(ow.compute_gravity_compensation(0));
+            ow.joints_[1]->add_torque(ow.compute_gravity_compensation(1));
+
+
             // update the OpenWrist's internal MELShare map so we can use MELScope
             ow.update_state_map();
 
@@ -323,10 +327,8 @@ int main(int argc, char * argv[]) {
 
             // wait for the next clock tick
             clock.hybrid_wait();
-
-            clock.log();
         }
-        clock.save_log();
+
         // disable hardware and cleanup
         ow.disable();
         q8->disable();
