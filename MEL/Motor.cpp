@@ -156,6 +156,9 @@ namespace mel {
             if (i2t_integral_ > i2t_time_ * (pow(peak_current_limit_, 2) - pow(continuous_current_limit_, 2))) {
                 limited_current_ = math::saturate(current_, continuous_current_limit_);
                 util::print("WARNING: Motor " + util::namify(name_) + " command current exceeded the I2T current limit: current saturated to " + std::to_string(continuous_current_limit_) + ".");
+                util::print("i2t_integral_ "  + util::stringify(i2t_integral_));
+                util::print("i2t_integrand_ " + util::stringify(i2t_integrand_));
+                util::print("i2t_time_ " + util::stringify(i2t_time_));
             }
             else {
                 limited_current_ = math::saturate(current_, peak_current_limit_);

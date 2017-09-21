@@ -310,7 +310,6 @@ int main(int argc, char * argv[]) {
             ow.joints_[0]->add_torque(ow.compute_gravity_compensation(0));
             ow.joints_[1]->add_torque(ow.compute_gravity_compensation(1));
 
-
             // update the OpenWrist's internal MELShare map so we can use MELScope
             ow.update_state_map();
 

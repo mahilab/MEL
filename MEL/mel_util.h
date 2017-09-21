@@ -86,6 +86,13 @@ namespace mel {
         /// Formats string name in between angle brackets for MEL printing puproses
         std::string namify(std::string name);
 
+        /// Turns basic types into a string
+        template <typename T>
+        std::string stringify(T value) {
+            return std::to_string(value);
+        }
+            
+
         //-------------------------------------------------------------------------
         // USEFUL CLASSES & TYPES
         //-------------------------------------------------------------------------
