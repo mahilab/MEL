@@ -27,6 +27,20 @@ namespace mel {
         const double METER2INCH = 1.0 / 0.0254;       ///< multiply meters by this value to convert to inches
 
         //-------------------------------------------------------------------------
+        // TRIGONOMETRIC FUNCTIONS
+        //-------------------------------------------------------------------------
+
+        //double cos(double angle)  { return std::cos(angle); }
+        //double tan(double angle)  { return std::tan(angle); }
+        //double asin(double angle) { return std::asin(angle); }
+        //double acos(double angle) { return std::acos(angle); }
+        //double atan(double angle) { return std::atan(angle); }
+        //double atan2(double y, double x) { return std::atan2(y,x); }
+        //double sinh(double angle) { return std::sinh(angle); }
+        //double cosh(double angle) { return std::cosh(angle); }
+        //double tanh(double angle) { return std::tanh(angle); }
+
+        //-------------------------------------------------------------------------
         // GENERIC FUNCTIONS
         //-------------------------------------------------------------------------
 

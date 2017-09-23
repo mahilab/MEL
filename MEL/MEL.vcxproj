@@ -50,6 +50,7 @@
     <ClInclude Include="Filter.h" />
     <ClInclude Include="ForceSensor.h" />
     <ClInclude Include="GuiFlag.h" />
+    <ClInclude Include="CRio.h" />
     <ClInclude Include="Integrator.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MahiExoII.h" />

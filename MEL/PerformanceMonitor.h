@@ -1,5 +1,7 @@
 #pragma once
 #include "mel_types.h"
+#pragma warning(disable : 4006) // disables warning about already defined in winmm.lib(WINMM.dll)
+
 
 namespace mel{
 

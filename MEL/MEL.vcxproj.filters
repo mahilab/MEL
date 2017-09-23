@@ -87,9 +87,6 @@
     <ClCompile Include="ExternalApp.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="PdController.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Mutex.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -125,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="PerformanceMonitor.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="PdController.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +185,6 @@
     <ClInclude Include="Controller.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="PdController.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="GuiFlag.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -235,6 +232,12 @@
     </ClInclude>
     <ClInclude Include="PerformanceMonitor.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CRio.h">
+      <Filter>Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="PdController.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
