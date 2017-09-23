@@ -1,6 +1,7 @@
 #pragma once
 #include "MahiExoII.h"
 #include "EmgElectrode.h"
+#include "Filter.h"
 #include <boost/circular_buffer.hpp>
 
 namespace mel {
@@ -11,8 +12,11 @@ namespace mel {
 
         public:
 
+            static const int N_emg_ = 8; // number of EMG electrodes
+
+
             struct Config : public virtual MahiExoII::Config {
-                std::array<core::Daq::Ai, 8> emg_; // analog input channels that measure EMG voltages
+                std::array<core::Daq::Ai, N_emg_> emg_; // analog input channels that measure EMG voltages
             };
 
             struct Params : public virtual MahiExoII::Params {
@@ -62,10 +66,14 @@ namespace mel {
             // PUBLIC FUNCTIONS
 
             double_vec get_emg_voltages();
+            
 
             // PUBLIC VARIABLES
 
             std::vector<core::EmgElectrode*> emg_electrodes_;
+
+            // EMG FILTERING
+            math::Filter butter_bp_ = math::Filter(N_emg_, 4, { 0.536588531113699, 0, -2.146354124454798, 0, 3.219531186682196, 0, -2.146354124454798, 0, 0.536588531113699 }, { 1.0, -0.412155439075553, -2.694838729987920, 0.759229089729279, 2.933646520071239, -0.508403607035591, -1.478522012017576, 0.118655004582321, 0.287930429421141 });
 
         private:
 

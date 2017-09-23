@@ -108,7 +108,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\build\</IntDir>
+    <IntDir>$(ProjectDir)\build\</IntDir>
     <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

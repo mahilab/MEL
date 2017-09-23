@@ -16,7 +16,13 @@ namespace mel {
             double filter(double);
             double_vec filter(double_vec x);
 
+            void reset(); /// sets the internal states s_ to all be zero
+
         private:
+
+            //-------------------------------------------------------------------------
+            // INDIVIDUAL FILTER IMPLEMENTATION
+            //-------------------------------------------------------------------------
 
             class FilterImplementation {
 
@@ -26,16 +32,22 @@ namespace mel {
 
                 double filter(double x);
 
+                void reset(); /// sets the internal states s_ to all be zero
+
             private:
 
                 const int n_;
 
-                double_vec a_;
-                double_vec b_;
+                double_vec b_; /// numerator coefficients
+                double_vec a_; /// denominator coefficients
 
                 double_vec s_;
                 double y_;
             };
+
+            //-------------------------------------------------------------------------
+            // MEMBERS OF THE FILTER CLASS
+            //-------------------------------------------------------------------------
 
             const int length_;
             const int n_;
