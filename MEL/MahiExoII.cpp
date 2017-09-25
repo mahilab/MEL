@@ -90,6 +90,28 @@ namespace mel {
             }
         }
 
+        //-----------------------------------------------------------------------------
+        // PUBLIC FUNCTIONS
+        //-----------------------------------------------------------------------------
+
+        void MahiExoII::disable() {
+
+            // code executed by overridden function Robot::disable()
+            enabled_ = false;
+            util::print("Disabling Robot <" + name_ + "> ... ", false);
+            for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+                (*it)->disable();
+            }
+            util::print("Done");
+
+            // disable reference trajectories
+            rps_init_par_ref_.stop();
+            rps_par_ref_.stop();
+            rps_ser_ref_.stop();
+
+            robot_ref_.stop();
+            anat_ref_.stop();
+        }
 
         //-----------------------------------------------------------------------------
         // PUBLIC POSITION CONTROL FUNCTIONS

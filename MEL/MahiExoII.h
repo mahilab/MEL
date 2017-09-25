@@ -62,6 +62,8 @@ namespace mel {
             // PUBLIC FUNCTIONS
             //-------------------------------------------------------------------------
 
+            void disable() override;
+
             class SmoothReferenceTrajectory {
 
             public:
