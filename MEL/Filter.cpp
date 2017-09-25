@@ -70,6 +70,16 @@ namespace mel {
             return y_;
         }
 
+        void Filter::reset() {
+            for (int j = 0; j < length_; ++j) {
+                filter_implementations_[j]->reset();
+            }
+        }
+
+        void Filter::FilterImplementation::reset() {
+            s_ = double_vec(n_ - 1, 0.0);
+        }
+
     }
 
 }

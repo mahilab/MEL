@@ -142,11 +142,11 @@ namespace mel {
         void Q8Usb::disable() {
             if (enabled_) {
                 t_error result;
-
+                
                 // Stop all tasks and monitors (possibly unnecessary)
                 hil_task_stop_all(q8_usb_);
                 hil_monitor_stop_all(q8_usb_);
-
+                
                 // set and write final voltages and states
                 ao_voltages_ = ao_final_voltages_;
                 do_signals_ = do_final_signals_;
@@ -158,10 +158,10 @@ namespace mel {
 
                 // Stop and Clear Watchdog
                 stop_watchdog();
-
+                
                 // Reset the Q8 board sepcifc options to factory defaults
                 factory_reset();
-
+                
                 // Wait a few milliseconds so factory_reset() can finish configuring the FPGA
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
