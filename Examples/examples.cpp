@@ -282,9 +282,9 @@ int main(int argc, char * argv[]) {
         util::Clock clock(1000);
 
         // create some PD controllers that fill like light springs
-        core::PdController pd0(2, 0.0125); // joint 0 ( Nm/rad , Nm-s/rad )
-        core::PdController pd1(1, 0.0125); // joint 1 ( Nm/rad , Nm-s/rad )
-        core::PdController pd2(1, 0.0125);  // joint 2 ( Nm/rad , Nm-s/rad )
+        core::PdController pd0(5, .025); // joint 0 ( Nm/rad , Nm-s/rad )
+        core::PdController pd1(5, .025); // joint 1 ( Nm/rad , Nm-s/rad )
+        core::PdController pd2(5, .025);  // joint 2 ( Nm/rad , Nm-s/rad )
 
         // request user input to begin
         util::Input::acknowledge("Press ENTER to start the controller.", util::Input::Return);
@@ -314,7 +314,7 @@ int main(int argc, char * argv[]) {
             ow.update_state_map();
 
             // check joint limits and react if necessary
-            if (ow.check_all_joint_limits())
+            if (ow.check_all_joint_velocity_limits() || ow.check_all_joint_torque_limits())
                 break;
 
             // check for user request to stop
