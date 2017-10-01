@@ -574,6 +574,7 @@ namespace mel {
         }
 
         bool Q8Usb::check_digital_loopback(uint32 daq_id, channel digital_channel) {
+            std::cout << "Q8 USB: Checking Digital Loopback for Channel " << digital_channel << " ... " << std::endl;
 
             //  create a Q8Usb object
             uint32 id = daq_id;
@@ -618,6 +619,13 @@ namespace mel {
             delete q8_temp;
             q8_temp = nullptr;
 
+            if (is_connected) {
+                std::cout << "Q8 USB: Channel " << digital_channel << " Connected" << std::endl;
+            }
+            else {
+                std::cout << "Q8 USB: Channel " << digital_channel << " Failed" << std::endl;
+            }
+            
             return is_connected;
         }
     }

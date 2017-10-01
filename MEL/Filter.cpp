@@ -19,10 +19,7 @@ namespace mel {
             b_(b),
             y_(double_vec(length, 0))
         {
-
-            for (int j = 0; j < length_; ++j) {
-                filter_implementations_.push_back(new FilterImplementation(order, b, a));
-            }
+            filter_implementations_ = std::vector<FilterImplementation>(length_, FilterImplementation(order, b, a));
         }
 
         Filter::FilterImplementation::FilterImplementation(int order, double_vec b, double_vec a) :
@@ -51,7 +48,7 @@ namespace mel {
                 return { 1 };
             }
 
-            y_[0] = filter_implementations_[0]->filter(x);
+            y_[0] = filter_implementations_[0].filter(x);
 
             return y_[0];
         }
@@ -64,7 +61,7 @@ namespace mel {
             }
 
             for (int j = 0; j < length_; ++j) {
-                y_[j] = filter_implementations_[j]->filter(x[j]);
+                y_[j] = filter_implementations_[j].filter(x[j]);
             }
 
             return y_;
@@ -72,7 +69,7 @@ namespace mel {
 
         void Filter::reset() {
             for (int j = 0; j < length_; ++j) {
-                filter_implementations_[j]->reset();
+                filter_implementations_[j].reset();
             }
         }
 

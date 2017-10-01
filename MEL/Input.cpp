@@ -9,7 +9,7 @@ namespace mel {
 
     namespace util {
 
-        bool Input::is_key_pressed(Input::Key key)
+        bool Input::is_key_pressed(Input::Key key, bool require_focus)
         {
             int vkey = 0;
             switch (key)
@@ -118,7 +118,36 @@ namespace mel {
             case Input::F15:        vkey = VK_F15;        break;
             case Input::Pause:      vkey = VK_PAUSE;      break;
             }
-            return (GetAsyncKeyState(vkey) & 0x8000) != 0;
+            bool is_pressed = (GetAsyncKeyState(vkey) & 0x8000) != 0;
+            if (require_focus) {
+                if (is_console_window_focused()) {
+                    return is_pressed;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return is_pressed;
+            }
+        }
+
+        Input::Key Input::are_any_keys_pressed(std::vector<Input::Key> keys, bool require_focus) {
+            for (int i = 0; i < keys.size(); ++i) {
+                if (is_key_pressed(keys[i], require_focus)) {
+                    return keys[i];          
+                }
+            }
+            return Input::Key::None;
+        }
+
+        bool Input::are_all_keys_pressed(std::vector<Input::Key> keys, bool require_focus) {
+            for (int i = 0; i < keys.size(); ++i) {
+                if (!is_key_pressed(keys[i], require_focus)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         bool Input::is_console_window_focused() {
@@ -157,7 +186,10 @@ namespace mel {
 
         void Input::wait_for_key(Key key, bool require_focus) {
             while (true) {
-                if (is_key_pressed(key)) {
+                if (is_key_pressed(key, require_focus)) {
+                    return;
+                }
+                /*if (is_key_pressed(key)) {
                     if (require_focus) {
                         if (is_console_window_focused()) {
                             return;
@@ -166,15 +198,17 @@ namespace mel {
                     else {
                         return;
                     }
-                }
+                }*/
                 Sleep(10);
             }
-            clear_console_input_buffer();
         }
 
-        Input::Key Input::wait_for_keys(std::vector<Key> keys, bool require_focus) {
+        Input::Key Input::wait_for_any_keys(std::vector<Key> keys, bool require_focus) {
             while (true) {
-                for (int i = 0; i < keys.size(); ++i) {
+                if (are_any_keys_pressed(keys, require_focus)) {
+                    return are_any_keys_pressed(keys, require_focus);
+                }
+                /*for (int i = 0; i < keys.size(); ++i) {
                     if (is_key_pressed(keys[i])) {
                         if (require_focus) {
                             if (is_console_window_focused()) {
@@ -185,10 +219,18 @@ namespace mel {
                             return keys[i];
                         }
                     }
+                }*/
+                Sleep(10);
+            }
+        }
+
+        void Input::wait_for_all_keys(std::vector<Key> keys, bool require_focus) {
+            while (true) {
+                if (are_all_keys_pressed(keys, require_focus)) {
+                    return;
                 }
                 Sleep(10);
             }
-            clear_console_input_buffer();
         }
 
         void Input::acknowledge(std::string message, Key key) {

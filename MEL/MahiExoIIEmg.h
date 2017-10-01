@@ -64,13 +64,11 @@ namespace mel {
 
 
             // PUBLIC FUNCTIONS
-
             double_vec get_emg_voltages();
             
 
             // PUBLIC VARIABLES
-
-            std::vector<core::EmgElectrode*> emg_electrodes_;
+            std::vector<core::EmgElectrode> emg_electrodes_ = std::vector<core::EmgElectrode>(N_emg_);
 
             // EMG FILTERING
             math::Filter butter_hp_ = math::Filter(N_emg_, 4, { 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 });

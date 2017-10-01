@@ -57,8 +57,7 @@ namespace mel {
 
             double_vec y_;
 
-            std::vector<FilterImplementation*> filter_implementations_;
-
+            std::vector<FilterImplementation> filter_implementations_;
         };
 
     }

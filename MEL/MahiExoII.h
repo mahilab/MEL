@@ -209,10 +209,10 @@ namespace mel {
             // rps position control
             int rps_control_mode_ = 0; // 0 = robot joint space (parallel), 1 = anatomical joint space (serial)
             bool rps_backdrive_ = false; // true = rps is backdrivable, false = rps is active
-            double rps_init_err_tol_ = 0.003; // [m]
+            double rps_init_err_tol_ = 0.01; // [m]
             double_vec rps_par_goal_err_tol_ = double_vec(N_qs_, 0.003);
             double_vec rps_ser_goal_err_tol_ = { 2.0 * math::DEG2RAD, 2.0 * math::DEG2RAD, 0.005 };
-            const double_vec rps_init_pos_ = { 0.10, 0.10, 0.10 };
+            const double_vec rps_init_pos_ = { 0.11, 0.11, 0.11 };
             const double_vec rps_par_joint_speed_ = { 0.015, 0.015, 0.015 };
             const double_vec rps_ser_joint_speed_ = { 0.125, 0.125, 0.015 };
 
@@ -220,7 +220,7 @@ namespace mel {
             // full robot position control
             bool elbow_backdrive_ = false; // true = elbow is backdrivable, false = elbow is active
             bool forearm_backdrive_ = false; // true = forearm is backdrivable, false = forearm is active
-            double_vec anat_goal_err_tol_ = { 1.0 * math::DEG2RAD, 1.0 * math::DEG2RAD, 2.0 * math::DEG2RAD, 2.0 * math::DEG2RAD, 0.005 };
+            double_vec anat_goal_err_tol_ = { 1.0 * math::DEG2RAD, 3.0 * math::DEG2RAD, 5.0 * math::DEG2RAD, 5.0 * math::DEG2RAD, 0.005 };
             const double_vec robot_joint_speed_ = { 0.25, 0.25, 0.015, 0.015, 0.015 };
             const double_vec anat_joint_speed_ = { 0.25, 0.25, 0.125, 0.125, 0.015 }; // constant speed at which anatomical joint reference trajectories are interpolated
 
@@ -252,9 +252,6 @@ namespace mel {
 
             double spec_norm_prev_ = 0; // debugging
             Eigen::VectorXd q_par_prev_ = Eigen::VectorXd::Zero(N_qs_); // debugging        
-
-            
-
 
             //-------------------------------------------------------------------------
             // PRIVATE FUNCTIONS

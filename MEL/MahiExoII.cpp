@@ -96,21 +96,25 @@ namespace mel {
 
         void MahiExoII::disable() {
 
-            // code executed by overridden function Robot::disable()
-            enabled_ = false;
-            util::print("Disabling Robot <" + name_ + "> ... ", false);
-            for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-                (*it)->disable();
-            }
-            util::print("Done");
-
             // disable reference trajectories
             rps_init_par_ref_.stop();
             rps_par_ref_.stop();
             rps_ser_ref_.stop();
-
             robot_ref_.stop();
             anat_ref_.stop();
+
+            // disable the robot
+            if (enabled_) {
+                // code executed by overridden function Robot::disable()
+                enabled_ = false;
+                util::print("Disabling Robot <" + name_ + "> ... ", false);
+                for (auto it = joints_.begin(); it != joints_.end(); ++it) {
+                    (*it)->disable();
+                }
+                util::print("Done");
+            }
+
+            
         }
 
         //-----------------------------------------------------------------------------
@@ -147,8 +151,7 @@ namespace mel {
             }
             else {
                 util::print("ERROR: Reference position was not initialized. Must provide reference position to start().");
-            }
-            
+            }  
         }
 
         void MahiExoII::SmoothReferenceTrajectory::start(double_vec ref_pos, double_vec current_pos, double current_time) {
@@ -163,7 +166,9 @@ namespace mel {
                 util::print("ERROR: Cannot call set_ref() before start().");
             }
             else {
-                prev_ref_ = ref_;
+                for (int i = 0; i < ref_pos.size(); ++i) {
+                    prev_ref_[i] = calculate_smooth_ref(i, current_time);
+                }
                 ref_ = ref_pos;
                 start_time_ = current_time;
             }
@@ -171,6 +176,9 @@ namespace mel {
 
         double MahiExoII::SmoothReferenceTrajectory::calculate_smooth_ref(int dof, double current_time) {
             if (started_) {
+                if (ref_[dof] == prev_ref_[dof]) {
+                    return ref_[dof];
+                }
                 return prev_ref_[dof] + (ref_[dof] - prev_ref_[dof]) * mel::math::saturate((current_time - start_time_) * speed_[dof] / std::abs(ref_[dof] - prev_ref_[dof]), 1.0, 0.0);
             }
             else {
@@ -269,24 +277,6 @@ namespace mel {
             // rps mechanism
             double_vec rps_command_torques(N_qs_, 0.0);
             switch (rps_control_mode_) {
-            /*case 0: // control impedance of parallel joints
-
-                for (auto i = 0; i < N_qs_; ++i) {
-                    if (rps_backdrive_) {
-                        rps_command_torques[i] = 0.0;
-                    }
-                    else {
-                        double smooth_ref = anat_ref.calculate_smooth_ref(i+2, current_time);
-                        if (std::isnan(smooth_ref)) {
-                            rps_command_torques[i] = 0.0;
-                        }
-                        else {
-                            rps_command_torques[i] = robot_joint_pd_controllers_[i + 2].calculate(smooth_ref, joints_[i + 2]->get_position(), 0, joints_[i + 2]->get_velocity());
-                        }
-                    }
-                }
-                //set_rps_par_torques(rps_command_torques);
-                break;*/
             case 1: // control impedance of serial joints
 
                 for (auto i = 0; i < N_qs_; ++i) {
@@ -305,7 +295,7 @@ namespace mel {
                 }
                 break;
 
-            default: util::print("WARNING: Invalid rps_control_mode_. Must be 0 or 1. Zero torques commanded.");
+            default: util::print("WARNING: Invalid rps_control_mode_. Must be 1. Zero torques commanded.");
                 for (auto i = 0; i < N_qs_; ++i) {
                     rps_command_torques = double_vec(N_qs_, 0.0);
                 }

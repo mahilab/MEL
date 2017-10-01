@@ -14,7 +14,8 @@ namespace mel {
             enum Key
             {
                 Unknown = -1, ///< Unhandled key
-                A = 0,        ///< The A key
+                None = 0,     ///< No key
+                A,            ///< The A key
                 B,            ///< The B key
                 C,            ///< The C key
                 D,            ///< The D key
@@ -123,7 +124,17 @@ namespace mel {
             /// \brief Check if a key is pressed and console window has focus
             /// \param key Key to check
             /// \return True if the key is pressed, false otherwise
-            static bool is_key_pressed(Key key);
+            static bool is_key_pressed(Key key, bool require_focus = true);
+
+            /// \brief Check if any key from a vector of keys is pressed and console window has focus
+            /// \param keys Keys to check
+            /// \return The key that was pressed, or the None key if no key was pressed
+            static Key are_any_keys_pressed(std::vector<Key> keys, bool require_focus = true);
+
+            /// \brief Check if all keys from a vector of keys are pressed and console window has focus
+            /// \param keys Keys to check
+            /// \return True if all keys were pressed, none otherwise
+            static bool are_all_keys_pressed(std::vector<Key> keys, bool require_focus = true);
 
             /// \brief Check if console window has focus
             /// \return True if console window has focus, false otherwise
@@ -147,7 +158,11 @@ namespace mel {
             /// \brief Waits for any key from a vector of keys and return which key was pressed
             /// \param keys Keys to check
             /// \return The Key that was pressed
-            static Key wait_for_keys(std::vector<Key> keys, bool require_focus = true);
+            static Key wait_for_any_keys(std::vector<Key> keys, bool require_focus = true);
+
+            /// \brief Waits for all keys from a vector of keys and return which key was pressed
+            /// \param keys Keys to check
+            static void wait_for_all_keys(std::vector<Key> keys, bool require_focus = true);
 
             /// \brief Displays #message in the console and blocks until #key is pressed
             static void acknowledge(std::string message, Key key);

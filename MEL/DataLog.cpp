@@ -86,7 +86,13 @@ namespace mel {
         }
 
         void DataLog::save_data(std::string filename, std::string directory, bool timestamp) {
-            std::string full_filename = directory + "\\" + filename + "_" + util::get_ymdhms() + ".csv";
+            std::string full_filename;
+            if (timestamp) {
+                full_filename = directory + "\\" + filename + "_" + util::get_ymdhms() + ".csv";
+            }
+            else {
+                full_filename = directory + "\\" + filename + ".csv";
+            }
             boost::filesystem::path dir(directory.c_str());
             boost::filesystem::create_directories(dir);
             std::ofstream data_log;
