@@ -32,9 +32,7 @@ namespace mel {
                     config_.enable_[i],
                     core::Actuator::EnableMode::High,
                     config_.sense_[i],
-                    params_.motor_cont_limits_[i],
-                    params_.motor_peak_limits_[i],
-                    params_.motor_i2t_times_[i]);
+                    params_.motor_cont_limits_[i]);
 
                 actuators_.push_back(motor);
 

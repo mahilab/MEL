@@ -54,6 +54,9 @@ namespace mel {
             /// Saves all data collected so far, the clears all data.
             void save_and_clear_data(std::string filename, std::string directory, bool timestamp = true);
 
+            /// Waits for saving to be completed
+            void wait_for_save();
+
         private:
 
             //---------------------------------------------------------------------
@@ -67,11 +70,13 @@ namespace mel {
             void double_rows();
 
             /// Thread process in which data is saved to file
-            void DataLog::save_thread_function(std::string full_filename, std::vector<std::string> column_names, std::vector<std::vector<double>> data);
+            void save_thread_function(std::string full_filename, std::vector<std::string> column_names, std::vector<std::vector<double>> data, uint32 num_rows, uint32 num_cols);
 
             //---------------------------------------------------------------------
             // PRIVATE VARIABLES
             //---------------------------------------------------------------------
+
+            bool saving_ = false;
 
             std::vector<std::string> column_names_; ///< vector of column names
             std::vector<std::vector<double>> data_; ///< data[cols][rows]

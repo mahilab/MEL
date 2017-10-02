@@ -413,15 +413,16 @@ int main(int argc, char * argv[]) {
 
         log.add_col("A").add_col("B").add_col("C").add_col("D").add_col("E");
         
-        log.add_row(math::linspace(1, 5, 5));
-        log.add_row(math::linspace(6, 10, 5));
-        log.add_row(math::linspace(11, 15, 5));
+        for (int i = 0; i < 500; i++) {
+            log.add_row(math::linspace(1, 5, 5));
+            log.add_row(math::linspace(6, 10, 5));
+            log.add_row(math::linspace(11, 15, 5));
+        }
 
         util::print("Row 1: ", false); util::print(math::mean(log.get_row(1)));
         util::print("Col A: ", false); util::print(math::stddev_p(log.get_col("A")));
 
-        log.save_data("my_log", "my_logs", true);     
-
+        log.save_and_clear_data("my_log", "my_logs", true);   
     }
 
     //-------------------------------------------------------------------------

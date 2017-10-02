@@ -50,15 +50,23 @@ namespace mel {
         // STATISTICS
         //--------------------------------------------------------------------------
 
-        double sum(std::vector<double> data) {
+        std::vector<double> abs_vec(const std::vector<double>& data) {
+            std::vector<double> abs_data(data.size());
+            for (int i = 0; i < data.size(); ++i) {
+                abs_data[i] = std::abs(data[i]);
+            }
+            return abs_data;
+        }        
+
+        double sum(const std::vector<double>& data) {
             return std::accumulate(data.begin(), data.end(), 0.0);
         }
 
-        double mean(std::vector<double> data) {
+        double mean(const std::vector<double>& data) {
             return data.size() > 0 ? sum(data) / data.size() : 0.0;
         }
 
-        double stddev_p(std::vector<double> data) {
+        double stddev_p(const std::vector<double>& data) {
             if (data.size() > 0) {
                 double avg = mean(data);
                 std::vector<double> diff(data.size());
@@ -71,7 +79,7 @@ namespace mel {
             }
         }
 
-        double stddev_s(std::vector<double> data) {
+        double stddev_s(const std::vector<double>& data) {
             if (data.size() > 1) {
                 double avg = mean(data);
                 std::vector<double> diff(data.size());
