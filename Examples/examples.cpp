@@ -439,7 +439,7 @@ int main(int argc, char * argv[]) {
         util::print("Which door is the car behind? Your options are: ", false);  // prints a string without a new line
         util::print(door_options); // prints a vector
 
-        util::Input::Key key_pressed = util::Input::wait_for_keys(key_options); // wait for valid keys, requires console focus (default)
+        util::Input::Key key_pressed = util::Input::wait_for_any_keys(key_options); // wait for valid keys, requires console focus (default)
 
         switch (key_pressed) {
         case util::Input::Num1:

@@ -1,6 +1,7 @@
 #include "DataLog.h"
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include <thread>
 
 namespace mel {
 
@@ -85,6 +86,22 @@ namespace mel {
             }
         }
 
+        void DataLog::save_thread_function(std::string full_filename, std::vector<std::string> column_names, std::vector<std::vector<double>> data) {
+            std::ofstream data_log;
+            data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
+            for (auto it = column_names.begin(); it != column_names.end(); ++it) {
+                data_log << *it << ",";
+            }
+            data_log << std::endl;
+            for (uint32 i = 0; i < data[0].size(); i++) {
+                for (size_t j = 0; j < data.size(); j++) {
+                    data_log << data[j][i] << ",";
+                }
+                data_log << std::endl;
+            }
+            data_log.close();
+        }
+
         void DataLog::save_data(std::string filename, std::string directory, bool timestamp) {
             std::string full_filename;
             if (timestamp) {
@@ -95,22 +112,12 @@ namespace mel {
             }
             boost::filesystem::path dir(directory.c_str());
             boost::filesystem::create_directories(dir);
-            std::ofstream data_log;
-            std::cout << "Saving DataLog " + util::namify(name_) + " to <" << full_filename << "> ... ";
-            data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
-            for (auto it = column_names_.begin(); it != column_names_.end(); ++it) {
-                data_log << *it << ",";
-            }
-            data_log << std::endl;
-            for (uint32 i = 0; i < row_index_; i++) {
-                for (size_t j = 0; j < num_cols_; j++) {
-                    data_log << data_[j][i] << ",";
-                }
-                data_log << std::endl;
-            }
+            util::print("Saving DataLog " + util::namify(name_) + " to <" + full_filename + ">.");
+
+            std::thread t(&DataLog::save_thread_function, full_filename, column_names_, data_);
+            t.detach();
+
             log_saved_ = true;
-            data_log.close();
-            std::cout << "Done" << std::endl;
         }
 
         void DataLog::clear_data() {

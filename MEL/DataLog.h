@@ -66,6 +66,9 @@ namespace mel {
             /// performance purposes.
             void double_rows();
 
+            /// Thread process in which data is saved to file
+            void DataLog::save_thread_function(std::string full_filename, std::vector<std::string> column_names, std::vector<std::vector<double>> data);
+
             //---------------------------------------------------------------------
             // PRIVATE VARIABLES
             //---------------------------------------------------------------------
