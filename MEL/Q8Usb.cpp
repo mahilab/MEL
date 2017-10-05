@@ -340,9 +340,9 @@ namespace mel {
             }
         }
 
-        void Q8Usb::reload_watchdog() { // TO DO: CHECK STATUS OF WATCHDOG
+        void Q8Usb::start_watchdog(double watchdog_timeout) {
             if (enabled_) {
-                t_error result = hil_watchdog_reload(q8_usb_);
+                t_error result = hil_watchdog_start(q8_usb_, watchdog_timeout);
                 if (result < 0)
                     print_quarc_error(result);
             }
@@ -351,9 +351,9 @@ namespace mel {
             }
         }
 
-        void Q8Usb::start_watchdog(double watchdog_timeout) {
+        void Q8Usb::reload_watchdog() { // TO DO: CHECK STATUS OF WATCHDOG
             if (enabled_) {
-                t_error result = hil_watchdog_start(q8_usb_, watchdog_timeout);
+                t_error result = hil_watchdog_reload(q8_usb_);
                 if (result < 0)
                     print_quarc_error(result);
             }
@@ -369,6 +369,17 @@ namespace mel {
             result = hil_watchdog_clear(q8_usb_);
             if (result < 0)
                 print_quarc_error(result);
+        }
+
+        bool Q8Usb::is_watchdog_expired() {
+            t_error result = hil_watchdog_is_expired(q8_usb_);
+            if (result == 1)
+                return true;
+            else if (result == 0)
+                return false;
+            else {
+                print_quarc_error(result);
+            }
         }
 
         void Q8Usb::benchmark(uint32 samples) {

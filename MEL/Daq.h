@@ -58,12 +58,16 @@ namespace mel {
             virtual void start_watchdog(double watchdog_timeout) {
                 util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
             }
-            /// This function should reload the watchdog timer if the DAQ supports one.
+            /// This function should reload the watchdog timer if the DAQ supports one and return true if successful.
             virtual void reload_watchdog() {
-                util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
+                util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);                
             }
             /// This function should stop and/or clear the watchdog timer if the DAQ supports one.
             virtual void stop_watchdog() {
+                util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
+            }
+            /// This function should return true if the watchdog timer has expired.
+            virtual bool is_watchdog_expired() {
                 util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
             }
 

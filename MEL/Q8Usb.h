@@ -129,9 +129,10 @@ namespace mel {
             void write_analogs() override;
             void write_all() override;
 
-            void reload_watchdog() override;
             void start_watchdog(double watchdog_timeout) override;
+            void reload_watchdog() override;
             void stop_watchdog() override;
+            bool is_watchdog_expired() override;
 
             void benchmark(uint32 samples) override;
 
