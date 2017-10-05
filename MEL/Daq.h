@@ -69,6 +69,7 @@ namespace mel {
             /// This function should return true if the watchdog timer has expired.
             virtual bool is_watchdog_expired() {
                 util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
+                return false;
             }
 
             /// This function should benchmark the read/write speed of DAQ in its current configuration.
