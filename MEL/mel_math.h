@@ -94,9 +94,13 @@ namespace mel {
         // EIGEN RELATED
         //-------------------------------------------------------------------------
 
-        std::vector<double> eigenv2stdv(const Eigen::VectorXd& eigen_vec);
+        std::vector<double> eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec);
 
-        Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec);
+        Eigen::VectorXd stdvec_to_eigvec(std::vector<double>& std_vec);
+
+        std::vector<std::vector<double>> eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat);
+
+        Eigen::MatrixXd stdvecvec_to_eigmat(std::vector<std::vector<double>>& std_vecvec);
 
         double mat_spectral_norm(const Eigen::MatrixXd& mat);
 

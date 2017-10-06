@@ -131,7 +131,7 @@ namespace mel {
             double_vec get_wrist_serial_positions() const;
 
             // send torque commands to the exo
-            void set_anatomical_joint_torques(double_vec new_torques, int error_code = 0) override;
+            void set_anatomical_joint_torques(double_vec new_torques) override;
             void set_rps_par_torques(double_vec& tau_par);
             void set_rps_ser_torques(double_vec& tau_ser);
 

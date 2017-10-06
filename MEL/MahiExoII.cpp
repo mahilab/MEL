@@ -341,14 +341,14 @@ namespace mel {
         }
 
         double_vec MahiExoII::get_wrist_parallel_positions() const {
-            return math::eigenv2stdv(q_par_);
+            return math::eigvec_to_stdvec(q_par_);
         }
 
         double_vec MahiExoII::get_wrist_serial_positions() const {
-            return math::eigenv2stdv(q_ser_);
+            return math::eigvec_to_stdvec(q_ser_);
         }
 
-        void MahiExoII::set_anatomical_joint_torques(double_vec new_torques, int error_code) {
+        void MahiExoII::set_anatomical_joint_torques(double_vec new_torques) {
 
             // set torques for first two anatomical joints, which have actuators
             joints_[0]->set_torque(new_torques[0]);
@@ -421,7 +421,7 @@ namespace mel {
         }
 
         void MahiExoII::set_rps_ser_torques(double_vec& tau_ser) {
-            Eigen::VectorXd tau_ser_eig = math::stdv2eigenv(tau_ser);
+            Eigen::VectorXd tau_ser_eig = math::stdvec_to_eigvec(tau_ser);
             Eigen::VectorXd tau_par = Eigen::VectorXd::Zero(N_qs_);
             tau_par = jac_fk_.transpose() * tau_ser_eig;
             for (int i = 0; i < N_qs_; ++i) {
@@ -437,14 +437,14 @@ namespace mel {
 
         void MahiExoII::forward_rps_kinematics(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out) const {
 
-            Eigen::VectorXd q_par_in_eig = math::stdv2eigenv(q_par_in);
+            Eigen::VectorXd q_par_in_eig = math::stdvec_to_eigvec(q_par_in);
             Eigen::VectorXd q_ser_out_eig = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(N_qp_);
 
             forward_rps_kinematics(q_par_in_eig, q_ser_out_eig, qp_out_eig);
 
-            q_ser_out = math::eigenv2stdv(q_ser_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
+            q_ser_out = math::eigvec_to_stdvec(q_ser_out_eig);
+            qp_out = math::eigvec_to_stdvec(qp_out_eig);
 
         }
 
@@ -456,19 +456,19 @@ namespace mel {
 
         void MahiExoII::forward_rps_kinematics_velocity(double_vec& q_par_in, double_vec& q_ser_out, double_vec& qp_out, double_vec& q_par_dot_in, double_vec& q_ser_dot_out, double_vec& qp_dot_out) const {
 
-            Eigen::VectorXd q_par_in_eig = math::stdv2eigenv(q_par_in);
+            Eigen::VectorXd q_par_in_eig = math::stdvec_to_eigvec(q_par_in);
             Eigen::VectorXd q_ser_out_eig = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(N_qp_);
-            Eigen::VectorXd q_par_dot_in_eig = math::stdv2eigenv(q_par_dot_in);
+            Eigen::VectorXd q_par_dot_in_eig = math::stdvec_to_eigvec(q_par_dot_in);
             Eigen::VectorXd q_ser_dot_out_eig = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd qp_dot_out_eig = Eigen::VectorXd::Zero(N_qs_);
 
             forward_rps_kinematics_velocity(q_par_in_eig, q_ser_out_eig, qp_out_eig, q_par_dot_in_eig, q_ser_dot_out_eig, qp_dot_out_eig);
 
-            q_ser_out = math::eigenv2stdv(q_ser_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
-            q_ser_dot_out = math::eigenv2stdv(q_ser_dot_out_eig);
-            qp_dot_out = math::eigenv2stdv(qp_dot_out_eig);
+            q_ser_out = math::eigvec_to_stdvec(q_ser_out_eig);
+            qp_out = math::eigvec_to_stdvec(qp_out_eig);
+            q_ser_dot_out = math::eigvec_to_stdvec(q_ser_dot_out_eig);
+            qp_dot_out = math::eigvec_to_stdvec(qp_dot_out_eig);
 
         }
 
@@ -479,14 +479,14 @@ namespace mel {
 
         void MahiExoII::inverse_rps_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) const {
 
-            Eigen::VectorXd q_ser_in_eig = math::stdv2eigenv(q_ser_in);
+            Eigen::VectorXd q_ser_in_eig = math::stdvec_to_eigvec(q_ser_in);
             Eigen::VectorXd q_par_out_eig = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(N_qp_);
 
             inverse_rps_kinematics(q_ser_in_eig, q_par_out_eig, qp_out_eig);
 
-            q_par_out = math::eigenv2stdv(q_par_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
+            q_par_out = math::eigvec_to_stdvec(q_par_out_eig);
+            qp_out = math::eigvec_to_stdvec(qp_out_eig);
 
         }
 
@@ -497,19 +497,19 @@ namespace mel {
 
         void MahiExoII::inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const {
 
-            Eigen::VectorXd q_ser_in_eig = math::stdv2eigenv(q_ser_in);
+            Eigen::VectorXd q_ser_in_eig = math::stdvec_to_eigvec(q_ser_in);
             Eigen::VectorXd q_par_out_eig = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd qp_out_eig = Eigen::VectorXd::Zero(N_qp_);
-            Eigen::VectorXd q_ser_dot_in_eig = math::stdv2eigenv(q_ser_dot_in);
+            Eigen::VectorXd q_ser_dot_in_eig = math::stdvec_to_eigvec(q_ser_dot_in);
             Eigen::VectorXd q_par_dot_out_eig = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd qp_dot_out_eig = Eigen::VectorXd::Zero(N_qp_);
 
             inverse_rps_kinematics_velocity(q_ser_in_eig, q_par_out_eig, qp_out_eig, q_ser_dot_in_eig, q_par_dot_out_eig, qp_dot_out_eig);
 
-            q_par_out = math::eigenv2stdv(q_par_out_eig);
-            qp_out = math::eigenv2stdv(qp_out_eig);
-            q_par_dot_out = math::eigenv2stdv(q_par_dot_out_eig);
-            qp_dot_out = math::eigenv2stdv(qp_dot_out_eig);
+            q_par_out = math::eigvec_to_stdvec(q_par_out_eig);
+            qp_out = math::eigvec_to_stdvec(qp_out_eig);
+            q_par_dot_out = math::eigvec_to_stdvec(q_par_dot_out_eig);
+            qp_dot_out = math::eigvec_to_stdvec(qp_dot_out_eig);
 
         }
 
