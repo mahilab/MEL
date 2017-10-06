@@ -1,6 +1,7 @@
 #include "DataLog.h"
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include <thread>
 
 namespace mel {
 
@@ -22,6 +23,9 @@ namespace mel {
         DataLog::~DataLog() {
             if (!log_saved_ && row_index_ > 0 && autosave_) {
                 save_data(name_, "data_log_backups", true);
+            }
+            if (saving_) {
+                wait_for_save();
             }
         }
 
@@ -85,7 +89,25 @@ namespace mel {
             }
         }
 
+        void DataLog::save_thread_function(std::string full_filename, std::vector<std::string> column_names, std::vector<std::vector<double>> data, uint32 num_rows, uint32 num_cols) {
+            std::ofstream data_log;
+            data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
+            for (auto it = column_names.begin(); it != column_names.end(); ++it) {
+                data_log << *it << ",";
+            }
+            data_log << std::endl;
+            for (uint32 i = 0; i < num_rows; i++) {
+                for (size_t j = 0; j < num_cols; j++) {
+                    data_log << data[j][i] << ",";
+                }
+                data_log << std::endl;
+            }
+            data_log.close();
+            saving_ = false;
+        }
+
         void DataLog::save_data(std::string filename, std::string directory, bool timestamp) {
+            saving_ = true;
             std::string full_filename;
             if (timestamp) {
                 full_filename = directory + "\\" + filename + "_" + util::get_ymdhms() + ".csv";
@@ -95,22 +117,12 @@ namespace mel {
             }
             boost::filesystem::path dir(directory.c_str());
             boost::filesystem::create_directories(dir);
-            std::ofstream data_log;
-            std::cout << "Saving DataLog " + util::namify(name_) + " to <" << full_filename << "> ... ";
-            data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
-            for (auto it = column_names_.begin(); it != column_names_.end(); ++it) {
-                data_log << *it << ",";
-            }
-            data_log << std::endl;
-            for (uint32 i = 0; i < row_index_; i++) {
-                for (size_t j = 0; j < num_cols_; j++) {
-                    data_log << data_[j][i] << ",";
-                }
-                data_log << std::endl;
-            }
+            util::print("Saving DataLog " + util::namify(name_) + " to <" + full_filename + ">.");
+
+            std::thread t(&DataLog::save_thread_function, this, full_filename, column_names_, data_, row_index_, num_cols_);
+            t.detach();
+
             log_saved_ = true;
-            data_log.close();
-            std::cout << "Done" << std::endl;
         }
 
         void DataLog::clear_data() {
@@ -124,6 +136,14 @@ namespace mel {
         void DataLog::save_and_clear_data(std::string filename, std::string directory, bool timestamp) {
             save_data(filename, directory, timestamp);
             clear_data();
+        }
+
+        void DataLog::wait_for_save() {
+            util::print("Waiting for DataLog " + util::namify(name_) + " to finish saving ... ", false);
+            while (saving_) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+            util::print("Done");
         }
 
     }

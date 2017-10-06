@@ -58,6 +58,7 @@
     <ClInclude Include="MahiExoIIEmgFrc.h" />
     <ClInclude Include="MahiExoIIFrc.h" />
     <ClInclude Include="MelShare.h" />
+    <ClInclude Include="mel_errors.h" />
     <ClInclude Include="mel_math.h" />
     <ClInclude Include="mel_types.h" />
     <ClInclude Include="Mutex.h" />

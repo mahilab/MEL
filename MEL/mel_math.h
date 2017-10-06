@@ -68,17 +68,20 @@ namespace mel {
         // STATISTICS
         //--------------------------------------------------------------------------
 
+        /// Returns the absolute value of a vector
+        std::vector<double> abs_vec(const std::vector<double>& data);
+
         /// Returns the sum of a vector of data
-        double sum(std::vector<double> data);
+        double sum(const std::vector<double>& data);
 
         /// Returns the mean of a vector of data
-        double mean(std::vector<double> data);
+        double mean(const std::vector<double>& data);
 
         /// Returns the population standard deviation of a vector of data
-        double stddev_p(std::vector<double> data);
+        double stddev_p(const std::vector<double>& data);
 
         /// Returns the sample standard deviation of a vector of data
-        double stddev_s(std::vector<double> data);
+        double stddev_s(const std::vector<double>& data);
 
         //--------------------------------------------------------------------------
         // CYCLIC WAVEFORMS

@@ -239,5 +239,8 @@
     <ClInclude Include="PdController.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="mel_errors.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
