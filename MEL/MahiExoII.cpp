@@ -94,6 +94,13 @@ namespace mel {
         // PUBLIC FUNCTIONS
         //-----------------------------------------------------------------------------
 
+        void MahiExoII::zero_encoders(core::Daq* daq) {
+            daq->enable();
+            daq->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
+            daq->disable();
+        }
+
+
         void MahiExoII::disable() {
 
             // disable reference trajectories

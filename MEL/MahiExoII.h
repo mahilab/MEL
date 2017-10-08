@@ -62,6 +62,11 @@ namespace mel {
             // PUBLIC FUNCTIONS
             //-------------------------------------------------------------------------
 
+            // exo setup
+            void zero_encoders(core::Daq* daq);
+
+
+            // exo disable
             void disable() override;
 
             class SmoothReferenceTrajectory {
@@ -146,6 +151,7 @@ namespace mel {
             void inverse_rps_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) const;
             void inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) const;
             void inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const;
+
 
             
             //-----------------------------------------------------------------------------
