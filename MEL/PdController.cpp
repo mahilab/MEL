@@ -27,6 +27,23 @@ namespace mel {
                 return calculate(next_x, x, 0, xdot); // moving condition
         }
 
+        double PdController::move_to_hold2(double x_ref, double x, double xdot_ref, double xdot, double delta_time, double tolerance) {
+            if (std::abs(x_ref - x) < tolerance) {
+                move_started_ = false;
+                return calculate(x_ref, x, 0, xdot);                
+            }
+            else {
+                if (!move_started_ || std::abs(last_x_ - x) > tolerance) {
+                    last_x_ = x;
+                    move_started_ = true;
+                }
+                double next_x = last_x_ - mel::math::sign(x - x_ref) * xdot_ref * delta_time;
+                last_x_ = next_x;
+                return calculate(next_x, x, 0, xdot); 
+            }
+        }
+
+
     }
 
 }

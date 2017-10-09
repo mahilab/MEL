@@ -19,6 +19,7 @@ namespace mel {
             /// Computes the control effort to move to a desired location x_ref with a constant velocity x_ref, and the hold that position
             /// state_here should be true the first time this function is called in a loop, and subsequently false once movement has initiated
             double move_to_hold(double x_ref, double x, double xdot_ref, double xdot, double delta_time, double window, bool start_here);
+            double move_to_hold2(double x_ref, double x, double xdot_ref, double xdot, double delta_time, double tolerance);
 
             double kp_; ///< the proportional control gain
             double kd_; ///< the derivative control gain
@@ -35,6 +36,8 @@ namespace mel {
 
             double last_x_;
             bool holding_;
+
+            bool move_started_ = false;
 
         };
 
