@@ -16,6 +16,7 @@ namespace mel {
         const double PI  = 3.14159265358979E+00;                     ///< pi
         const double EPS = std::numeric_limits<double>::epsilon();   ///< smallest double such that 1.0 + EPS != 1.0
         const double INF = std::numeric_limits<double>::infinity();  ///< constant representing positive infinity (negative infinifty is just -INF)
+        const double NaN = std::numeric_limits<double>::quiet_NaN(); ///< not-a-number
 
         //-------------------------------------------------------------------------
         // CONVERSION FACTORS

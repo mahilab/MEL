@@ -149,8 +149,6 @@ namespace mel {
 
             virtual void set_encoder_quadrature_factors(uint32_vec quadrature_factors) override;
 
-            static bool check_digital_loopback(uint32 daq_id, channel digital_channel);
-
         private:
 
             //---------------------------------------------------------------------
@@ -167,6 +165,15 @@ namespace mel {
 
             static void print_quarc_error(int result);
             static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
+
+        public:
+
+            //---------------------------------------------------------------------
+            // PUBLIC STATIC FUNCTIONS
+            //---------------------------------------------------------------------
+
+            static int get_q8_usb_count();
+            static bool check_digital_loopback(uint32 daq_id, channel digital_channel);
 
         };
 

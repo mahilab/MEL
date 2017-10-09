@@ -73,17 +73,8 @@ namespace mel {
                     std::cout << "Q8 USB " << id_ << ": Enabling (Attempt " << attempt + 1 << ") ... ";
                     result = hil_open("q8_usb", std::to_string(id_).c_str(), &q8_usb_);
                     if (result == 0) {
-                        //double temp[3]; // TODO: FIX THIS CRAP
-                        //result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);
-                        //if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
                         std::cout << "Done" << std::endl;
                         break;
-                        //}
-                        //else {
-                        //    std::cout << "Failed (Encoder Read Error)" << std::endl;
-                        //   result = 1;
-                        //   hil_close(q8_usb_);
-                        //}
                     }
                     else {
                         std::cout << "Failed" << std::endl;
@@ -582,6 +573,27 @@ namespace mel {
                 }
             }
             return options;
+        }
+
+        int Q8Usb::get_q8_usb_count() {
+            int id = 0;
+            std::vector<t_card> q8_usbs;
+            t_error result;
+            while (true) {
+                t_card q8_usb;
+                result = hil_open("q8_usb", std::to_string(id).c_str(), &q8_usb);
+                if (result < 0) {
+                    break;
+                }
+                else {
+                    q8_usbs.push_back(q8_usb);
+                    ++id;
+                }
+            }
+            for (size_t i = 0; i < q8_usbs.size(); ++i) {
+                hil_close(q8_usbs[i]);
+            }
+            return id;
         }
 
         bool Q8Usb::check_digital_loopback(uint32 daq_id, channel digital_channel) {

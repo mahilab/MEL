@@ -81,7 +81,7 @@ namespace mel {
         protected:
 
             /// Returns index of a channel number in a channel numbers vector.
-            channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);
+            int channel_number_to_index(const channel_vec& channels, const channel channel_number);
             /// Sorts and reduces a channel numbers vector such as {3, 1, 1, 2} to {1, 2, 3}.
             channel_vec sort_and_reduce_channels(channel_vec channels);
 

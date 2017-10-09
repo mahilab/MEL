@@ -38,6 +38,7 @@ int main(int argc, char * argv[]) {
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
         ("external", "example of how to launch an external app or game from C++")
         ("q8", "example demonstrating how to set up a Q8 USB and becnhmark it's read/write speed")
+        ("q8-multi", "example demonstrating how to set up multiple Q8 USBs and determine which is which")
         ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
         ("clock","tests clock wait function performance on your PC")
         ("log", "example demonstrating use of DataLog class")
@@ -232,6 +233,15 @@ int main(int argc, char * argv[]) {
 
         q8->disable();
         delete q8;
+    }
+
+    //-------------------------------------------------------------------------
+    // MUTLI Q8 USB EXAMPLE:    >Examples.exe --q8-multi
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("q8-multi")) {
+        int count = dev::Q8Usb::get_q8_usb_count();
+        util::print("Number of Q8 USBs detected: " + std::to_string(count));
     }
 
     //-------------------------------------------------------------------------
