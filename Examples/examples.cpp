@@ -304,6 +304,8 @@ int main(int argc, char * argv[]) {
         q8->start_watchdog(0.1);
         ow.enable();
 
+        bool move_started = false;
+
         // start the control loop
         clock.start();
         while (true) {
@@ -313,12 +315,16 @@ int main(int argc, char * argv[]) {
             q8->reload_watchdog();
 
             // do something controlsy
-            ow.joints_[0]->set_torque(pd0.calculate(0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
-            ow.joints_[1]->set_torque(pd1.calculate(0, ow.joints_[1]->get_position(), 0, ow.joints_[1]->get_velocity()));
-            ow.joints_[2]->set_torque(pd2.calculate(0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
+            //ow.joints_[0]->set_torque(pd0.calculate(0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
+            //ow.joints_[1]->set_torque(pd1.calculate(0, ow.joints_[1]->get_position(), 0, ow.joints_[1]->get_velocity()));
+            //ow.joints_[2]->set_torque(pd2.calculate(0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
 
-            ow.joints_[0]->add_torque(ow.compute_gravity_compensation(0));
-            ow.joints_[1]->add_torque(ow.compute_gravity_compensation(1));
+            //ow.joints_[0]->add_torque(ow.compute_gravity_compensation(0));
+            //ow.joints_[1]->add_torque(ow.compute_gravity_compensation(1));
+
+
+            double torque = ow.pd_controllers[1].move_to_hold(0, ow.joints_[1]->get_position(), 10 * math::DEG2RAD, ow.joints_[1]->get_velocity(), clock.delta_time_, math::DEG2RAD, 5*math::DEG2RAD);
+            ow.joints_[1]->set_torque(torque);
 
             // update the OpenWrist's internal MELShare map so we can use MELScope
             ow.update_state_map();
