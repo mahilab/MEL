@@ -150,6 +150,8 @@ namespace mel {
             // enable DAQs, zero encoders, and start watchdog
             for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
                 (*it)->enable();
+                if (!((*it)->is_enabled()))
+                    return;
                 (*it)->zero_encoders();
                 (*it)->start_watchdog(0.1);
             }
@@ -256,7 +258,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.hybrid_wait();
+                clock.wait();
             }
 
             // disable OpenWrist
@@ -318,7 +320,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.hybrid_wait();
+                clock.wait();
             }
 
             // disable OpenWrist

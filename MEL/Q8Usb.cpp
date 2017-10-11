@@ -18,7 +18,8 @@ namespace mel {
             channel_vec di_channels,
             channel_vec do_channels,
             channel_vec enc_channels,
-            Options options) :
+            Options options,
+            bool sanity_check_on_enable) :
             Daq("q8_usb_" + std::to_string(id),
                 ai_channels,
                 ao_channels,
@@ -27,7 +28,8 @@ namespace mel {
                 enc_channels,
                 get_q8_encrate_channels(enc_channels)),
             id_(id),
-            options_(options)
+            options_(options),
+            sanity_check_on_enable_(sanity_check_on_enable)
         {
             // set up analog input channels
             for (auto it = ai_channel_nums_.begin(); it != ai_channel_nums_.end(); ++it) {
@@ -67,14 +69,28 @@ namespace mel {
 
         void Q8Usb::enable() {
             if (!enabled_) {
+                enabled_ = true;
                 t_error result;
                 // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)            
                 for (int attempt = 0; attempt < 10; attempt++) {
                     std::cout << "Q8 USB " << id_ << ": Enabling (Attempt " << attempt + 1 << ") ... ";
                     result = hil_open("q8_usb", std::to_string(id_).c_str(), &q8_usb_);
-                    if (result == 0) {
-                        std::cout << "Done" << std::endl;
-                        break;
+                    if (result == 0) {                        
+                        if (sanity_check_on_enable_){
+                            bool sane = sanity_check();
+                            if (sane) {
+                                std::cout << "Done" << std::endl;
+                                break;
+                            }
+                            else {
+                                std::cout << "Failed (Did Not Pass Sanity Check)" << std::endl;
+                                result = 1;
+                            }
+                        }
+                        else {
+                            std::cout << "Done" << std::endl;
+                            break;
+                        }                    
                     }
                     else {
                         std::cout << "Failed" << std::endl;
@@ -85,6 +101,7 @@ namespace mel {
                 // If all attempts were unsuccessful, display message and terminate the application.
                 if (result != 0) {
                     std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to enable." << std::endl;
+                    disable();
                     return;
                 }
 
@@ -96,8 +113,6 @@ namespace mel {
                     print_quarc_error(result);
                     return;
                 }
-
-                enabled_ = true;
 
                 // stop and clear watchdog
                 stop_watchdog();
@@ -174,6 +189,19 @@ namespace mel {
                 return;
             }
             return;
+        }
+
+        bool Q8Usb::sanity_check() {
+            read_encrates();
+            bool sane = true;
+            for (int i = 0; i < enc_rates.size(); ++i) {
+                if (enc_rates[i] != 0) {
+                    sane = false;
+                    break;
+                }
+            }
+            std::fill(enc_rates.begin(), enc_rates.end(), 0.0);
+            return sane;
         }
 
         void Q8Usb::reset() {
@@ -370,6 +398,7 @@ namespace mel {
                 return false;
             else {
                 print_quarc_error(result);
+                return false;
             }
         }
 

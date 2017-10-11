@@ -99,7 +99,8 @@ namespace mel {
                 channel_vec di_channels,
                 channel_vec do_channels,
                 channel_vec enc_channels,
-                Options options = Options());
+                Options options = Options(),
+                bool sanity_check_on_enable = false);
 
             ~Q8Usb() override;
 
@@ -158,10 +159,13 @@ namespace mel {
             uint32 id_;
             t_card q8_usb_;
             char options_str_[4096];   // Quarc board specific options
+            bool sanity_check_on_enable_;
 
             //---------------------------------------------------------------------
             // PRIVATE FUNCTIONS
             //---------------------------------------------------------------------
+
+            bool sanity_check();
 
             static void print_quarc_error(int result);
             static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
