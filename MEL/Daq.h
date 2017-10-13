@@ -127,7 +127,7 @@ namespace mel {
 
         public:
 
-            virtual void write_analogs() {
+            virtual void write_analogs() {                
                 util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
             }
             virtual void set_analog_voltages(voltage_vec new_voltages);

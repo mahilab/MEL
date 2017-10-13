@@ -25,6 +25,7 @@
     <ClCompile Include="MahiExoIIEmgFrc.cpp" />
     <ClCompile Include="MahiExoIIFrc.cpp" />
     <ClCompile Include="MelShare.cpp" />
+    <ClCompile Include="mel_errors.cpp" />
     <ClCompile Include="mel_math.cpp" />
     <ClCompile Include="Motor.cpp" />
     <ClCompile Include="Mutex.cpp" />

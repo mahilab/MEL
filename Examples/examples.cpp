@@ -13,6 +13,7 @@
 #include "OpenWrist.h"
 #include "PerformanceMonitor.h"
 #include <iostream>
+#include "mel_errors.h"
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -21,6 +22,17 @@
 // command line.
 
 using namespace mel; // this isn't necessary, but will keep the amount of typing down
+
+class A {
+public:
+    virtual void poop() {
+        util::throw_error(util::ERROR_VIRTUAL_FUNCTION_NOT_IMPLEMENTED, __FUNCTION__, typeid(*this).name());
+    }
+};
+
+class B : public A {
+
+};
 
 int main(int argc, char * argv[]) {
 
@@ -41,7 +53,8 @@ int main(int argc, char * argv[]) {
         ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
         ("clock","tests clock wait function performance on your PC")
         ("log", "example demonstrating use of DataLog class")
-        ("io", "example demonstrating use of print functions and Input class");
+        ("io", "example demonstrating use of print functions and Input class")
+        ("error", "example demonstrating error handling in MEL");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -460,6 +473,18 @@ int main(int argc, char * argv[]) {
         util::print("you entered" + std::to_string(i));
 
         util::usleep(1000000);
+    }
+
+    //-------------------------------------------------------------------------
+    // ERROR EXAMPLE:    >Examples.exe --error
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("error")) {
+        util::enable_debug_mode();
+        util::throw_error(util::ERROR_JOINT_TORQUE_LIMIT_EXCEEDED, "joint_5", 6.45, 5.123);
+        util::throw_error(util::ERROR_QUARC_ERROR, dev::Q8Usb::get_quarc_error_message(-10).c_str(), -10);
+        B a;
+        a.poop();
     }
 
 }

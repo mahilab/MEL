@@ -151,6 +151,9 @@ namespace mel {
 
             static bool check_digital_loopback(uint32 daq_id, channel digital_channel);
 
+            static std::string get_quarc_error_message(int result);
+            static void print_quarc_error_message(int result);
+
         private:
 
             //---------------------------------------------------------------------
@@ -165,9 +168,8 @@ namespace mel {
             // PRIVATE FUNCTIONS
             //---------------------------------------------------------------------
 
-            static void print_quarc_error(int result);
             static channel_vec get_q8_encrate_channels(channel_vec enc_channels);
-
+            
         };
 
     }

@@ -28,6 +28,9 @@ namespace mel {
         /// resolution version of std::this_thread::sleep_for() or Windows.h Sleep(). 
         void usleep(int64 microseconds);
 
+        /// Returns formatted name of a type or class
+        std::string get_type_name();
+
         //-------------------------------------------------------------------------
         // PRINTING AND FORMATTING FUNCTIONS
         //-------------------------------------------------------------------------

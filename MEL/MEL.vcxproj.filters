@@ -126,6 +126,9 @@
     <ClCompile Include="PdController.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="mel_errors.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Robot.h">
