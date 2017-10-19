@@ -16,6 +16,7 @@ namespace mel {
         const double PI  = 3.14159265358979E+00;                     ///< pi
         const double EPS = std::numeric_limits<double>::epsilon();   ///< smallest double such that 1.0 + EPS != 1.0
         const double INF = std::numeric_limits<double>::infinity();  ///< constant representing positive infinity (negative infinifty is just -INF)
+        const double NaN = std::numeric_limits<double>::quiet_NaN(); ///< not-a-number
 
         //-------------------------------------------------------------------------
         // CONVERSION FACTORS
@@ -97,9 +98,13 @@ namespace mel {
         // EIGEN RELATED
         //-------------------------------------------------------------------------
 
-        std::vector<double> eigenv2stdv(const Eigen::VectorXd& eigen_vec);
+        std::vector<double> eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec);
 
-        Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec);
+        Eigen::VectorXd stdvec_to_eigvec(std::vector<double>& std_vec);
+
+        std::vector<std::vector<double>> eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat);
+
+        Eigen::MatrixXd stdvecvec_to_eigmat(std::vector<std::vector<double>>& std_vecvec);
 
         double mat_spectral_norm(const Eigen::MatrixXd& mat);
 

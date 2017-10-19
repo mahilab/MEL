@@ -62,6 +62,11 @@ namespace mel {
             // PUBLIC FUNCTIONS
             //-------------------------------------------------------------------------
 
+            // exo setup
+            void zero_encoders(core::Daq* daq);
+
+
+            // exo disable
             void disable() override;
 
             class SmoothReferenceTrajectory {
@@ -131,7 +136,7 @@ namespace mel {
             double_vec get_wrist_serial_positions() const;
 
             // send torque commands to the exo
-            void set_anatomical_joint_torques(double_vec new_torques, int error_code = 0) override;
+            void set_anatomical_joint_torques(double_vec new_torques) override;
             void set_rps_par_torques(double_vec& tau_par);
             void set_rps_ser_torques(double_vec& tau_ser);
 
@@ -146,6 +151,7 @@ namespace mel {
             void inverse_rps_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) const;
             void inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) const;
             void inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const;
+
 
             
             //-----------------------------------------------------------------------------

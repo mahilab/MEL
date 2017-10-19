@@ -126,16 +126,39 @@ namespace mel {
         // EIGEN RELATED
         //-------------------------------------------------------------------------
 
-        std::vector<double> eigenv2stdv(const Eigen::VectorXd& eigen_vec) {
+        std::vector<double> eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec) {
             std::vector<double> std_vec;
             std_vec.resize(eigen_vec.size());
             Eigen::VectorXd::Map(&std_vec[0], eigen_vec.size()) = eigen_vec;
             return std_vec;
         }
 
-        Eigen::VectorXd stdv2eigenv(std::vector<double>& std_vec) {
+        Eigen::VectorXd stdvec_to_eigvec(std::vector<double>& std_vec) {
             Eigen::Map<Eigen::VectorXd> eigen_vec(&std_vec[0], std_vec.size());
             return eigen_vec;
+        }
+
+        std::vector<std::vector<double>> eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat) {
+            std::vector<std::vector<double>> std_vecvec;
+            for (int i = 0; i < eigen_mat.rows(); ++i) {
+                std_vecvec.push_back(eigvec_to_stdvec(eigen_mat.row(i)));
+            }
+            return std_vecvec;
+        }
+        
+
+        Eigen::MatrixXd stdvecvec_to_eigmat(std::vector<std::vector<double>>& std_vecvec) {
+            int cols = std_vecvec[0].size();
+            Eigen::MatrixXd eigmat(std_vecvec.size(), cols);
+            for (int i = 0; i < std_vecvec.size(); ++i) {
+                if (std_vecvec[i].size() == cols) {
+                    eigmat.row(i) = stdvec_to_eigvec(std_vecvec[i]);
+                }
+                else {
+                    std::cout << "ERROR: Input must have same number of cols in each row to be converted into Eigen Matrix type." << std::endl;
+                }
+            }
+            return eigmat;
         }
 
         double mat_spectral_norm(const Eigen::MatrixXd& mat) {

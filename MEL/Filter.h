@@ -5,57 +5,51 @@ namespace mel {
 
     namespace math {
 
-        class Filter {
+        //-------------------------------------------------------------------------
+        // INDIVIDUAL FILTER IMPLEMENTATION
+        //-------------------------------------------------------------------------
+
+        class FilterImplementation {
 
         public:
 
-            Filter();
-            Filter(int order, double_vec b, double_vec a);
-            Filter(int length, int order, double_vec b, double_vec a);
+            FilterImplementation(const double_vec& b, const double_vec& a);
 
-            double filter(double);
-            double_vec filter(double_vec x);
+            void filter(const double& x, double& y);
 
             void reset(); /// sets the internal states s_ to all be zero
 
         private:
 
-            //-------------------------------------------------------------------------
-            // INDIVIDUAL FILTER IMPLEMENTATION
-            //-------------------------------------------------------------------------
+            int n_; /// order
 
-            class FilterImplementation {
+            const double_vec b_; /// numerator coefficients
+            const double_vec a_; /// denominator coefficients
 
-            public:
+            double_vec s_;
+        };
 
-                FilterImplementation(int order, double_vec b, double_vec a);
+        class Filter {
 
-                double filter(double x);
+        public:
 
-                void reset(); /// sets the internal states s_ to all be zero
+            Filter();
+            Filter(const double_vec& b, const double_vec& a);
+            Filter(int length, const double_vec& b, const double_vec& a);
 
-            private:
+            void filter(const double& x, double& y);
+            void filter(const double_vec& x, double_vec& y);
+            //void filter_offline(const double_vec& X, double_vec& Y);
+            //void filter_offline(const std::vector<double_vec>& X, std::vector<double_vec>& Y);
 
-                const int n_;
+            void reset(); /// sets the internal states s_ to all be zero
 
-                double_vec b_; /// numerator coefficients
-                double_vec a_; /// denominator coefficients
-
-                double_vec s_;
-                double y_;
-            };
-
-            //-------------------------------------------------------------------------
-            // MEMBERS OF THE FILTER CLASS
-            //-------------------------------------------------------------------------
+        private:
 
             const int length_;
-            const int n_;
 
-            double_vec a_;
-            double_vec b_;
-
-            double_vec y_;
+            const double_vec b_; /// numerator coefficients
+            const double_vec a_; /// denominator coefficients
 
             std::vector<FilterImplementation> filter_implementations_;
         };

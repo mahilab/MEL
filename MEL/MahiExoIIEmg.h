@@ -24,40 +24,56 @@ namespace mel {
             };
 
             struct EmgDataBuffer {
-                EmgDataBuffer(size_t num_channels, size_t length) :
-                    num_channels_(num_channels),
-                    length_(length)
-                {
-                    for (size_t i = 0; i < num_channels_; ++i) {
-                        data_buffer_.push_back(boost::circular_buffer<double>(length_, 0.0));
-                    }
-                }
-                void push_back(double_vec data_vec) {
-                    if (data_vec.size() != num_channels_) {
-                        util::print("ERROR: Incorrect number of rows when calling EmgDataBuffer::push_back().");
-                    }
-                    for (int i = 0; i < num_channels_; ++i) {
-                        data_buffer_[i].push_back(data_vec[i]);
-                    }
-                }
-                double_vec at(int index) {
-                    double_vec data_vec;
-                    for (int i = 0; i < num_channels_; ++i) {
-                        data_vec.push_back(data_buffer_[i][index]);
-                    }
-                    return data_vec;
-                }
-                double_vec get_channel(int index) {
-                    double_vec channel_vec;
-                    for (int i = 0; i < length_; ++i) {
-                        channel_vec.push_back(data_buffer_[index][i]);
-                    }
-                    return channel_vec;
-                }
+
+                EmgDataBuffer(size_t num_channels, size_t length);
+
+                void push_back(double_vec data_vec);
+
+                void flush();
+
+                double_vec at(int index) const;
+
+                double_vec get_channel(int index) const;
+
                 size_t num_channels_;
                 size_t length_;
                 std::vector<boost::circular_buffer<double>> data_buffer_;
             };
+
+            class TeagerKaiserOperator {
+
+                class TeagerKaiserOperatorImplementation {
+
+                public:
+
+                    TeagerKaiserOperatorImplementation();
+
+                    void tkeo(const double& x, double& y);
+
+                    void reset(); /// sets the internal states s_ to all be zero
+
+                private:
+
+                    double_vec s_;
+                };
+
+            public:
+
+                TeagerKaiserOperator();
+
+                void tkeo(const double& x, double& y);
+                void tkeo(const double_vec& x, double_vec& y);
+
+                void reset();
+
+            private:
+                
+                static const int length_ = N_emg_;
+                static const int n_ = 2;
+
+                std::vector<TeagerKaiserOperatorImplementation> tko_implementations_;
+            };
+
 
             // CONSTRUCTOR
             MahiExoIIEmg(Config configuration, Params parameters = Params());
@@ -71,7 +87,9 @@ namespace mel {
             std::vector<core::EmgElectrode> emg_electrodes_ = std::vector<core::EmgElectrode>(N_emg_);
 
             // EMG FILTERING
-            math::Filter butter_hp_ = math::Filter(N_emg_, 4, { 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 });
+            math::Filter butter_hp_ = math::Filter(N_emg_, { 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 });
+            TeagerKaiserOperator tko_;
+            math::Filter tkeo_butter_lp_ = math::Filter(N_emg_, { 0.020083365564211, 0.040166731128423, 0.020083365564211 }, { 1.000000000000000, -1.561018075800718, 0.641351538057563 });
 
         private:
 
