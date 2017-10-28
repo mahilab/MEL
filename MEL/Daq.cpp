@@ -127,7 +127,14 @@ namespace mel {
         int Daq::channel_number_to_index(const channel_vec& channels, const channel channel_number) {
             auto result = std::find(channels.begin(), channels.end(), channel_number);
             if (result != channels.end()) {
-                return result - channels.begin();
+                int index = result - channels.begin();
+                if (index >= 0 && index < channels.size()) {
+                    return index;
+                }
+                else {
+                    std::cout << "FATAL ERROR: Channel index " << index << " out of bounds." << std::endl;
+                    return -1;
+                }
             }
             else {
                 std::cout << "FATAL ERROR: Attempted to access invalid channel number " << channel_number << "." << std::endl;
