@@ -27,14 +27,37 @@ public class MelShare {
     // API FUNCTIONS (USE THESE)
     //-------------------------------------------------------------------------
 
-    public static int ReadMap(string name, byte[] buffer) { return ReadByteMap(name, buffer, buffer.Length); }
-    public static int ReadMap(string name, int[] buffer) { return ReadIntMap(name, buffer, buffer.Length); }
-    public static int ReadMap(string name, float[] buffer) { return ReadFloatMap(name, buffer, buffer.Length); }
-    public static int ReadMap(string name, double[] buffer) { return ReadDoubleMap(name, buffer, buffer.Length); }
-    public static int WriteMap(string name, byte[] buffer) { return WriteByteMap(name, buffer, buffer.Length); }
-    public static int WriteMap(string name, int[] buffer) { return WriteIntMap(name, buffer, buffer.Length); }
-    public static int WriteMap(string name, float[] buffer) { return WriteFloatMap(name, buffer, buffer.Length); }
-    public static int WriteMap(string name, double[] buffer) { return WriteDoubleMap(name, buffer, buffer.Length); }
+    public static int ReadMap(string name, byte[] buffer) {
+        return ReadByteMap(name, buffer, buffer.Length);
+    }
+
+    public static int ReadMap(string name, int[] buffer) {
+        return ReadIntMap(name, buffer, buffer.Length);
+    }
+
+    public static int ReadMap(string name, float[] buffer) {
+        return ReadFloatMap(name, buffer, buffer.Length);
+    }
+
+    public static int ReadMap(string name, double[] buffer) {
+        return ReadDoubleMap(name, buffer, buffer.Length);
+    }
+
+    public static int WriteMap(string name, byte[] buffer) {
+        return WriteByteMap(name, buffer, buffer.Length);
+    }
+
+    public static int WriteMap(string name, int[] buffer) {
+        return WriteIntMap(name, buffer, buffer.Length);
+    }
+
+    public static int WriteMap(string name, float[] buffer) {
+        return WriteFloatMap(name, buffer, buffer.Length);
+    }
+
+    public static int WriteMap(string name, double[] buffer) {
+        return WriteDoubleMap(name, buffer, buffer.Length);
+    }
 
     public static string ReadMessage(string name)
     {

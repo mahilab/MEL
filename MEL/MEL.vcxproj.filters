@@ -188,9 +188,6 @@
     <ClInclude Include="Controller.h">
       <Filter>Legacy</Filter>
     </ClInclude>
-    <ClInclude Include="GuiFlag.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Spinlock.h">
       <Filter>Utility</Filter>
     </ClInclude>

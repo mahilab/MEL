@@ -185,7 +185,7 @@ namespace mel {
 
                             // calculate torque req'd to move the calibrating joint forward at constant speed
                             pos_ref += dir[i] * vel_ref * clock.delta_time_;
-                            torque = pd_controllers[i].calculate(pos_ref, pos_act, 0, vel_act);
+                            torque = pd_controllers_[i].calculate(pos_ref, pos_act, 0, vel_act);
                             torque = math::saturate(torque, sat_torques[i]);
 
 
@@ -215,7 +215,7 @@ namespace mel {
                         else {
                             // calculate torque req'd to retur the calibrating joint back to zero
                             pos_ref -= dir[i] * vel_ref * clock.delta_time_;
-                            torque = pd_controllers[i].calculate(pos_ref, pos_act, 0, vel_act);
+                            torque = pd_controllers_[i].calculate(pos_ref, pos_act, 0, vel_act);
                             torque = math::saturate(torque, sat_torques[i]);
 
 
@@ -233,7 +233,7 @@ namespace mel {
                     }
                     else {
                         // lock all other joints at their zero positions
-                        torque = pd_controllers[i].calculate(zeros[i], pos_act, 0, vel_act);
+                        torque = pd_controllers_[i].calculate(zeros[i], pos_act, 0, vel_act);
                         torque = math::saturate(torque, sat_torques[i]);
 
                     }
