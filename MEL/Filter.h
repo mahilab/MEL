@@ -21,7 +21,7 @@ namespace mel {
 
         private:
 
-            int n_; /// order
+            size_t n_; /// order
 
             const double_vec b_; /// numerator coefficients
             const double_vec a_; /// denominator coefficients
@@ -39,8 +39,6 @@ namespace mel {
 
             void filter(const double& x, double& y);
             void filter(const double_vec& x, double_vec& y);
-            //void filter_offline(const double_vec& X, double_vec& Y);
-            //void filter_offline(const std::vector<double_vec>& X, std::vector<double_vec>& Y);
 
             void reset(); /// sets the internal states s_ to all be zero
 

@@ -46,6 +46,16 @@ namespace mel {
             return out;
         }
 
+        double sigmoid(double a) {
+            double b = std::exp(-a);
+            if (std::isinf(b)) {
+                return 0;
+            }
+            else {
+                return 1.0 / (1.0 + b);
+            }
+        }
+
         //--------------------------------------------------------------------------
         // STATISTICS
         //--------------------------------------------------------------------------
@@ -126,38 +136,56 @@ namespace mel {
         // EIGEN RELATED
         //-------------------------------------------------------------------------
 
-        std::vector<double> eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec) {
-            std::vector<double> std_vec;
+        void eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec, std::vector<double>& std_vec) {
             std_vec.resize(eigen_vec.size());
             Eigen::VectorXd::Map(&std_vec[0], eigen_vec.size()) = eigen_vec;
+        }
+
+        void stdvec_to_eigvec(std::vector<double>& std_vec, Eigen::VectorXd& eigen_vec) {
+            eigen_vec = Eigen::Map<Eigen::VectorXd>(std_vec.data(), std_vec.size());
+        }
+
+        std::vector<double> copy_eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec) {
+            std::vector<double> std_vec(eigen_vec.size());
+            for (int i = 0; i < eigen_vec.size(); ++i) {
+                std_vec[i] = eigen_vec[i];
+            }
             return std_vec;
         }
 
-        Eigen::VectorXd stdvec_to_eigvec(std::vector<double>& std_vec) {
-            Eigen::Map<Eigen::VectorXd> eigen_vec(&std_vec[0], std_vec.size());
+        Eigen::VectorXd copy_stdvec_to_eigvec(const std::vector<double>& std_vec) {
+            Eigen::VectorXd eigen_vec(std_vec.size());
+            for (int i = 0; i < std_vec.size(); ++i) {
+                eigen_vec[i] = std_vec[i];
+            }
             return eigen_vec;
         }
 
-        std::vector<std::vector<double>> eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat) {
-            std::vector<std::vector<double>> std_vecvec;
+        std::vector<std::vector<double>> copy_eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat) {
+            std::vector<std::vector<double>> std_vecvec(eigen_mat.rows());
             for (int i = 0; i < eigen_mat.rows(); ++i) {
-                std_vecvec.push_back(eigvec_to_stdvec(eigen_mat.row(i)));
+                std_vecvec[i] = std::vector<double>(eigen_mat.cols());
+                for (int j = 0; j < eigen_mat.cols(); ++j) {
+                    std_vecvec[i][j] = eigen_mat(i, j);
+                }
             }
             return std_vecvec;
         }
         
-        Eigen::MatrixXd stdvecvec_to_eigmat(std::vector<std::vector<double>>& std_vecvec) {
-            int cols = std_vecvec[0].size();
-            Eigen::MatrixXd eigmat(std_vecvec.size(), cols);
+        Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>& std_vecvec) {
+            size_t cols = std_vecvec[0].size();
+            Eigen::MatrixXd eigen_mat(std_vecvec.size(), cols);
             for (int i = 0; i < std_vecvec.size(); ++i) {
                 if (std_vecvec[i].size() == cols) {
-                    eigmat.row(i) = stdvec_to_eigvec(std_vecvec[i]);
+                    for (int j = 0; j < cols; ++j) {
+                        eigen_mat(i, j) = std_vecvec[i][j];
+                    }
                 }
                 else {
                     std::cout << "ERROR: Input must have same number of cols in each row to be converted into Eigen Matrix type." << std::endl;
                 }
             }
-            return eigmat;
+            return eigen_mat;
         }
 
         double mat_spectral_norm(const Eigen::MatrixXd& mat) {
@@ -174,6 +202,31 @@ namespace mel {
             std::vector<double>::iterator lambda_max;
             lambda_max = std::max_element(lambda_abs.begin(), lambda_abs.end());
             return std::sqrt(*lambda_max);
+        }
+
+        double softmax(const Eigen::VectorXd& a, int k) {
+            if (k < 0 || k > a.size()) {
+                util::print("ERROR: Function softmax received input index k outside of bounds of input vector a.");
+                return NAN;
+            }
+            Eigen::VectorXd b(a.size());
+            Eigen::VectorXd c = Eigen::VectorXd::Constant(a.size(), a.minCoeff());
+            b = a - c;
+            
+            for (int i = 0; i < b.size(); ++i) {
+                b(i) = std::exp(b(i));
+            }
+            if (b.allFinite() && b.sum() != 0) {
+                return b(k) / b.sum();
+            }
+            else {
+                if (a(k) == a.maxCoeff()) {
+                    return 1.0;
+                }
+                else {
+                    return 0.0;
+                }
+            }         
         }
 
     }

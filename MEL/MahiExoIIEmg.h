@@ -66,6 +66,9 @@ namespace mel {
 
                 void reset();
 
+                bool tkeo_signal_monitor_ = false;
+                const double tkeo_max_ = 5.0;
+
             private:
                 
                 static const int length_ = N_emg_;
@@ -81,15 +84,24 @@ namespace mel {
 
             // PUBLIC FUNCTIONS
             double_vec get_emg_voltages();
-            
+          
 
             // PUBLIC VARIABLES
             std::vector<core::EmgElectrode> emg_electrodes_ = std::vector<core::EmgElectrode>(N_emg_);
 
+
+            // SIGNAL CHECKING PARAMETERS
+            bool emg_signal_monitor_ = false;
+            const double emg_voltage_max_ = 5.0;
+
+
             // EMG FILTERING
             math::Filter butter_hp_ = math::Filter(N_emg_, { 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 });
             TeagerKaiserOperator tko_;
-            math::Filter tkeo_butter_lp_ = math::Filter(N_emg_, { 0.020083365564211, 0.040166731128423, 0.020083365564211 }, { 1.000000000000000, -1.561018075800718, 0.641351538057563 });
+           // math::Filter tkeo_butter_lp_ = math::Filter(N_emg_, { 0.020083365564211, 0.040166731128423, 0.020083365564211 }, { 1.000000000000000, -1.561018075800718, 0.641351538057563 });
+            math::Filter tkeo_butter_lp_ = math::Filter(N_emg_, { 0.002898194633721,   0.008694583901164,   0.008694583901164,   0.002898194633721 }, { 1.000000000000000, -2.374094743709352,   1.929355669091215, -0.532075368312092 });
+            
+            
 
         private:
 

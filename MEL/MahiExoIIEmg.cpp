@@ -15,8 +15,17 @@ namespace mel {
         }
 
         double_vec MahiExoIIEmg::get_emg_voltages() {
+            double emg_voltage;
+            uint16 i;
             for (auto it = emg_electrodes_.begin(); it != emg_electrodes_.end(); ++it) {
-                emg_voltages_[std::distance(emg_electrodes_.begin(), it)] = it->get_voltage();
+                emg_voltage = it->get_voltage();
+                i = std::distance(emg_electrodes_.begin(), it);
+                if (emg_signal_monitor_) {
+                    if (emg_voltage < -std::abs(emg_voltage_max_) || emg_voltage > std::abs(emg_voltage_max_)) {
+                        std::cout << "WARNING: EMG voltage outside of expected range for channel " + std::to_string(i) + " with a value of " + std::to_string(emg_voltage) << std::endl;
+                    }
+                }
+                emg_voltages_[i] = emg_voltage;               
             }
             return emg_voltages_;
         }
@@ -62,7 +71,6 @@ namespace mel {
         }
 
         MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperator() :
-            //y_(double_vec(length_, 0.0)),
             tko_implementations_(std::vector<TeagerKaiserOperatorImplementation>(length_))
         { }
 
@@ -81,6 +89,11 @@ namespace mel {
             }
             for (int i = 0; i < length_; ++i) {
                 tko_implementations_[i].tkeo(x[i], y[i]);
+                if (tkeo_signal_monitor_) {
+                    if (y[i] < -std::abs(tkeo_max_) || y[i] > std::abs(tkeo_max_)) {
+                        std::cout << "WARNING: TKEO value outside of expected range for channel " + std::to_string(i) + " with a value of " + std::to_string(y[i]) << std::endl;
+                    }
+                }
             }
         }
 
@@ -93,7 +106,6 @@ namespace mel {
         
 
         MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperatorImplementation::TeagerKaiserOperatorImplementation() :
-            //y_(0.0)
             s_(double_vec(n_, 0.0))        
         { }
 

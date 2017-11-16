@@ -112,7 +112,7 @@ namespace mel {
             // rps position control functions
             void set_rps_control_mode(int mode);
             void set_rps_backdrive(bool backdrive = false);         
-            void set_rps_pos_ctrl_torques(SmoothReferenceTrajectory& rps_ref, double current_time);
+            double_vec set_rps_pos_ctrl_torques(SmoothReferenceTrajectory& rps_ref, double current_time);
 
             // rps position controllers
             SmoothReferenceTrajectory rps_init_par_ref_;
@@ -162,6 +162,7 @@ namespace mel {
             bool check_goal_rps_par_pos(double_vec goal_rps_par_pos, char_vec check_dof, bool print_output = false) const;
             bool check_goal_rps_ser_pos(double_vec goal_rps_ser_pos, char_vec check_dof, bool print_output = false) const;
             bool check_goal_anat_pos(double_vec goal_anat_pos, char_vec check_dof, bool print_output = false) const;
+            bool check_neutral_anat_pos(double_vec goal_anat_pos, char_vec check_dof, bool print_output = false) const;
 
             //-------------------------------------------------------------------------
             // PUBLIC VARIABLES
@@ -218,7 +219,7 @@ namespace mel {
             double rps_init_err_tol_ = 0.01; // [m]
             double_vec rps_par_goal_err_tol_ = double_vec(N_qs_, 0.003);
             double_vec rps_ser_goal_err_tol_ = { 2.0 * math::DEG2RAD, 2.0 * math::DEG2RAD, 0.005 };
-            const double_vec rps_init_pos_ = { 0.11, 0.11, 0.11 };
+            const double_vec rps_init_pos_ = { 0.12, 0.12, 0.12 };
             const double_vec rps_par_joint_speed_ = { 0.015, 0.015, 0.015 };
             const double_vec rps_ser_joint_speed_ = { 0.125, 0.125, 0.015 };
 
@@ -226,7 +227,8 @@ namespace mel {
             // full robot position control
             bool elbow_backdrive_ = false; // true = elbow is backdrivable, false = elbow is active
             bool forearm_backdrive_ = false; // true = forearm is backdrivable, false = forearm is active
-            double_vec anat_goal_err_tol_ = { 1.0 * math::DEG2RAD, 3.0 * math::DEG2RAD, 5.0 * math::DEG2RAD, 5.0 * math::DEG2RAD, 0.005 };
+            double_vec anat_goal_err_tol_ = { 2.0 * math::DEG2RAD, 3.0 * math::DEG2RAD, 5.0 * math::DEG2RAD, 5.0 * math::DEG2RAD, 0.01 };
+            double_vec anat_neutral_err_tol_ = { 1.0 * math::DEG2RAD, 2.0 * math::DEG2RAD, 3.0 * math::DEG2RAD, 3.0 * math::DEG2RAD, 0.01 };
             const double_vec robot_joint_speed_ = { 0.25, 0.25, 0.015, 0.015, 0.015 };
             const double_vec anat_joint_speed_ = { 0.25, 0.25, 0.125, 0.125, 0.015 }; // constant speed at which anatomical joint reference trajectories are interpolated
 

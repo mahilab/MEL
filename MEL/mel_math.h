@@ -64,6 +64,9 @@ namespace mel {
         /// Computes a proportial-derivative control effort given gains, reference state, and current state
         double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
 
+        /// Logistic sigmoid
+        double sigmoid(double a);
+
         //--------------------------------------------------------------------------
         // STATISTICS
         //--------------------------------------------------------------------------
@@ -97,15 +100,22 @@ namespace mel {
         // EIGEN RELATED
         //-------------------------------------------------------------------------
 
-        std::vector<double> eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec);
+        void eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec, std::vector<double>& std_vec);
 
-        Eigen::VectorXd stdvec_to_eigvec(std::vector<double>& std_vec);
+        void stdvec_to_eigvec(std::vector<double>& std_vec, Eigen::VectorXd& eigen_vec);
 
-        std::vector<std::vector<double>> eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat);
+        std::vector<double> copy_eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec);
 
-        Eigen::MatrixXd stdvecvec_to_eigmat(std::vector<std::vector<double>>& std_vecvec);
+        Eigen::VectorXd copy_stdvec_to_eigvec(const std::vector<double>& std_vec);
+
+        std::vector<std::vector<double>> copy_eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat);
+
+        Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>& std_vecvec);
 
         double mat_spectral_norm(const Eigen::MatrixXd& mat);
+
+        /// returns the value of the softmax function for element k of input vector a
+        double softmax(const Eigen::VectorXd& a, int k);
 
     }
 
