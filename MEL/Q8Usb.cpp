@@ -18,7 +18,8 @@ namespace mel {
             channel_vec di_channels,
             channel_vec do_channels,
             channel_vec enc_channels,
-            Options options) :
+            Options options,
+            bool sanity_check_on_enable) :
             Daq("q8_usb_" + std::to_string(id),
                 ai_channels,
                 ao_channels,
@@ -27,7 +28,8 @@ namespace mel {
                 enc_channels,
                 get_q8_encrate_channels(enc_channels)),
             id_(id),
-            options_(options)
+            options_(options),
+            sanity_check_on_enable_(sanity_check_on_enable)
         {
             // set up analog input channels
             for (auto it = ai_channel_nums_.begin(); it != ai_channel_nums_.end(); ++it) {
@@ -67,33 +69,39 @@ namespace mel {
 
         void Q8Usb::enable() {
             if (!enabled_) {
+                enabled_ = true;
                 t_error result;
                 // Attempt to Open Q8 USB and Sanity Check Encoder Velocity Readings (10 attempts)            
                 for (int attempt = 0; attempt < 10; attempt++) {
                     std::cout << "Q8 USB " << id_ << ": Enabling (Attempt " << attempt + 1 << ") ... ";
                     result = hil_open("q8_usb", std::to_string(id_).c_str(), &q8_usb_);
-                    if (result == 0) {
-                        //double temp[3]; // TODO: FIX THIS CRAP
-                        //result = hil_read_other(q8_usb_, &encrate_channels_nums_[0], encoder_channels_nums_.size(), temp);
-                        //if (temp[0] == 0 && temp[1] == 0 && temp[2] == 0) {
-                        std::cout << "Done" << std::endl;
-                        break;
-                        //}
-                        //else {
-                        //    std::cout << "Failed (Encoder Read Error)" << std::endl;
-                        //   result = 1;
-                        //   hil_close(q8_usb_);
-                        //}
+                    if (result == 0) {                        
+                        if (sanity_check_on_enable_){
+                            bool sane = sanity_check();
+                            if (sane) {
+                                std::cout << "Done" << std::endl;
+                                break;
+                            }
+                            else {
+                                std::cout << "Failed (Did Not Pass Sanity Check)" << std::endl;
+                                result = 1;
+                            }
+                        }
+                        else {
+                            std::cout << "Done" << std::endl;
+                            break;
+                        }                    
                     }
                     else {
                         std::cout << "Failed" << std::endl;
-                        print_quarc_error(result);
+                        print_quarc_error_message(result);
                     }
                 }
 
                 // If all attempts were unsuccessful, display message and terminate the application.
                 if (result != 0) {
                     std::cout << "Q8 USB " << id_ << ": Exhausted all attempts to enable." << std::endl;
+                    disable();
                     return;
                 }
 
@@ -102,11 +110,9 @@ namespace mel {
                 result = hil_set_card_specific_options(q8_usb_, options_str_, strlen(options_str_)); // TODO: make this optional or configured in another way
                 if (result < 0) {
                     std::cout << "Failed" << std::endl;
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
                     return;
                 }
-
-                enabled_ = true;
 
                 // stop and clear watchdog
                 stop_watchdog();
@@ -175,7 +181,7 @@ namespace mel {
                 result = hil_close(q8_usb_);
                 if (result != 0) {
                     std::cout << "Failed" << std::endl;
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
                     return;
                 }
                 enabled_ = false;
@@ -183,6 +189,19 @@ namespace mel {
                 return;
             }
             return;
+        }
+
+        bool Q8Usb::sanity_check() {
+            read_encrates();
+            bool sane = true;
+            for (int i = 0; i < enc_rates.size(); ++i) {
+                if (enc_rates[i] != 0) {
+                    sane = false;
+                    break;
+                }
+            }
+            std::fill(enc_rates.begin(), enc_rates.end(), 0.0);
+            return sane;
         }
 
         void Q8Usb::reset() {
@@ -202,7 +221,7 @@ namespace mel {
             t_error result = hil_set_card_specific_options(q8_usb_, factory_options_str, strlen(factory_options_str));
             if (result < 0) {
                 std::cout << "ERROR: Failed to reset Q8 USB " << id_ << ".";
-                print_quarc_error(result);
+                print_quarc_error_message(result);
                 return;
             }
         }
@@ -214,7 +233,7 @@ namespace mel {
                 t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &enc_zero_counts[0]);
                 if (result != 0) {
                     std::cout << "Failed" << std::endl;
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
                     return;
                 }
                 std::cout << "Done" << std::endl;
@@ -229,7 +248,7 @@ namespace mel {
                 t_error result = hil_set_encoder_counts(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &offset_counts[0]);
                 if (result != 0) {
                     std::cout << "Failed" << std::endl;
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
                     return;
                 }
                 std::cout << "Done" << std::endl;
@@ -240,7 +259,7 @@ namespace mel {
             if (enabled_ && ai_channels_count_ > 0) {
                 t_error result = hil_read_analog(q8_usb_, &ai_channel_nums_[0], static_cast<uint32>(ai_channels_count_), &ai_voltages_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no analog input channels were passed to the constructor." << std::endl;
@@ -251,7 +270,7 @@ namespace mel {
             if (enabled_ && di_channels_count_ > 0) {
                 t_error result = hil_read_digital(q8_usb_, &di_channel_nums_[0], static_cast<uint32>(di_channels_count_), &di_signals_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no digital input channels were passed to the constructor." << std::endl;
@@ -262,7 +281,7 @@ namespace mel {
             if (enabled_ && encoder_channels_count_ > 0) {
                 t_error result = hil_read_encoder(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &enc_counts_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no encoder channels were passed to the constructor." << std::endl;
@@ -273,7 +292,7 @@ namespace mel {
             if (enabled_ && encrate_channels_count_ > 0) {
                 t_error result = hil_read_other(q8_usb_, &encrate_channel_nums_[0], static_cast<uint32>(encrate_channels_count_), &enc_rates[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Either Q8 USB " << id_ << "has not been enabled, or no encoder channels were passed to the constructor." << std::endl;
@@ -292,7 +311,7 @@ namespace mel {
                     di_channels_count_ > 0 ? &di_signals_[0] : NULL,
                     encrate_channels_count_ > 0 ? &enc_rates[0] : NULL);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
@@ -303,7 +322,7 @@ namespace mel {
             if (enabled_ && ao_channels_count_ > 0) {
                 t_error result = hil_write_analog(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(ao_channels_count_), &ao_voltages_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Either Q8 USB " << id_ << " has not been enabled, or no analog output channels were passed to the constructor." << std::endl;
@@ -314,7 +333,7 @@ namespace mel {
             if (enabled_ && do_channels_count_ > 0) {
                 t_error result = hil_write_digital(q8_usb_, &do_channel_nums_[0], static_cast<uint32>(do_channels_count_), &do_signals_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Either Q8 USB " << id_ << "has not been enabled, or no digital output channels were passed to the constructor." << std::endl;
@@ -333,7 +352,7 @@ namespace mel {
                     do_channels_count_ > 0 ? &do_signals_[0] : NULL,
                     NULL);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
@@ -344,7 +363,7 @@ namespace mel {
             if (enabled_) {
                 t_error result = hil_watchdog_start(q8_usb_, watchdog_timeout);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
@@ -355,7 +374,7 @@ namespace mel {
             if (enabled_) {
                 t_error result = hil_watchdog_reload(q8_usb_);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
             else {
                 std::cout << "ERROR: Q8 USB " << id_ << " has not been enabled." << std::endl;
@@ -365,10 +384,10 @@ namespace mel {
         void Q8Usb::stop_watchdog() {
             t_error result = hil_watchdog_stop(q8_usb_);
             if (result < 0)
-                print_quarc_error(result);
+                print_quarc_error_message(result);
             result = hil_watchdog_clear(q8_usb_);
             if (result < 0)
-                print_quarc_error(result);
+                print_quarc_error_message(result);
         }
 
         bool Q8Usb::is_watchdog_expired() {
@@ -378,7 +397,8 @@ namespace mel {
             else if (result == 0)
                 return false;
             else {
-                print_quarc_error(result);
+                print_quarc_error_message(result);
+                return false;
             }
         }
 
@@ -457,7 +477,7 @@ namespace mel {
             if (ai_channels_count_ > 0) {
                 t_error result = hil_set_analog_input_ranges(q8_usb_, &ai_channel_nums_[0], static_cast<uint32>(ai_channels_count_), &ai_min_voltages_[0], &ai_max_voltages_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
         }
 
@@ -466,7 +486,7 @@ namespace mel {
             if (ao_channels_count_ > 0) {
                 t_error result = hil_set_analog_output_ranges(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(ao_channels_count_), &ao_min_voltages_[0], &ao_max_voltages_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
         }
 
@@ -475,7 +495,7 @@ namespace mel {
             if (ao_channels_count_ > 0) {
                 t_error result = hil_watchdog_set_analog_expiration_state(q8_usb_, &ao_channel_nums_[0], static_cast<uint32>(ao_channels_count_), &ao_expire_voltages_[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
         }
 
@@ -494,7 +514,7 @@ namespace mel {
                 }
                 t_error result = hil_watchdog_set_digital_expiration_state(q8_usb_, &do_channel_nums_[0], static_cast<uint32>(do_channels_count_), &converted_do_exp_signals[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
         }
 
@@ -511,11 +531,18 @@ namespace mel {
                 }
                 t_error result = hil_set_encoder_quadrature_mode(q8_usb_, &encoder_channel_nums_[0], static_cast<uint32>(encoder_channels_count_), &converted_encoder_modes[0]);
                 if (result < 0)
-                    print_quarc_error(result);
+                    print_quarc_error_message(result);
             }
         }
 
-        void Q8Usb::print_quarc_error(int result) {
+        std::string Q8Usb::get_quarc_error_message(int result) {
+            TCHAR message[512];
+            msg_get_error_message(NULL, result, message, sizeof(message));
+            std::wstring w_string_message(message);
+            return std::string(w_string_message.begin(), w_string_message.end());
+        }
+
+        void Q8Usb::print_quarc_error_message(int result) {
             TCHAR message[512];
             msg_get_error_message(NULL, result, message, sizeof(message));
             _tprintf(_T("QUARC ERROR: %s (error %d)\n"), message, -result);
@@ -582,6 +609,27 @@ namespace mel {
                 }
             }
             return options;
+        }
+
+        int Q8Usb::get_q8_usb_count() {
+            int id = 0;
+            std::vector<t_card> q8_usbs;
+            t_error result;
+            while (true) {
+                t_card q8_usb;
+                result = hil_open("q8_usb", std::to_string(id).c_str(), &q8_usb);
+                if (result < 0) {
+                    break;
+                }
+                else {
+                    q8_usbs.push_back(q8_usb);
+                    ++id;
+                }
+            }
+            for (size_t i = 0; i < q8_usbs.size(); ++i) {
+                hil_close(q8_usbs[i]);
+            }
+            return id;
         }
 
         bool Q8Usb::check_digital_loopback(uint32 daq_id, channel digital_channel) {

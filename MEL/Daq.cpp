@@ -1,6 +1,7 @@
 #include "Daq.h"
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 namespace mel {
 
@@ -44,7 +45,11 @@ namespace mel {
         }
 
         voltage Daq::get_analog_voltage(channel channel_number) {
-            return ai_voltages_[channel_number_to_index(ai_channel_nums_, channel_number)];
+            int index = channel_number_to_index(ai_channel_nums_, channel_number);
+            if (index >= 0)
+                return ai_voltages_[index];
+            else 
+                return std::numeric_limits<voltage>::quiet_NaN();
         }
 
         void Daq::set_analog_voltages(voltage_vec new_voltages) {
@@ -53,7 +58,9 @@ namespace mel {
         }
 
         void Daq::set_analog_voltage(channel channel_number, voltage new_voltage) {
-            ao_voltages_[channel_number_to_index(ao_channel_nums_, channel_number)] = new_voltage;
+            int index = channel_number_to_index(ao_channel_nums_, channel_number);
+            if (index >= 0)
+                ao_voltages_[index] = new_voltage;
         }
 
         dsignal_vec Daq::get_digital_signals() {
@@ -61,7 +68,11 @@ namespace mel {
         }
 
         dsignal Daq::get_digital_signal(channel channel_number) {
-            return di_signals_[channel_number_to_index(di_channel_nums_, channel_number)];
+            int index = channel_number_to_index(di_channel_nums_, channel_number);
+            if (index >= 0)
+                return di_signals_[index];
+            else
+                return std::numeric_limits<dsignal>::quiet_NaN();
         }
 
         void Daq::set_digital_signals(dsignal_vec new_signals) {
@@ -70,7 +81,9 @@ namespace mel {
         }
 
         void Daq::set_digital_signal(channel channel_number, dsignal new_state) {
-            do_signals_[channel_number_to_index(do_channel_nums_, channel_number)] = new_state;
+            int index = channel_number_to_index(do_channel_nums_, channel_number);
+            if (index >= 0)
+                do_signals_[index] = new_state;
         }
 
         int32_vec Daq::get_encoder_counts() {
@@ -78,7 +91,11 @@ namespace mel {
         }
 
         int32 Daq::get_encoder_count(channel channel_number) {
-            return enc_counts_[channel_number_to_index(encoder_channel_nums_, channel_number)];
+            int index = channel_number_to_index(encoder_channel_nums_, channel_number);
+            if (index >= 0)
+                return enc_counts_[index];
+            else
+                return std::numeric_limits<int32>::quiet_NaN();
         }
 
         double_vec Daq::get_encoder_rates() {
@@ -86,7 +103,11 @@ namespace mel {
         }
 
         double Daq::get_encoder_rate(channel channel_number) {
-            return enc_rates[channel_number_to_index(encrate_channel_nums_, channel_number)];
+            int index = channel_number_to_index(encrate_channel_nums_, channel_number);
+            if (index >= 0)
+                return enc_rates[index];
+            else
+                return std::numeric_limits<double>::quiet_NaN();
         }
 
         uint32_vec Daq::get_encoder_quadrature_factors() {
@@ -94,15 +115,26 @@ namespace mel {
         }
 
         uint32 Daq::get_encoder_quadrature_factor(channel channel_number) {
-            return encoder_quadrature_factors_[channel_number_to_index(encoder_channel_nums_, channel_number)];
+            int index = channel_number_to_index(encoder_channel_nums_, channel_number);
+            if (index >= 0)
+                return encoder_quadrature_factors_[index];
+            else
+                return std::numeric_limits<uint32>::quiet_NaN();
         }
 
         // HELPER FUNCTIONS
 
-        channel_vec::size_type Daq::channel_number_to_index(const channel_vec& channels, const channel channel_number) {
+        int Daq::channel_number_to_index(const channel_vec& channels, const channel channel_number) {
             auto result = std::find(channels.begin(), channels.end(), channel_number);
             if (result != channels.end()) {
-                return result - channels.begin();
+                int index = result - channels.begin();
+                if (index >= 0 && index < channels.size()) {
+                    return index;
+                }
+                else {
+                    std::cout << "FATAL ERROR: Channel index " << index << " out of bounds." << std::endl;
+                    return -1;
+                }
             }
             else {
                 std::cout << "FATAL ERROR: Attempted to access invalid channel number " << channel_number << "." << std::endl;

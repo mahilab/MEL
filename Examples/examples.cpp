@@ -13,6 +13,7 @@
 #include "OpenWrist.h"
 #include "PerformanceMonitor.h"
 #include <iostream>
+#include "mel_errors.h"
 
 // This is the MEL Examples program. It is divided in sections by comment headers.
 // With the exception of PROGRAM OPTIONS, each section is self contained and 
@@ -21,6 +22,17 @@
 // command line.
 
 using namespace mel; // this isn't necessary, but will keep the amount of typing down
+
+class A {
+public:
+    virtual void poop() {
+        util::throw_error(util::ERROR_VIRTUAL_FUNCTION_NOT_IMPLEMENTED, __FUNCTION__, typeid(*this).name());
+    }
+};
+
+class B : public A {
+
+};
 
 int main(int argc, char * argv[]) {
 
@@ -38,10 +50,12 @@ int main(int argc, char * argv[]) {
         ("melscope", "another MELShare demo that produces test data for also introducing in MELScope")
         ("external", "example of how to launch an external app or game from C++")
         ("q8", "example demonstrating how to set up a Q8 USB and becnhmark it's read/write speed")
+        ("q8-multi", "example demonstrating how to set up multiple Q8 USBs and determine which is which")
         ("open-wrist", "example demonstrating how to control an OpenWrist in MEL")
         ("clock","tests clock wait function performance on your PC")
         ("log", "example demonstrating use of DataLog class")
-        ("io", "example demonstrating use of print functions and Input class");
+        ("io", "example demonstrating use of print functions and Input class")
+        ("error", "example demonstrating error handling in MEL");
 
     boost::program_options::variables_map var_map;
     boost::program_options::store(boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), var_map);
@@ -235,6 +249,15 @@ int main(int argc, char * argv[]) {
     }
 
     //-------------------------------------------------------------------------
+    // MUTLI Q8 USB EXAMPLE:    >Examples.exe --q8-multi
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("q8-multi")) {
+        int count = dev::Q8Usb::get_q8_usb_count();
+        util::print("Number of Q8 USBs detected: " + std::to_string(count));
+    }
+
+    //-------------------------------------------------------------------------
     // OPENWRIST EXAMPLE:    >Examples.exe --open-wrist
     //-------------------------------------------------------------------------
     
@@ -294,6 +317,8 @@ int main(int argc, char * argv[]) {
         q8->start_watchdog(0.1);
         ow.enable();
 
+        bool move_started = false;
+
         // start the control loop
         clock.start();
         while (true) {
@@ -303,12 +328,16 @@ int main(int argc, char * argv[]) {
             q8->reload_watchdog();
 
             // do something controlsy
-            ow.joints_[0]->set_torque(pd0.calculate(0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
-            ow.joints_[1]->set_torque(pd1.calculate(0, ow.joints_[1]->get_position(), 0, ow.joints_[1]->get_velocity()));
-            ow.joints_[2]->set_torque(pd2.calculate(0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
+            //ow.joints_[0]->set_torque(pd0.calculate(0, ow.joints_[0]->get_position(), 0, ow.joints_[0]->get_velocity()));
+            //ow.joints_[1]->set_torque(pd1.calculate(0, ow.joints_[1]->get_position(), 0, ow.joints_[1]->get_velocity()));
+            //ow.joints_[2]->set_torque(pd2.calculate(0, ow.joints_[2]->get_position(), 0, ow.joints_[2]->get_velocity()));
 
-            ow.joints_[0]->add_torque(ow.compute_gravity_compensation(0));
-            ow.joints_[1]->add_torque(ow.compute_gravity_compensation(1));
+            //ow.joints_[0]->add_torque(ow.compute_gravity_compensation(0));
+            //ow.joints_[1]->add_torque(ow.compute_gravity_compensation(1));
+
+
+            double torque = ow.pd_controllers[1].move_to_hold(0, ow.joints_[1]->get_position(), 10 * math::DEG2RAD, ow.joints_[1]->get_velocity(), clock.delta_time_, math::DEG2RAD, 5*math::DEG2RAD);
+            ow.joints_[1]->set_torque(torque);
 
             // update the OpenWrist's internal MELShare map so we can use MELScope
             ow.update_state_map();
@@ -460,6 +489,18 @@ int main(int argc, char * argv[]) {
         util::print("you entered" + std::to_string(i));
 
         util::usleep(1000000);
+    }
+
+    //-------------------------------------------------------------------------
+    // ERROR EXAMPLE:    >Examples.exe --error
+    //-------------------------------------------------------------------------
+
+    if (var_map.count("error")) {
+        util::enable_debug_mode();
+        util::throw_error(util::ERROR_JOINT_TORQUE_LIMIT_EXCEEDED, "joint_5", 6.45, 5.123);
+        util::throw_error(util::ERROR_QUARC_ERROR, dev::Q8Usb::get_quarc_error_message(-10).c_str(), -10);
+        B a;
+        a.poop();
     }
 
 }

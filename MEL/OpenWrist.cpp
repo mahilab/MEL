@@ -17,7 +17,7 @@ namespace mel {
                 std::string num = std::to_string(i);
 
                 // construct encoders
-                core::PositionSensor* encoder = new core::Encoder("encoder_" + num,
+                core::PositionSensor* encoder = new core::Encoder("ow_encoder_" + num,
                     params_.encoder_res_[i] / (2 * math::PI),
                     config_.encoder_[i],
                     config_.encrate_[i]);
@@ -25,7 +25,7 @@ namespace mel {
                 position_sensors_.push_back(encoder);
 
                 // construct motors
-                core::Actuator* motor = new core::Motor("motor_" + num,
+                core::Actuator* motor = new core::Motor("ow_motor_" + num,
                     params_.kt_[i],
                     config_.amp_gains_[i],
                     config_.command_[i],
@@ -37,7 +37,7 @@ namespace mel {
                 actuators_.push_back(motor);
 
                 // construct joints
-                core::Joint* joint = new core::Joint("joint_" + num,
+                core::Joint* joint = new core::Joint("ow_joint_" + num,
                     encoder,
                     params_.eta_[i],
                     motor,
@@ -150,6 +150,8 @@ namespace mel {
             // enable DAQs, zero encoders, and start watchdog
             for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
                 (*it)->enable();
+                if (!((*it)->is_enabled()))
+                    return;
                 (*it)->zero_encoders();
                 (*it)->start_watchdog(0.1);
             }
@@ -183,7 +185,7 @@ namespace mel {
 
                             // calculate torque req'd to move the calibrating joint forward at constant speed
                             pos_ref += dir[i] * vel_ref * clock.delta_time_;
-                            torque = pd_controllers[i].calculate(pos_ref, pos_act, 0, vel_act);
+                            torque = pd_controllers_[i].calculate(pos_ref, pos_act, 0, vel_act);
                             torque = math::saturate(torque, sat_torques[i]);
 
 
@@ -213,7 +215,7 @@ namespace mel {
                         else {
                             // calculate torque req'd to retur the calibrating joint back to zero
                             pos_ref -= dir[i] * vel_ref * clock.delta_time_;
-                            torque = pd_controllers[i].calculate(pos_ref, pos_act, 0, vel_act);
+                            torque = pd_controllers_[i].calculate(pos_ref, pos_act, 0, vel_act);
                             torque = math::saturate(torque, sat_torques[i]);
 
 
@@ -231,7 +233,7 @@ namespace mel {
                     }
                     else {
                         // lock all other joints at their zero positions
-                        torque = pd_controllers[i].calculate(zeros[i], pos_act, 0, vel_act);
+                        torque = pd_controllers_[i].calculate(zeros[i], pos_act, 0, vel_act);
                         torque = math::saturate(torque, sat_torques[i]);
 
                     }
@@ -250,13 +252,13 @@ namespace mel {
                 }
 
                 // check joint velocity limits
-                if (check_all_joint_velocity_limits()) {
+                if (check_all_joint_velocity_limits() && check_all_joint_torque_limits()) {
                     stop = true;
                     break;
                 }
 
                 // wait the clock
-                clock.hybrid_wait();
+                clock.wait();
             }
 
             // disable OpenWrist
@@ -318,7 +320,7 @@ namespace mel {
                 }
 
                 // wait the clock
-                clock.hybrid_wait();
+                clock.wait();
             }
 
             // disable OpenWrist

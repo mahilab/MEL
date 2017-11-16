@@ -81,7 +81,7 @@ namespace mel {
         protected:
 
             /// Returns index of a channel number in a channel numbers vector.
-            channel_vec::size_type channel_number_to_index(const channel_vec& channels, const channel channel_number);
+            int channel_number_to_index(const channel_vec& channels, const channel channel_number);
             /// Sorts and reduces a channel numbers vector such as {3, 1, 1, 2} to {1, 2, 3}.
             channel_vec sort_and_reduce_channels(channel_vec channels);
 
@@ -127,7 +127,7 @@ namespace mel {
 
         public:
 
-            virtual void write_analogs() {
+            virtual void write_analogs() {                
                 util::print("WARNING: DAQ <" + name_ + "> does not implement " + __FUNCTION__);
             }
             virtual void set_analog_voltages(voltage_vec new_voltages);

@@ -27,7 +27,7 @@ namespace mel {
                 std::array<core::Daq::Ai, 3>      sense_;     ///< analog input channels that sense motor current
                 std::array<core::Daq::Encoder, 3> encoder_;   ///< encoder channels that measure motor positions
                 std::array<core::Daq::EncRate, 3> encrate_;   ///< encoder channels that measure motor velocities
-                std::array<double, 3>       amp_gains_; ///, motor aplifier gains 
+                std::array<double, 3>             amp_gains_; ///, motor aplifier gains 
             };
 
             /// Stores the constant parameters associated with the OpenWrist. The
@@ -84,27 +84,29 @@ namespace mel {
             // PUBLIC VARIABLES
             //-------------------------------------------------------------------------
 
-            comm::MelShare state_map_ = comm::MelShare("ow_state");
+            comm::MelShare state_map_ = comm::MelShare("openwrist");
             double_vec state_ = double_vec(15, 0);
 
             const Config config_; ///< this OpenWrist's Config, set during construction
             const Params params_; ///< this OpenWrist's Params, set during construction
 
-            //-------------------------------------------------------------------------
-            // PRIVATE VARIABLES
-            //-------------------------------------------------------------------------
-
             std::vector<core::Daq*> daqs_; ///< all unique DAQs found in config_
 
             /// critically damped PD controllers for each joint
-            std::array<core::PdController, 3> pd_controllers = {
+            std::array<core::PdController, 3> pd_controllers_ = {
                 core::PdController(25, 1.15), // joint 0 ( Nm/rad , Nm-s/rad )
                 core::PdController(20, 1.00), // joint 1 ( Nm/rad , Nm-s/rad )
                 core::PdController(20, 0.25)  // joint 2 ( Nm/rad , Nm-s/rad )
             };
 
+        protected:
+
             //-------------------------------------------------------------------------
-            // PRIVATE FUNCTIONS
+            // PROTECTED VARIABLES
+            //-------------------------------------------------------------------------
+
+            //-------------------------------------------------------------------------
+            // PROTECTED FUNCTIONS
             //-------------------------------------------------------------------------
 
             /// Adds a Daq to daqs_ if it's not already in there based on the Device 
