@@ -10,6 +10,7 @@
 #include "Encoder.h"
 #include "Integrator.h"
 #include "PdController.h"
+#include "DataLog.h"
 
 namespace mel {
 
@@ -18,6 +19,10 @@ namespace mel {
         class MahiExoII : public core::Exo {
 
         public:
+
+            //-------------------------------------------------------------------------
+            // STATIC PUBLIC VARIABLES
+            //-------------------------------------------------------------------------
 
             static const int N_aj_ = 5; // number of anatomical joints
             static const int N_rj_ = 5; // number of robotic joints
@@ -151,18 +156,20 @@ namespace mel {
             void inverse_rps_kinematics(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out) const;
             void inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out) const;
             void inverse_rps_kinematics_velocity(double_vec& q_ser_in, double_vec& q_par_out, double_vec& qp_out, double_vec& q_ser_dot_in, double_vec& q_par_dot_out, double_vec& qp_dot_out) const;
+         
 
-
-            
-            //-----------------------------------------------------------------------------
             // PUBLIC UTILITY FUNCTIONS
-            //-----------------------------------------------------------------------------
-
             bool check_rps_init(bool print_output = false) const;
             bool check_goal_rps_par_pos(double_vec goal_rps_par_pos, char_vec check_dof, bool print_output = false) const;
             bool check_goal_rps_ser_pos(double_vec goal_rps_ser_pos, char_vec check_dof, bool print_output = false) const;
             bool check_goal_anat_pos(double_vec goal_anat_pos, char_vec check_dof, bool print_output = false) const;
             bool check_neutral_anat_pos(double_vec goal_anat_pos, char_vec check_dof, bool print_output = false) const;
+
+
+            // PUBLIC DATA LOGGING FUNCTIONS
+            void init_robot_log();
+            void log_robot_row(double time);
+            void save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp = true);
 
             //-------------------------------------------------------------------------
             // PUBLIC VARIABLES
@@ -205,7 +212,8 @@ namespace mel {
             // PROTECTED VARIABLES
             //-------------------------------------------------------------------------
 
-            
+            // DATA LOGGING
+            util::DataLog robot_log_ = util::DataLog("robot_log", false);
 
         private:
 
@@ -247,6 +255,8 @@ namespace mel {
             Eigen::VectorXd qp_dot_ = Eigen::VectorXd::Zero(N_qp_);
             Eigen::VectorXd q_par_dot_ = Eigen::VectorXd::Zero(N_qs_);
             Eigen::VectorXd q_ser_dot_ = Eigen::VectorXd::Zero(N_qs_);
+            Eigen::VectorXd tau_par_rob_ = Eigen::VectorXd::Zero(N_qs_);
+            Eigen::VectorXd tau_ser_rob_ = Eigen::VectorXd::Zero(N_qs_);
             Eigen::MatrixXd rho_fk_ = Eigen::MatrixXd::Zero(N_qp_ - N_qs_, N_qs_);
             Eigen::MatrixXd jac_fk_ = Eigen::MatrixXd::Zero(N_qs_, N_qs_);
 
@@ -303,10 +313,7 @@ namespace mel {
             void phi_d_qp_update(const Eigen::VectorXd& qp, Eigen::MatrixXd& phi_d_qp) const;
             uint8_vec select_q_invert(uint8_vec select_q) const;
 
-            //-----------------------------------------------------------------------------
             // PRIVATE UTILITY FUNCTIONS
-            //-----------------------------------------------------------------------------
-
             bool check_goal_pos(double_vec goal_pos, double_vec current_pos, char_vec check_joint, double_vec error_tol, bool print_output = false) const;
 
 

@@ -26,10 +26,14 @@ namespace mel {
             double get_position() override;
             /// Converts encoder count rate to encoder velocity in [unit/s], implicity defined by counts_per_unit_;
             double get_velocity() override;
-            ///< Zeros the encoder position to the current location
+            /// Zeros the encoder position to the current location
             void zero();
             /// Zeros the encoder offset_units from the current location
             void offset(double offset_units);
+            /// Gets and returns the encoder count directly
+            double get_encoder_counts();
+            /// Gets and returns the encoder count directly
+            double get_encoder_rate();
 
             //---------------------------------------------------------------------
             // PUBLIC VARIABLES

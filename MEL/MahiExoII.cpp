@@ -328,29 +328,29 @@ namespace mel {
         void MahiExoII::update_kinematics() {
 
             // update q_par_ (q parallel) with the three prismatic link positions
-            q_par_ << joints_.at(2)->get_position(), joints_.at(3)->get_position(), joints_.at(4)->get_position();
-            q_par_dot_ << joints_.at(2)->get_velocity(), joints_.at(3)->get_velocity(), joints_.at(4)->get_velocity();
+            q_par_ << joints_[2]->get_position(), joints_[3]->get_position(), joints_[4]->get_position();
+            q_par_dot_ << joints_[2]->get_velocity(), joints_[3]->get_velocity(), joints_[4]->get_velocity();
 
             // run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
             forward_rps_kinematics_velocity(q_par_, q_ser_, qp_, rho_fk_, jac_fk_, q_par_dot_, q_ser_dot_, qp_dot_);
 
             // get positions from first two anatomical joints, which have encoders
-            anatomical_joint_positions_.at(0) = joints_.at(0)->get_position(); // elbow flexion/extension
-            anatomical_joint_positions_.at(1) = joints_.at(1)->get_position(); // forearm pronation/supination
+            anatomical_joint_positions_[0] = joints_[0]->get_position(); // elbow flexion/extension
+            anatomical_joint_positions_[1] = joints_[1]->get_position(); // forearm pronation/supination
 
             // get positions from forward kinematics solver for three wrist anatomical joints 
-            anatomical_joint_positions_.at(2) = q_ser_[0]; // wrist flexion/extension
-            anatomical_joint_positions_.at(3) = q_ser_[1]; // wrist radial/ulnar deviation
-            anatomical_joint_positions_.at(4) = q_ser_[2]; // arm translation
+            anatomical_joint_positions_[2] = q_ser_[0]; // wrist flexion/extension
+            anatomical_joint_positions_[3] = q_ser_[1]; // wrist radial/ulnar deviation
+            anatomical_joint_positions_[4] = q_ser_[2]; // arm translation
 
             // get velocities from first two anatomical joints, which have encoders
-            anatomical_joint_velocities_.at(0) = joints_.at(0)->get_velocity(); // elbow flexion/extension
-            anatomical_joint_velocities_.at(1) = joints_.at(1)->get_velocity(); // forearm pronation/supination
+            anatomical_joint_velocities_[0] = joints_[0]->get_velocity(); // elbow flexion/extension
+            anatomical_joint_velocities_[1] = joints_[1]->get_velocity(); // forearm pronation/supination
 
             // get velocities from forward kinematics solver for three wrist anatomical joints 
-            anatomical_joint_velocities_.at(2) = q_ser_dot_[0]; // wrist flexion/extension
-            anatomical_joint_velocities_.at(3) = q_ser_dot_[1]; // wrist radial/ulnar deviation
-            anatomical_joint_velocities_.at(4) = q_ser_dot_[2]; // arm translation
+            anatomical_joint_velocities_[2] = q_ser_dot_[0]; // wrist flexion/extension
+            anatomical_joint_velocities_[3] = q_ser_dot_[1]; // wrist radial/ulnar deviation
+            anatomical_joint_velocities_[4] = q_ser_dot_[2]; // arm translation
         }
 
         double_vec MahiExoII::get_wrist_parallel_positions() const {
@@ -366,6 +366,7 @@ namespace mel {
             // set torques for first two anatomical joints, which have actuators
             joints_[0]->set_torque(new_torques[0]);
             joints_[1]->set_torque(new_torques[1]);
+
 
             // calculate the spectral norm of the transformation matrix
             Eigen::EigenSolver<Eigen::Matrix3d> eigensolver(jac_fk_.transpose() * jac_fk_, false);
@@ -405,7 +406,6 @@ namespace mel {
             // debugging
             spec_norm_prev_ = spec_norm;
             q_par_prev_ = q_par_;
-            //mel::print(eigensolver.eigenvalues());
 
             // set torques for two wrist anatomical joints and arm translation
             Eigen::VectorXd par_torques = Eigen::VectorXd::Zero(N_qs_);
@@ -414,32 +414,43 @@ namespace mel {
             ser_torques(1) = new_torques[3];
             ser_torques(2) = new_torques[4];
             par_torques = jac_fk_.transpose()*ser_torques;
-
             joints_[2]->set_torque(par_torques(0));
             joints_[3]->set_torque(par_torques(1));
             joints_[4]->set_torque(par_torques(2));
-            /*joints_[2]->set_torque(0.0);
-            joints_[3]->set_torque(0.0);
-            joints_[4]->set_torque(0.0);*/
-            //std::cout << jac_fk_.transpose() << std::endl;
-            //std::cout << par_torques.transpose() << std::endl;
 
+          
+            std::cout << ser_torques.transpose() << "\t" << par_torques.transpose() << std::endl;
+            util::print("");
+
+            // store parallel and serial joint torques for data logging
+            tau_par_rob_ = par_torques;
+            tau_ser_rob_ = -ser_torques;
         }
 
 
         void MahiExoII::set_rps_par_torques(double_vec& tau_par) {
             for (int i = 0; i < N_qs_; ++i) {
-                joints_.at(i + 2)->set_torque(tau_par.at(i));
+                joints_[i + 2]->set_torque(tau_par[i]);
             }
+            tau_par_rob_ = math::copy_stdvec_to_eigvec(tau_par);
+            std::cout << tau_par_rob_.transpose() << std::endl;
+            util::print("");
+
+            Eigen::VectorXd tau_b(N_qp_ - N_qs_);
+            tau_b << 0.0, 0.0, 0.0, tau_par_rob_[0], tau_par_rob_[1], tau_par_rob_[2], 0.0, 0.0, 0.0;
+            solve_static_rps_torques(select_q_ser_, tau_b, qp_, tau_ser_rob_);
         }
 
         void MahiExoII::set_rps_ser_torques(double_vec& tau_ser) {
             Eigen::VectorXd tau_ser_eig = math::copy_stdvec_to_eigvec(tau_ser);
-            Eigen::VectorXd tau_par = Eigen::VectorXd::Zero(N_qs_);
-            tau_par = jac_fk_.transpose() * tau_ser_eig;
+            //Eigen::VectorXd tau_par = Eigen::VectorXd::Zero(N_qs_);
+            //tau_par = jac_fk_.transpose() * tau_ser_eig;
+            tau_par_rob_ = jac_fk_.transpose() * tau_ser_eig;
             for (int i = 0; i < N_qs_; ++i) {
-                joints_.at(i + 2)->set_torque(tau_par[i]);
+                //joints_[i + 2]->set_torque(tau_par[i]);
+                joints_[i + 2]->set_torque(tau_par_rob_[i]);
             }
+            tau_ser_rob_ = -tau_ser_eig;
         }
 
 
@@ -552,6 +563,83 @@ namespace mel {
             return check_goal_pos(goal_anat_pos, get_anatomical_joint_positions(), check_dof, anat_neutral_err_tol_, print_output);
         }
 
+
+        //-----------------------------------------------------------------------------
+        // PUBLIC DATA LOGGING FUNCTIONS
+        //-----------------------------------------------------------------------------
+
+        void MahiExoII::init_robot_log() {
+            robot_log_.add_col("Time [s]")
+                .add_col("MEII Joint 0 Encoder Count [counts]").add_col("MEII Joint 0 Encoder Rate [counts/s]").add_col("MEII Joint 0 Motor Command Current [A]").add_col("MEII Joint 0 Motor Limited Current [A]")
+                .add_col("MEII Joint 1 Encoder Count [counts]").add_col("MEII Joint 1 Encoder Rate [counts/s]").add_col("MEII Joint 1 Motor Command Current [A]").add_col("MEII Joint 1 Motor Limited Current [A]")
+                .add_col("MEII Joint 2 Encoder Count [counts]").add_col("MEII Joint 2 Encoder Rate [counts/s]").add_col("MEII Joint 2 Motor Command Current [A]").add_col("MEII Joint 2 Motor Limited Current [A]")
+                .add_col("MEII Joint 3 Encoder Count [counts]").add_col("MEII Joint 3 Encoder Rate [counts/s]").add_col("MEII Joint 3 Motor Command Current [A]").add_col("MEII Joint 3 Motor Limited Current [A]")
+                .add_col("MEII Joint 4 Encoder Count [counts]").add_col("MEII Joint 4 Encoder Rate [counts/s]").add_col("MEII Joint 4 Motor Command Current [A]").add_col("MEII Joint 4 Motor Limited Current [A]")
+                .add_col("MEII EFE Position [rad]").add_col("MEII EFE Velocity [rad/s]").add_col("MEII EFE Commanded Torque [Nm]")
+                .add_col("MEII FPS Position [rad]").add_col("MEII FPS Velocity [rad/s]").add_col("MEII FPS Commanded Torque [Nm]")
+                .add_col("MEII RPS Theta1 Position [rad]").add_col("MEII RPS Theta2 Position [rad]").add_col("MEII RPS Theta3 Position [rad]")
+                .add_col("MEII RPS L1 Position [m]").add_col("MEII RPS L2 Position [m]").add_col("MEII RPS L3 Position [m]")
+                .add_col("MEII RPS Alpha Position [rad]").add_col("MEII RPS Beta Position [rad]").add_col("MEII RPS Gamma Position [rad]")
+                .add_col("MEII RPS X Position [m]").add_col("MEII RPS Y Position [m]").add_col("MEII RPS Z Position [m]")
+                .add_col("MEII RPS Theta1 Velocity [rad/s]").add_col("MEII RPS Theta2 Velocity [rad/s]").add_col("MEII RPS Theta3 Velocity [rad/s]")
+                .add_col("MEII RPS L1 Velocity [m/s]").add_col("MEII RPS L2 Velocity [m/s]").add_col("MEII RPS L3 Velocity [m/s]")
+                .add_col("MEII RPS Alpha Velocity [rad/s]").add_col("MEII RPS Beta Velocity [rad/s]").add_col("MEII RPS Gamma Velocity [rad/s]")
+                .add_col("MEII RPS X Velocity [m/s]").add_col("MEII RPS Y Velocity [m/s]").add_col("MEII RPS Z Velocity [m/s]")
+                .add_col("MEII RPS L1 Force [N]").add_col("MEII RPS L2 Force [N]").add_col("MEII RPS L3 Force [N]")
+                .add_col("MEII RPS Alpha Torque [Nm]").add_col("MEII RPS Beta Torque [Nm]").add_col("MEII RPS X Force [N]");           
+        }
+
+        void MahiExoII::log_robot_row(double time) {
+
+            std::vector<double> row;
+            row.push_back(time);
+            row.push_back(static_cast<core::Encoder*>(joints_[0]->position_sensor_)->get_encoder_counts());
+            row.push_back(static_cast<core::Encoder*>(joints_[0]->position_sensor_)->get_encoder_rate());
+            row.push_back(static_cast<core::Motor*>(actuators_[0])->get_current_command());
+            row.push_back(static_cast<core::Motor*>(actuators_[0])->get_current_limited());
+            row.push_back(static_cast<core::Encoder*>(joints_[1]->position_sensor_)->get_encoder_counts());
+            row.push_back(static_cast<core::Encoder*>(joints_[1]->position_sensor_)->get_encoder_rate());
+            row.push_back(static_cast<core::Motor*>(actuators_[1])->get_current_command());
+            row.push_back(static_cast<core::Motor*>(actuators_[1])->get_current_limited());
+            row.push_back(static_cast<core::Encoder*>(joints_[2]->position_sensor_)->get_encoder_counts());
+            row.push_back(static_cast<core::Encoder*>(joints_[2]->position_sensor_)->get_encoder_rate());
+            row.push_back(static_cast<core::Motor*>(actuators_[2])->get_current_command());
+            row.push_back(static_cast<core::Motor*>(actuators_[2])->get_current_limited());
+            row.push_back(static_cast<core::Encoder*>(joints_[3]->position_sensor_)->get_encoder_counts());
+            row.push_back(static_cast<core::Encoder*>(joints_[3]->position_sensor_)->get_encoder_rate());
+            row.push_back(static_cast<core::Motor*>(actuators_[3])->get_current_command());
+            row.push_back(static_cast<core::Motor*>(actuators_[3])->get_current_limited());
+            row.push_back(static_cast<core::Encoder*>(joints_[4]->position_sensor_)->get_encoder_counts());
+            row.push_back(static_cast<core::Encoder*>(joints_[4]->position_sensor_)->get_encoder_rate());
+            row.push_back(static_cast<core::Motor*>(actuators_[4])->get_current_command());
+            row.push_back(static_cast<core::Motor*>(actuators_[4])->get_current_limited());
+            row.push_back(joints_[0]->get_position());
+            row.push_back(joints_[0]->get_velocity());
+            row.push_back(joints_[0]->get_torque());
+            row.push_back(joints_[1]->get_position());
+            row.push_back(joints_[1]->get_velocity());
+            row.push_back(joints_[1]->get_torque());
+            for (int i = 0; i < N_qp_; ++i) {
+                row.push_back(qp_[i]);
+            }
+            for (int i = 0; i < N_qp_; ++i) {
+                row.push_back(qp_dot_[i]);
+            }
+            for (int i = 0; i < N_qs_; ++i) {
+                row.push_back(tau_par_rob_[i]);
+            }
+            for (int i = 0; i < N_qs_; ++i) {
+                row.push_back(tau_ser_rob_[i]);
+            }
+            robot_log_.add_row(row);
+        }
+
+        void MahiExoII::save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp) {
+            robot_log_.save_and_clear_data(filename, directory, timestamp);
+            robot_log_ = util::DataLog("robot_log", false);
+        }
+
+
         //-----------------------------------------------------------------------------
         // PRIVATE KINEMATICS FUNCTIONS
         //-----------------------------------------------------------------------------
@@ -560,7 +648,7 @@ namespace mel {
         void MahiExoII::solve_static_rps_torques(uint8_vec select_q, const Eigen::VectorXd& tau_b, const Eigen::VectorXd& qp, Eigen::VectorXd& tau_s) const {
             Eigen::MatrixXd rho = Eigen::MatrixXd::Zero(N_qp_ - N_qs_, N_qs_);
             generate_rho(select_q, qp, rho);
-            tau_s = rho.transpose() * tau_b;
+            tau_s = -rho.transpose() * tau_b;
         }
 
         void MahiExoII::solve_static_rps_torques(uint8_vec select_q, const Eigen::VectorXd& tau_b, const Eigen::VectorXd& qp, Eigen::VectorXd& tau_s, Eigen::VectorXd& tau_p) const {

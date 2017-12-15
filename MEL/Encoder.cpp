@@ -45,6 +45,19 @@ namespace mel {
             return PositionSensor::get_velocity(); // else call the default get_velocity() function
         }
 
+        double Encoder::get_encoder_counts() {
+            count_ = encoder_channel_.get_count();
+            return count_;
+        }
+
+        double Encoder::get_encoder_rate() {
+            if (velocity_enabled_) {
+                rate_ = encrate_channel_.get_rate();
+                return rate_;
+            }
+            return PositionSensor::get_velocity(); // else call the default get_velocity() function
+        }
+
     }
 
 }

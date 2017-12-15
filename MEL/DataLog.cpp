@@ -92,6 +92,7 @@ namespace mel {
         void DataLog::save_thread_function(std::string full_filename, std::vector<std::string> column_names, std::vector<std::vector<double>> data, uint32 num_rows, uint32 num_cols) {
             std::ofstream data_log;
             data_log.precision(12);
+            
             data_log.open(full_filename, std::ofstream::out | std::ofstream::trunc);
             for (auto it = column_names.begin(); it != column_names.end(); ++it) {
                 data_log << *it << ",";
@@ -103,6 +104,7 @@ namespace mel {
                 }
                 data_log << std::endl;
             }
+            
             data_log.close();
             saving_ = false;
         }
