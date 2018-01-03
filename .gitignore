@@ -17,6 +17,9 @@
 daq_logs/
 clock_logs/
 
+#Sublime
+MEL.sublime-workspace
+
 #Doxygen
 html/
 latex/
