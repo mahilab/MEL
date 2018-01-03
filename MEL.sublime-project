@@ -1,0 +1,84 @@
+{
+	"build_systems":
+	[
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (MinGW-Win32)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DMELSHARE=OFF -DEXAMPLES=ON",
+			"working_dir": "$project_path/build/mingw_win32"
+		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (MinGW-Linux)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DNI=ON",
+			"working_dir": "$project_path/build/mingw_linux"
+		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (MSVC-Win64)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DEXAMPLES=ON -DQUANSER=ON -DMELSHARE=OFF",
+			"working_dir": "$project_path/build/msvc_win64"
+		},
+		{
+			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+			"name": "Make (Win32)",
+			"selector":
+			[
+				"source.c++"
+			],
+			"shell_cmd": "make",
+			"working_dir": "$project_path/build/mingw_win32"
+		},
+		{
+			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+			"name": "Make (Linux)",
+			"selector":
+			[
+				"source.c++"
+			],
+			"shell_cmd": "make",
+			"working_dir": "$project_path/build/mingw_linux"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Python",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"ecc_common_flags":
+		[
+			"-I$project_base_path/src",
+			"-I$project_base_path/include",
+			"-I$project_base_path/examples",
+			"-IC:/dev/quarc/include"
+			// "-IC:/Git/SFML/include"
+		]
+	}
+}

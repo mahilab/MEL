@@ -1,0 +1,50 @@
+All:
+  ☐ Documentation
+  ☐
+
+Device:
+  ✘ Should this expose "on_enable", "on_disable", etc? Could alleviate "enable_" issue @cancelled (17-12-28 01:14)
+
+SharedMemory:
+  ✔ Make size known to class at write and read @done (17-12-30 19:21)
+  ✘ Choose to more tightly integrate Packet or not @cancelled (17-12-30 19:21)
+  ☐ Write Linux version
+
+StateMachine:
+  ☐ Simplify, remove old garbage code
+
+Packet:
+  ☐ Add methods for vector (just use underlying in loop?)
+
+Console:
+  ✔ Add control-C handler function/class @done (17-12-22 15:15)
+
+Daq:
+  ✔ Modularize - make each I/O a separate class/module, Q8 inheret from all @done (17-12-28 01:15)
+  ✘ Channel <- OutputChannel / InputChannel @cancelled (17-12-28 01:15)
+  ✔ Module  <- AnalogInput / AnalogOutput / DigitalInput / DigitalOutput / Encoder ^^^ @done (17-12-28 01:16)
+  ✔ Daq <- Q8Usb / CRio ^^^ @done (17-12-28 01:16)
+  ✔ Q8 encoder velocity, @done (17-12-28 16:09)
+  ☐ determine what the hell Q8 velocity units are and if quadraturea affects it
+  ☐ ranges, misc functions
+
+
+Mutex:
+  ✔ Change to match format of new classes @done (17-12-21 11:31)
+  ☐ Write Linux version
+  ✔ Make NonCopyable @done (17-12-21 11:31)
+  ☐ get_last_os_error(), make static functions not print
+
+Error:
+  ☐ make an error output stream or something like that
+
+ Amplifer:
+   ☐ create class for amps
+
+  Devece:
+    ✘ is this necessary, really? @cancelled (17-12-28 01:14)
+    ✔ make enable/disable return bool @done (17-12-28 01:14)
+    ✘ add open/close? @cancelled (17-12-28 01:15)
+
+
+
