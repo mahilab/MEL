@@ -2,19 +2,19 @@ cmake_minimum_required(VERSION 2.6)
 
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
-# Updated: 12/2017
+# Updated: 1/2018
 
 #===============================================================================
 # HOW TO USE THIS FILE
 #===============================================================================
 
-# 1) Set user options below to desired settings
-# 2) Open console and navigate to the /build folder
-# 3a) To generate makefile for NI hardware, run:
-#     $: cmake .. -G "MinGW Makefiles"
-# 3b) To generate Visual Studio *.sln file for Quanser hardware, run:
-#     $: cmake .. -G "Visual Studio 15 2017 Win64"
-# 4) Proceed to build makefile or *.sln file with necessary software
+# 1) Open console and navigate to the /build folder
+# 2a) To generate makefile for NI hardware, run:
+#     $: cmake .. -G "MinGW Makefiles -DNI=ON"
+# 2b) To generate Visual Studio *.sln file for Quanser hardware, run:
+#     $: cmake .. -G "Visual Studio 15 2017 Win64 -DQUANSER=ON"
+# 3) To make example executables, append "-DEXAMPLES=ON"
+# 4) Proceed to build makefile or *.sln file with the necessary software
 
 #===============================================================================
 # USER OPTIONS
@@ -23,7 +23,6 @@ cmake_minimum_required(VERSION 2.6)
 option(NI "Turn ON if compiling for NI hardware and NI Realtime Linux" OFF)
 option(QUANSER "Turn ON if compiling for Quanser hardware and MSVC" OFF)
 option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
-option(MELSHARE "Turn ON to include MelShare. Requires Boost." OFF)
 option(EXAMPLES "Turn ON to build example executable(s)" OFF)
 
 #===============================================================================
@@ -70,6 +69,9 @@ if(WIN32)
     add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()
 
+# add configurations
+set(CMAKE_CONFIGURATION_TYPES Release)
+
 #===============================================================================
 # PERFORM CHECKS
 #===============================================================================
@@ -78,21 +80,16 @@ if(NI AND QUANSER)
     message(FATAL_ERROR "FATAL ERROR: MEL cannot be built for NI and Quanser hardware simultaneously. Choose only one.")
 endif()
 
-if(QUANSER AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC"))
+if(QUANSER AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "MSVC"))
     message(FATAL_ERROR "FATAL ERROR: Must use MSVC compiler when using Quanser hardware.")
 endif()
 
-if(NI AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
+if(NI AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
     message(FATAL_ERROR "FATAL_ERROR: Must use Linux G++ compiler when using NI hardware.")
 endif()
 
-if(MELSHARE AND NOT WIN32)
-    message(WARNING "WARNING: MelShare can only be compiled on Windows. Disabling MelShare.")
-    set(MELSHARE OFF)
-endif()
-
 #===============================================================================
-# INCLUDES
+# EXTERNAL INCLUDES
 #===============================================================================
 
 # MEL Lib
@@ -107,27 +104,6 @@ elseif (QUANSER)
     list(APPEND INCLUDE_DIRS
         C:/dev/quarc/include)
 endif()
-
-# Boost Lib
-if (MELSHARE)
-    set(Boost_INCLUDE_DIR C:/dev/boost_1_64_0)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        set(Boost_LIBRARY_DIR C:/dev/boost_1_64_0/lib64-msvc-14.1)
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(Boost_LIBRARY_DIR C:/dev/boost_1_64_0/lib64-mgw-71)
-    endif()
-    set(Boost_USE_STATIC_LIBS ON)
-    find_package(Boost REQUIRED)
-    list(APPEND INCLUDE_DIRS
-        ${Boost_INCLUDE_DIR})
-endif()
-
-# if (SFML)
-#     list(APPEND INCLUDE_DIRS
-#     C:/Git/SFML/include)
-# endif()
-
-# list(APPEND INCLUDE_DIRS openwrist)
 
 # include directories
 include_directories(${INCLUDE_DIRS})
@@ -197,30 +173,26 @@ file(GLOB SRC_WINDOWS
 
 set(SOURCE_FILES
     ${SRC_COMMUNICATIONS}
-    ${SRC_CORE}
-    ${SRC_DAQ}
-    # ${SRC_DEVICES}
+    #${SRC_CORE}
+    #${SRC_DAQ}
+    #${SRC_DEVICES}
     #${SRC_EXOSKELETONS}
     ${SRC_MATH}
     ${SRC_UTILITY}
 )
 
 if(LEGACY)
-    list(APPEND SOURCE_FILES
-        ${SRC_LEGACY})
+    list(APPEND SOURCE_FILES ${SRC_LEGACY})
 endif()
 
 if(WIN32)
-    list(APPEND SOURCE_FILES
-        ${SRC_WINDOWS})
+    list(APPEND SOURCE_FILES ${SRC_WINDOWS})
 endif()
 
 if(NI)
-    list(APPEND SOURCE_FILES
-        ${SRC_NI})
+    list(APPEND SOURCE_FILES ${SRC_NI})
 elseif (QUANSER)
-    list(APPEND SOURCE_FILES
-        ${SRC_QUANSER})
+    list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
 #===============================================================================
@@ -228,13 +200,7 @@ endif()
 #===============================================================================
 
 if (QUANSER)
-    link_directories(
-        C:/dev/quarc/lib/win64)
-endif()
-
-if (MELSHARE)
-    link_directories(
-        ${Boost_LIBRARY_DIR})
+    link_directories(C:/dev/quarc/lib/win64)
 endif()
 
 #===============================================================================
@@ -263,9 +229,7 @@ set(LINK_LIBS "")
 
 if(NI)
     list(APPEND LINK_LIBS dl)
-endif()
-
-if(QUANSER)
+elseif(QUANSER)
     list(APPEND LINK_LIBS
         hil
         quanser_communications
@@ -279,7 +243,6 @@ if(WIN32)
     list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi)
 endif()
 
-# link libraries
 target_link_libraries(MEL ${LINK_LIBS})
 
 #===============================================================================
@@ -287,21 +250,6 @@ target_link_libraries(MEL ${LINK_LIBS})
 #===============================================================================
 
 if(EXAMPLES)
-
-    if(QUANSER)
-        add_executable(q8usb examples/q8usb.cpp)
-        target_link_libraries(q8usb MEL)
-    endif()
-
-    if(NI)
-        add_executable(crio examples/crio.cpp)
-        target_link_libraries(crio MEL)
-    endif()
-
-    # if(MELSHARE)
-    #     add_executable(melscope examples/melscope.cpp)
-    #     target_link_libraries(melscope MEL)
-    # endif()
 
     add_executable(udp examples/udp.cpp)
     target_link_libraries(udp MEL)
@@ -318,14 +266,22 @@ if(EXAMPLES)
     add_executable(shared_memory examples/shared_memory.cpp)
     target_link_libraries(shared_memory MEL)
 
-    # add_executable(ctrl_c_handling examples/ctrl_c_handling.cpp)
-    # target_link_libraries(ctrl_c_handling MEL)
+    add_executable(ctrl_c_handling examples/ctrl_c_handling.cpp)
+    target_link_libraries(ctrl_c_handling MEL)
 
-    # add_executable(openwrist openwrist/main.cpp openwrist/Pendulum.cpp)
-    # target_link_libraries(openwrist MEL)
+    add_executable(melscope examples/melscope.cpp)
+    target_link_libraries(melscope MEL)
+
+    if(QUANSER)
+        add_executable(q8usb examples/q8usb.cpp)
+        target_link_libraries(q8usb MEL)
+    elseif(NI)
+        add_executable(crio examples/crio.cpp)
+        target_link_libraries(crio MEL)
+    endif()
 
 endif()
 
 # testing
-add_executable(testing tests/testing.cpp)
-target_link_libraries(testing MEL)
+# add_executable(testing tests/testing.cpp)
+# target_link_libraries(testing MEL)

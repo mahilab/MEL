@@ -4,8 +4,8 @@
 
 // To run this example, open two terminals and run the following:
 //
-// Terminal 1: shared_memory.exe A
-// Terminal 2: shared_memory.exe B
+// Terminal 1: melshare.exe A
+// Terminal 2: melshare.exe B
 
 using namespace mel;
 
@@ -14,16 +14,16 @@ int main(int argc, char *argv[]) {
         std::string id = argv[1];
         if (id == "A") {
             MelShare ms("melshare");
-            ms.write_data({1.0, 2.0, 3.0, 4.0, 5.0});
-            prompt("Press Enter after running B");
-            print(ms.read_message());
-
-        } else if (id == "B") {
+            ms.write_message("Hello from C++! Please send me some data.");
+            prompt("Press Enter after running B ...");
+            print(ms.read_data());
+        }
+        else if (id == "B") {
             MelShare ms("melshare");
-            auto data = ms.read_data();
-            print(data);
-            ms.write_message("Hello, I'm a string from C++!");
+            print(ms.read_message());
+            ms.write_data({1.0, 2.0, 3.0});
         }
     }
     return 0;
 }
+

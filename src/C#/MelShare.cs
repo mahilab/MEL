@@ -101,6 +101,7 @@ class MelShare
             byte[] message = new byte[length];
             for (int i = 0; i < length; ++i)
                 message[i] = accessor.ReadByte(sizeof(uint) + i * sizeof(byte));
+            mutex.ReleaseMutex();
             return Encoding.ASCII.GetString(message);
         }
         catch

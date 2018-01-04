@@ -19,8 +19,8 @@ public:
 
     public:
 
-        Channel() : 
-            Module<T>::Channel(), 
+        Channel() :
+            Module<T>::Channel(),
             module_(nullptr) { }
 
         Channel(OutputModule* module, uint32 channel_number) :
@@ -28,7 +28,7 @@ public:
             module_(module) { }
 
         void set_value(T value) {
-            module_->set_value(channel_number_, value);
+            module_->set_value(Module<T>::Channel::channel_number_, value);
         }
 
         void set_enable_value(T enable_value) {
@@ -57,7 +57,7 @@ public:
         enable_values_(Module<T>::channel_count_),
         disable_values_(Module<T>::channel_count_),
         expire_values_(Module<T>::channel_count_),
-        invalid_channel_(Channel(this,-1))
+        invalid_channel_(OutputModule::Channel(this,-1))
     {
         OutputModule::make_channels();
     }

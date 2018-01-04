@@ -20,6 +20,9 @@ clock_logs/
 #Sublime
 *.sublime-workspace
 
+#Python
+*.pyc
+
 #Doxygen
 html/
 latex/

@@ -71,12 +71,12 @@ std::string SharedMemory::get_name() const {
 
 MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
     HANDLE hMapFile;
-    hMapFile = CreateFileMapping(
+    hMapFile = CreateFileMappingA(
                   INVALID_HANDLE_VALUE,    // use paging file
                   NULL,                    // default security
                   PAGE_READWRITE,          // read/write access
                   0,                       // maximum object size (high-order DWORD)
-                  size,           // maximum object size (low-order DWORD)
+                  size,                    // maximum object size (low-order DWORD)
                   name.c_str());           // name of mapping object
 
     if (hMapFile == NULL) {
@@ -94,7 +94,7 @@ void SharedMemory::close(MapHandle map) {
 
 void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
     void* pBuf;
-    pBuf = MapViewOfFile(map, // handle to map object
+    pBuf = MapViewOfFile(map,          // handle to map object
                 FILE_MAP_ALL_ACCESS,   // read/write permission
                 0,
                 0,

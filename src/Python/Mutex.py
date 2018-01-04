@@ -94,3 +94,15 @@ class Mutex(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.release()
+
+
+#==============================================================================
+# Example:
+#==============================================================================
+# from Mutex import Mutex
+
+# b = Mutex("my_mutex")
+
+# b.try_lock()
+# print "B can continue now"
+# b.release()

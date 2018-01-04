@@ -1,0 +1,33 @@
+CURVE_COLORS:
+  melscope1:
+  - [31, 120, 180]
+  - [255, 170, 0]
+  melscope2:
+  - [51, 160, 44]
+  - [255, 127, 0]
+CURVE_LINES:
+  melscope1: [Solid, Solid]
+  melscope2: [Solid, Solid]
+CURVE_SIZES:
+  melscope1: [3, 3]
+  melscope2: [3, 3]
+DATA_NAMES:
+  melscope1: [melscope1_data_0, melscope1_data_1]
+  melscope2: [melscope2_data_0, melscope2_data_1]
+GRID_COLS: 2
+GRID_ROWS: 1
+MELSHARE_MODES: {melscope1: Read Only, melscope2: Write Only}
+MELSHARE_NAMES: [melscope1, melscope2]
+MELSHARE_SIZES: {melscope1: 2, melscope2: 2}
+SCOPE_FILTERS:
+- melscope1: [true, true]
+  melscope2: [false, false]
+- melscope1: [false, false]
+  melscope2: [true, true]
+SCOPE_LEGENDS: [true, false]
+SCOPE_MODES: [Scope, I/O]
+SCOPE_RANGES:
+- [-1.0, 1.0]
+- [-1.0, 1.0]
+SCOPE_TITLES: [scope_0, scope_1]
+theme: Dark
