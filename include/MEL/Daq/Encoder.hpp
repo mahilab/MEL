@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/InputModule.hpp>
+#include <MEL/Daq/Module.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 
 namespace mel {
@@ -10,33 +10,17 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates an incremental optical encoder module
-class EncoderModule : public InputModule<int32> {
+class Encoder : public Module<int32> {
 
 public:
 
-    /// Encapsulates and EncoderModule channel, which is also a PositionSensor
-    class Channel : public Module<int32>::Channel, public PositionSensor {
-    public:
-        Channel();
-        Channel(EncoderModule* module, uint32 channel_number);
-        bool enable() override;
-        bool disable() override;
-        bool zero();
-        bool offset(int32 offset_counts);
-        bool set_quadrature_factor(QuadFactor factor);
-        void set_units_per_count(double units_per_count);
-        double get_position() override;
-    private:
-        EncoderModule* module_;
-    };
-
-public:
+    class Channel;
 
     /// Default constructor
-    EncoderModule(const std::string& name, const std::vector<uint32>& channel_numbers);
+    Encoder(const std::string& name, const std::vector<uint32>& channel_numbers);
 
     /// Default destructor
-    virtual ~EncoderModule();
+    virtual ~Encoder();
 
     /// This function should call the DAQ's API to set all encoder counters
     virtual bool reset_counts(const std::vector<int32>& counts) = 0;
@@ -53,6 +37,8 @@ public:
     virtual bool set_quadrature_factor(uint32 channel_number, QuadFactor factor) = 0;
 
 public:
+
+    //Channel& operator[](uint32 channel_number);
 
     /// Zeros all encoder channels
     bool zero();
@@ -72,13 +58,19 @@ public:
     /// Performs conversion to position using #factors_ and #counts_per_unit
     double get_position(uint32 channel_number);
 
-    /// Overrides get_channel() so that it returns an Encoder::Channel
-    const Channel& get_channel(uint32 channel_number) override;
+    /// Returns a Encoder::Channel
+    Channel get_channel(uint32 channel_number);
+
+    /// Returns multiple Encoder::Channels
+    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
+
+    /// Returns a Encoder::Channel
+    Channel operator[](uint32 channel_number);
+
+    /// Returns multiple Encoder::Channels
+    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
 
 private:
-
-    /// Overrides make_channels() so that channels_ is filled with EncoderModule::Channels
-    void make_channels() override;
 
     /// Precomputes position conversion sclars (i.e. #units_per_count_ / #factors_)
     void compute_conversions();
@@ -90,8 +82,47 @@ protected:
     std::vector<double> positions_;       ///< The calculated positions of the Encoder channels
     std::vector<double> conversions_;     ///< Conversion scalars used to conver to positions
 
-    Channel invalid_channel_;             ///< Represents an invalid channel
-    std::vector<Channel> channels_;       ///< Hides Input::channels_
+public:
+
+    /// Encapsulates and Encoder channel (can be used as a PositionSensor)
+    class Channel : public PositionSensor {
+
+    public:
+
+        /// Default constructor. Creates invalid channel
+        Channel();
+        /// Creates a valid channel.
+        Channel(Encoder* module, uint32 channel_number);
+        /// Enables the encoder
+        bool enable() override;
+        /// Disables the encoder
+        bool disable() override;
+        /// Gets the encoder position
+        double get_position() override;
+        /// Synchronizes the encoder with the real-world
+        bool update();
+        /// Gets the current count of the encoder
+        int32 get_value() const;
+        /// Gets the current count of the encoder
+        int32 operator()();
+        /// Gets the channel number
+        uint32 get_channel_number() const;
+        /// Zeros the encoder count
+        bool zero();
+        /// Sets the encoder count to a specific value
+        bool reset_count(int32 count);
+        /// Sets the encoder count to a specific value
+        void operator()(int32 count);
+        /// Sets the encoder quadrature factor
+        bool set_quadrature_factor(QuadFactor factor);
+        /// Sets the encoder units/count
+        void set_units_per_count(double units_per_count);
+
+    private:
+
+        Encoder* module_;              ///< The Module this channel is on
+        const uint32 channel_number_;  ///< The physical channel number
+    };
 
 };
 

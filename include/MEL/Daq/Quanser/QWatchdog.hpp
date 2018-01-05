@@ -15,7 +15,7 @@ class QDaq;
 //==============================================================================
 
 /// Encapsulates a hardware watchdog timer
-class QWatchdog : Watchdog {
+class QWatchdog : public Watchdog {
 
 public:
 

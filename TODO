@@ -25,8 +25,10 @@ Daq:
   ✔ Module  <- AnalogInput / AnalogOutput / DigitalInput / DigitalOutput / Encoder ^^^ @done (17-12-28 01:16)
   ✔ Daq <- Q8Usb / CRio ^^^ @done (17-12-28 01:16)
   ✔ Q8 encoder velocity, @done (17-12-28 16:09)
-  ☐ determine what the hell Q8 velocity units are and if quadraturea affects it
-  ☐ ranges, misc functions
+  ✔ determine what the hell Q8 velocity units are and if quadraturea affects it @done (18-01-04 19:53)
+  ✔ ranges, misc functions @done (18-01-04 19:54)
+  ✔ overload [] to get channel, and () on channel to set, get value @done (18-01-04 23:19)
+  ☐ figure out how to do inhertance with the Channel classes
 
 
 Mutex:

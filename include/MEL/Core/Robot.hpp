@@ -4,6 +4,7 @@
 #include <MEL/Core/Joint.hpp>
 #include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/PositionSensor.hpp>
+#include <MEL/Utility/Types.hpp>
 #include <vector>
 
 namespace mel {
@@ -13,10 +14,10 @@ class Robot : public Device {
 public:
 
     /// Default constructor.
-    Robot() : Device("robot") {}
+    Robot();
 
     /// Prefered constructor.
-    Robot(std::string name) : Device(name) {}
+    Robot(std::string name);
 
     /// Destructor
     virtual ~Robot() { }
@@ -26,6 +27,14 @@ public:
 
     /// Virtual function to disable all robot members.
     virtual bool disable() override;
+
+public:
+
+    /// Adds a new joint to the robot
+    void add_joint(const Joint& joint);
+
+    /// Gets a reference to a Robot's Joint
+    Joint& get_joint(uint32 joint_number);
 
     /// Get the most recently read robot joint positions.
     std::vector<double> get_joint_positions();
@@ -48,11 +57,10 @@ public:
     /// Checks position, velocity, and torque limits of all joints and returns true if any exceeded, false otherwise
     bool check_all_joint_limits();
 
-    std::vector<Joint*> joints_; ///< Vector of RobotJoint pointers.
-    std::vector<PositionSensor*> position_sensors_; ///< Vector of PositionSensor pointers.
-    std::vector<Actuator*> actuators_; ///< Vector of Actuator pointers.
 
 protected:
+
+    std::vector<Joint> joints_; ///< Vector of RobotJoint pointers.
 
     std::vector<double> joint_positions_; ///< Stores the robot joint positions since the last call of get_robot_joint_positions().
     std::vector<double> joint_velocities_; ///< Stores the robot joint velocities since the last call of get_robot_joint_velocities().

@@ -1,101 +1,56 @@
-#include <MEL/Exoskeletons/OpenWrist.hpp>
-#include <MEL/Core/Encoder.hpp>
-#include <MEL/Core/Motor.hpp>
-#include <MEL/Utility/Keyboard.hpp>
+#include <MEL/Exoskeletons/OpenWrist/OpenWrist.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/PositionSensor.hpp>
+#include <MEL/Core/VelocitySensor.hpp>
 
 namespace mel {
 
-OpenWrist::OpenWrist(Config configuration, Params parameters) :
+OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
     Exo("open_wrist"),
     config_(configuration),
-    params_(parameters),
-    state_map_("openwrist")
+    params_(parameters)
 {
+    motors_.reserve(3);
+
     // for every joint
     for (int i = 0; i < 3; i++) {
         std::string num = std::to_string(i);
 
-        // construct encoders
-        PositionSensor* encoder = new Encoder("ow_encoder_" + num,
-            params_.encoder_res_[i] / (2 * PI),
-            config_.encoder_[i],
-            config_.encrate_[i]);
-
-        position_sensors_.push_back(encoder);
-
         // construct motors
-        Actuator* motor = new Motor("ow_motor_" + num,
+        motors_.push_back( 
+            Motor("ow_motor_" + num,
             params_.kt_[i],
-            config_.amp_gains_[i],
-            config_.command_[i],
-            config_.enable_[i],
+            config_.amplifier_gains_[i],
+            config_.command_channels_[i],
+            config_.enable_channels_[i],
             Actuator::EnableMode::High,
-            config_.sense_[i],
-            params_.motor_cont_limits_[i]);
+            config_.sense_channels_[i],
+            params_.motor_cont_limits_[i]) 
+        );
 
-        actuators_.push_back(motor);
+        config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
+        config_.velocity_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
 
-        // construct joints
-        Joint* joint = new Joint("ow_joint_" + num,
-            encoder,
+        Joint joint(
+            "ow_joint_" + num,
+            config_.encoder_channels_[i],
             params_.eta_[i],
-            motor,
+            config_.velocity_channels_[i],
+            params_.eta_[i],
+            motors_[i],
             params_.eta_[i],
             std::array<double, 2>({ params_.pos_limits_neg_[i] , params_.pos_limits_pos_[i] }),
             params_.vel_limits_[i],
-            params_.joint_torque_limits[i],
-            true);
+            params_.joint_torque_limits[i]);
 
-        joints_.push_back(joint);
-
-        // add DAQs in config_ struct to daqs_ vector
-        add_daq(config_.enable_[i].daq_);
-        add_daq(config_.command_[i].daq_);
-        add_daq(config_.sense_[i].daq_);
-        add_daq(config_.encoder_[i].daq_);
-        add_daq(config_.encrate_[i].daq_);
+        add_joint(joint);
     }
 }
 
 OpenWrist::~OpenWrist() {
     if (is_enabled())
         disable();
-}
-
-#ifdef _WIN32
-void OpenWrist::update_state_map() {
-    state_[0] = joints_[0]->get_position();
-    state_[1] = joints_[1]->get_position();
-    state_[2] = joints_[2]->get_position();
-
-    state_[3] = joints_[0]->get_velocity();
-    state_[4] = joints_[1]->get_velocity();
-    state_[5] = joints_[2]->get_velocity();
-
-    state_[6] = joints_[0]->get_torque();
-    state_[7] = joints_[1]->get_torque();
-    state_[8] = joints_[2]->get_torque();
-
-    state_[9] = static_cast<Motor*>(joints_[0]->actuator_)->get_current_command();
-    state_[10] = static_cast<Motor*>(joints_[1]->actuator_)->get_current_command();
-    state_[11] = static_cast<Motor*>(joints_[2]->actuator_)->get_current_command();
-
-    state_[12] = static_cast<Motor*>(joints_[0]->actuator_)->get_current_sense();
-    state_[13] = static_cast<Motor*>(joints_[1]->actuator_)->get_current_sense();
-    state_[14] = static_cast<Motor*>(joints_[2]->actuator_)->get_current_sense();
-
-    state_map_.write(state_);
-}
-#endif
-
-void OpenWrist::add_daq(Daq* daq) {
-    for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-        if ((*it)->get_name() == daq->get_name())
-            return;
-    }
-    daqs_.push_back(daq);
 }
 
 double OpenWrist::compute_gravity_compensation(uint32 joint) {
@@ -111,13 +66,13 @@ double OpenWrist::compute_gravity_compensation(uint32 joint) {
 }
 
 double OpenWrist::compute_friction_compensation(uint32 joint) {
-    return params_.kin_friction_[joint] * tanh(10.0 * joints_[joint]->get_velocity());
+    return params_.kin_friction_[joint] * tanh(10.0 * joints_[joint].get_velocity());
 }
 
 std::array<double, 3> OpenWrist::compute_friction_compensation() {
     std::array<double, 3> friction_torques = { 0,0,0 };
     for (int joint = 0; joint < 3; joint++) {
-        friction_torques[joint] = params_.kin_friction_[joint] * tanh(10.0 * joints_[joint]->get_velocity());
+        friction_torques[joint] = params_.kin_friction_[joint] * tanh(10.0 * joints_[joint].get_velocity());
     }
     return friction_torques;
 }
@@ -132,7 +87,7 @@ std::array<double, 3> OpenWrist::compute_gravity_compensation() {
 }
 
 
-void OpenWrist::calibrate() {
+void OpenWrist::calibrate(bool& stop) {
 
     // create needed variables
     std::array<double, 3> zeros = { 0, 0, 0 }; // determined zero positions for each joint
@@ -143,43 +98,37 @@ void OpenWrist::calibrate() {
     double vel_ref = 90 * DEG2RAD;             // desired velocity
     std::vector<double> stored_positions;      // stores past positions
     stored_positions.reserve(100000);
-    Timer timer(milliseconds(1));
 
     std::array<double, 3> sat_torques = { 2.0, 0.5, 1.0 }; // temporary saturation torques
 
-    double timeout = 20; // max amout of time we will allow calibration to occur for
-    bool stop = false;   // flag used to exit calibration loop
+    Time timeout = seconds(10); // max amout of time we will allow calibration to occur for
 
     // enable DAQs, zero encoders, and start watchdog
-    for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-        (*it)->enable();
-        if (!((*it)->is_enabled()))
-            return;
-        (*it)->zero_encoders();
-        (*it)->start_watchdog(0.1);
-    }
+    config_.daq_.enable();
+    config_.encoder_channels_[0].zero();
+    config_.encoder_channels_[1].zero();
+    config_.encoder_channels_[2].zero();
+    config_.watchdog_.start();
 
     // enable OpenWrist
     enable();
 
     // start the clock
-    timer.restart();
+    Timer timer(milliseconds(1));
 
     // start the calibration control loop
-    while (!stop) {
+    while (!stop && timer.get_elapsed_time() < timeout) {
 
         // read and reload DAQs
-        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-            (*it)->read_all();
-            (*it)->reload_watchdog();
-        }
+        config_.daq_.update_input();
+        config_.watchdog_.kick();
 
         // iterate over all joints
         for (int i = 0; i < 3; i++) {
 
             // get positions and velocities
-            double pos_act = joints_[i]->get_position();
-            double vel_act = joints_[i]->get_velocity();
+            double pos_act = joints_[i].get_position();
+            double vel_act = joints_[i].get_velocity();
 
             double torque = 0;
             if (i == calibrating_joint) {
@@ -190,7 +139,6 @@ void OpenWrist::calibrate() {
                     pos_ref += dir[i] * vel_ref * timer.get_period().as_seconds();
                     torque = pd_controllers_[i].calculate(pos_ref, pos_act, 0, vel_act);
                     torque = saturate(torque, sat_torques[i]);
-
 
                     // check if the calibrating joint is still moving
                     stored_positions.push_back(pos_act);
@@ -206,7 +154,7 @@ void OpenWrist::calibrate() {
 
                     // if it's not moving, it's at a hardstop so record the position and deduce the zero location
                     if (!moving) {
-                        std::cout << "Joint <" << joints_[i]->get_name() << "> reached the reference position. Returning to zero ... ";
+                        std::cout << "Joint <" << joints_[i].get_name() << "> reached the reference position. Returning to zero ... ";
                         if (dir[i] > 0)
                             zeros[i] = pos_act - params_.pos_limits_pos_[i];
                         else if (dir[i] < 0)
@@ -229,7 +177,7 @@ void OpenWrist::calibrate() {
                         returning = false;
                         std::cout << "Done" << std::endl;
                         if (calibrating_joint == 3)
-                            std::cout << "All Joints are in their calibrated positions. Press CTRL+C to confirm the calibration." << std::endl;
+                            std::cout << "All Joints are in their calibrated positions." << std::endl;
                     }
                 }
 
@@ -240,21 +188,11 @@ void OpenWrist::calibrate() {
                 torque = saturate(torque, sat_torques[i]);
 
             }
-            joints_[i]->set_torque(torque);
+            joints_[i].set_torque(torque);
         }
-
-        // update state map
-        #ifdef _WIN32
-        update_state_map();
-        #endif
-
-        // check for stop input from user
-        stop = (Keyboard::is_key_pressed(Keyboard::LControl) && Keyboard::is_key_pressed(Keyboard::C));
 
         // write all DAQs
-        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-            (*it)->write_all();
-        }
+        config_.daq_.update_output();
 
         // check joint velocity limits
         if (check_all_joint_velocity_limits() && check_all_joint_torque_limits()) {
@@ -270,23 +208,18 @@ void OpenWrist::calibrate() {
     disable();
 
     // zero DAQs and disable them
-    for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-        (*it)->zero_encoders();
-        (*it)->disable();
-    }
-
+    config_.encoder_channels_[0].zero();
+    config_.encoder_channels_[1].zero();
+    config_.encoder_channels_[2].zero();
+    config_.daq_.disable();
 }
 
-void OpenWrist::transparency_mode() {
 
-    // Clock clock(1000);
-    bool stop = false;
+void OpenWrist::transparency_mode(bool& stop) {
 
     // enable DAQs, zero encoders, and start watchdog
-    for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-        (*it)->enable();
-        (*it)->start_watchdog(0.1);
-    }
+    config_.daq_.enable();
+    config_.watchdog_.start();
 
     // enable OpenWrist
     enable();
@@ -297,28 +230,17 @@ void OpenWrist::transparency_mode() {
     while (!stop) {
 
         // read and reload DAQs
-        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-            (*it)->read_all();
-            (*it)->reload_watchdog();
-        }
+        config_.daq_.update_input();
+        config_.watchdog_.kick();
 
         // calculate and set compensation torques
-        joints_[0]->set_torque(compute_gravity_compensation(0) + compute_friction_compensation(0));
-        joints_[1]->set_torque(compute_gravity_compensation(1) + compute_friction_compensation(1));
-        joints_[2]->set_torque(compute_friction_compensation(2) * 0.5);
+        joints_[0].set_torque(compute_gravity_compensation(0) + compute_friction_compensation(0));
+        joints_[1].set_torque(compute_gravity_compensation(1) + compute_friction_compensation(1));
+        joints_[2].set_torque(compute_friction_compensation(2) * 0.5);
 
-        // update state map
-        #ifdef _WIN32
-        update_state_map();
-        #endif
-
-        // check for stop input from user
-        stop = (Keyboard::is_key_pressed(Keyboard::LControl) && Keyboard::is_key_pressed(Keyboard::C));
 
         // write all DAQs
-        for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-            (*it)->write_all();
-        }
+        config_.daq_.update_output();
 
         // check joint limits
         if (check_all_joint_torque_limits() && check_all_joint_velocity_limits()) {
@@ -334,10 +256,7 @@ void OpenWrist::transparency_mode() {
     disable();
 
     // disable all DAQs
-    for (auto it = daqs_.begin(); it != daqs_.end(); ++it) {
-        (*it)->disable();
-    }
-
+    config_.daq_.disable();
 }
 
 } // namespace mel

@@ -9,7 +9,7 @@ namespace mel {
     //==============================================================================
 
     QDigitalInput::QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-        InputModule(daq.name_ + "_digital_input", channel_numbers),
+        Input(daq.name_ + "_digital_input", channel_numbers),
         daq_(daq)
     {
     }
@@ -19,11 +19,15 @@ namespace mel {
     }
 
     bool QDigitalInput::enable() {
+        if (enabled_)
+            return true;
         print("Enabling " + namify(name_) + " ... Done");
         return Device::enable();
     }
 
     bool QDigitalInput::disable() {
+        if (!enabled_)
+            return true;
         print("Disabling " + namify(name_) + " ... Done");
         return Device::disable();
     }

@@ -1,10 +1,10 @@
 CURVE_COLORS:
   melscope1:
-  - [31, 120, 180]
-  - [255, 170, 0]
+  - [85, 170, 255]
+  - [255, 75, 75]
   melscope2:
-  - [51, 160, 44]
-  - [255, 127, 0]
+  - [0, 85, 255]
+  - [255, 0, 0]
 CURVE_LINES:
   melscope1: [Solid, Solid]
   melscope2: [Solid, Solid]
@@ -12,22 +12,28 @@ CURVE_SIZES:
   melscope1: [3, 3]
   melscope2: [3, 3]
 DATA_NAMES:
-  melscope1: [melscope1_data_0, melscope1_data_1]
-  melscope2: [melscope2_data_0, melscope2_data_1]
+  melscope1: [Sin, Square]
+  melscope2: [Sin Amplitude, Square Amplitude]
 GRID_COLS: 2
-GRID_ROWS: 1
+GRID_ROWS: 2
 MELSHARE_MODES: {melscope1: Read Only, melscope2: Write Only}
-MELSHARE_NAMES: [melscope1, melscope2]
+MELSHARE_NAMES: [melscope2, melscope1]
 MELSHARE_SIZES: {melscope1: 2, melscope2: 2}
 SCOPE_FILTERS:
 - melscope1: [true, true]
   melscope2: [false, false]
-- melscope1: [false, false]
+- melscope1: [true, true]
   melscope2: [true, true]
-SCOPE_LEGENDS: [true, false]
-SCOPE_MODES: [Scope, I/O]
+- melscope1: [true, false]
+  melscope2: [false, false]
+- melscope1: [false, true]
+  melscope2: [false, false]
+SCOPE_LEGENDS: [true, false, false, false]
+SCOPE_MODES: [Scope, I/O, Scope, Scope]
 SCOPE_RANGES:
+- [-3.0, 3.0]
 - [-1.0, 1.0]
-- [-1.0, 1.0]
-SCOPE_TITLES: [scope_0, scope_1]
+- [-1.5, 1.5]
+- [-3.0, 3.0]
+SCOPE_TITLES: [Waveforms, Controller, Sin Wave, Square Wave]
 theme: Dark

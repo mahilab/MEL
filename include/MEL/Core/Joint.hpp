@@ -17,20 +17,23 @@ class Joint : public Device {
 public:
 
     /// Default constructor
-    Joint(std::string name, 
-        PositionSensor& position_sensor, double position_sensor_transmission,
-        VelocitySensor& velocity_sensor, double velocity_sensor_transmission,
-        Actuator& actuator,              double actuator_transmission,
+    Joint(const std::string& name, 
+        PositionSensor& position_sensor, 
+        double position_sensor_transmission,
+        VelocitySensor& velocity_sensor, 
+        double velocity_sensor_transmission,
+        Actuator& actuator,              
+        double actuator_transmission,
         std::array<double, 2> position_limits, 
         double velocity_limit, 
         double torque_limit, 
         bool saturate = true);
 
     /// Enables the joint's position sensor, velocity sensor, and actuator
-    virtual bool enable() override;
+    bool enable() override;
 
     /// Disables the joint's position sensor, velocity sensor, and actuator
-    virtual bool disable() override;
+    bool disable() override;
 
     /// Converts PositionSensor position to RobotJoint position
     double get_position();

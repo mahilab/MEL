@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/VelocityModule.hpp>
+#include <MEL/Daq/Velocity.hpp>
 
 namespace mel {
 
@@ -15,7 +15,7 @@ namespace mel {
     //==============================================================================
 
     /// Quanser implementation of Encoder
-    class QVelocity : public VelocityModule {
+    class QVelocity : public Velocity {
 
     public:
 

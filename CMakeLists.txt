@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.7)
 
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
@@ -9,12 +9,12 @@ cmake_minimum_required(VERSION 2.6)
 #===============================================================================
 
 # 1) Open console and navigate to the /build folder
-# 2a) To generate makefile for NI hardware, run:
-#     $: cmake .. -G "MinGW Makefiles -DNI=ON"
-# 2b) To generate Visual Studio *.sln file for Quanser hardware, run:
-#     $: cmake .. -G "Visual Studio 15 2017 Win64 -DQUANSER=ON"
-# 3) To make example executables, append "-DEXAMPLES=ON"
-# 4) Proceed to build makefile or *.sln file with the necessary software
+# 2) To generate makefile for NI hardware, run:
+#        $: cmake .. -G "MinGW Makefiles -DNI=ON"
+#    To generate Visual Studio *.sln file for Quanser hardware, run:
+#        $: cmake .. -G "Visual Studio 15 2017 Win64 -DQUANSER=ON"
+# 3) To build executables in /examples, append "-DEXAMPLES=ON"
+# 4) Proceed to build generated makefile or *.sln file with the necessary software
 
 #===============================================================================
 # USER OPTIONS
@@ -22,8 +22,10 @@ cmake_minimum_required(VERSION 2.6)
 
 option(NI "Turn ON if compiling for NI hardware and NI Realtime Linux" OFF)
 option(QUANSER "Turn ON if compiling for Quanser hardware and MSVC" OFF)
-option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
+option(OPENWRIST "Turn ON to include OpenWrist source code" ON)
+option(MAHIEXOII "Turn ON to include MAHI Exo-II source code" OFF)
 option(EXAMPLES "Turn ON to build example executable(s)" OFF)
+option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
 
 #===============================================================================
 # SETUP BUILD
@@ -142,9 +144,14 @@ file(GLOB SRC_DEVICES
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/*.cpp"
 )
 
-file(GLOB SRC_EXOSKELETONS
-    "${CMAKE_SOURCE_DIR}/include/MEL/Exoskeletons/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Exoskeletons/*.cpp"
+file(GLOB SRC_OPENWRIST
+    "${CMAKE_SOURCE_DIR}/include/MEL/Exoskeletons/OpenWrist/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Exoskeletons/OpenWrist/*.cpp"
+)
+
+file(GLOB SRC_MAHIEXOII
+    "${CMAKE_SOURCE_DIR}/include/MEL/Exoskeletons/MahiExoII/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Exoskeletons/MahiExoII/*.cpp"
 )
 
 file(GLOB SRC_LEGACY
@@ -173,13 +180,20 @@ file(GLOB SRC_WINDOWS
 
 set(SOURCE_FILES
     ${SRC_COMMUNICATIONS}
-    #${SRC_CORE}
-    #${SRC_DAQ}
-    #${SRC_DEVICES}
-    #${SRC_EXOSKELETONS}
+    ${SRC_CORE}
+    ${SRC_DAQ}
+    ${SRC_DEVICES}
     ${SRC_MATH}
     ${SRC_UTILITY}
 )
+
+if(OPENWRIST)
+    list(APPEND SOURCE_FILES ${SRC_OPENWRIST})
+endif()
+
+if(MAHIEXOII)
+    list(APPEND SOURCE_FILES ${SRC_MAHIEXOII})
+endif()
 
 if(LEGACY)
     list(APPEND SOURCE_FILES ${SRC_LEGACY})
@@ -215,7 +229,8 @@ source_group("Daq" FILES ${SRC_DAQ})
 source_group("NI" FILES ${SRC_NI})
 source_group("Quanser" FILES ${SRC_QUANSER})
 source_group("Devices" FILES ${SRC_DEVICES})
-source_group("Exoskeletons" FILES ${SRC_EXOSKELETONS})
+source_group("OpenWrist" FILES ${SRC_OPENWRIST})
+source_group("MahiExoII" FILES ${SRC_MAHIEXOII})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
@@ -278,6 +293,11 @@ if(EXAMPLES)
     elseif(NI)
         add_executable(crio examples/crio.cpp)
         target_link_libraries(crio MEL)
+    endif()
+
+    if (QUANSER AND OPENWRIST)
+        add_executable(openwrist_q8usb examples/openwrist_q8usb.cpp)
+        target_link_libraries(openwrist_q8usb MEL)
     endif()
 
 endif()

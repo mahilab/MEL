@@ -2,7 +2,7 @@
 
 namespace mel {
 
-EmgElectrode::EmgElectrode(std::string name, InputModule<voltage>::Channel ai_channel) :
+EmgElectrode::EmgElectrode(std::string name, Input<voltage>::Channel ai_channel) :
     Device(name),
     ai_channel_(ai_channel),
     voltage_(0.0)

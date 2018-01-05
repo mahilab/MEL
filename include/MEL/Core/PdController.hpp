@@ -14,10 +14,6 @@ public:
     /// Calculates the control effort given the current state and desired reference
     double calculate(double x_ref, double x, double xdot_ref, double xdot);
 
-    /// Computes the control effort to move to a desired location x_ref with a constant velocity xdot_ref, and the hold that position
-    /// start_here should be true the first time this function is called in a loop, and subsequently false once movement has initiated
-    double move_to_hold(double x_ref, double x, double xdot_ref, double xdot, double delta_time, double window, bool start_here);
-
     /// Computes the control effort to move to a desired location #x_ref with a constant velocity #xdot_ref, then hold that position.
     /// #delta_time should be the elapsed time since the last call to this function (e.g. Clock.delta_time_). #hold_tol is the tolerance
     /// within which the controller switches from the moving state to the holding state. #break_tol is the tolerance within which the

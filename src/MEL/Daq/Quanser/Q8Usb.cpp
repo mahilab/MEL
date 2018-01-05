@@ -14,14 +14,15 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Q8Usb::Q8Usb(uint32 id, QOptions options) :
+Q8Usb::Q8Usb(QOptions options, bool perform_sanity_check, uint32 id) :
     Q8Usb(std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
           std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
           std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
           std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
           std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
-          id,
-          options)
+          options,
+          perform_sanity_check, 
+          id)
 {
 }
 
@@ -29,10 +30,12 @@ Q8Usb::Q8Usb(std::vector<uint32> ai_channels,
              std::vector<uint32> ao_channels,
              std::vector<uint32> di_channels,
              std::vector<uint32> do_channels,
-             std::vector<uint32> enc_channels,
-             uint32 id,
-             QOptions options) :
+             std::vector<uint32> enc_channels,             
+             QOptions options, 
+             bool perform_sanity_check,
+             uint32 id) :
     QDaq("q8_usb", id, options),
+    perform_sanity_check_(perform_sanity_check),
     analog_input(*this, ai_channels),
     analog_output(*this, ao_channels),
     digital_input(*this, di_channels),
@@ -58,6 +61,16 @@ bool Q8Usb::enable() {
         if (!open())
             return false;
     print("Enabling " + namify(name_) + " ... ");
+    // sanity check
+    if (perform_sanity_check_) {
+        print("Sanity checking " + namify(name_) + " ... ", false);
+        if (!sanity_check()) {
+            print("Failed. Reopening the device.");
+            close();
+            return enable();
+        }
+    }
+    print("Passed");
     // clear watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
@@ -77,6 +90,11 @@ bool Q8Usb::enable() {
     if (!encoder.enable())
         return false;
     if (!velocity.enable())
+        return false;
+    // set default expire values (digital = LOW, analog = 0.0V)
+    if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0)))
+        return false;
+    if (!digital_output.set_expire_values(std::vector<logic>(8, LOW)))
         return false;
     // allow changes to take effect
     sleep(milliseconds(10));
@@ -169,8 +187,8 @@ bool Q8Usb::update_output() {
 
 bool Q8Usb::identify(uint32 channel_number) {
     if (open_) {
-        InputModule<logic>::Channel di_ch = digital_input.get_channel(channel_number);
-        OutputModule<logic>::Channel do_ch = digital_output.get_channel(channel_number);
+        Input<logic>::Channel di_ch = digital_input.get_channel(channel_number);
+        Output<logic>::Channel do_ch = digital_output.get_channel(channel_number);
         bool loopback_detected = true;
         for (int i = 0; i < 5; ++i) {
             do_ch.set_value(HIGH);
@@ -202,6 +220,19 @@ int Q8Usb::identify() {
             return (int)channel_number;
     }
     return -1;
+}
+
+bool Q8Usb::sanity_check() {
+    velocity.update();
+    bool sane = true;
+    std::vector<double> velocities = velocity.get_values();
+    for (auto it = velocities.begin(); it != velocities.end(); ++it) {
+        if (*it != 0.0) {
+            sane = false;
+            break;
+        }
+    }
+    return sane;
 }
 
 std::size_t Q8Usb::get_q8_usb_count() {

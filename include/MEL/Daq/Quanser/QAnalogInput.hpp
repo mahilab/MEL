@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/InputModule.hpp>
+#include <MEL/Daq/Input.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
@@ -15,7 +15,7 @@ class QDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QAnalogInput : public InputModule<voltage>, NonCopyable {
+class QAnalogInput : public Input<voltage>, NonCopyable {
 
 public:
 

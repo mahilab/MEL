@@ -13,7 +13,7 @@ public:
     //---------------------------------------------------------------------
 
     AtiMini45();
-    AtiMini45(std::string name, std::vector<Daq::Ai> ai_channels, array_2D<double, 6, 6> calib_mat);
+    AtiMini45(std::string name, std::vector<Input<voltage>::Channel> ai_channels, array_2D<double, 6, 6> calib_mat);
 
     //---------------------------------------------------------------------
     // PUBLIC FUNCTIONS

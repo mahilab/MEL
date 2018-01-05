@@ -10,7 +10,7 @@ namespace mel {
     //==============================================================================
 
     QVelocity::QVelocity(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-        VelocityModule(daq.name_ + "_velocity", channel_numbers),
+        Velocity(daq.name_ + "_velocity", channel_numbers),
         converted_channel_numbers_(convert_channel_numbers(channel_numbers)),
         daq_(daq)
     {
@@ -21,11 +21,15 @@ namespace mel {
     }
 
     bool QVelocity::enable() {
+        if (enabled_)
+            return true;
         print("Enabling " + namify(name_) + " ... Done");
         return Device::enable();
     }
 
     bool QVelocity::disable() {
+        if (!enabled_)
+            return true;
         print("Disabling " + namify(name_) + " ... Done");
         return Device::disable();
     }
@@ -66,11 +70,11 @@ namespace mel {
     }
 
     bool QVelocity::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
-        return VelocityModule::set_quadrature_factors(factors);
+        return Velocity::set_quadrature_factors(factors);
     }
 
     bool QVelocity::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
-        return VelocityModule::set_quadrature_factor(channel_number, factor);
+        return Velocity::set_quadrature_factor(channel_number, factor);
     }
 
     const std::vector<uint32>& QVelocity::get_converted_channel_numbers() {

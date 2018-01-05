@@ -23,7 +23,7 @@ public:
 
     /// Default constructor. Creates Q8 USB with all channels enabled and default
     /// QOptions
-    Q8Usb(uint32 id = next_id_, QOptions options = QOptions());
+    Q8Usb(QOptions options = QOptions(), bool perform_sanity_check = true, uint32 id = next_id_);
 
     /// Overloaded constructor for defining specific channels to enable.
     Q8Usb(std::vector<uint32> ai_channels,
@@ -31,8 +31,9 @@ public:
           std::vector<uint32> di_channels,
           std::vector<uint32> do_channels,
           std::vector<uint32> enc_channels,
-          uint32 id = next_id_,
-          QOptions options = QOptions());
+          QOptions options = QOptions(),
+          bool perform_sanity_check = true,
+          uint32 id = next_id_);
 
     /// Default destructor. First calls disable() if the Q8Usb is enabled
     /// then close() if the Q8Usb is open.
@@ -99,7 +100,18 @@ public:
 
 private:
 
-    static uint32 next_id_;  ///< Static counter that determines the next ID# to use
+
+    /// Quarc can sometimes fail to properly intialize a Q8 USB even if it says
+    /// otherwise. In these cases, velocity readings are widely incorrect and can 
+    /// result in catstrophic behavior. This function performs a sanity check by
+    /// checking that all velocities are zero on startup if #perform_sanity_check_
+    /// is true (default).
+    bool sanity_check();
+
+private:
+
+    bool perform_sanity_check_;  ///< If true, the sanity check will be performed on enable
+    static uint32 next_id_;      ///< Static counter that determines the next ID# to use
 
 };
 
@@ -109,3 +121,5 @@ private:
 //==============================================================================
 // CLASS DOCUMENTATION
 //==============================================================================
+
+/// http://quanser-update.azurewebsites.net/quarc/documentation/q8_usb.html

@@ -10,7 +10,7 @@ namespace mel {
 //==============================================================================
 
 QEncoder::QEncoder(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-    EncoderModule(daq.name_ + "_encoder", channel_numbers),
+    Encoder(daq.name_ + "_encoder", channel_numbers),
     daq_(daq)
 {
 }
@@ -20,11 +20,15 @@ QEncoder::~QEncoder() {
 }
 
 bool QEncoder::enable() {
+    if (enabled_)
+        return true;
     print("Enabling " + namify(name_) + " ... Done");
     return Device::enable();
 }
 
 bool QEncoder::disable() {
+    if (!enabled_)
+        return false;
     print("Disabling " + namify(name_) + " ... Done");
     return Device::disable();
 }
@@ -64,7 +68,7 @@ bool QEncoder::update_channel(uint32 channel_number) {
 }
 
 bool QEncoder::reset_counts(const std::vector<int32>& counts) {
-    if (!EncoderModule::reset_counts(counts))
+    if (!Encoder::reset_counts(counts))
         return false;
     if (daq_.open_) {
         t_error result;
@@ -84,7 +88,7 @@ bool QEncoder::reset_counts(const std::vector<int32>& counts) {
 }
 
 bool QEncoder::reset_count(uint32 channel_number, int32 count) {
-    if (!EncoderModule::reset_count(channel_number, count))
+    if (!Encoder::reset_count(channel_number, count))
         return false;
     if (daq_.open_) {
         t_error result;
@@ -105,14 +109,16 @@ bool QEncoder::reset_count(uint32 channel_number, int32 count) {
 
 
 bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
-    if (!EncoderModule::set_quadrature_factors(factors))
+    if (!Encoder::set_quadrature_factors(factors))
         return false;
     if (daq_.open_) {
         // convert MEL QuadFactor to Quanser t_encoder_quadratue_mode
         std::vector<t_encoder_quadrature_mode> converted_factors;
         for (auto it = factors_.begin(); it != factors_.end(); ++it) {
-            if (*it == QuadFactor::X1)
+            if (*it == QuadFactor::None)
                 converted_factors.push_back(ENCODER_QUADRATURE_NONE);
+            else if (*it == QuadFactor::X1)
+                converted_factors.push_back(ENCODER_QUADRATURE_1X);
             else if (*it == QuadFactor::X2)
                 converted_factors.push_back(ENCODER_QUADRATURE_2X);
             else if (*it == QuadFactor::X4)
@@ -139,13 +145,15 @@ bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
 }
 
 bool QEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
-    if (!EncoderModule::set_quadrature_factor(channel_number, factor))
+    if (!Encoder::set_quadrature_factor(channel_number, factor))
         return false;
     if (daq_.open_) {
         // convert MEL QuadFactor to Quanser t_encoder_quadratue_mode
         t_encoder_quadrature_mode converted_factor;
-        if (factor == QuadFactor::X1)
+        if (factor == QuadFactor::None)
             converted_factor = ENCODER_QUADRATURE_NONE;
+        else if (factor == QuadFactor::X1)
+            converted_factor = ENCODER_QUADRATURE_1X;
         else if (factor == QuadFactor::X2)
             converted_factor = ENCODER_QUADRATURE_2X;
         else if (factor == QuadFactor::X4)

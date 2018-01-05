@@ -37,9 +37,10 @@ const        logic HIGH = 1;
 
 /// Represents encoder quadrature factors
 enum QuadFactor {
-    X1 = 1,  ///< 1X counts per revolution
-    X2 = 2,  ///< 2X counts per revolution,
-    X4 = 4,  ///< 4X counts per revolution
+    None = 0,  ///< no quadrature
+    X1   = 1,  ///< 1X counts per revolution
+    X2   = 2,  ///< 2X counts per revolution,
+    X4   = 4,  ///< 4X counts per revolution
 };
 
 //==============================================================================

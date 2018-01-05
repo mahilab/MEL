@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/OutputModule.hpp>
+#include <MEL/Daq/Output.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
@@ -15,7 +15,7 @@ namespace mel {
     // CLASS DECLARATION
     //==============================================================================
 
-    class QDigitalOutput : public OutputModule<logic>, NonCopyable {
+    class QDigitalOutput : public Output<logic>, NonCopyable {
 
     public:
 

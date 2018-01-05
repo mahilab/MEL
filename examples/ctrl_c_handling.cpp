@@ -23,11 +23,11 @@ static void global_handler(int param) {
 int main(int argc, char *argv[]) {
     print("Press Ctrl+C to continue.");
     // Method 1
-    register_ctrl_c(MyClass::class_handler);
+    register_ctrl_c_handler(MyClass::class_handler);
     while (MyClass::class_block) {}
     print("Since we made it this far, the class Ctrl+C handler was invoked.");
     // Method 2
-    register_ctrl_c(global_handler);
+    register_ctrl_c_handler(global_handler);
     while (global_block) {}
     print("Since we made it this far, the global Ctrl+C handler was invoked.");
 }

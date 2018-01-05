@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/InputModule.hpp>
+#include <MEL/Daq/Input.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 
@@ -16,7 +16,7 @@ namespace mel {
     // CLASS DECLARATION
     //==============================================================================
 
-    class QDigitalInput : public InputModule<logic>, NonCopyable {
+    class QDigitalInput : public Input<logic>, NonCopyable {
 
     public:
 

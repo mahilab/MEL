@@ -13,7 +13,10 @@ class Device {
 
 public:
 
-    /// Default constructor. Every device in MEL should have a unique name.
+    /// Default constructor
+    Device();
+
+    /// Prefered constructor. Every device in MEL should have a unique name.
     Device(const std::string& name);
 
     /// Default destructor.

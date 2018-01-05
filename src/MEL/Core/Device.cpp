@@ -6,6 +6,11 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
+Device::Device() :
+    name_("invalid_device"),
+    enabled_(false)
+{ }
+
 Device::Device(const std::string& name) :
     name_(name),
     enabled_(false)

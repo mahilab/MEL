@@ -10,7 +10,7 @@ namespace mel {
 //==============================================================================
 
 QAnalogOutput::QAnalogOutput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-    OutputModule(daq.name_ + "_analog_output", channel_numbers),
+    Output(daq.name_ + "_analog_output", channel_numbers),
     daq_(daq)
 {
 }
@@ -20,6 +20,8 @@ QAnalogOutput::~QAnalogOutput() {
 }
 
 bool QAnalogOutput::enable() {
+    if (enabled_)
+        return true;
     print("Enabling " + namify(name_) + " ... ", false);
     set_values(enable_values_);
     if (update()) {
@@ -31,6 +33,8 @@ bool QAnalogOutput::enable() {
 }
 
 bool QAnalogOutput::disable() {
+    if (!enabled_)
+        return true;
     print("Disabling " + namify(name_) + " ... ", false);
     set_values(disable_values_);
     if (update()) {
@@ -114,7 +118,7 @@ bool QAnalogOutput::set_range(uint32 channel_number, voltage min_value, voltage 
 }
 
 bool QAnalogOutput::set_expire_values(const std::vector<voltage>& expire_values) {
-    if (!OutputModule::set_expire_values(expire_values))
+    if (!Output::set_expire_values(expire_values))
         return false;
     if (daq_.open_) {
         t_error result;
@@ -133,7 +137,7 @@ bool QAnalogOutput::set_expire_values(const std::vector<voltage>& expire_values)
 }
 
 bool QAnalogOutput::set_expire_value(uint32 channel_number, voltage expire_value) {
-    if (!OutputModule::set_expire_value(channel_number, expire_value))
+    if (!Output::set_expire_value(channel_number, expire_value))
         return false;
     if (daq_.open_) {
         t_error result;

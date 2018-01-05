@@ -5,8 +5,12 @@
 
 namespace mel {
 
+Motor::Motor() :
+    Actuator()
+{ }
+
 Motor::Motor(std::string name, double kt, double amp_gain,
-    OutputModule<voltage>::Channel ao_channel, OutputModule<logic>::Channel do_channel, EnableMode enable_mode,
+    Output<voltage>::Channel ao_channel, Output<logic>::Channel do_channel, EnableMode enable_mode,
     double hard_current_limit) :
     Actuator(name, enable_mode),
     kt_(kt),
@@ -22,7 +26,7 @@ Motor::Motor(std::string name, double kt, double amp_gain,
 
 
 Motor::Motor(std::string name, double kt, double amp_gain,
-    OutputModule<voltage>::Channel ao_channel, OutputModule<logic>::Channel do_channel, EnableMode enable_mode,
+    Output<voltage>::Channel ao_channel, Output<logic>::Channel do_channel, EnableMode enable_mode,
     double continuous_current_limit, double peak_current_limit, Time i2t_time) :
     Actuator(name, enable_mode),
     kt_(kt),
@@ -37,7 +41,7 @@ Motor::Motor(std::string name, double kt, double amp_gain,
 { }
 
 Motor::Motor(std::string name, double kt, double amp_gain,
-    OutputModule<voltage>::Channel ao_channel, OutputModule<logic>::Channel do_channel, EnableMode enable_mode, InputModule<voltage>::Channel ai_channel,
+    Output<voltage>::Channel ao_channel, Output<logic>::Channel do_channel, EnableMode enable_mode, Input<voltage>::Channel ai_channel,
     double hard_current_limit) :
     Actuator(name, enable_mode),
     kt_(kt),
@@ -53,7 +57,7 @@ Motor::Motor(std::string name, double kt, double amp_gain,
 { }
 
 Motor::Motor(std::string name, double kt, double amp_gain,
-    OutputModule<voltage>::Channel ao_channel, OutputModule<logic>::Channel do_channel, EnableMode enable_mode, InputModule<voltage>::Channel ai_channel,
+    Output<voltage>::Channel ao_channel, Output<logic>::Channel do_channel, EnableMode enable_mode, Input<voltage>::Channel ai_channel,
     double continuous_current_limit, double peak_current_limit, Time i2t_time) :
     Actuator(name, enable_mode),
     kt_(kt),
@@ -89,6 +93,7 @@ bool Motor::enable() {
     }
     else {
         std::cout << "WARNING: Motor <" << name_ << "> was not assigned an enable mode." << std::endl;
+        return false;
     }
 }
 

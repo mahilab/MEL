@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/OutputModule.hpp>
+#include <MEL/Daq/Output.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
@@ -15,7 +15,7 @@ class QDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QAnalogOutput : public OutputModule<voltage>, NonCopyable {
+class QAnalogOutput : public Output<voltage>, NonCopyable {
 
 public:
 

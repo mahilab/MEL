@@ -12,7 +12,6 @@ from pyqtgraph.ptime import time
 import pyqtgraph.widgets.RemoteGraphicsView
 import numpy as np
 import pyqtgraph
-import ctypes
 import webbrowser
 import subprocess
 import sys
@@ -35,6 +34,7 @@ import qdarkstyle
 # optimize calls to sample time and data
 # manage MELShare(s) dialog
 # changing colros when paused deletes data
+# add MelNet
 
 
 #==============================================================================
@@ -49,7 +49,7 @@ ver = '0.2.0'
 app = QtGui.QApplication([])
 
 main_window = QtGui.QMainWindow()
-main_window.setWindowTitle('MELScope (untitled)')
+main_window.setWindowTitle('MEL Scope (untitled)')
 #main_window.setFixedSize(400,400)
 
 screen_resolution = app.desktop().screenGeometry()
@@ -65,8 +65,8 @@ widg.setLayout(grid)
 bold_font = QtGui.QFont()
 bold_font.setBold(True)
 
-WIDTH = 400
-HEIGHT = 400
+WIDTH  = 400 * resolution_scale
+HEIGHT = 400 * resolution_scale
 
 #==============================================================================
 # THEME SETUP
@@ -90,7 +90,8 @@ def set_theme():
     pyqtgraph.setConfigOption('foreground', THEME_SCOPE_FB_COLORS[theme])
     refresh_scopes()
 
-SCROLL_MODE = 'FIXED' # ROLLING / FIXED
+SCROLL_OPTIONS = ['Fixed', 'Rolling']
+SCROLL_MODE = 'Fixed'
 
 #==============================================================================
 # STATUS BAR SETUP
@@ -211,7 +212,7 @@ def add_melshare(name, mode):
             MELSHARE_CONNECTIONS[name] = False
             # MELSHARE_DOUBLE_ARRAYS[name] = None
             # MELSHARE_BUFFERS[name] = None
-            MELSHARE_DATA[name] = None
+            MELSHARE_DATA[name] = [0.0] * MELSHARE_SIZES[name]
             MELSHARE_BUFFERS_TEXT[name] = None
         MELSHARE_SAMPLED_DATA[name] = None
         DATA_NAMES[name] = []
@@ -239,7 +240,7 @@ def reconnect_melshare(name):
             MELSHARE_CONNECTIONS[name] = False
             # MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * MELSHARE_SIZES[name]
             # MELSHARE_BUFFERS[name] =  MELSHARE_DOUBLE_ARRAYS[name]()
-            MELSHARE_DATA[name] = None
+            MELSHARE_DATA[name] = [0.0] * MELSHARE_SIZES[name]
             MELSHARE_BUFFERS_TEXT[name] = ['0.00'] * MELSHARE_SIZES[name]
         MELSHARE_SAMPLED_DATA[name] = None
     # print_melshare_info()
@@ -313,10 +314,10 @@ NUM_SAMPLES = int(SAMPLE_DURATION * SAMPLE_TARGET * 1.1)
 
 def save_melshare_times():
     global MELSHARE_SAMPLED_TIMES
-    if SCROLL_MODE == 'FIXED':
+    if SCROLL_MODE == 'Fixed':
         MELSHARE_SAMPLED_TIMES[:-1] = MELSHARE_SAMPLED_TIMES[1:] - DELTA_TIME_SR
         MELSHARE_SAMPLED_TIMES[-1] = 0
-    elif SCROLL_MODE == 'ROLLING':
+    elif SCROLL_MODE == 'Rolling':
         MELSHARE_SAMPLED_TIMES[:-1] = MELSHARE_SAMPLED_TIMES[1:]
         MELSHARE_SAMPLED_TIMES[-1] = ELAPSED_TIME_SR
 
@@ -459,6 +460,7 @@ def validate_scope_properties():
 def refresh_scopes():
     for scope in SCOPE_MODULES:
         scope.refresh()
+    status_bar.showMessage("Reloaded")
 
 
 class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
@@ -471,7 +473,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.time_ticks = [[(-t, t) for t in range(SAMPLE_DURATION + 1)]]
         self.time_ticks[0][0] = (0, '0  ')
         # various object handles
-        self.plot_widget = pyqtgraph.PlotWidget(name='MELScope')
+        self.plot_widget = pyqtgraph.PlotWidget(name='MEL Scope')
         # http://www.pyqtgraph.org/documentation/graphicsItems/axisitem.html
         self.axis_left = self.plot_widget.getAxis('left')
         # http://www.pyqtgraph.org/documentation/graphicsItems/axisitem.html
@@ -482,7 +484,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.view_box = self.plot_item.getViewBox()
         # configure plot settings
         self.plot_widget.setRange(xRange=[-SAMPLE_DURATION, 0], yRange=[-1, 1])
-        if SCROLL_MODE == 'FIXED':
+        if SCROLL_MODE == 'Fixed':
             self.plot_widget.setLimits(xMin=-SAMPLE_DURATION, xMax=0)
             self.axis_bottom.setTicks(self.time_ticks)
         self.plot_widget.showGrid(x=True, y=True)
@@ -495,7 +497,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.curves = {}
         # scope title label
         self.label = QtGui.QLabel()
-        self.label.mouseDoubleClickEvent = self.rename_scope
+        # self.label.mouseDoubleClickEvent = self.rename_scope
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setFont(bold_font)
         # scope module layout
@@ -511,7 +513,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.io_layout = QtGui.QGridLayout()
         self.io_layout.setAlignment(QtCore.Qt.AlignTop)
         self.io_label = QtGui.QLabel()
-        self.io_label.mouseDoubleClickEvent = self.rename_io
+        # self.io_label.mouseDoubleClickEvent = self.rename_io
         self.io_label.setAlignment(QtCore.Qt.AlignCenter)
         self.io_label.setFont(bold_font)
         self.io_layout.addWidget(self.io_label, 0, 0, 1, 2)
@@ -593,7 +595,16 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     self.curves[name].append(new_curve)
                     # update IO
                     new_name = QtGui.QLabel(self)
-                    new_name.setText(DATA_NAMES[name][i])
+                    new_name.setText("  " + DATA_NAMES[name][i])
+                    # set fill color
+                    c = CURVE_COLORS[name][i]
+                    curve_color = QtGui.QColor(c[0], c[1], c[2])
+                    curve_label_font = QtGui.QFont()
+                    curve_label_font.setBold(True)
+                    curve_label_font.setPointSize(8)
+                    new_name.setFont(curve_label_font)
+                    new_name.setStyleSheet('color: white; background-color: %s' % curve_color.name())
+                    # new_name.setStyleSheet('color: %s' % curve_color.name())
                     #new_name.mouseDoubleClickEvent = self.rename_data_factory(name, i)
                     new_value = QtGui.QLineEdit(self)
                     new_value.setText('0.0000')
@@ -620,7 +631,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     self.io_values[name].append(None)
 
     def update(self):
-        if SCROLL_MODE == 'ROLLING':
+        if SCROLL_MODE == 'Rolling':
             self.plot_widget.setLimits(xMin=ELAPSED_TIME_SR-SAMPLE_DURATION, xMax=ELAPSED_TIME_SR)
         for name in MELSHARE_NAMES:
             if MELSHARE_CONNECTIONS[name]:
@@ -654,67 +665,67 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
     def change_io_factory(self, line_edit):
         return lambda: self.change_io(line_edit)
 
-    def rename_scope(self, event=None):
-        self.temp_line_edit = QtGui.QLineEdit()
-        self.temp_line_edit.setText(self.title)
-        self.temp_line_edit.setAlignment(QtCore.Qt.AlignCenter)
-        self.temp_line_edit.setFont(bold_font)
-        self.temp_line_edit.editingFinished.connect(self.confirm_scope_rename)
-        self.temp_line_edit.focusOutEvent = self.confirm_scope_rename
-        self.layout.addWidget(self.temp_line_edit, 0, 0, 1, 1)
-        self.temp_line_edit.selectAll()
-        self.temp_line_edit.setFocus()
+    # def rename_scope(self, event=None):
+    #     self.temp_line_edit = QtGui.QLineEdit()
+    #     self.temp_line_edit.setText(self.title)
+    #     self.temp_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+    #     self.temp_line_edit.setFont(bold_font)
+    #     self.temp_line_edit.editingFinished.connect(self.confirm_scope_rename)
+    #     self.temp_line_edit.focusOutEvent = self.confirm_scope_rename
+    #     self.layout.addWidget(self.temp_line_edit, 0, 0, 1, 1)
+    #     self.temp_line_edit.selectAll()
+    #     self.temp_line_edit.setFocus()
 
-    def confirm_scope_rename(self, event=None):
-        self.title = str(self.temp_line_edit.text())
-        SCOPE_TITLES[self.index] = self.title
-        self.label.setText(self.title)
-        self.io_label.setText(self.title)
-        self.layout.removeWidget(self.temp_line_edit)
-        self.temp_line_edit.deleteLater()
-        self.temp_line_edit = None
+    # def confirm_scope_rename(self, event=None):
+    #     self.title = str(self.temp_line_edit.text())
+    #     SCOPE_TITLES[self.index] = self.title
+    #     self.label.setText(self.title)
+    #     self.io_label.setText(self.title)
+    #     self.layout.removeWidget(self.temp_line_edit)
+    #     self.temp_line_edit.deleteLater()
+    #     self.temp_line_edit = None
 
-    def rename_io(self, event=None):
-        self.temp_line_edit = QtGui.QLineEdit()
-        self.temp_line_edit.setText(self.title)
-        self.temp_line_edit.setAlignment(QtCore.Qt.AlignCenter)
-        self.temp_line_edit.setFont(bold_font)
-        self.temp_line_edit.editingFinished.connect(self.confirm_io_rename)
-        self.temp_line_edit.focusOutEvent = self.confirm_io_rename
-        self.io_layout.addWidget(self.temp_line_edit, 0, 0, 1, 3)
-        self.temp_line_edit.selectAll()
-        self.temp_line_edit.setFocus()
+    # def rename_io(self, event=None):
+    #     self.temp_line_edit = QtGui.QLineEdit()
+    #     self.temp_line_edit.setText(self.title)
+    #     self.temp_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+    #     self.temp_line_edit.setFont(bold_font)
+    #     self.temp_line_edit.editingFinished.connect(self.confirm_io_rename)
+    #     self.temp_line_edit.focusOutEvent = self.confirm_io_rename
+    #     self.io_layout.addWidget(self.temp_line_edit, 0, 0, 1, 3)
+    #     self.temp_line_edit.selectAll()
+    #     self.temp_line_edit.setFocus()
 
-    def confirm_io_rename(self, event=None):
-        self.title = str(self.temp_line_edit.text())
-        SCOPE_TITLES[self.index] = self.title
-        self.io_label.setText(self.title)
-        self.label.setText(self.title)
-        self.layout.removeWidget(self.temp_line_edit)
-        self.temp_line_edit.deleteLater()
-        self.temp_line_edit = None
+    # def confirm_io_rename(self, event=None):
+    #     self.title = str(self.temp_line_edit.text())
+    #     SCOPE_TITLES[self.index] = self.title
+    #     self.io_label.setText(self.title)
+    #     self.label.setText(self.title)
+    #     self.layout.removeWidget(self.temp_line_edit)
+    #     self.temp_line_edit.deleteLater()
+    #     self.temp_line_edit = None
 
-    def rename_data_factory(self, name, index):
-        return lambda event: self.rename_data(name, index, event)
+    # def rename_data_factory(self, name, index):
+    #     return lambda event: self.rename_data(name, index, event)
 
-    def rename_data(self, name, index, event=None):
-        self.temp_line_edit1 = QtGui.QLineEdit()
-        self.temp_line_edit1.setText(DATA_NAMES[name][index])
-        self.temp_line_edit1.editingFinished.connect(
-            lambda: self.confirm_data_rename(name, index))
-        self.temp_line_edit1.focusOutEvent = lambda event: self.confirm_data_rename(
-            name, index, event)
-        self.io_layout.addWidget(self.temp_line_edit1, index + 1, 0)
-        self.temp_line_edit1.selectAll()
-        self.temp_line_edit1.setFocus()
+    # def rename_data(self, name, index, event=None):
+    #     self.temp_line_edit1 = QtGui.QLineEdit()
+    #     self.temp_line_edit1.setText(DATA_NAMES[name][index])
+    #     self.temp_line_edit1.editingFinished.connect(
+    #         lambda: self.confirm_data_rename(name, index))
+    #     self.temp_line_edit1.focusOutEvent = lambda event: self.confirm_data_rename(
+    #         name, index, event)
+    #     self.io_layout.addWidget(self.temp_line_edit1, index + 1, 0)
+    #     self.temp_line_edit1.selectAll()
+    #     self.temp_line_edit1.setFocus()
 
-    def confirm_data_rename(self, name, index, event=None):
-        DATA_NAMES[name][index] = str(self.temp_line_edit1.text())
-        self.io_names[name][index].setText(DATA_NAMES[name][index])
-        self.io_layout.removeWidget(self.temp_line_edit1)
-        self.temp_line_edit1.deleteLater()
-        self.temp_line_edit1 = None
-        refresh_scopes()
+    # def confirm_data_rename(self, name, index, event=None):
+    #     DATA_NAMES[name][index] = str(self.temp_line_edit1.text())
+    #     self.io_names[name][index].setText(DATA_NAMES[name][index])
+    #     self.io_layout.removeWidget(self.temp_line_edit1)
+    #     self.temp_line_edit1.deleteLater()
+    #     self.temp_line_edit1 = None
+    #     refresh_scopes()
 
 
 #==============================================================================
@@ -773,6 +784,15 @@ def resize_grid():
         grid.setColumnStretch(i, 1)
     # update scope count
     SCOPE_COUNT = new_count
+    main_window.resize(GRID_COLS * WIDTH, GRID_ROWS * HEIGHT)
+    center_window()
+
+def center_window():
+    frameGm = main_window.frameGeometry()
+    screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+    centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+    frameGm.moveCenter(centerPoint)
+    main_window.move(frameGm.topLeft())
 
 
 #==============================================================================
@@ -783,7 +803,7 @@ FILEPATH = None
 
 def open_new_instance():
     CREATE_NO_WINDOW = 0x08000000
-    subprocess.Popen([sys.executable, 'MELScope.pyw'],
+    subprocess.Popen([sys.executable, 'MelScope.pyw'],
                      creationflags=CREATE_NO_WINDOW)
 # https://stackoverflow.com/questions/89228/calling-an-external-command-in-python#2251026
 # https://msdn.microsoft.com/en-us/library/windows/desktop/ms684863(v=vs.85).aspx
@@ -792,7 +812,7 @@ def open_new_instance():
 def open():
     global FILEPATH
     FILEPATH = QtGui.QFileDialog.getOpenFileName(
-        widg, 'Open MELScope', "", 'Scope Files (*.scope *.yaml)')
+        widg, 'Open MEL Scope', "", 'Scope Files (*.scope *.yaml)')
     if FILEPATH:
         stream = file(FILEPATH, 'r')
         config = yaml.load(stream)
@@ -804,7 +824,7 @@ def open():
         filename = str(FILEPATH[str(FILEPATH).rfind('/') + 1:])
         filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Opened <' + filename + '>')
-        main_window.setWindowTitle('MELScope (' + filename + ')')
+        main_window.setWindowTitle('MEL Scope (' + filename + ')')
 
 
 def save():
@@ -816,7 +836,7 @@ def save():
         filename = str(FILEPATH[str(FILEPATH).rfind('/') + 1:])
         filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Saved <' + filename + '>')
-        main_window.setWindowTitle('MELScope (' + filename + ')')
+        main_window.setWindowTitle('MEL Scope (' + filename + ')')
     else:
         save_as()
 
@@ -824,7 +844,7 @@ def save():
 def save_as():
     global FILEPATH
     new_filepath = QtGui.QFileDialog.getSaveFileName(
-        widg, 'Save MELScope', "", 'Scope Files (*.scope *.yaml)')
+        widg, 'Save MEL Scope', "", 'Scope Files (*.scope *.yaml)')
     if new_filepath:
         FILEPATH = new_filepath
         save()
@@ -879,11 +899,11 @@ def generate_config():
 class AddMelShareDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(AddMelShareDialog, self).__init__(parent)
-        self.setWindowTitle('Add MELShare')
+        self.setWindowTitle('Add MEL Share')
         self.layout = QtGui.QGridLayout(self)
 
         self.name_label = QtGui.QLabel(self)
-        self.name_label.setText("MELShare Name")
+        self.name_label.setText("MEL Share Name")
         self.name_label.setFont(bold_font)
         self.layout.addWidget(self.name_label, 0, 0)
 
@@ -1074,7 +1094,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
         x = 0
         for name in MELSHARE_NAMES:
             filter_label = QtGui.QLabel(self)
-            filter_label.setText(name)
+            filter_label.setText("  " + name + "  ")
             filter_label.setFont(bold_font)
             filter_label.setAlignment(QtCore.Qt.AlignCenter)
             filter_label.setStyleSheet("border: 1px solid %s" % border_color.name());
@@ -1092,7 +1112,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
         layout.addWidget(scope_label, 0, 3, 1, 3)
 
         index_label = QtGui.QLabel(self)
-        index_label.setText('i')
+        index_label.setText('')
         index_label.setFont(bold_font)
         index_label.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(index_label, 1, 0)
@@ -1242,7 +1262,7 @@ class AboutDialog(QtGui.QDialog):
         layout = QtGui.QGridLayout(self)
 
         title = QtGui.QLabel(self)
-        title.setText("MELScope v" + ver)
+        title.setText("MEL Scope v" + ver)
         title_font = QtGui.QFont()
         title_font.setBold(True)
         title_font.setPointSize(12)
@@ -1299,7 +1319,7 @@ def prompt_configure_data():
         ConfigureDataDialog.open_dialog()
     else:
         msgBox = QtGui.QMessageBox(main_window)
-        msgBox.setText('Connect to a MELShare before configuring!')
+        msgBox.setText('Connect to a MEL Share before configuring!')
         msgBox.setWindowTitle('Configure Data')
         msgBox.exec_()
 
@@ -1315,7 +1335,7 @@ def prompt_add_melshare():
         add_melshare(melshare_name, melshare_mode)
 
 def prompt_remove_melshare():
-    selection, ok = QtGui.QInputDialog.getItem(widg, 'Remove MELShare', 'Select MELShare:', MELSHARE_NAMES,0,False)
+    selection, ok = QtGui.QInputDialog.getItem(widg, 'Remove MEL Share', 'Select MEL Share:', MELSHARE_NAMES,0,False)
     if ok:
         remove_melshare(str(selection))
 
@@ -1337,6 +1357,12 @@ def about():
 def open_github():
     webbrowser.open('https://github.com/epezent/MEL')
 
+def prompt_scroll_mode():
+    global SCROLL_MODE
+    selection, ok = QtGui.QInputDialog.getItem(
+        widg, 'Scroll Mode', 'Select Mode:', SCROLL_OPTIONS, SCROLL_OPTIONS.index(SCROLL_MODE), False)
+    if ok:
+        SCROLL_MODE = str(selection)
 
 def prompt_change_theme():
     global theme, THEME_OPTIONS
@@ -1397,35 +1423,35 @@ pref_menu = menu_bar.addMenu('&Preferences')
 help_menu = menu_bar.addMenu('&Help')
 
 new_action = QtGui.QAction('&New', main_window,
-                           shortcut='Ctrl+N', statusTip='Create a MELScope', triggered=open_new_instance)
+                           shortcut='Ctrl+N', statusTip='Create a MEL Scope', triggered=open_new_instance)
 file_menu.addAction(new_action)
 
 open_action = QtGui.QAction('&Open...', main_window,
-                            shortcut='Ctrl+O', statusTip='Open an existing MELScope', triggered=open)
+                            shortcut='Ctrl+O', statusTip='Open an existing MEL Scope', triggered=open)
 file_menu.addAction(open_action)
 
 save_action = QtGui.QAction('&Save', main_window,
-                            shortcut='Ctrl+S', statusTip='Save this MELScope', triggered=save)
+                            shortcut='Ctrl+S', statusTip='Save this MEL Scope', triggered=save)
 file_menu.addAction(save_action)
 
 save_as_action = QtGui.QAction('Save &As...', main_window,
-                               shortcut='Ctrl+Shift+S', statusTip='Save this MELScope under a new name', triggered=save_as)
+                               shortcut='Ctrl+Shift+S', statusTip='Save this MEL Scope under a new name', triggered=save_as)
 file_menu.addAction(save_as_action)
 
 reload_action = QtGui.QAction('&Reload', main_window,
-                              shortcut='R', statusTip='Reload the MELScope', triggered=reload_melshares)
+                              shortcut='R', statusTip='Reload the MEL Scope', triggered=reload_melshares)
 action_menu.addAction(reload_action)
 
 pause_action = QtGui.QAction('&Pause', main_window,
-    shortcut='P',statusTip='Pause the MELScope', triggered=switch_pause)
+    shortcut='P',statusTip='Pause the MEL Scope', triggered=switch_pause)
 action_menu.addAction(pause_action)
 
-add_action = QtGui.QAction('&Add MELShare...', main_window,
-                               shortcut='Ctrl+A', statusTip='Add a new MELShare map', triggered=prompt_add_melshare)
+add_action = QtGui.QAction('&Add MEL Share...', main_window,
+                               shortcut='Ctrl+A', statusTip='Add a new MEL Share map', triggered=prompt_add_melshare)
 edit_menu.addAction(add_action)
 
-remove_action = QtGui.QAction('&Remove MELShare...', main_window,
-                               shortcut='Ctrl+X', statusTip='Remove an existing MELShare map', triggered=prompt_remove_melshare)
+remove_action = QtGui.QAction('&Remove MEL Share...', main_window,
+                               shortcut='Ctrl+X', statusTip='Remove an existing MEL Share map', triggered=prompt_remove_melshare)
 edit_menu.addAction(remove_action)
 
 grid_action = QtGui.QAction('Resize &Grid...', main_window,
@@ -1440,12 +1466,16 @@ configure_modules_action = QtGui.QAction('&Configure Modules(s)...', main_window
                                          shortcut='Ctrl+C', statusTip='Configure scope module(s) properties', triggered=prompt_configure_modules)
 edit_menu.addAction(configure_modules_action)
 
+# scroll_action = QtGui.QAction('&Scroll Mode...', main_window,
+#                               shortcut='Ctrl+L', statusTip='Change the scope scrolling mode', triggered=prompt_scroll_mode)
+# pref_menu.addAction(scroll_action)
+
 theme_action = QtGui.QAction('&Theme...', main_window,
                              shortcut='F10', statusTip='Change the current theme', triggered=prompt_change_theme)
 pref_menu.addAction(theme_action)
 
 about_action = QtGui.QAction('&About', main_window,
-                             shortcut='F11', statusTip='About MELScope', triggered=about)
+                             shortcut='F11', statusTip='About MEL Scope', triggered=about)
 help_menu.addAction(about_action)
 
 github_action = QtGui.QAction('&GitHub...', main_window,
@@ -1472,7 +1502,7 @@ def update_menu():
 
 set_theme()
 reload_grid()
-status_bar.showMessage('Welcome to MELScope!')
+status_bar.showMessage('Welcome to MEL Scope!')
 
 def sample_loop():
     global WRITE_FLAG
@@ -1491,6 +1521,7 @@ def sample_loop():
                     save_melshare_data(name)
                 else:
                     lost.append(name)
+                    MELSHARE_DATA[name] = [0.0] * MELSHARE_SIZES[name]
                     MELSHARE_CONNECTIONS[name] = False;
             elif MELSHARE_MODES[name] == 'Write Only':
                 if WRITE_FLAG is True:
@@ -1502,7 +1533,7 @@ def sample_loop():
                             MELSHARE_CONNECTIONS[name] = False;
     WRITE_FLAG = False
     if lost:
-        msg = 'Lost connection to MELShare(s): '
+        msg = 'Lost connection to MEL Share(s): '
         for name in lost:
             msg += '<' + name + '>, '
         msg = msg[:-2]

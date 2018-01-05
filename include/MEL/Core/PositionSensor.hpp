@@ -13,6 +13,9 @@ class PositionSensor : public Device {
 public:
 
     /// Default constructor
+    PositionSensor();
+
+    /// Prefered constructor
     PositionSensor(std::string name);
 
     /// This function should return the position of the PositionSensor

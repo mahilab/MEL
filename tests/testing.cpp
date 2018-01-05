@@ -1,15 +1,32 @@
-#include <MEL/Communications/SharedMemory.hpp>
+#include <MEL/Daq/Quanser/Q8Usb.hpp>
+#include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Communications/Packet.hpp>
 #include <vector>
 
 using namespace mel;
 
-int main() {
-    SharedMemory map("my_map");
-    std::vector<double> data = {1.2, 3.4, 5.6, 7.8};
-    map.write(&data[0], 32);
-    prompt("Press Enter to exit");
-    return 0;
+static bool stop = false;
+static void handler(int var) {
+    stop = true;
 }
 
+int main() {
+
+    // register ctrl-c handler
+    register_ctrl_c_handler(handler);
+
+    Q8Usb q8;
+    q8.enable();
+
+    q8.digital_output[0](HIGH);
+    q8.update_output();
+
+    while (!stop) {
+        q8.update_input();
+        print(q8.encoder[0]());
+    }
+
+    prompt("Press Enter to exit ...");
+
+    return 0;
+}

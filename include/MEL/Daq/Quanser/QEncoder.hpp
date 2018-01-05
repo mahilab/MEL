@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/EncoderModule.hpp>
+#include <MEL/Daq/Encoder.hpp>
 
 namespace mel {
 
@@ -15,7 +15,7 @@ class QDaq;
 //==============================================================================
 
 /// Quanser implementation of Encoder
-class QEncoder : public EncoderModule {
+class QEncoder : public Encoder {
 
 public:
 

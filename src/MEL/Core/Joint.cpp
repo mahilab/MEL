@@ -5,10 +5,13 @@
 
 namespace mel {
 
- Joint::Joint(std::string name,
-        PositionSensor& position_sensor, double position_sensor_transmission,
-        VelocitySensor& velocity_sensor, double velocity_sensor_transmission,
-        Actuator& actuator, double actuator_transmission,
+ Joint::Joint(const std::string& name,
+        PositionSensor& position_sensor,
+        double position_sensor_transmission,
+        VelocitySensor& velocity_sensor, 
+        double velocity_sensor_transmission,
+        Actuator& actuator, 
+        double actuator_transmission,
         std::array<double, 2> position_limits,
         double velocity_limit,
         double torque_limit,
@@ -33,6 +36,7 @@ namespace mel {
 { }
 
 bool Joint::enable() {
+    actuator_.enable();
     if (position_sensor_.enable() && velocity_sensor_.enable() && actuator_.enable()) {
         return Device::enable();
     }

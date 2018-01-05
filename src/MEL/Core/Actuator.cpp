@@ -3,7 +3,7 @@
 namespace mel {
 
 Actuator::Actuator() :
-    Device("actuator"),
+    Device("invalid_actuator"),
     torque_(0.0),
     torque_sense_(0.0),
     enable_mode_(EnableMode::None),

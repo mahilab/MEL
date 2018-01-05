@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MEL/Core/Device.hpp>
+#include <MEL/Utility/Console.hpp>
 
 namespace mel {
 

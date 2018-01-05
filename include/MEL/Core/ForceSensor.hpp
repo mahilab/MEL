@@ -1,6 +1,6 @@
 #pragma once
 #include <MEL/Core/Device.hpp>
-#include <MEL/Daq/InputModule.hpp>
+#include <MEL/Daq/Input.hpp>
 
 namespace mel {
 
@@ -13,7 +13,7 @@ public:
     //---------------------------------------------------------------------
 
     ForceSensor();
-    ForceSensor(std::string name, std::vector<InputModule<voltage>::Channel> ai_channels);
+    ForceSensor(std::string name, std::vector<Input<voltage>::Channel> ai_channels);
 
     //---------------------------------------------------------------------
     // PUBLIC FUNCTIONS
@@ -27,7 +27,7 @@ protected:
     // PROTECTED VARIABLES
     //---------------------------------------------------------------------
 
-    std::vector<InputModule<voltage>::Channel> ai_channels_; // the DAQ analog input channels bound to this sensor
+    std::vector<Input<voltage>::Channel> ai_channels_; // the DAQ analog input channels bound to this sensor
 
     int num_channels_;
 

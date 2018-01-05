@@ -30,46 +30,6 @@ class Module : public Device {
 
 public:
 
-    /// Encapsulates a Module channel
-    class Channel {
-    public:
-
-        /// Default constructor. Creates invalid channel
-        Channel() : module_(nullptr), channel_number_(-1) {}
-
-        /// Overloaded constructor. Creates channel on module.
-        Channel(Module<T>* module, uint32 channel_number) :
-            module_(module),
-            channel_number_(channel_number) { }
-
-        /// Updates this channel with the real-world
-        bool update() {
-            return module_->update_channel(channel_number_);
-        }
-
-        /// Returns the current value of the channel
-        T get_value() const {
-            return module_->get_value(channel_number_);
-        }
-
-        /// Returns reference to the channel's module
-        const Module<T>& get_module() const {
-            return *module_;
-        }
-
-        /// Gets the channel number of this Channel
-        uint32 get_channel_number() const {
-            return channel_number_;
-        }
-
-    protected:
-
-        Module<T>* module_;             ///< The Module this channel is on
-        const uint32 channel_number_;  ///< The physical channel number
-    };
-
-public:
-
     /// Default constructor
     Module(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
         Device(name),
@@ -79,10 +39,8 @@ public:
         channel_map_(make_channel_map(channel_numbers_)),
         values_(channel_count_),
         min_values_(channel_count_),
-        max_values_(channel_count_),
-        invalid_channel_(Channel(this,-1))
+        max_values_(channel_count_)
     {
-        make_channels();
     }
 
     /// Default destructor
@@ -149,23 +107,7 @@ public:
         return type_;
     }
 
-    /// Gets a Channel object given a channel number. If an invalid channel number
-    /// is passed, an invalid Channel is returned.
-    virtual const Channel& get_channel(uint32 channel_number) {
-        if (validate_channel_number(channel_number))
-            return channels_[channel_map_.at(channel_number)];
-        else
-            return invalid_channel_;
-    }
-
 protected:
-
-    /// Makes vector of the Channels contained on this Module
-    virtual void make_channels() {
-        for (std::size_t i = 0; i < channel_count_; ++i) {
-            channels_.push_back(Channel(this, channel_numbers_[i]));
-        }
-    }
 
     /// Checks if a channel number is a number defined on this Module
     bool validate_channel_number(uint32 channel_number) const {
@@ -215,11 +157,6 @@ protected:
     std::vector<T> values_;          ///< The real-world values of the channels in this Module
     std::vector<T> min_values_;      ///< The minimum possible values of each channel
     std::vector<T> max_values_;      ///< The maximum possible values of each channel
-
-    Channel invalid_channel_;        ///< Represents an invalid channel
-    std::vector<Channel> channels_;  ///< The channels contained on this Module
-
-public:
 
 };
 
