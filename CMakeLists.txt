@@ -107,6 +107,10 @@ elseif (QUANSER)
         C:/dev/quarc/include)
 endif()
 
+if (MAHIEXOII)
+    list(APPEND INCLUDE_DIRS C:/dev/eigen)
+endif()
+
 # include directories
 include_directories(${INCLUDE_DIRS})
 

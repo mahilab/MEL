@@ -28,7 +28,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DEXAMPLES=ON -DQUANSER=ON",
+			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DEXAMPLES=ON -DQUANSER=ON -DMAHIEXOII=ON",
 			"working_dir": "$project_path/build/msvc_win64"
 		},
 		{

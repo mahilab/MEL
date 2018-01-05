@@ -2,6 +2,8 @@
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <vector>
+#include <MEL/Utility/Clock.hpp>
+#include <MEL/Utility/Timer.hpp>
 
 using namespace mel;
 
@@ -10,24 +12,14 @@ static void handler(int var) {
     stop = true;
 }
 
+void test(PositionSensor& sensor) {
+
+}
+
 int main() {
 
-    // register ctrl-c handler
-    register_ctrl_c_handler(handler);
+   
 
-    Q8Usb q8;
-    q8.enable();
-
-    q8.digital_output[0](HIGH);
-    q8.update_output();
-
-    while (!stop) {
-        q8.update_input();
-        int32 count = q8.encoder[0]();
-        print(count);
-    }
-
-    prompt("Press Enter to exit ...");
 
     return 0;
 }
