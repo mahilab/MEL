@@ -10,10 +10,10 @@ cmake_minimum_required(VERSION 3.7)
 
 # 1) Open console and navigate to the /build folder
 # 2) To generate makefile for NI hardware, run:
-#        $: cmake .. -G "MinGW Makefiles -DNI=ON"
+#        $: cmake .. -G "MinGW Makefiles" -DNI=ON
 #    To generate Visual Studio *.sln file for Quanser hardware, run:
-#        $: cmake .. -G "Visual Studio 15 2017 Win64 -DQUANSER=ON"
-# 3) To build executables in /examples, append "-DEXAMPLES=ON"
+#        $: cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
+# 3) To build executables in ./examples, append -DEXAMPLES=ON
 # 4) Proceed to build generated makefile or *.sln file with the necessary software
 
 #===============================================================================
@@ -91,7 +91,7 @@ if(NI AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
 endif()
 
 #===============================================================================
-# EXTERNAL INCLUDES
+# INCLUDES
 #===============================================================================
 
 # MEL Lib
@@ -103,8 +103,7 @@ if (NI)
         C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
         C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
 elseif (QUANSER)
-    list(APPEND INCLUDE_DIRS
-        C:/dev/quarc/include)
+    list(APPEND INCLUDE_DIRS C:/dev/quarc/include)
 endif()
 
 if (MAHIEXOII)
@@ -178,6 +177,20 @@ file(GLOB SRC_WINDOWS
     "${CMAKE_SOURCE_DIR}/src/MEL/Utility/Windows/*.cpp"
 )
 
+# create filters for Visual Studio
+source_group("Communications" FILES ${SRC_COMMUNICATIONS})
+source_group("Core" FILES ${SRC_CORE})
+source_group("Daq" FILES ${SRC_DAQ})
+source_group("Daq\\NI" FILES ${SRC_NI})
+source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
+source_group("Devices" FILES ${SRC_DEVICES})
+source_group("Exoskeletons\\OpenWrist" FILES ${SRC_OPENWRIST})
+source_group("Exoskeletons\\MahiExoII" FILES ${SRC_MAHIEXOII})
+source_group("Legacy" FILES ${SRC_LEGACY})
+source_group("Math" FILES ${SRC_MATH})
+source_group("Utility" FILES ${SRC_UTILITY})
+source_group("Utility\\Windows" FILES ${SRC_WINDOWS})
+
 #===============================================================================
 # SELECT SOURCE FILES BASED ON OPTIONS/PLATFORM
 #===============================================================================
@@ -214,31 +227,10 @@ elseif (QUANSER)
 endif()
 
 #===============================================================================
-# LINK DIRECTORIES
-#===============================================================================
-
-if (QUANSER)
-    link_directories(C:/dev/quarc/lib/win64)
-endif()
-
-#===============================================================================
 # CREATE MEL LIBRARY
 #===============================================================================
 
 add_library(MEL STATIC ${SOURCE_FILES})
-
-source_group("Communications" FILES ${SRC_COMMUNICATIONS})
-source_group("Core" FILES ${SRC_CORE})
-source_group("Daq" FILES ${SRC_DAQ})
-source_group("NI" FILES ${SRC_NI})
-source_group("Quanser" FILES ${SRC_QUANSER})
-source_group("Devices" FILES ${SRC_DEVICES})
-source_group("OpenWrist" FILES ${SRC_OPENWRIST})
-source_group("MahiExoII" FILES ${SRC_MAHIEXOII})
-source_group("Legacy" FILES ${SRC_LEGACY})
-source_group("Math" FILES ${SRC_MATH})
-source_group("Utility" FILES ${SRC_UTILITY})
-source_group("Windows" FILES ${SRC_WINDOWS})
 
 #===============================================================================
 # LINK EXTERNAL LIBS
@@ -249,6 +241,7 @@ set(LINK_LIBS "")
 if(NI)
     list(APPEND LINK_LIBS dl)
 elseif(QUANSER)
+    link_directories(C:/dev/quarc/lib/win64)
     list(APPEND LINK_LIBS
         hil
         quanser_communications

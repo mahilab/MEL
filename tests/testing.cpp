@@ -12,14 +12,6 @@ static void handler(int var) {
     stop = true;
 }
 
-void test(PositionSensor& sensor) {
-
-}
-
 int main() {
-
-   
-
-
     return 0;
 }

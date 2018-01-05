@@ -1,54 +1,54 @@
+MEL TODO List
+Evan Pezent (epezent@rice.edu)
+
+This TODO list contains things that need adding to MEL, cool ideas, and general thoughts.
+It should not be confused as a change log or road map, and it is not intended for public consumption.
+For those curious, the list is maintained using the Sublime Text package PlainTasks.
+
 All:
   ☐ Documentation
-  ☐
 
-Device:
-  ✘ Should this expose "on_enable", "on_disable", etc? Could alleviate "enable_" issue @cancelled (17-12-28 01:14)
+Communication:
+  ☐ Write Linux implementation of SharedMemory
+  ☐ Add methods for vector to Packet (just use underlying in loop?)
 
-SharedMemory:
-  ✔ Make size known to class at write and read @done (17-12-30 19:21)
-  ✘ Choose to more tightly integrate Packet or not @cancelled (17-12-30 19:21)
-  ☐ Write Linux version
-
-StateMachine:
-  ☐ Simplify, remove old garbage code
-
-Packet:
-  ☐ Add methods for vector (just use underlying in loop?)
-
-Console:
-  ✔ Add control-C handler function/class @done (17-12-22 15:15)
+Core:
+  ☐ create class for amps
 
 Daq:
-  ✔ Modularize - make each I/O a separate class/module, Q8 inheret from all @done (17-12-28 01:15)
-  ✘ Channel <- OutputChannel / InputChannel @cancelled (17-12-28 01:15)
-  ✔ Module  <- AnalogInput / AnalogOutput / DigitalInput / DigitalOutput / Encoder ^^^ @done (17-12-28 01:16)
-  ✔ Daq <- Q8Usb / CRio ^^^ @done (17-12-28 01:16)
-  ✔ Q8 encoder velocity, @done (17-12-28 16:09)
-  ✔ determine what the hell Q8 velocity units are and if quadraturea affects it @done (18-01-04 19:53)
-  ✔ ranges, misc functions @done (18-01-04 19:54)
-  ✔ overload [] to get channel, and () on channel to set, get value @done (18-01-04 23:19)
-  ☐ figure out how to do inhertance with the Channel classes
+  ☐ figure out how to do inheritance with the Channel classes
 
 Q8 USB:
   ☐ on disable/close needs to reset settings to factory so current mode doesn't cause kick
 
-Mutex:
-  ✔ Change to match format of new classes @done (17-12-21 11:31)
-  ☐ Write Linux version
-  ✔ Make NonCopyable @done (17-12-21 11:31)
-  ☐ get_last_os_error(), make static functions not print
-
 Error:
   ☐ make an error output stream or something like that
 
- Amplifer:
-   ☐ create class for amps
+Utility:
+  ☐ add json parser? header only on github seems good
+  ☐ Write Linux version of Mutex
+  ☐ get_last_os_error(), make static functions not print
+  ☐ Clean up / rethink StateMachine
 
-  Devece:
-    ✘ is this necessary, really? @cancelled (17-12-28 01:14)
-    ✔ make enable/disable return bool @done (17-12-28 01:14)
-    ✘ add open/close? @cancelled (17-12-28 01:15)
+OpenWrist:
+  ☐ figure out how to nicely integrate separate OpenWrist project outside of MEL
 
-
-
+＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
+Archive:
+ ✔ overload [] to get channel, and () on channel to set, get value @done (18-01-04 23:19) @project(Daq)
+ ✔ ranges, misc functions @done (18-01-04 19:54) @project(Daq)
+ ✔ determine what the hell Q8 velocity units are and if quadraturea affects it @done (18-01-04 19:53) @project(Daq)
+ ✘ Choose to more tightly integrate Packet or not @cancelled (17-12-30 19:21) @project(SharedMemory)
+ ✔ Make size known to class at write and read @done (17-12-30 19:21) @project(SharedMemory)
+ ✔ Q8 encoder velocity, @done (17-12-28 16:09) @project(Daq)
+ ✔ Module  <- AnalogInput / AnalogOutput / DigitalInput / DigitalOutput / Encoder ^^^ @done (17-12-28 01:16) @project(Daq)
+ ✔ Daq <- Q8Usb / CRio ^^^ @done (17-12-28 01:16) @project(Daq)
+ ✘ add open/close? @cancelled (17-12-28 01:15) @project(Devece)
+ ✘ Channel <- OutputChannel / InputChannel @cancelled (17-12-28 01:15) @project(Daq)
+ ✔ Modularize - make each I/O a separate class/module, Q8 inheret from all @done (17-12-28 01:15) @project(Daq)
+ ✘ is this necessary, really? @cancelled (17-12-28 01:14) @project(Devece)
+ ✘ Should this expose "on_enable", "on_disable", etc? Could alleviate "enable_" issue @cancelled (17-12-28 01:14) @project(Device)
+ ✔ make enable/disable return bool @done (17-12-28 01:14) @project(Devece)
+ ✔ Add control-C handler function/class @done (17-12-22 15:15) @project(Console)
+ ✔ Make NonCopyable @done (17-12-21 11:31) @project(Mutex)
+ ✔ Change to match format of new classes @done (17-12-21 11:31) @project(Mutex)
