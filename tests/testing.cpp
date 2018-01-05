@@ -23,7 +23,8 @@ int main() {
 
     while (!stop) {
         q8.update_input();
-        print(q8.encoder[0]());
+        int32 count = q8.encoder[0]();
+        print(count);
     }
 
     prompt("Press Enter to exit ...");

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MEL/Daq/Module.hpp>
+#include <MEL/Daq/ChannelBase.hpp>
 
 namespace mel {
 
@@ -48,41 +49,16 @@ public:
     }
 
     /// Encapsulates a Module channel
-    class Channel {
+    class Channel : public ChannelBase<T, Input<T>> {
+
     public:
 
         /// Default constructor. Creates invalid channel
-        Channel() : module_(nullptr), channel_number_(-1) {}
+        Channel() : ChannelBase<T, Input<T>>() {}
 
         /// Creates a valid channel.
         Channel(Input* module, uint32 channel_number) :
-            module_(module),
-            channel_number_(channel_number) { }
-
-        /// Synchronizes the channel with the real-world
-        bool update() {
-            return module_->update_channel(channel_number_);
-        }
-
-        /// Returns the current value of the channel
-        T get_value() const {
-            return module_->get_value(channel_number_);
-        }
-
-        /// Returns the current value of the channel
-        T operator()() {
-            return get_value();
-        }
-
-        /// Gets the channel number
-        uint32 get_channel_number() const {
-            return channel_number_;
-        }
-
-    protected:
-
-        Input* module_;                ///< The Module this channel is on
-        const uint32 channel_number_;  ///< The physical channel number
+            ChannelBase<T, Input<T>>(module, channel_number) { }
 
     };
 

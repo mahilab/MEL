@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MEL/Daq/Module.hpp>
+#include <MEL/Daq/ChannelBase.hpp>
 
 namespace mel {
 
@@ -50,20 +51,6 @@ public:
     }
 
 public:
-
-    /// Sets the current channel values of this Module. If the incorrect number
-    /// of values is pass, no values are set.
-    void set_values(const std::vector<T>& values) {
-        if (validate_channel_count(values))
-            Module<T>::values_ = values;
-    }
-
-    /// Sets the current value of a single channel. If an invalid channel number
-    /// is passed, non value is set
-    void set_value(uint32 channel_number, T value) {
-        if (Module<T>::validate_channel_number(channel_number))
-            Module<T>::values_[Module<T>::channel_map_.at(channel_number)] = value;
-    }
 
     /// Sets the initial values to be written on enable
     void set_enable_values(const std::vector<T>& enable_values) {
@@ -119,69 +106,35 @@ protected:
 
 public:
 
-    /// Encapsulates and Output channel
-    class Channel {
+    /// Encapsulates a Module channel
+    class Channel : public ChannelBase<T, Output<T>> {
 
     public:
 
         /// Default constructor. Creates invalid channel
-        Channel() : module_(nullptr), channel_number_(-1) {}
+        Channel() : ChannelBase<T, Output<T>>() {}
 
-        /// Creates a valid channel
+        /// Creates a valid channel.
         Channel(Output* module, uint32 channel_number) :
-            module_(module),
-            channel_number_(channel_number)
-        { }
-
-        /// Updates this channel with the real-world
-        bool update() {
-            return module_->update_channel(channel_number_);
-        }
-
-        /// Returns the current value of the channel
-        T get_value() const {
-            return module_->get_value(channel_number_);
-        }
-
-        /// Returns the current value of the channel
-        T operator()() {
-            return get_value();
-        }
-
-        /// Sets the current value of the channel
-        void set_value(T value) {
-            module_->set_value(channel_number_, value);
-        }
-
-        /// Sets the current value of the channel
-        void operator()(T value) {
-            set_value(value);
-        }
+            ChannelBase<T, Output<T>>(module, channel_number) { }
 
         /// Sets the enable value of the channel
         void set_enable_value(T enable_value) {
-            module_->set_intial_value(channel_number_, enable_value);
+            ChannelBase<T, Output<T>>::module_->set_intial_value(
+                ChannelBase<T, Output<T>>::channel_number_, enable_value);
         }
 
         /// Sets the disable value of the channel
         void set_disable_value(T disable_value) {
-            module_->set_disable_value(channel_number_, disable_value);
+            ChannelBase<T, Output<T>>::module_->set_disable_value(
+                ChannelBase<T, Output<T>>::channel_number_, disable_value);
         }
 
         /// Sets the expiration value of the channel
         bool set_expire_value(T expire_value) {
-            return module_->set_expire_value(channel_number_, expire_value);
+            return ChannelBase<T, Output<T>>::module_->set_expire_value(
+                ChannelBase<T, Output<T>>::channel_number_, expire_value);
         }
-
-        /// Gets the channel number
-        uint32 get_channel_number() const {
-            return channel_number_;
-        }
-
-    private:
-
-        Output* module_;               ///< The Output Module this channel is on
-        const uint32 channel_number_;  ///< The physical channel number
 
     };
 

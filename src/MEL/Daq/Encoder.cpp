@@ -127,14 +127,12 @@ void Encoder::compute_conversions() {
 
 Encoder::Channel::Channel() :
     PositionSensor("invalid_encoder"),
-    module_(nullptr),
-    channel_number_(-1)
+    ChannelBase()
 { }    
 
 Encoder::Channel::Channel(Encoder* module, uint32 channel_number) :
     PositionSensor(module->get_name() + "_encoder"),
-    module_(module),
-    channel_number_(channel_number)
+    ChannelBase(module, channel_number)
 { }
 
 bool Encoder::Channel::enable() {
@@ -150,32 +148,12 @@ double Encoder::Channel::get_position() {
     return position_;
 }
 
-bool Encoder::Channel::update() {
-    return module_->update_channel(channel_number_);
-}
-
-int32 Encoder::Channel::get_value() const {
-    return module_->get_value(channel_number_);
-}
-
-int32 Encoder::Channel::operator()() {
-    return get_value();
-}
-
-uint32 Encoder::Channel::get_channel_number() const {
-    return channel_number_;
-}
-
 bool Encoder::Channel::zero() {
     return module_->zero_channel(channel_number_);
 }
 
 bool Encoder::Channel::reset_count(int32 count) {
     return module_->reset_count(channel_number_, count);
-}
-
-void Encoder::Channel::operator()(int32 count) {
-    reset_count(count);
 }
 
 bool Encoder::Channel::set_quadrature_factor(QuadFactor factor) {

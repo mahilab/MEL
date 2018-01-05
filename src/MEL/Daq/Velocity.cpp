@@ -100,14 +100,12 @@ namespace mel {
 
     Velocity::Channel::Channel() :
         VelocitySensor("invalid_velocity"),
-        module_(nullptr),
-        channel_number_(-1)
+        ChannelBase()
     { }
 
     Velocity::Channel::Channel(Velocity* module, uint32 channel_number) :
         VelocitySensor(module->get_name() + "_velocity"),
-        module_(module),
-        channel_number_(channel_number)
+        ChannelBase(module, channel_number)
     { }
 
     bool Velocity::Channel::enable() {
@@ -121,22 +119,6 @@ namespace mel {
     double Velocity::Channel::get_velocity() {
         velocity_ = module_->get_velocity(channel_number_);
         return velocity_;
-    }
-
-    bool Velocity::Channel::update() {
-        return module_->update_channel(channel_number_);
-    }
-
-    double Velocity::Channel::get_value() const {
-        return module_->get_value(channel_number_);
-    }
-
-    double Velocity::Channel::operator()() {
-        return get_value();
-    }
-
-    uint32 Velocity::Channel::get_channel_number() const {
-        return channel_number_;
     }
 
     bool Velocity::Channel::set_quadrature_factor(QuadFactor factor) {

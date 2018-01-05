@@ -91,6 +91,20 @@ public:
         return T();
     }
 
+    /// Sets the current channel values of this Module. If the incorrect number
+    /// of values is pass, no values are set.
+    void set_values(const std::vector<T>& values) {
+        if (validate_channel_count(values))
+            values_ = values;
+    }
+
+    /// Sets the current value of a single channel. If an invalid channel number
+    /// is passed, non value is set
+    void set_value(uint32 channel_number, T value) {
+        if (validate_channel_number(channel_number))
+            values_[channel_map_.at(channel_number)] = value;
+    }
+
 
     /// Gets the vector of channel numbers this Module maintains
     const std::vector<uint32>& get_channel_numbers() const {

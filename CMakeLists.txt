@@ -303,5 +303,5 @@ if(EXAMPLES)
 endif()
 
 # testing
-# add_executable(testing tests/testing.cpp)
-# target_link_libraries(testing MEL)
+add_executable(testing tests/testing.cpp)
+target_link_libraries(testing MEL)

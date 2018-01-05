@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MEL/Daq/Module.hpp>
+#include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
 
 namespace mel {
@@ -71,37 +72,31 @@ namespace mel {
     public:
 
         /// Encapsulates and EncoderModule channel, which is also a PositionSensor
-        class Channel : public VelocitySensor {
+        class Channel : public ChannelBase<double, Velocity>, public VelocitySensor {
 
         public:
 
             /// Default constructor. Creates invalid channel
             Channel();
+
             /// Creates a valid channel.
             Channel(Velocity* module, uint32 channel_number);
+
             /// Enables the velocity sensor
             bool enable() override;
+
             /// Disables the velocity sensor
             bool disable() override;
+
             /// Gets the current velocity
             double get_velocity() override;
-            /// Synchronizes the velocity sensor with the real-world
-            bool update();
-            /// Returns the current value of the channel
-            double get_value() const;
-            /// Returns the current value of the channel
-            double operator()();
-            /// Gets the channel number
-            uint32 get_channel_number() const;
+   
             /// Sets the encoder quadrature factor
             bool set_quadrature_factor(QuadFactor factor);
+
             /// Sets the encoder units/count
             void set_units_per_count(double units_per_count);
 
-        private:
-
-            Velocity* module_;             ///< The Module this channel is on
-            const uint32 channel_number_;  ///< The physical channel number
         };
 
     };

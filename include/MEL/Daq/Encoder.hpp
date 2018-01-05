@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MEL/Daq/Module.hpp>
+#include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 
 namespace mel {
@@ -37,8 +38,6 @@ public:
     virtual bool set_quadrature_factor(uint32 channel_number, QuadFactor factor) = 0;
 
 public:
-
-    //Channel& operator[](uint32 channel_number);
 
     /// Zeros all encoder channels
     bool zero();
@@ -85,43 +84,37 @@ protected:
 public:
 
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
-    class Channel : public PositionSensor {
+    class Channel : public ChannelBase<int32, Encoder>, public PositionSensor {
 
     public:
 
         /// Default constructor. Creates invalid channel
         Channel();
+
         /// Creates a valid channel.
         Channel(Encoder* module, uint32 channel_number);
+
         /// Enables the encoder
         bool enable() override;
+
         /// Disables the encoder
         bool disable() override;
+
         /// Gets the encoder position
         double get_position() override;
-        /// Synchronizes the encoder with the real-world
-        bool update();
-        /// Gets the current count of the encoder
-        int32 get_value() const;
-        /// Gets the current count of the encoder
-        int32 operator()();
-        /// Gets the channel number
-        uint32 get_channel_number() const;
+
         /// Zeros the encoder count
         bool zero();
+
         /// Sets the encoder count to a specific value
         bool reset_count(int32 count);
-        /// Sets the encoder count to a specific value
-        void operator()(int32 count);
+
         /// Sets the encoder quadrature factor
         bool set_quadrature_factor(QuadFactor factor);
+
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);
 
-    private:
-
-        Encoder* module_;              ///< The Module this channel is on
-        const uint32 channel_number_;  ///< The physical channel number
     };
 
 };
