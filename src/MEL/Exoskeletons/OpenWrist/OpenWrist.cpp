@@ -34,11 +34,11 @@ OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
 
         Joint joint(
             "ow_joint_" + num,
+            motors_[i],
+            params_.eta_[i],
             config_.encoder_channels_[i],
             params_.eta_[i],
             config_.velocity_channels_[i],
-            params_.eta_[i],
-            motors_[i],
             params_.eta_[i],
             std::array<double, 2>({ params_.pos_limits_neg_[i] , params_.pos_limits_pos_[i] }),
             params_.vel_limits_[i],

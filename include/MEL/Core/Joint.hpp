@@ -5,6 +5,7 @@
 #include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Core/Actuator.hpp>
 #include <array>
+#include <memory>
 
 namespace mel {
 
@@ -18,12 +19,12 @@ public:
 
     /// Default constructor
     Joint(const std::string& name, 
+        Actuator& actuator,
+        double actuator_transmission,
         PositionSensor& position_sensor, 
         double position_sensor_transmission,
         VelocitySensor& velocity_sensor, 
         double velocity_sensor_transmission,
-        Actuator& actuator,              
-        double actuator_transmission,
         std::array<double, 2> position_limits, 
         double velocity_limit, 
         double torque_limit, 
@@ -35,10 +36,10 @@ public:
     /// Disables the joint's position sensor, velocity sensor, and actuator
     bool disable() override;
 
-    /// Converts PositionSensor position to RobotJoint position
+    /// Converts PositionSensor position to Joint position
     double get_position();
 
-    /// Converts PositionSensor velocity to RobotJoint velocity
+    /// Converts PositionSensor velocity to Joint velocity
     double get_velocity();
 
     /// Returns the currently set joint torque
@@ -51,34 +52,32 @@ public:
     void add_torque(double additional_torque);
 
     /// Gets current position, checks it against limits, and returns true if min or max exceeded, false otherwise
-    bool check_position_limits();
+    bool position_limit_exceeded();
 
     /// Gets current velocity, checks it against limit, and returns true if exceeded, false otherwise
-    bool check_velocity_limit();
+    bool velocity_limit_exceeded();
 
     ///  Gets last commanded torque, checks it against torque limit, and returns true if exceeded, false otherise
-    bool check_torque_limit();
+    bool torque_limit_exceeded();
 
     /// Gets current position, velocity, and torque, checks them against limits, and returns true if either exceeded, false otherwise
-    bool check_all_limits();
+    bool any_limit_exceeded();
 
-public:
+protected:
 
+    Actuator&       actuator_;
     PositionSensor& position_sensor_;
     VelocitySensor& velocity_sensor_;
-    Actuator& actuator_;
 
+    const double actuator_transmission_;
     const double position_sensor_transmission_;
     const double velocity_sensor_transmission_;
-    const double actuator_transmission_;
 
     std::array<double, 2> position_limits_; ///< the [min, max] position limits of the Joint
     double velocity_limit_; ///< the absolute limit on the Joint's velocity
     bool has_torque_limit_; ///< whether or not the Joint should enforce torque limits
 
     bool saturate_; ///< command torques will be saturated at the torque limit if this is true
-
-protected:
 
     double position_; ///< the stored position of the Joint since the last call to get_position()
     bool has_position_limits_; ///< whether or not the Joint should check position limits

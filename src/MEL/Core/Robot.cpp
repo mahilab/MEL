@@ -66,7 +66,7 @@ void Robot::set_joint_torques(std::vector<double> new_torques) {
 bool Robot::check_all_joint_position_limits() {
     bool exceeded = false;
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-        if (it->check_position_limits()) {
+        if (it->position_limit_exceeded()) {
             exceeded = true;
         }
     }
@@ -76,7 +76,7 @@ bool Robot::check_all_joint_position_limits() {
 bool Robot::check_all_joint_velocity_limits() {
     bool exceeded = false;
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-        if (it->check_velocity_limit()) {
+        if (it->velocity_limit_exceeded()) {
             exceeded = true;
         }
     }
@@ -86,7 +86,7 @@ bool Robot::check_all_joint_velocity_limits() {
 bool Robot::check_all_joint_torque_limits() {
     bool exceeded = false;
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-        if (it->check_torque_limit()) {
+        if (it->torque_limit_exceeded()) {
             exceeded = true;
         }
     }
@@ -96,7 +96,7 @@ bool Robot::check_all_joint_torque_limits() {
 bool Robot::check_all_joint_limits() {
     bool exceeded = false;
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-        if (it->check_all_limits()) {
+        if (it->any_limit_exceeded()) {
             exceeded = true;
         }
     }

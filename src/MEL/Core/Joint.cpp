@@ -6,23 +6,23 @@
 namespace mel {
 
  Joint::Joint(const std::string& name,
+        Actuator& actuator, 
+        double actuator_transmission,
         PositionSensor& position_sensor,
         double position_sensor_transmission,
         VelocitySensor& velocity_sensor, 
         double velocity_sensor_transmission,
-        Actuator& actuator, 
-        double actuator_transmission,
         std::array<double, 2> position_limits,
         double velocity_limit,
         double torque_limit,
         bool saturate) :
     Device(name),
+    actuator_(actuator),
+    actuator_transmission_(actuator_transmission),
     position_sensor_(position_sensor),
     position_sensor_transmission_(position_sensor_transmission),
     velocity_sensor_(velocity_sensor),
     velocity_sensor_transmission_(velocity_sensor_transmission),
-    actuator_(actuator),
-    actuator_transmission_(actuator_transmission),
     position_(0.0),
     position_limits_(position_limits),
     has_position_limits_(true),
@@ -66,7 +66,7 @@ double Joint::get_torque() {
 
 void Joint::set_torque(double new_torque) {
     torque_ = new_torque;
-    if (check_torque_limit() && saturate_) {
+    if (torque_limit_exceeded() && saturate_) {
         print("WARNING: Joint " + namify(name_) + " command torque saturated to " + std::to_string(torque_limit_) + ".");
         torque_ = saturate(torque_, torque_limit_);
     }
@@ -78,7 +78,7 @@ void Joint::add_torque(double additional_torque) {
     set_torque(torque_);
 }
 
-bool Joint::check_torque_limit() {
+bool Joint::torque_limit_exceeded() {
     bool exceeded = false;
     if (has_torque_limit_ && abs(torque_) > torque_limit_) {
         print("WARNING: Joint " + namify(name_) + " command torque exceeded the torque limit " + std::to_string(torque_limit_) + " with a value of " + std::to_string(torque_) + ".");
@@ -87,7 +87,7 @@ bool Joint::check_torque_limit() {
     return exceeded;
 }
 
-bool Joint::check_position_limits() {
+bool Joint::position_limit_exceeded() {
     get_position();
     bool exceeded = false;
     if (has_position_limits_ && position_ < position_limits_[0]) {
@@ -101,7 +101,7 @@ bool Joint::check_position_limits() {
     return exceeded;
 }
 
-bool Joint::check_velocity_limit() {
+bool Joint::velocity_limit_exceeded() {
     get_velocity();
     bool exceeded = false;
     if (has_velocity_limit_ && abs(velocity_) > velocity_limit_) {
@@ -111,13 +111,13 @@ bool Joint::check_velocity_limit() {
     return exceeded;
 }
 
-bool Joint::check_all_limits() {
+bool Joint::any_limit_exceeded() {
     bool exceeded = false;
-    if (check_position_limits())
+    if (position_limit_exceeded())
         exceeded = true;
-    if (check_velocity_limit())
+    if (velocity_limit_exceeded())
         exceeded = true;
-    if (check_torque_limit())
+    if (torque_limit_exceeded())
         exceeded = true;
     return exceeded;
 }
