@@ -36,6 +36,9 @@ public:
     /// Gets a reference to a Robot's Joint
     Joint& get_joint(uint32 joint_number);
 
+    /// Gets a reference to a Robot's Joint
+    Joint& operator[](uint32 joint_number);
+
     /// Get the most recently read robot joint positions.
     std::vector<double> get_joint_positions();
 

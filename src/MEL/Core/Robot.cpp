@@ -3,12 +3,12 @@
 
 namespace mel {
 
-Robot::Robot() : 
-    Device("invalid_robot") 
+Robot::Robot() :
+    Device("invalid_robot")
 {}
 
-Robot::Robot(std::string name) : 
-    Device(name) 
+Robot::Robot(std::string name) :
+    Device(name)
 {}
 
 bool Robot::enable() {
@@ -33,6 +33,10 @@ void Robot::add_joint(const Joint& joint) {
 
 Joint& Robot::get_joint(uint32 joint_number) {
     return joints_[static_cast<std::size_t>(joint_number)];
+}
+
+Joint& Robot::operator[](uint32 joint_number) {
+    return get_joint(joint_number);
 }
 
 std::vector<double> Robot::get_joint_positions() {

@@ -49,6 +49,7 @@ bool QDaq::close() {
     if (!open_)
         return false;
     print("Closing " + namify(name_) + " ... ", false);
+    set_options(QOptions());
     t_error result;
     result = hil_close(handle_);
     sleep(milliseconds(10));

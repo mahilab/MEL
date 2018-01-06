@@ -14,6 +14,8 @@ Communication:
 
 Core:
   ☐ create class for amps
+  ☐ overload [] operator for robot to go to joint
+  ☐ make safety check functions more descriptive
 
 Daq:
   ☐ figure out how to do inheritance with the Channel classes
@@ -37,7 +39,7 @@ OpenWrist:
 Archive:
  ✔ overload [] to get channel, and () on channel to set, get value @done (18-01-04 23:19) @project(Daq)
  ✔ ranges, misc functions @done (18-01-04 19:54) @project(Daq)
- ✔ determine what the hell Q8 velocity units are and if quadraturea affects it @done (18-01-04 19:53) @project(Daq)
+ ✔ determine what the hell Q8 velocity units are and if quadrature affects it @done (18-01-04 19:53) @project(Daq)
  ✘ Choose to more tightly integrate Packet or not @cancelled (17-12-30 19:21) @project(SharedMemory)
  ✔ Make size known to class at write and read @done (17-12-30 19:21) @project(SharedMemory)
  ✔ Q8 encoder velocity, @done (17-12-28 16:09) @project(Daq)
@@ -45,7 +47,7 @@ Archive:
  ✔ Daq <- Q8Usb / CRio ^^^ @done (17-12-28 01:16) @project(Daq)
  ✘ add open/close? @cancelled (17-12-28 01:15) @project(Devece)
  ✘ Channel <- OutputChannel / InputChannel @cancelled (17-12-28 01:15) @project(Daq)
- ✔ Modularize - make each I/O a separate class/module, Q8 inheret from all @done (17-12-28 01:15) @project(Daq)
+ ✔ Modularize - make each I/O a separate class/module, Q8 inherent from all @done (17-12-28 01:15) @project(Daq)
  ✘ is this necessary, really? @cancelled (17-12-28 01:14) @project(Devece)
  ✘ Should this expose "on_enable", "on_disable", etc? Could alleviate "enable_" issue @cancelled (17-12-28 01:14) @project(Device)
  ✔ make enable/disable return bool @done (17-12-28 01:14) @project(Devece)

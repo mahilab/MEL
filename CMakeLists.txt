@@ -284,6 +284,9 @@ if(EXAMPLES)
     add_executable(melscope examples/melscope.cpp)
     target_link_libraries(melscope MEL)
 
+    add_executable(options examples/options.cpp)
+    target_link_libraries(options MEL)
+
     if(QUANSER)
         add_executable(q8usb examples/q8usb.cpp)
         target_link_libraries(q8usb MEL)
