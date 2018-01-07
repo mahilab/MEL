@@ -21,7 +21,9 @@ class MelShare(object):
         self.shm.seek(0)
         self.mutex.try_lock()
         size = struct.unpack('I', self.shm.read(4))[0]
-        data = array.array('d', self.shm.read(size)).tolist()
+        data = []
+        if size > 0:
+            data = array.array('d', self.shm.read(size)).tolist()
         self.mutex.release()
         return data
 
@@ -38,7 +40,9 @@ class MelShare(object):
         self.shm.seek(0)
         self.mutex.try_lock()
         size = struct.unpack('I', self.shm.read(4))[0]
-        message = self.shm.read(size - 1)
+        message = ''
+        if size > 0:
+            message = self.shm.read(size - 1)
         self.mutex.release()
         return message
 

@@ -173,7 +173,8 @@ def update_sample_rate():
 # MELSHARE VARIABLES / FUNCTIONS
 #==============================================================================
 
-# MELSHARE_DLL = ctypes.WinDLL("MELShare.dll")
+SAMPLE_DURATION = 10
+NUM_SAMPLES = int(SAMPLE_DURATION * SAMPLE_TARGET * 1.1)
 
 MELSHARE_MODES_OPTIONS = ['Read Only', 'Write Only']
 
@@ -182,8 +183,6 @@ MELSHARE_OBJS = {}
 MELSHARE_MODES = {}
 MELSHARE_SIZES = {}
 MELSHARE_CONNECTIONS = {}
-#MELSHARE_DOUBLE_ARRAYS  = {}
-#MELSHARE_BUFFERS =  {}
 MELSHARE_DATA = {}
 MELSHARE_SAMPLED_DATA = {}
 MELSHARE_BUFFERS_TEXT = {}
@@ -197,21 +196,15 @@ def add_melshare(name, mode):
         MELSHARE_NAMES.append(name)
         MELSHARE_OBJS[name] = MelShare(name)
         MELSHARE_MODES[name] = mode
-        # result = MELSHARE_DLL.get_map_size(name)
         result = MELSHARE_OBJS[name].get_size()
         if result > 0:
             MELSHARE_SIZES[name] = result / 8
             MELSHARE_CONNECTIONS[name] = True
-            # MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * result
-            # MELSHARE_BUFFERS[name] = MELSHARE_DOUBLE_ARRAYS[name]()
-            # read_melshare(name)
             MELSHARE_DATA[name] = MELSHARE_OBJS[name].read_data()
             MELSHARE_BUFFERS_TEXT[name] = ['%0.4f' % value for value in MELSHARE_DATA[name]]
         else:
             MELSHARE_SIZES[name] = 0
             MELSHARE_CONNECTIONS[name] = False
-            # MELSHARE_DOUBLE_ARRAYS[name] = None
-            # MELSHARE_BUFFERS[name] = None
             MELSHARE_DATA[name] = [0.0] * MELSHARE_SIZES[name]
             MELSHARE_BUFFERS_TEXT[name] = None
         MELSHARE_SAMPLED_DATA[name] = None
@@ -224,33 +217,24 @@ def add_melshare(name, mode):
 def reconnect_melshare(name):
     # print 'CALL: reconnect_melshare()'
     if name in MELSHARE_NAMES:
-        # result = MELSHARE_DLL.get_map_size(name)
         if name not in MELSHARE_OBJS:
             MELSHARE_OBJS[name] = MelShare(name)
         result = MELSHARE_OBJS[name].get_size()
         if result > 0:
             MELSHARE_SIZES[name] = result / 8
             MELSHARE_CONNECTIONS[name] = True
-            # MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * result
-            # MELSHARE_BUFFERS[name] = MELSHARE_DOUBLE_ARRAYS[name]()
-            # read_melshare(name)
             MELSHARE_DATA[name] = MELSHARE_OBJS[name].read_data()
             MELSHARE_BUFFERS_TEXT[name] = ['%0.4f' % value for value in MELSHARE_DATA[name]]
         else:
             MELSHARE_CONNECTIONS[name] = False
-            # MELSHARE_DOUBLE_ARRAYS[name] = ctypes.c_double * MELSHARE_SIZES[name]
-            # MELSHARE_BUFFERS[name] =  MELSHARE_DOUBLE_ARRAYS[name]()
             MELSHARE_DATA[name] = [0.0] * MELSHARE_SIZES[name]
             MELSHARE_BUFFERS_TEXT[name] = ['0.00'] * MELSHARE_SIZES[name]
         MELSHARE_SAMPLED_DATA[name] = None
-    # print_melshare_info()
 
 def purge_melshare_dicts(name):
     del MELSHARE_MODES[name]
     del MELSHARE_SIZES[name]
     del MELSHARE_CONNECTIONS[name]
-    # del MELSHARE_DOUBLE_ARRAYS[name]
-    # del MELSHARE_BUFFERS[name]
     del MELSHARE_DATA[name]
     del MELSHARE_SAMPLED_DATA[name]
     del MELSHARE_BUFFERS_TEXT[name]
@@ -265,7 +249,6 @@ def remove_melshare(name):
         purge_melshare_dicts(name)
         MELSHARE_NAMES.remove(name)
         reload_melshares()
-    # print_melshare_info()
 
 def remove_all_melshares():
     # print "CALL: remove_all_melshares()"
@@ -273,16 +256,6 @@ def remove_all_melshares():
     for name in MELSHARE_NAMES:
         purge_melshare_dicts(name)
     MELSHARE_NAMES = []
-
-# def read_melshare(name):
-#     if MELSHARE_CONNECTIONS[name]:
-#         return MELSHARE_DLL.read_double_map(name,
-#             ctypes.byref(MELSHARE_BUFFERS[name]), MELSHARE_SIZES[name])
-
-# def write_melshare(name):
-#     if MELSHARE_CONNECTIONS[name]:
-#         return MELSHARE_DLL.write_double_map(name,
-#         ctypes.byref(MELSHARE_BUFFERS[name]), MELSHARE_SIZES[name])
 
 def all_melshares_connected():
     if len(MELSHARE_NAMES) == 0:
@@ -300,17 +273,7 @@ def any_melshares_connected():
             return True
     return False
 
-def print_melshare_info():
-    print '    MELSHARE_NAMES:        ', MELSHARE_NAMES
-    print '    MELSHARE_MODES:        ', MELSHARE_MODES
-    print '    MELSHARE_SIZES:        ', MELSHARE_SIZES
-    print '    MELSHARE_CONNECTIONS:  ', MELSHARE_CONNECTIONS
-    # print '    MELSHARE_DOUBLE_ARRAYS:', MELSHARE_DOUBLE_ARRAYS
-    # print '    MELSHARE_BUFFERS:      ', MELSHARE_BUFFERS
-    print '    MELSHARE_DATA:         ', MELSHARE_DATA
 
-SAMPLE_DURATION = 10
-NUM_SAMPLES = int(SAMPLE_DURATION * SAMPLE_TARGET * 1.1)
 
 def save_melshare_times():
     global MELSHARE_SAMPLED_TIMES
@@ -337,7 +300,6 @@ def reset_melshare_sampling(name):
     MELSHARE_DATA[name] = MELSHARE_OBJS[name].read_data()
     for i in range(MELSHARE_SIZES[name]):
         MELSHARE_SAMPLED_DATA[name].append(np.ones(NUM_SAMPLES) * MELSHARE_DATA[name][i])
-    # print_melshare_info()
 
 #==============================================================================
 # DATA / CURVE PROPERTIES SETUP
