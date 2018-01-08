@@ -33,6 +33,12 @@ public:
     /// Receives a string message from the remote host
     std::string receive_message();
 
+    /// Requests that new information be sent
+    void request();
+
+    /// Returns true if information is being requested, false otherwise
+    bool check_request();
+
     /// Set the blocking state of the MelNet
     void set_blocking(bool blocking);
 

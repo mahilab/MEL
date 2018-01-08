@@ -60,30 +60,24 @@ void blocking_B(std::string remote_host) {
 void nonblocking_A(std::string remote_host) {
     // make MelNet A
     MelNet melnetA(55001, 55002, IpAddress(remote_host), false);
-    while (melnetA.receive_message() != "Feed Me!") {
+    while (!melnetA.check_request())
         print("Waiting to Feed B");
-    }
     print("Feeding B");
-    std::vector<double> data = {0,1,2,3,4};
-    melnetA.send_data(data);
-    while (melnetA.receive_message() != "More!") {
+    melnetA.send_data({0,1,2,3,4});
+    while (!melnetA.check_request())
         print("Waiting to Feed B");
-    }
     print("Feeding B again, he's really hungy!");
-    data = {5,6,7,8,9};
-    melnetA.send_data(data);
+    melnetA.send_data({5,6,7,8,9});
 }
 
 void nonblocking_B(std::string remote_host) {
     // make MelNet B
     MelNet melnetB(55002, 55001, IpAddress(remote_host), true);
-    std::string message("Feed Me!");
-    melnetB.send_message(message);
+    melnetB.request();
     std::vector<double> data = melnetB.receive_data();
     print(data);
     prompt("Press ENTER for more!");
-    message = "More!";
-    melnetB.send_message(message);
+    melnetB.request();
     data = melnetB.receive_data();
     print(data);
 }

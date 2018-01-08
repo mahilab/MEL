@@ -59,6 +59,14 @@ std::string MelNet::receive_message() {
     }
 }
 
+void MelNet::request() {
+    send_message("request");
+}
+
+bool MelNet::check_request() {
+    return receive_message() == "request";
+}
+
 void MelNet::set_blocking(bool blocking) {
     socket_.set_blocking(blocking);
 }
