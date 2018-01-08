@@ -27,21 +27,18 @@ import ctypes
 # curve scaling (eg deg2rad)
 # scope modules to generic modules, add interactive gain modules with sliders
 # open from .scope
-# add scope mode
-# change grid item class structure to be less bulky and titles separate
-# change grid dialog that uses checkboxes
-# optimize calls to sample time and data
-# manage MELShare(s) dialog
 # changing colros when paused deletes data
 # add MelNet
 # write only shouldn't plot
+# write curves do weird things on plot -- should be hidden or fixed
+# settigns tab on each scope
 
 #==============================================================================
-# EDITABLE SETTINGS
+# DEFAULT SETTINGS
 #==============================================================================
 
 # The default theme ('Classic', 'Dark')
-THEME = 'Dark'
+DEFAULT_THEME = 'Dark'
 # The default width of each new grid box
 DEFAULT_WIDTH = 400
 # The default height of each new grid box
@@ -56,29 +53,35 @@ SAMPLE_DURATION = 10
 FPS_TARGET = 60
 # The target sampling rate (Hz)
 SAMPLE_TARGET = 100
-# The plot scrolling mode ('Fixed', 'Rolling')
-TIME_MODE = 'Rolling'
+# The default time axis mode ('Fixed', 'Rolling')
+DEFAULT_TIME_MODE = 'Fixed'
 # The default curve style ('Solid', 'Dash', 'Dot', 'Dash Dot', 'Dash Dot Dot')
 DEFAULT_CURVE_STYLE = 'Solid'
 # The default curve width
 DEFAULT_CURVE_WIDTH = 2
 
 #==============================================================================
-# PYQT INITIALIZATION
+# INITIALIZATION
 #==============================================================================
 
 myappid = 'MELScope'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 application = QtGui.QApplication([])
 application.setWindowIcon(QtGui.QIcon("melscope_icon.png"))
+
 main_window = QtGui.QMainWindow()
 main_window.setWindowTitle('MEL Scope (untitled)')
+
 main_widget = QtGui.QWidget()
 main_window.setCentralWidget(main_widget)
 main_widget.setContentsMargins(12, 12, 12, 12)
+
 grid = QtGui.QGridLayout()
 grid.setContentsMargins(0, 0, 0, 0)
 main_widget.setLayout(grid)
+
+theme = DEFAULT_THEME
+time_mode = DEFAULT_TIME_MODE
 
 #==============================================================================
 # GLOBAL CONSTANTS
@@ -183,10 +186,10 @@ def update_sample_times():
     delta_time_sr = time_now_sr - last_time_sr
     elapsed_time_sr += delta_time_sr
     last_time_sr = time_now_sr
-    if TIME_MODE == 'Fixed':
+    if time_mode == 'Fixed':
         sampled_times[:-1] = sampled_times[1:] - delta_time_sr
         sampled_times[-1] = 0
-    elif TIME_MODE == 'Rolling':
+    elif time_mode == 'Rolling':
         sampled_times[:-1] = sampled_times[1:]
         sampled_times[-1] = elapsed_time_sr
 
@@ -286,13 +289,11 @@ def add_data_source(name, mode, curve_names, curve_colors, curve_styles, curve_w
     global data_sources
     if name not in data_sources:
         data_sources[name] = DataSource(name, mode, curve_names, curve_colors, curve_styles, curve_widths)
-        reload_data_sources()
 
 def remove_data_source(name):
     global data_sources
     if name in data_sources:
         del data_sources[name]
-        reload_data_sources()
 
 def remove_all_data_sources():
     global data_sources
@@ -323,7 +324,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.view_box = self.plot_item.getViewBox()
         # configure plot settings
         self.plot_widget.setRange(xRange=[-SAMPLE_DURATION, 0], yRange=[-1, 1])
-        if TIME_MODE == 'Fixed':
+        if time_mode == 'Fixed':
             self.plot_widget.setLimits(xMin=-SAMPLE_DURATION, xMax=0)
             self.axis_bottom.setTicks(self.time_ticks)
         self.plot_widget.showGrid(x=True, y=True)
@@ -346,7 +347,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.layout.addWidget(self.label, 0, 0, 1, 1)
         self.layout.addWidget(self.plot_widget, 1, 0, 1, 1)
         self.addTab(self.scope_tab, '    Plot    ')
-        # IO Tab Setup
+        # Numeric Tab
         self.io_tab = QtGui.QWidget()
         self.io_layout = QtGui.QGridLayout()
         self.io_layout.setAlignment(QtCore.Qt.AlignTop)
@@ -358,6 +359,15 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.addTab(self.io_tab, ' Numeric ')
         self.io_names = {}
         self.io_values = {}
+        # Settings Tab
+        # self.settings_tab = QtGui.QWidget()
+        # self.settings_layout = QtGui.QGridLayout()
+        # self.settings_layout.setAlignment(QtCore.Qt.AlignTop)
+        # self.settings_label = QtGui.QLabel()
+        # self.settings_label.setAlignment(QtCore.Qt.AlignCenter)
+        # self.settings_label.setFont(BOLD_FONT)
+        # self.settings_layout.addWidget(self.settings_label, 0, 0, 1, 2)
+        # self.addTab(self.settings_tab, ' Settings ')
         # make filter
         self.filter = {}
         for name in data_sources:
@@ -367,7 +377,6 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.currentChanged.connect(self.on_tab_changed)
         self.reset_write_only = True
         # self.axis_left.range = [1.1 * x for x in self.yrange]
-
 
     def on_tab_changed(self):
         self.mode = SCOPE_MODE_OPTIONS[self.currentIndex()]
@@ -387,16 +396,17 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         # set title
         self.label.setText(self.title)
         self.io_label.setText(self.title)
+        # self.settings_label.setText(self.title)
         # validate filter
         self.validate_filter()
         # clear plot
         self.plot_widget.clear()
-        # apply THEME settings
-        self.view_box.setBackgroundColor(THEME_SCOPE_VB_COLORS[THEME])
-        self.plot_widget.setBackground(THEME_SCOPE_BG_COLORS[THEME])
-        self.axis_left.setPen(THEME_SCOPE_FB_COLORS[THEME])
-        self.axis_bottom.setPen(THEME_SCOPE_FB_COLORS[THEME])
-        if THEME == 'Classic':
+        # apply theme settings
+        self.view_box.setBackgroundColor(THEME_SCOPE_VB_COLORS[theme])
+        self.plot_widget.setBackground(THEME_SCOPE_BG_COLORS[theme])
+        self.axis_left.setPen(THEME_SCOPE_FB_COLORS[theme])
+        self.axis_bottom.setPen(THEME_SCOPE_FB_COLORS[theme])
+        if theme == 'Classic':
             color = QtGui.QColor(240, 240, 240)
             self.setStyleSheet(' background-color: %s' % color.name())
         else:
@@ -448,8 +458,8 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     if data_souce.mode == 'Read Only':
                         new_value.setReadOnly(True)
                     elif data_souce.mode == 'Write Only':
-                        io_color = QtGui.QColor(THEME_SCOPE_IO_CONFIRMED_COLORS[THEME][0], THEME_SCOPE_IO_CONFIRMED_COLORS[
-                                                THEME][1], THEME_SCOPE_IO_CONFIRMED_COLORS[THEME][2])
+                        io_color = QtGui.QColor(THEME_SCOPE_IO_CONFIRMED_COLORS[theme][0], THEME_SCOPE_IO_CONFIRMED_COLORS[
+                                                theme][1], THEME_SCOPE_IO_CONFIRMED_COLORS[theme][2])
                         new_value.setStyleSheet('background-color: %s' % io_color.name())
                         new_value.returnPressed.connect(self.confirm_write_factory(name, i, new_value))
                         new_value.textEdited.connect(self.change_io_factory(new_value))
@@ -467,7 +477,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
                     self.io_values[name].append(None)
 
     def update(self):
-        if TIME_MODE == 'Rolling':
+        if time_mode == 'Rolling':
             self.plot_widget.setLimits(xMin=elapsed_time_sr-SAMPLE_DURATION, xMax=elapsed_time_sr)
         for name in data_sources:
             for curve, io_value, filter, data, value_text in zip(self.curves[name], self.io_values[name], self.filter[name], data_sources[name].samples, data_sources[name].text):
@@ -483,7 +493,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         global write_flag
         value = float(line_edit.text())
         data_sources[name].data[index] = value
-        io_color = QtGui.QColor(THEME_SCOPE_IO_CONFIRMED_COLORS[THEME][0], THEME_SCOPE_IO_CONFIRMED_COLORS[THEME][1], THEME_SCOPE_IO_CONFIRMED_COLORS[THEME][2])
+        io_color = QtGui.QColor(THEME_SCOPE_IO_CONFIRMED_COLORS[theme][0], THEME_SCOPE_IO_CONFIRMED_COLORS[theme][1], THEME_SCOPE_IO_CONFIRMED_COLORS[theme][2])
         line_edit.setText('%0.4f' % data_sources[name].data[index])
         line_edit.setStyleSheet('background-color: %s' % io_color.name())
         status_bar.showMessage("Wrote " + str(value) + " to " + name + '[' + str(index) + '] "' + data_sources[name].curve_names[index] + '"')
@@ -493,7 +503,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         return lambda: self.confirm_write(name, index, line_edit)
 
     def change_io(self, line_edit):
-        io_color = QtGui.QColor(THEME_SCOPE_IO_CHANGING_COLORS[THEME][0], THEME_SCOPE_IO_CHANGING_COLORS[THEME][1], THEME_SCOPE_IO_CHANGING_COLORS[THEME][2])
+        io_color = QtGui.QColor(THEME_SCOPE_IO_CHANGING_COLORS[theme][0], THEME_SCOPE_IO_CHANGING_COLORS[theme][1], THEME_SCOPE_IO_CHANGING_COLORS[theme][2])
         line_edit.setStyleSheet('background-color: %s' % io_color.name())
 
     def change_io_factory(self, line_edit):
@@ -520,7 +530,7 @@ def refresh_scopes():
     for scope in scope_modules:
         scope.refresh()
 
-def add_scope_module(title, mode, yrange, show_legend=False):
+def add_scope_module(title, mode, yrange, show_legend):
     global scope_count
     scope_modules.append(ScopeModule(scope_count, title, mode, yrange, show_legend))
     scope_count += 1
@@ -529,6 +539,11 @@ def remove_scope_module():
     global scope_count
     scope_modules.pop().deleteLater()
     scope_count -= 1
+
+def remove_all_scope_modulels():
+    global scope_count
+    del scope_modules[:]
+    scope_count = 0;
 
 
 #==============================================================================
@@ -540,9 +555,9 @@ grid_cols = 1
 
 def set_theme():
     global application
-    application.setStyleSheet(THEME_STYLESHEETS[THEME])
-    pyqtgraph.setConfigOption('background', THEME_SCOPE_BG_COLORS[THEME])
-    pyqtgraph.setConfigOption('foreground', THEME_SCOPE_FB_COLORS[THEME])
+    application.setStyleSheet(THEME_STYLESHEETS[theme])
+    pyqtgraph.setConfigOption('background', THEME_SCOPE_BG_COLORS[theme])
+    pyqtgraph.setConfigOption('foreground', THEME_SCOPE_FB_COLORS[theme])
     refresh_scopes()
 
 def center_window():
@@ -619,7 +634,9 @@ def open():
         stream = file(filepath, 'r')
         config = yaml.load(stream)
         remove_all_data_sources()
+        remove_all_scope_modulels()
         deploy_config(config)
+        reload_data_sources()
         resize_grid()
         set_theme()
         reload_all()
@@ -652,14 +669,55 @@ def save_as():
 
 
 def deploy_config(config):
-    pass
-
+    global theme, grid_rows, grid_cols
+    theme = config['THEME']
+    grid_rows = config['GRID_ROWS']
+    grid_cols = config['GRID_COLS']
+    for x in config['DATA_SOURCES']:
+        add_data_source(
+            x['name'],
+            x['mode'],
+            x['curve_names'],
+            x['curve_colors'],
+            x['curve_styles'],
+            x['curve_widths'])
+    for x in config['SCOPES']:
+        add_scope_module(
+            x['title'],
+            x['mode'],
+            x['yrange'],
+            x['legend'])
+        scope_modules[-1].filter = x['filter']
 
 def generate_config():
     config = {}
-
+    config['THEME'] = theme
+    config['GRID_ROWS'] = grid_rows
+    config['GRID_COLS'] = grid_cols
+    config['DATA_SOURCES'] = []
+    for name in data_sources:
+        x = {
+            'name': data_sources[name].name,
+            'mode': data_sources[name].mode,
+            'size': data_sources[name].size,
+            'curve_names': data_sources[name].curve_names,
+            'curve_colors': data_sources[name].curve_colors,
+            'curve_styles': data_sources[name].curve_styles,
+            'curve_widths': data_sources[name].curve_widths
+        }
+        config['DATA_SOURCES'].append(x)
+    config['SCOPES'] = []
+    for scope in scope_modules:
+        x = {
+            'index': scope.index,
+            'title': scope.title,
+            'mode': scope.mode,
+            'yrange': scope.yrange,
+            'legend': scope.show_legend,
+            'filter': scope.filter
+            }
+        config['SCOPES'].append(x)
     return config
-
 
 #==============================================================================
 # DIALOG CLASSES
@@ -853,7 +911,7 @@ class ConfigureModulesDialog(QtGui.QDialog):
         self.setWindowTitle('Configure Scope(s)')
         layout = QtGui.QGridLayout(self)
 
-        c = THEME_SCOPE_FB_COLORS[THEME]
+        c = THEME_SCOPE_FB_COLORS[theme]
         border_color = QtGui.QColor(c[0], c[1], c[2])
 
         x = 0
@@ -964,14 +1022,14 @@ class ConfigureModulesDialog(QtGui.QDialog):
 
             new_min_line_edit = QtGui.QLineEdit(self)
             new_min_line_edit.setValidator(QtGui.QDoubleValidator(self))
-            new_min_line_edit.setText(str(round(scope_modules[i].axis_left.range[0] / 1.1, 2)))
+            new_min_line_edit.setText(str(scope_modules[i].yrange[0]))
             new_min_line_edit.setFixedWidth(50 * RESOLUTION_SCALE)
             self.min_line_edits.append(new_min_line_edit)
             layout.addWidget(new_min_line_edit, i + 2, 4)
 
             new_max_line_edit = QtGui.QLineEdit(self)
             new_max_line_edit.setValidator(QtGui.QDoubleValidator(self))
-            new_max_line_edit.setText(str(round(scope_modules[i].axis_left.range[1] / 1.1, 2)))
+            new_max_line_edit.setText(str(scope_modules[i].yrange[1]))
             new_max_line_edit.setFixedWidth(50 * RESOLUTION_SCALE)
             self.max_line_edits.append(new_max_line_edit)
             layout.addWidget(new_max_line_edit, i + 2, 5)
@@ -1094,6 +1152,7 @@ def prompt_add_data_source():
             status_bar.showMessage("Data Source <" + name + "> already exists.")
         else:
             add_data_source(name, mode, [], [], [], [])
+            reload_data_sources()
             status_bar.showMessage("Added Data Source <" + name + ">")
 
 def prompt_remove_melshare():
@@ -1101,6 +1160,7 @@ def prompt_remove_melshare():
     if ok:
         name = str(selection)
         remove_data_source(name)
+        reload_data_sources()
         status_bar.showMessage("Removed Data Source <" + name + ">")
 
 
@@ -1121,20 +1181,20 @@ def open_github():
     webbrowser.open('https://github.com/epezent/MEL')
 
 def prompt_scroll_mode():
-    global TIME_MODE
+    global time_mode
     selection, ok = QtGui.QInputDialog.getItem(
-        main_widget, 'Scroll Mode', 'Select Mode:', SCROLL_OPTIONS, SCROLL_OPTIONS.index(TIME_MODE), False)
+        main_widget, 'Scroll Mode', 'Select Mode:', SCROLL_OPTIONS, SCROLL_OPTIONS.index(time_mode), False)
     if ok:
-        TIME_MODE = str(selection)
+        time_mode = str(selection)
 
 def prompt_change_theme():
-    global THEME, THEME_OPTIONS
+    global theme, THEME_OPTIONS
     selection, ok = QtGui.QInputDialog.getItem(
-        main_widget, 'Theme', 'Select Theme:', THEME_OPTIONS, THEME_OPTIONS.index(THEME), False)
+        main_widget, 'Theme', 'Select Theme:', THEME_OPTIONS, THEME_OPTIONS.index(theme), False)
     if ok:
-        THEME = str(selection)
+        theme = str(selection)
         set_theme()
-        status_bar.showMessage("Theme changed to " + THEME)
+        status_bar.showMessage("Theme changed to " + theme)
 
 def reload_all():
     reload_data_sources()
