@@ -11,6 +11,7 @@ All:
 Communication:
   ☐ Write Linux implementation of SharedMemory
   ☐ Add methods for vector to Packet (just use underlying in loop?)
+  ☐ Make MelNet not use packets (for string at least)
 
 Core:
   ☐ create class for amps
@@ -21,7 +22,7 @@ Daq:
   ☐ figure out how to do inheritance with the Channel classes
 
 Q8 USB:
-  ☐ on disable/close needs to reset settings to factory so current mode doesn't cause kick
+  ✔ on disable/close needs to reset settings to factory so current mode doesn't cause kick @done (18-01-10 21:31)
 
 Error:
   ☐ make an error output stream or something like that
