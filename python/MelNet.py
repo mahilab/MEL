@@ -43,49 +43,49 @@ class MelNet(object):
 #==============================================================================
 # Example:
 #==============================================================================
-import sys
+# import sys
 
-if len(sys.argv) > 3:
-    mode = sys.argv[1]
-    ID = sys.argv[2]
-    remote_address = sys.argv[3]
-    print 'Mode:', mode
-    print 'ID:', ID
-    print 'Remote Address:', remote_address
+# if len(sys.argv) > 3:
+#     mode = sys.argv[1]
+#     ID = sys.argv[2]
+#     remote_address = sys.argv[3]
+#     print 'Mode:', mode
+#     print 'ID:', ID
+#     print 'Remote Address:', remote_address
 
-    if mode == 'blocking' and ID == 'A':
-        melnet = MelNet(55001, 55002, remote_address)
-        print melnet.receive_data()
-        melnet.send_data([5, 6, 7, 8, 9])
-        message = melnet.receive_message()
-        print message
-        melnet.send_message(message + ', World!')
+#     if mode == 'blocking' and ID == 'A':
+#         melnet = MelNet(55001, 55002, remote_address)
+#         print melnet.receive_data()
+#         melnet.send_data([5, 6, 7, 8, 9])
+#         message = melnet.receive_message()
+#         print message
+#         melnet.send_message(message + ', World!')
 
-    if mode == 'blocking' and ID == 'B':
-        melnet = MelNet(55002, 55001, remote_address)
-        melnet.send_data([0, 1, 2, 3, 4])
-        print melnet.receive_data()
-        melnet.send_message("Hello")
-        print melnet.receive_message()
+#     if mode == 'blocking' and ID == 'B':
+#         melnet = MelNet(55002, 55001, remote_address)
+#         melnet.send_data([0, 1, 2, 3, 4])
+#         print melnet.receive_data()
+#         melnet.send_message("Hello")
+#         print melnet.receive_message()
 
-    if mode == 'nonblocking' and ID == 'A':
-        melnet = MelNet(55001, 55002, remote_address, False)
-        while not melnet.check_request():
-            print 'Waiting to Feed B'
-        print 'Feeding B'
-        melnet.send_data([0,1,2,3,4]);
-        while not melnet.check_request():
-            print 'Waiting to Feed B'
-        print "Feeding B again, he's really hungy!"
-        melnet.send_data([5,6,7,8,9])
+#     if mode == 'nonblocking' and ID == 'A':
+#         melnet = MelNet(55001, 55002, remote_address, False)
+#         while not melnet.check_request():
+#             print 'Waiting to Feed B'
+#         print 'Feeding B'
+#         melnet.send_data([0,1,2,3,4]);
+#         while not melnet.check_request():
+#             print 'Waiting to Feed B'
+#         print "Feeding B again, he's really hungy!"
+#         melnet.send_data([5,6,7,8,9])
 
-    if mode == 'nonblocking' and ID == 'B':
-        melnet = MelNet(55002, 55001, remote_address)
-        melnet.request()
-        print melnet.receive_data()
-        raw_input('Press Enter for More!')
-        melnet.request()
-        print melnet.receive_data()
+#     if mode == 'nonblocking' and ID == 'B':
+#         melnet = MelNet(55002, 55001, remote_address)
+#         melnet.request()
+#         print melnet.receive_data()
+#         raw_input('Press Enter for More!')
+#         melnet.request()
+#         print melnet.receive_data()
 
 
 
