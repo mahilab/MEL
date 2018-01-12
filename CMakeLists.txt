@@ -122,6 +122,11 @@ file(GLOB SRC_COMMUNICATIONS
     "${CMAKE_SOURCE_DIR}/src/MEL/Communications/*.cpp"
 )
 
+file(GLOB SRC_COMMUNICATIONS_WINDOWS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Communications/Windows/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Communications/Windows/*.cpp"
+)
+
 file(GLOB SRC_CORE
     "${CMAKE_SOURCE_DIR}/include/MEL/Core/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Core/*.cpp"
@@ -135,6 +140,8 @@ file(GLOB SRC_DAQ
 file(GLOB SRC_NI
     "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/*.cpp"
+    "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.h"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/*.c"
 )
 
 file(GLOB SRC_QUANSER
@@ -172,13 +179,14 @@ file(GLOB SRC_UTILITY
     "${CMAKE_SOURCE_DIR}/src/MEL/Utility/*.cpp"
 )
 
-file(GLOB SRC_WINDOWS
+file(GLOB SRC_UTILITY_WINDOWS
     "${CMAKE_SOURCE_DIR}/include/MEL/Utility/Windows/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Utility/Windows/*.cpp"
 )
 
 # create filters for Visual Studio
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
+source_group("Communications\\Windows" FILES ${SRC_COMMUNICATIONS_WINDOWS})
 source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
 source_group("Daq\\NI" FILES ${SRC_NI})
@@ -189,7 +197,7 @@ source_group("Exoskeletons\\MahiExoII" FILES ${SRC_MAHIEXOII})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
-source_group("Utility\\Windows" FILES ${SRC_WINDOWS})
+source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
 
 #===============================================================================
 # SELECT SOURCE FILES BASED ON OPTIONS/PLATFORM
@@ -217,7 +225,8 @@ if(LEGACY)
 endif()
 
 if(WIN32)
-    list(APPEND SOURCE_FILES ${SRC_WINDOWS})
+    list(APPEND SOURCE_FILES ${SRC_COMMUNICATIONS_WINDOWS})
+    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS})
 endif()
 
 if(NI)
@@ -266,26 +275,28 @@ if(EXAMPLES)
     add_executable(udp examples/udp.cpp)
     target_link_libraries(udp MEL)
 
-    add_executable(mutex examples/mutexes.cpp)
-    target_link_libraries(mutex MEL)
-
     add_executable(melnet examples/melnet.cpp)
     target_link_libraries(melnet MEL)
-
-    add_executable(melshare examples/melshare.cpp)
-    target_link_libraries(melshare MEL)
-
-    add_executable(shared_memory examples/shared_memory.cpp)
-    target_link_libraries(shared_memory MEL)
 
     add_executable(ctrl_c_handling examples/ctrl_c_handling.cpp)
     target_link_libraries(ctrl_c_handling MEL)
 
-    add_executable(melscope examples/melscope.cpp)
-    target_link_libraries(melscope MEL)
-
     add_executable(options examples/options.cpp)
     target_link_libraries(options MEL)
+
+    if(WIN32)
+        add_executable(mutex examples/mutexes.cpp)
+        target_link_libraries(mutex MEL)
+
+        add_executable(shared_memory examples/shared_memory.cpp)
+        target_link_libraries(shared_memory MEL)
+
+        add_executable(melshare examples/melshare.cpp)
+        target_link_libraries(melshare MEL)
+
+        add_executable(melscope examples/melscope.cpp)
+        target_link_libraries(melscope MEL)
+    endif()
 
     if(QUANSER)
         add_executable(q8usb examples/q8usb.cpp)

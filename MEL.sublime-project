@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DNI=ON",
+			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DNI=ON -DOPENWRIST=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/build/mingw_linux"
 		},
 		{

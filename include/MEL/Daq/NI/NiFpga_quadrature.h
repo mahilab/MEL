@@ -10,7 +10,7 @@
    #define NiFpga_Version 1700
 #endif
 
-#include <MEL/Devices/NiFpga.h>
+#include <MEL/Daq/NI/NiFpga.h>
 
 /**
  * The filename of the FPGA bitfile.

@@ -6,7 +6,7 @@
  * All rights reserved.
  */
 
-#include <MEL/Devices/NiFpga.h>
+#include <MEL/Daq/NI/NiFpga.h>
 
 /*
  * Platform specific includes.

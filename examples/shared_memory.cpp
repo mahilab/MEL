@@ -1,4 +1,4 @@
-#include <MEL/Communications/SharedMemory.hpp>
+#include <MEL/Communications/Windows/SharedMemory.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <vector>

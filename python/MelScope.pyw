@@ -7,6 +7,7 @@
 #==============================================================================
 
 from MelShare import MelShare
+from MelNet import MelNet
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.ptime import time
 import pyqtgraph.widgets.RemoteGraphicsView
@@ -206,21 +207,39 @@ write_flag = False
 
 class DataSource(object):
 
-    def __init__(self, name, mode, curve_names, curve_colors, curve_styles, curve_widths):
+    def __init__(self, name, type, mode, settings, curve_names, curve_colors, curve_styles, curve_widths):
         # properties
         self.name = name
+        self.type = type
         self.mode = mode
+        self.settings = settings
         self.curve_names  = curve_names
         self.curve_colors = curve_colors
         self.curve_styles = curve_styles
         self.curve_widths = curve_widths
-        self.ms = MelShare(name)
-        self.data = self.ms.read_data()
-        self.size = len(self.data)
+        if self.type == 'melshare':
+            self.ms = MelShare(name)
+        elif self.type == 'melnet':
+            self.ms = MelNet(self.settings[0], self.settings[1], self.settings[2])
+        self.get_data()
         self.text = ['%0.4f' % value for value in self.data]
         self.samples = None
         self.reset_samples()
         self.validate_curves()
+
+    def get_data(self):
+        if self.type == 'melshare':
+            self.data = self.ms.read_data()
+        elif self.type == 'melnet':
+            self.ms.request()
+            self.data = self.ms.receive_data()
+            if self.data is None:
+                self.data = [0.0] * self.size
+        self.size = len(self.data)
+
+
+    def write(self):
+        self.ms.write_data(self.data)
 
     def reload(self):
         self.reset_samples()
@@ -228,8 +247,7 @@ class DataSource(object):
 
     def sample(self):
         # read new data
-        self.data = self.ms.read_data()
-        self.size = len(self.data)
+        self.get_data()
         # save valus to as text
         self.text = ['%0.4f' % value for value in self.data]
         # add new data to samples
@@ -239,17 +257,12 @@ class DataSource(object):
 
     def reset_samples(self):
         self.samples = []
-        self.data = self.ms.read_data()
-        self.size = len(self.data)
+        self.get_data()
         for i in range(self.size):
             self.samples.append(np.ones(NUM_SAMPLES) * self.data[i])
 
-    def write(self):
-        self.ms.write_data(self.data)
-
     def validate_curves(self):
-        self.data = self.ms.read_data()
-        self.size = len(self.data)
+        self.get_data()
         # validate curve names
         if self.size > len(self.curve_names):
             for i in range(len(self.curve_names), self.size):
@@ -285,10 +298,10 @@ def reload_data_sources():
         data_sources[name].reload()
     refresh_scopes()
 
-def add_data_source(name, mode, curve_names, curve_colors, curve_styles, curve_widths):
+def add_data_source(name, type, mode, settings, curve_names, curve_colors, curve_styles, curve_widths):
     global data_sources
     if name not in data_sources:
-        data_sources[name] = DataSource(name, mode, curve_names, curve_colors, curve_styles, curve_widths)
+        data_sources[name] = DataSource(name, type, mode, settings, curve_names, curve_colors, curve_styles, curve_widths)
 
 def remove_data_source(name):
     global data_sources
@@ -676,7 +689,9 @@ def deploy_config(config):
     for x in config['DATA_SOURCES']:
         add_data_source(
             x['name'],
+            x['type'],
             x['mode'],
+            x['settings'],
             x['curve_names'],
             x['curve_colors'],
             x['curve_styles'],
@@ -698,7 +713,9 @@ def generate_config():
     for name in data_sources:
         x = {
             'name': data_sources[name].name,
+            'type': data_sources[name].type,
             'mode': data_sources[name].mode,
+            'settings': data_sources[name].settings,
             'size': data_sources[name].size,
             'curve_names': data_sources[name].curve_names,
             'curve_colors': data_sources[name].curve_colors,
@@ -723,14 +740,14 @@ def generate_config():
 # DIALOG CLASSES
 #==============================================================================
 
-class AddDataSourceDialog(QtGui.QDialog):
+class AddMelShareDialog(QtGui.QDialog):
     def __init__(self, parent=None):
-        super(AddDataSourceDialog, self).__init__(parent)
-        self.setWindowTitle('Add Data Source')
+        super(AddMelShareDialog, self).__init__(parent)
+        self.setWindowTitle('Add MEL Share')
         self.layout = QtGui.QGridLayout(self)
 
         self.name_label = QtGui.QLabel(self)
-        self.name_label.setText("MEL Share / MEL Net   ")
+        self.name_label.setText("MEL Share Name")
         self.name_label.setFont(BOLD_FONT)
         self.layout.addWidget(self.name_label, 0, 0)
 
@@ -756,7 +773,7 @@ class AddDataSourceDialog(QtGui.QDialog):
 
     @staticmethod
     def get_input(parent=None):
-        dialog = AddDataSourceDialog(parent)
+        dialog = AddMelShareDialog(parent)
         result = dialog.exec_()
         if result == QtGui.QDialog.Accepted:
             melshare_name = str(dialog.name_line_edit.text())
@@ -764,6 +781,60 @@ class AddDataSourceDialog(QtGui.QDialog):
             return (melshare_name, melshare_mode, True)
         else:
             return (None, None, False)
+
+class AddMelNetDialog(QtGui.QDialog):
+    def __init__(self, parent=None):
+        super(AddMelNetDialog, self).__init__(parent)
+        self.setWindowTitle('Add MEL Net')
+        self.layout = QtGui.QGridLayout(self)
+
+        self.local_port_label = QtGui.QLabel(self)
+        self.local_port_label.setText("Local Port")
+        self.local_port_label.setFont(BOLD_FONT)
+        self.layout.addWidget(self.local_port_label, 0, 0)
+
+        self.remote_port_label = QtGui.QLabel(self)
+        self.remote_port_label.setText("Remote Port")
+        self.remote_port_label.setFont(BOLD_FONT)
+        self.layout.addWidget(self.remote_port_label, 0, 1)
+
+        self.remote_address_label = QtGui.QLabel(self)
+        self.remote_address_label.setText("Remote Address")
+        self.remote_address_label.setFont(BOLD_FONT)
+        self.layout.addWidget(self.remote_address_label, 0, 2)
+
+
+        self.local_port_line_edit = QtGui.QLineEdit(self)
+        self.local_port_line_edit.setValidator(QtGui.QIntValidator(self))
+        self.layout.addWidget(self.local_port_line_edit, 1, 0)
+
+        self.remote_port_line_edit = QtGui.QLineEdit(self)
+        self.remote_port_line_edit.setValidator(QtGui.QIntValidator(self))
+        self.layout.addWidget(self.remote_port_line_edit, 1, 1)
+
+        self.remote_address_line_edit = QtGui.QLineEdit(self)
+        self.layout.addWidget(self.remote_address_line_edit, 1, 2)
+
+        # OK and Cancel buttons
+        self.buttons = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel,
+            QtCore.Qt.Horizontal, self)
+        self.layout.addWidget(self.buttons, 2, 0, 1, 3)
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+    @staticmethod
+    def get_input(parent=None):
+        dialog = AddMelNetDialog(parent)
+        result = dialog.exec_()
+        if result == QtGui.QDialog.Accepted:
+            local_port = int(dialog.local_port_line_edit.text())
+            remote_port = int(dialog.remote_port_line_edit.text())
+            remote_address = str(dialog.remote_address_line_edit.text())
+            return (local_port, remote_port, remote_address, True)
+        else:
+            return (None, None, None, False)
+
 
 
 class ConfigureDataDialog(QtGui.QDialog):
@@ -1145,15 +1216,26 @@ def prompt_configure_data():
 def prompt_configure_modules():
     ConfigureModulesDialog.open_dialog()
 
-def prompt_add_data_source():
-    name, mode, ok = AddDataSourceDialog.get_input()
+def prompt_add_melshare():
+    name, mode, ok = AddMelShareDialog.get_input()
     if ok:
         if name in data_sources:
-            status_bar.showMessage("Data Source <" + name + "> already exists.")
+            status_bar.showMessage("MELShare <" + name + "> already exists.")
         else:
-            add_data_source(name, mode, [], [], [], [])
+            add_data_source(name, 'melshare', mode, None, [], [], [], [])
             reload_data_sources()
-            status_bar.showMessage("Added Data Source <" + name + ">")
+            status_bar.showMessage("Added MELShare <" + name + ">")
+
+def prompt_add_melnet():
+    local_port, remote_port, remote_address, ok = AddMelNetDialog.get_input()
+    if ok:
+        name = str(remote_port) + '@' + remote_address
+        if name in data_sources:
+            status_bar.showMessage("MELNet <" + name + "> already exists.")
+        else:
+            add_data_source(name, 'melnet', 'Read Only', [local_port, remote_port, remote_address], [], [], [], [])
+            reload_data_sources()
+            status_bar.showMessage("Added MELNet <" + name + ">")
 
 def prompt_remove_melshare():
     selection, ok = QtGui.QInputDialog.getItem(main_widget, 'Remove Data Source', 'Select Data Source:', list(data_sources.keys()), 0, False)
@@ -1250,9 +1332,13 @@ pause_action = QtGui.QAction('&Pause', main_window,
     shortcut='P',statusTip='Pause the MEL Scope', triggered=switch_pause)
 action_menu.addAction(pause_action)
 
-add_action = QtGui.QAction('&Add Data Source...', main_window,
-                               shortcut='Ctrl+A', statusTip='Add a data source', triggered=prompt_add_data_source)
-edit_menu.addAction(add_action)
+add_melshare_action = QtGui.QAction('&Add MEL Share...', main_window,
+                               shortcut='Ctrl+A', statusTip='Add a MEL Share data source', triggered=prompt_add_melshare)
+edit_menu.addAction(add_melshare_action)
+
+add_melnet_action = QtGui.QAction('Add &MEL Net...', main_window,
+                               shortcut='Ctrl+Shift+A', statusTip='Add a MEL Net data source', triggered=prompt_add_melnet)
+edit_menu.addAction(add_melnet_action)
 
 remove_action = QtGui.QAction('&Remove Data Source...', main_window,
                                shortcut='Ctrl+X', statusTip='Remove an existing data source', triggered=prompt_remove_melshare)

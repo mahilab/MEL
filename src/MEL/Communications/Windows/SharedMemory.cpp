@@ -1,5 +1,4 @@
-#include <MEL/Communications/SharedMemory.hpp>
-#include <MEL/Communications/Packet.hpp>
+#include <MEL/Communications/Windows/SharedMemory.hpp>
 #include <iostream>
 #include <cstring>
 

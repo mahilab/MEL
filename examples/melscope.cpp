@@ -1,8 +1,10 @@
-#include <MEL/Communications/MelShare.hpp>
+#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Communications/MelNet.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Clock.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Utility/Options.hpp>
 
 // To see this example in action, start this exectable then run MelScope.pyw
 // and open the provided example.scope file.
@@ -15,7 +17,17 @@ static void handler(int var) {
     stop = true;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    Options options("melscope.exe", "MEL Scope Demo");
+    options.add_options()
+        ("r", "Remote Address", value<std::string>());
+    auto result = options.parse(argc, argv);
+    std::string remote_address;
+    if (result.count("r") > 0)
+        remote_address = result["r"].as<std::string>();
+
+    print(remote_address);
 
     // register CTRL-C handler
     register_ctrl_c_handler(handler);
@@ -23,7 +35,9 @@ int main() {
     // make MelShares
     MelShare ms1("melscope1");
     MelShare ms2("melscope2");
-    MelShare ms3("melscope3");
+
+    // make MelNets
+    MelNet mn1(55001, 55002, IpAddress(remote_address), false);
 
     // create data buffers so we don't have to make them in each loop iteration
     std::vector<double> data1(2);
@@ -58,7 +72,9 @@ int main() {
         data3[1] = saw_wave.evaluate(clock.get_elapsed_time());
         // write waveform data
         ms1.write_data(data1);
-        ms3.write_data(data3);
+        // update MelNet
+        if (mn1.check_request())
+            mn1.send_data(data3);
         // let the thread sleep a little so we don't use 100% CPU
         sleep(milliseconds(1));
     }

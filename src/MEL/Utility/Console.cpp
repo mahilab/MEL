@@ -35,7 +35,7 @@ void prompt(std::string message) {
 
 void register_ctrl_c_handler(void (*function)(int)) {
     signal(SIGINT, function);
-    signal(SIGBREAK, function);
+    // signal(SIGBREAK, function);
 }
 
 //==============================================================================

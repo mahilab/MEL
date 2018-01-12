@@ -2,58 +2,42 @@ DATA_SOURCES:
 - curve_colors:
   - [31, 120, 180]
   - [227, 26, 28]
-  curve_names: [sin, square]
+  curve_names: [Triangle, Sawtooth]
+  curve_styles: [Solid, Solid]
+  curve_widths: [4, 4]
+  mode: Read Only
+  name: 55001@192.168.1.3
+  settings: [55002, 55001, 192.168.1.3]
+  size: 2
+  type: melnet
+- curve_colors:
+  - [85, 255, 0]
+  - [255, 127, 0]
+  curve_names: [Sin, Square]
   curve_styles: [Solid, Solid]
   curve_widths: [4, 4]
   mode: Read Only
   name: melscope1
+  settings: null
   size: 2
-- curve_colors:
-  - [51, 160, 44]
-  - [255, 127, 0]
-  curve_names: [sin amp, square amp]
-  curve_styles: [Solid, Solid]
-  curve_widths: [4, 4]
-  mode: Write Only
-  name: melscope2
-  size: 2
-- curve_colors:
-  - [106, 61, 154]
-  - [177, 89, 40]
-  curve_names: [triangle, sawtooth]
-  curve_styles: [Solid, Solid]
-  curve_widths: [4, 4]
-  mode: Read Only
-  name: melscope3
-  size: 2
-GRID_COLS: 3
+  type: melshare
+GRID_COLS: 2
 GRID_ROWS: 1
 SCOPES:
 - filter:
-    melscope1: [true, true]
-    melscope2: [false, false]
-    melscope3: [false, false]
+    55001@192.168.1.3: [true, true]
+    melscope1: [false, false]
   index: 0
   legend: true
   mode: Plot
-  title: waveforms1
-  yrange: [-4.0, 4.0]
+  title: Scope0
+  yrange: [-2.0, 2.0]
 - filter:
-    melscope1: [false, false]
-    melscope2: [true, true]
-    melscope3: [false, false]
+    55001@192.168.1.3: [false, false]
+    melscope1: [true, true]
   index: 1
   legend: true
-  mode: Numeric
-  title: controller
-  yrange: [-1.0, 1.0]
-- filter:
-    melscope1: [false, false]
-    melscope2: [false, false]
-    melscope3: [true, true]
-  index: 2
-  legend: true
   mode: Plot
-  title: waveforms2
+  title: Scope1
   yrange: [-2.0, 2.0]
 THEME: Dark

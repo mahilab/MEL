@@ -1,7 +1,7 @@
 #pragma once
 
-#include <MEL/Communications/SharedMemory.hpp>
-#include <MEL/Utility/Mutex.hpp>
+#include <MEL/Communications/Windows/SharedMemory.hpp>
+#include <MEL/Utility/Windows/Mutex.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <vector>

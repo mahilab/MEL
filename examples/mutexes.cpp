@@ -1,4 +1,4 @@
-#include <MEL/Utility/Mutex.hpp>
+#include <MEL/Utility/Windows/Mutex.hpp>
 #include <MEL/Utility/Console.hpp>
 
 #include <csignal>

@@ -1,6 +1,6 @@
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Communications/MelNet.hpp>
-#include "MEL/Devices/NiFpga_quadrature.h"
+#include "MEL/Daq/NI/NiFpga_quadrature.h"
 #include <MEL/Utility/Clock.hpp>
 #include <vector>
 
