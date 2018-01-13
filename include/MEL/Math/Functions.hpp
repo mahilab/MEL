@@ -34,11 +34,24 @@ int sign(T val) {
 /// Computes the absolute of a value
 extern double abs(double value);
 
+/// Returns minimum of two values
+extern double min(double a, double b);
+
+/// Returns minimum value in a a vector
+extern double min(const std::vector<double>& values);
+
+/// Returns maximum of two values
+extern double max(double a, double b);
+
+/// Returns maximum value in a a vector
+extern double max(const std::vector<double>& values);
+
 /// Computes the power of a base and exponent
 extern double pow(double base, double exp);
 
 /// Clamps value between min and max
 extern double saturate(double value, double max, double min);
+
 /// Clamps value between -abs_max and +abs_max
 extern double saturate(double value, double abs_max);
 

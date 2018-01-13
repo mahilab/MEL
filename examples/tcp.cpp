@@ -4,52 +4,73 @@
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/Clock.hpp>
 #include <MEL/Utility/Options.hpp>
+#include <MEL/Utility/System.hpp>
+#include <MEL/Math/Functions.hpp>
 
-// To run this example, open two terminals and run the following:
-
-// Terminal 1 (Server): tcp.exe -s
-// Terminal 2 (Client): tcp.exe -c
+// To run this example, open two terminals (same or different computers) and
+// run the following:
 //
-// client will send "Hello" to sever, who will append ", World!"
-// and send back the full string "Hello, World!" to client, where
-// it will be printed.
+// Terminal 1 (the "sever"):    tcp.exe -s
+// Terminal 2 (the "client"):   tcp.exe -c -r 123.456.7.8
+//
+// where 123.456.7.8 is the IP address of the server (printed by Terminal 1)
 
 using namespace mel;
 
-void server(int iterations) {
-    TcpListener listener;
-    listener.listen(55001);
-    // Wait for a connection
-    TcpSocket socket;
-    listener.accept(socket);
-    std::cout << "Connected to client: " << socket.get_remote_port() << "@" << socket.get_remote_address() << std::endl;
-    // Perform ping test
-    std::string msg;
-    Packet packet;
-    for (int i = 0; i < iterations; ++i) {
-        socket.receive(packet);
-        socket.send(packet);
+void server() {
+    std::cout << "Starting server on port 55001@" << IpAddress::get_local_address() << std::endl;
+    while (true) {
+        // Listen for connections
+        TcpListener listener;
+        listener.listen(55001);
+        // Accept connection
+        TcpSocket socket;
+        listener.accept(socket);
+        std::cout << "Connected to client: " << socket.get_remote_port() << "@" << socket.get_remote_address() << std::endl;
+        // Perform ping test
+        std::string msg;
+        Packet packet;
+        while (msg != "done") {
+            socket.receive(packet);
+            socket.send(packet);
+            packet >> msg;
+        }
+        sleep(seconds(1.0));
     }
 }
 
 void client(int iterations, int bytes, const IpAddress& remote_address) {
-    std::cout << "Connecting to server: 55001@" << remote_address << std::endl;
+    std::cout << "Connecting to server: 55001@" << remote_address << " ... ";
     TcpSocket socket;
     socket.connect(remote_address, 55001, seconds(10));
+    print("Done");
+    std::cout << "Performing ping test with " << bytes << " bytes of data and " << iterations << " iterations ... ";
     // Make dummy packet of size bytes
     std::string msg(bytes, '0');
     Packet packet;
     packet << msg;
+    std::vector<double> pings;
+    pings.reserve(iterations);
     Clock clock;
     // Perform ping test
     for (int i = 0; i < iterations; ++i) {
         clock.restart();
         socket.send(packet);
         socket.receive(packet);
-        Time t = clock.get_elapsed_time();
-        print("Ping: ", false);
-        print(t);
+        pings.push_back(clock.get_elapsed_time().as_microseconds());
     }
+    packet.clear();
+    msg = "done";
+    packet << msg;
+    socket.send(packet);
+    print("Done");
+    int mean_ping = mean(pings);
+    int std_ping = stddev_p(pings);
+    int min_ping = min(pings);
+    int max_ping = max(pings);
+    print("Avg Ping: " + stringify(mean_ping) + " +/- " + stringify(std_ping) + " usec");
+    print("Min Ping: " + stringify(min_ping) + " usec");
+    print("Max Ping: " + stringify(max_ping) + " usec");
 }
 
 int main(int argc, char *argv[]) {
@@ -57,12 +78,12 @@ int main(int argc, char *argv[]) {
     // Setup program options
     Options options("udp.exe", "UDP Ping Test");
     options.add_options()
-        ("s", "Sever")
-        ("c", "Client")
-        ("r", "Remote Address", value<std::string>())
-        ("i", "Ping Iterations", value<int>())
-        ("b", "Message Size in Bytes", value<int>())
-        ("h,help", "Help Message");
+    ("s", "Sever Mode")
+    ("c", "Client Mode")
+    ("r", "Remote Server Address", value<std::string>())
+    ("i", "Ping Iterations", value<int>())
+    ("b", "Message Size in Bytes", value<int>())
+    ("h,help", "Help Message");
     auto input = options.parse(argc, argv);
     if (input.count("h") > 0) {
         print(options.help());
@@ -75,7 +96,7 @@ int main(int argc, char *argv[]) {
         bytes = input["b"].as<int>();
 
     // Set iterations
-    int i = 100;
+    int i = 1000;
     if (input.count("i") > 0)
         i = input["i"].as<int>();
 
@@ -86,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     // Run TCP server/client code
     if (input.count("s") > 0)
-        server(i);
+        server();
     else if (input.count("c") > 0)
         client(i, bytes, remote_address);
     else

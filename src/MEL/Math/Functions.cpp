@@ -56,6 +56,22 @@ double abs(double value) {
     return std::abs(value);
 }
 
+double min(double a, double b) {
+    return std::min(a, b);
+}
+
+double min(const std::vector<double>& values) {
+    return *min_element(values.begin(), values.end());
+}
+
+double max(double a, double b) {
+    return std::max(a, b);
+}
+
+double max(const std::vector<double>& values) {
+    return *max_element(values.begin(), values.end());
+}
+
 /// Computes the power of a number
 double pow(double base, double exp){
     return std::pow(base, exp);
