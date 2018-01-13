@@ -18,7 +18,7 @@
 using namespace mel;
 
 void server() {
-    std::cout << "Starting server on port 55001@" << IpAddress::get_local_address() << std::endl;
+    std::cout << "Starting TCP server on port 55001@" << IpAddress::get_local_address() << std::endl;
     while (true) {
         // Listen for connections
         TcpListener listener;
