@@ -272,6 +272,9 @@ target_link_libraries(MEL ${LINK_LIBS})
 
 if(EXAMPLES)
 
+    add_executable(tcp examples/tcp.cpp)
+    target_link_libraries(tcp MEL)
+
     add_executable(udp examples/udp.cpp)
     target_link_libraries(udp MEL)
 
@@ -284,6 +287,9 @@ if(EXAMPLES)
     add_executable(options examples/options.cpp)
     target_link_libraries(options MEL)
 
+    add_executable(melscope examples/melscope.cpp)
+    target_link_libraries(melscope MEL)
+
     if(WIN32)
         add_executable(mutex examples/mutexes.cpp)
         target_link_libraries(mutex MEL)
@@ -294,8 +300,6 @@ if(EXAMPLES)
         add_executable(melshare examples/melshare.cpp)
         target_link_libraries(melshare MEL)
 
-        add_executable(melscope examples/melscope.cpp)
-        target_link_libraries(melscope MEL)
     endif()
 
     if(QUANSER)

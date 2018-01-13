@@ -1,7 +1,6 @@
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/Socket.hpp>
-// #include <SFML/System/Err.hpp>
 #include <algorithm>
 
 namespace mel {

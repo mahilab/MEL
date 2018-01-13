@@ -43,6 +43,8 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
+class TcpSocket;
+class TcpListener;
 class UdpSocket;
 class IpAddress;
 class Packet;
@@ -129,6 +131,8 @@ protected:
 
 private:
 
+    friend class TcpSocket;
+    friend class TcpListener;
     friend class UdpSocket;
     friend class IpAddress;
     friend class Packet;

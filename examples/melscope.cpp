@@ -1,4 +1,4 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
+// #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Communications/MelNet.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Clock.hpp>
@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
     register_ctrl_c_handler(handler);
 
     // make MelShares
-    MelShare ms1("melscope1");
-    MelShare ms2("melscope2");
+    // MelShare ms1("melscope1");
+    // MelShare ms2("melscope2");
 
     // make MelNets
     MelNet mn1(55001, 55002, IpAddress(remote_address), false);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     std::vector<double> data3(2);
 
     // write intial values for the amplitudes
-    ms2.write_data(data2);
+    // ms2.write_data(data2);
 
     // create waveforms
     Waveform sin_wave(Waveform::Sin,    seconds(2));
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     // data loop
     while (!stop) {
         // read in amplitudes
-        data2 = ms2.read_data();
+        // data2 = ms2.read_data();
         // set amplitudes
         sin_wave.amplitude_ = data2[0];
         sqr_wave.amplitude_ = data2[1];
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
         data3[0] = tri_wave.evaluate(clock.get_elapsed_time());
         data3[1] = saw_wave.evaluate(clock.get_elapsed_time());
         // write waveform data
-        ms1.write_data(data1);
+        // ms1.write_data(data1);
         // update MelNet
         if (mn1.check_request())
             mn1.send_data(data3);

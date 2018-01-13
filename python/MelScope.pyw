@@ -217,10 +217,13 @@ class DataSource(object):
         self.curve_colors = curve_colors
         self.curve_styles = curve_styles
         self.curve_widths = curve_widths
+        self.size = 0
+        self.data = []
         if self.type == 'melshare':
             self.ms = MelShare(name)
         elif self.type == 'melnet':
             self.ms = MelNet(self.settings[0], self.settings[1], self.settings[2])
+            #self.ms.socket.settimeout(0.005)
         self.get_data()
         self.text = ['%0.4f' % value for value in self.data]
         self.samples = None
@@ -232,9 +235,9 @@ class DataSource(object):
             self.data = self.ms.read_data()
         elif self.type == 'melnet':
             self.ms.request()
-            self.data = self.ms.receive_data()
-            if self.data is None:
-                self.data = [0.0] * self.size
+            data = self.ms.receive_data()
+            if data is not None:
+                self.data = data
         self.size = len(self.data)
 
 
