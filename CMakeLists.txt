@@ -11,10 +11,11 @@ cmake_minimum_required(VERSION 3.7)
 # 1) Open console and navigate to the /build folder
 # 2) To generate makefile for NI hardware, run:
 #        $: cmake .. -G "MinGW Makefiles" -DNI=ON
-#    To generate Visual Studio *.sln file for Quanser hardware, run:
+#    To generate Visual Studio MEL.sln file for Quanser hardware, run:
 #        $: cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
-# 3) To build executables in ./examples, append -DEXAMPLES=ON
-# 4) Proceed to build generated makefile or *.sln file with the necessary software
+# 3) To build OpenWrist or MAHI Exo-II classes, append -DOPENWRIST=ON or -DMAHIEXOII=ON
+# 3) To build example programs in ./examples, append -DEXAMPLES=ON
+# 4) Proceed to build generated makefile or MEL.sln file with the necessary software
 
 #===============================================================================
 # USER OPTIONS

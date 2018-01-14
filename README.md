@@ -33,7 +33,7 @@ These directories and files are created automatically when you install QUARC. If
 
 #### Eigen (Optional)
 
-If you are developing for the MAHI Exo-II, you will need to install Eigen for forward and inverse kinematics. MEL expects to find Eigen in ```C:/dev/eigen```, which should contain ```bench/```, ```blas/```, ```cmake/```, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
+If you are developing for the MAHI Exo-II, you will need to install [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) for forward and inverse kinematics. MEL expects to find Eigen in ```C:/dev/eigen```, which should contain ```bench/```, ```blas/```, ```cmake/```, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
 
 ## Building MEL
 
@@ -67,4 +67,8 @@ cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
 ```
 Open the generated MEL.sln file in Visual Studio to proceed with build process
 
-After the build/compile process has completed, binaries will be output to ```MEL/lib``` as MEL.a (GNU) or MEL.lib (MSVC) while example executables will be output to ```MEL/bin```.
+## Linking and Using MEL
+
+After the build/compile process has completed, binaries will be output to ```MEL/lib``` as **MEL.a** (GNU) or **MEL.lib** (MSVC) while example executables will be output to ```MEL/bin```.
+
+
