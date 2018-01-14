@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.7)
 
 option(NI "Turn ON if compiling for NI hardware and NI Realtime Linux" OFF)
 option(QUANSER "Turn ON if compiling for Quanser hardware and MSVC" OFF)
-option(OPENWRIST "Turn ON to include OpenWrist source code" ON)
+option(OPENWRIST "Turn ON to include OpenWrist source code" OFF)
 option(MAHIEXOII "Turn ON to include MAHI Exo-II source code" OFF)
 option(EXAMPLES "Turn ON to build example executable(s)" OFF)
 option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
@@ -102,7 +102,7 @@ if (NI)
         C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
         C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
 elseif (QUANSER)
-    list(APPEND INCLUDE_DIRS C:/dev/quarc/include)
+    list(APPEND INCLUDE_DIRS "C:/Program Files/Quanser/QUARC/include")
 endif()
 
 if (MAHIEXOII)
@@ -249,7 +249,11 @@ set(LINK_LIBS "")
 if(NI)
     list(APPEND LINK_LIBS dl)
 elseif(QUANSER)
-    link_directories(C:/dev/quarc/lib/win64)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
+        link_directories("C:/Program Files/Quanser/QUARC/lib/win64")
+    else()
+        link_directories("C:/Program Files/Quanser/QUARC/lib/windows")
+    endif()
     list(APPEND LINK_LIBS
         hil
         quanser_communications

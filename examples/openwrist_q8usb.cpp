@@ -2,7 +2,7 @@
 #include <MEL/Exoskeletons/OpenWrist/OpenWrist.hpp>
 #include <MEL/Utility/System.hpp>
 #include <vector>
-#include <MEL/Communications/MelShare.hpp>
+#include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>

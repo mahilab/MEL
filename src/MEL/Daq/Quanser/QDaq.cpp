@@ -4,6 +4,7 @@
 #include <quanser_messages.h>
 #include <hil.h>
 #include <tchar.h>
+#include <cstring>
 
 namespace mel {
 

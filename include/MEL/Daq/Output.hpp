@@ -34,7 +34,7 @@ public:
     /// the enabled channel numbers in acending order. The base implementation
     /// below should be called in the derived implementation.
     virtual bool set_expire_values(const std::vector<T>& expire_values) {
-        if (validate_channel_count(expire_values)) {
+        if (Module<T>::validate_channel_count(expire_values)) {
             expire_values_ = expire_values;
             return true;
         }
