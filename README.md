@@ -37,7 +37,7 @@ If you are developing for the MAHI Exo-II, you will need to install [Eigen](http
 
 #### Python / C# (Optional)
 
-MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt. For Python installation requirements, go [here](https://github.com/epezent/MEL/tree/master/python). For C#, you should be able to use [Visual Studio](https://www.visualstudio.com/), [MonoDevelop](http://www.monodevelop.com/, and [Unity Engine](https://unity3d.com/) as is.
+MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt. For Python installation requirements, go [here](https://github.com/epezent/MEL/tree/master/python). For C# (e.g. if using [Unity Engine](https://unity3d.com/) for visualizations), you should be able to use [Visual Studio](https://www.visualstudio.com/) or [MonoDevelop](http://www.monodevelop.com/) as is.
 
 ## Building MEL
 
