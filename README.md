@@ -17,7 +17,7 @@ The basic MEL library has no external dependencies but does rely on a few common
 
 Depending on how you use MEL, you may need to install a few additional hardware specific libraries:
 
-#### National Instruments (Optional)
+#### National Instruments Linux Real-Time (Optional)
 
 If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO), you'll need to install [NI's GNU/Linux cross-compiler](http://www.ni.com/download/labview-real-time-module-2017/6762/en/). MEL expects the top level of the compiler directories to be in ```C:/dev/nirlt-linux-g++```, which should contain ```sysroots/```, ```environment-setup-core2-64-nilrt-linux```, ```relocate_sdk.py```, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
 
@@ -34,6 +34,10 @@ These directories and files are created automatically when you install QUARC. If
 #### Eigen (Optional)
 
 If you are developing for the MAHI Exo-II, you will need to install [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) for forward and inverse kinematics. MEL expects to find Eigen in ```C:/dev/eigen```, which should contain ```bench/```, ```blas/```, ```cmake/```, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
+
+#### Python / C# (Optional)
+
+MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt. For Python installation requirements, go [here](https://github.com/epezent/MEL/tree/master/python). For C#, you should be able to use [Visual Studio](https://www.visualstudio.com/), [MonoDevelop](http://www.monodevelop.com/, and [Unity Engine](https://unity3d.com/) as is.
 
 ## Building MEL
 
