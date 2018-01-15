@@ -14,6 +14,7 @@ keep_files = ['bin/linux/sftp-config.json',
 
 files = []
 
+
 for folder in folders:
     try:
         files += [folder + "/" + f for f in os.listdir(folder)]
