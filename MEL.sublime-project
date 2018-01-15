@@ -6,57 +6,65 @@
 		//======================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (MinGW-Win32)",
+			"name": "CMake (Windows-MinGW)",
 			"selector":
 			[
 				"source.cmake"
 			],
 			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/build/mingw_win32"
+			"working_dir": "$project_path/build/windows_mingw"
 		},
+		//======================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (MinGW-Linux)",
+			"name": "CMake (Linux-MinGW)",
 			"selector":
 			[
 				"source.cmake"
 			],
 			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/build/mingw_linux"
+			"working_dir": "$project_path/build/linux_mingw"
 		},
+		//======================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (MSVC-Win64)",
+			"name": "CMake (Windows-MSVC)",
 			"selector":
 			[
 				"source.cmake"
 			],
 			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DOPENWRIST=ON -DQUANSER=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/build/msvc_win64"
+			"working_dir": "$project_path/build/windows_msvc"
 		},
 		//======================================================================
 		// MAKE
 		//======================================================================
 		{
 			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
-			"name": "Make (Win32)",
+			"name": "Make (Windows)",
 			"selector":
 			[
-				"source.c++"
+				"source.c++",
+				"source.c++.11"
 			],
 			"shell_cmd": "make -j",
-			"working_dir": "$project_path/build/mingw_win32"
+			"working_dir": "$project_path/build/windows_mingw"
 		},
+		//======================================================================
 		{
 			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
 			"name": "Make (Linux)",
 			"selector":
 			[
-				"source.c++"
+				"source.c++",
+				"source.c++.11"
 			],
 			"shell_cmd": "make -j",
-			"working_dir": "$project_path/build/mingw_linux"
+			"working_dir": "$project_path/build/linux_mingw"
 		},
+		//======================================================================
+		// PYTHON
+		//======================================================================
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Python",
@@ -84,7 +92,6 @@
 			"-I$project_base_path/include",
 			"-I$project_base_path/examples",
 			"-IC:/dev/quarc/include"
-			// "-IC:/Git/SFML/include"
 		]
 	}
 }

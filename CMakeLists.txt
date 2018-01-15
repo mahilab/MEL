@@ -57,9 +57,9 @@ enable_language(CXX)
 
 # set binary output locations
 if(WIN32)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/win32)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/win32)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/win32)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/windows)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/windows)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/windows)
 else()
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
@@ -287,6 +287,9 @@ if(EXAMPLES)
 
     add_executable(ctrl_c_handling examples/ctrl_c_handling.cpp)
     target_link_libraries(ctrl_c_handling MEL)
+
+    add_executable(datalog examples/datalog.cpp)
+    target_link_libraries(datalog MEL)
 
     add_executable(options examples/options.cpp)
     target_link_libraries(options MEL)

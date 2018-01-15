@@ -62,7 +62,7 @@ Run ```make``` or ```mingw32-make``` if using a GNU compiler or open the generat
 **Option 2: MEL + NI Hardware + Linux**
 ```{shell}
 cmake .. -G "MinGW Makefiles" -DNI=ON
-make
+make -j
 ```
 
 **Option 3: MEL + Quanser Hardware + Windows**
