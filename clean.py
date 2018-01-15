@@ -1,16 +1,19 @@
 import os
 import shutil
 
-folders = ['build/mingw_linux',
-           'build/mingw_win32',
-           'build/msvc_win64',
-           'bin/linux',
-           'bin/win32',
-           'lib/linux',
-           'lib/win32']
-
 keep_files = ['bin/linux/sftp-config.json',
               'bin/linux/NiFpga_quadrature.lvbitx']
+
+folders = ['build',
+           'build/linux_mingw',
+           'build/windows_mingw',
+           'build/windows_msvc',
+           'bin',
+           'bin/linux',
+           'bin/windows',
+           'lib',
+           'lib/linux',
+           'lib/windows']
 
 files = []
 
@@ -18,9 +21,10 @@ for folder in folders:
     try:
         files += [folder + "/" + f for f in os.listdir(folder)]
     except:
-        print "Couldn't locate /" + folder + ' folder'
+        os.mkdir(folder)
+        files += [folder + "/" + f for f in os.listdir(folder)]
 
-files = [f for f in files if f not in keep_files]
+files = [f for f in files if f not in folders + keep_files]
 
 if not files:
     print 'Already Clean'
