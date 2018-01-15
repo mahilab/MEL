@@ -14,6 +14,7 @@
 			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/build/mingw_win32"
 		},
+		//======================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (MinGW-Linux)",
@@ -24,6 +25,7 @@
 			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/build/mingw_linux"
 		},
+		//======================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (MSVC-Win64)",
@@ -42,21 +44,27 @@
 			"name": "Make (Win32)",
 			"selector":
 			[
-				"source.c++"
+				"source.c++",
+				"source.c++.11"
 			],
 			"shell_cmd": "make -j",
 			"working_dir": "$project_path/build/mingw_win32"
 		},
+		//======================================================================
 		{
 			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
 			"name": "Make (Linux)",
 			"selector":
 			[
-				"source.c++"
+				"source.c++",
+				"source.c++.11"
 			],
 			"shell_cmd": "make -j",
 			"working_dir": "$project_path/build/mingw_linux"
 		},
+		//======================================================================
+		// PYTHON
+		//======================================================================
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Python",
@@ -84,7 +92,6 @@
 			"-I$project_base_path/include",
 			"-I$project_base_path/examples",
 			"-IC:/dev/quarc/include"
-			// "-IC:/Git/SFML/include"
 		]
 	}
 }

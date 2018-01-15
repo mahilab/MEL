@@ -288,6 +288,9 @@ if(EXAMPLES)
     add_executable(ctrl_c_handling examples/ctrl_c_handling.cpp)
     target_link_libraries(ctrl_c_handling MEL)
 
+    add_executable(datalog examples/datalog.cpp)
+    target_link_libraries(datalog MEL)
+
     add_executable(options examples/options.cpp)
     target_link_libraries(options MEL)
 
