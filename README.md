@@ -43,7 +43,7 @@ MEL comes with Python and C# bindings for it's high-level communication classes,
 
 Navigate to the directory you wish to install MEL and run the following commands:
 
-```
+```{shell}
 git clone https://github.com/epezent/MEL
 cd MEL
 mkdir build
@@ -54,19 +54,19 @@ At this point, you can choose from one of the following build methods using CMak
 
 
 **Option 1: Basic MEL Library**
-```
+```{shell}
 cmake ..
 ```
 Run ```make``` or ```mingw32-make``` if using a GNU compiler or open the generated MEL.sln file in Visual Studio if using the MSVC compiler to proceed with build process.
 
 **Option 2: MEL + NI Hardware + Linux**
-```
+```{shell}
 cmake .. -G "MinGW Makefiles" -DNI=ON
 make
 ```
 
 **Option 3: MEL + Quanser Hardware + Windows**
-```
+```{shell}
 cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
 ```
 Open the generated MEL.sln file in Visual Studio to proceed with build process

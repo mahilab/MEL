@@ -1,6 +1,9 @@
 {
 	"build_systems":
 	[
+		//======================================================================
+		// CMAKE
+		//======================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (MinGW-Win32)",
@@ -31,6 +34,9 @@
 			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DOPENWRIST=ON -DQUANSER=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/build/msvc_win64"
 		},
+		//======================================================================
+		// MAKE
+		//======================================================================
 		{
 			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
 			"name": "Make (Win32)",
@@ -38,7 +44,7 @@
 			[
 				"source.c++"
 			],
-			"shell_cmd": "make",
+			"shell_cmd": "make -j",
 			"working_dir": "$project_path/build/mingw_win32"
 		},
 		{
@@ -48,7 +54,7 @@
 			[
 				"source.c++"
 			],
-			"shell_cmd": "make",
+			"shell_cmd": "make -j",
 			"working_dir": "$project_path/build/mingw_linux"
 		},
 		{
