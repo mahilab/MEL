@@ -14,8 +14,9 @@ namespace mel {
 
 class NamedMutex::Impl : NonCopyable {
 public:
+    ~Impl();
     void create(const std::string& name);
-    void open(std::string name);
+    void open(const std::string& name);
     void close();
     void lock();
     void unlock();
@@ -31,10 +32,14 @@ private:
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-NamedMutexHandle NamedMutex::create(std::string name) {
-    NamedMutexHandle handle;
-    handle = CreateMutexA(NULL, FALSE, name.c_str());
-    if (handle == NULL) {
+NamedMutex::Impl::~Impl() {
+    unlock();
+    close();
+}
+
+void NamedMutex::Impl::create(const std::string& name) {
+    mutex_ = CreateMutexA(NULL, FALSE, name.c_str());
+    if (mutex_ == NULL) {
         std::cout << "ERROR: Failed to create mutex <" << name << ">." << std::endl;
         printf("WINDOWS ERROR: %d\n", (int)GetLastError());
     }
@@ -42,29 +47,26 @@ NamedMutexHandle NamedMutex::create(std::string name) {
         if (GetLastError() == ERROR_ALREADY_EXISTS) {
             // std::cout << "WARNING: Opened an existing mutex when trying to create mutex." << std::endl;
         }
-        ReleaseMutex(handle);
+        ReleaseMutex(mutex_);
     }
-    return handle;
 }
 
-NamedMutexHandle NamedMutex::open(std::string name) {
-    NamedMutexHandle handle;
-    handle = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
-    if (handle == NULL) {
+void NamedMutex::Impl::open(const std::string& name) {
+    mutex_ = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
+    if (mutex_ == NULL) {
         std::cout << "ERROR: Failed to open mutex <" << name << ">." << std::endl;
         printf("WINDOWS ERROR: %d\n", (int)GetLastError());
     }
-    return handle;
 }
 
-void NamedMutex::close(NamedMutexHandle mutex) {
-    CloseHandle(mutex);
+void NamedMutex::Impl::close() {
+    CloseHandle(mutex_);
 }
 
-void NamedMutex::lock(NamedMutexHandle mutex) {
-    if (mutex != NULL) {
+void NamedMutex::Impl::lock() {
+    if (mutex_ != NULL) {
         DWORD dwWaitStatus;
-        dwWaitStatus = WaitForSingleObject(mutex, INFINITE);
+        dwWaitStatus = WaitForSingleObject(mutex_, INFINITE);
         switch (dwWaitStatus) {
         case WAIT_OBJECT_0:
             return;
@@ -88,8 +90,8 @@ void NamedMutex::lock(NamedMutexHandle mutex) {
     }
 }
 
-void NamedMutex::unlock(NamedMutexHandle mutex) {
-    if (!ReleaseMutex(mutex)) {
+void NamedMutex::Impl::unlock() {
+    if (!ReleaseMutex(mutex_)) {
         if (GetLastError() != ERROR_NOT_OWNER) {
             std::cout << "ERROR: Failed to unlock mutex." << std::endl;
             printf("WINDOWS ERROR: %d\n", (int)GetLastError());
@@ -104,30 +106,28 @@ void NamedMutex::unlock(NamedMutexHandle mutex) {
 //==============================================================================
 
 NamedMutex::NamedMutex(std::string name, NamedMutex::Mode mode) :
-    name_(name)
+    name_(name),
+    impl_(new NamedMutex::Impl)
 {
-    impl_ = new NamedMutex::Impl;
     switch(mode) {
-        case Create:
-            mutex_ = create(name_);
+        case OpenOrCreate:
+            impl_->create(name_);
             break;
-        case Open:
-            mutex_ = open(name_);
+        case OpenOnly:
+            impl_->open(name_);
             break;
     }
 }
 
 NamedMutex::~NamedMutex() {
-    unlock(mutex_);
-    close(mutex_);
 }
 
 void NamedMutex::lock() {
-    lock(mutex_);
+    impl_->lock();
 }
 
 void NamedMutex::unlock() {
-    unlock(mutex_);
+    impl_->unlock();
 }
 
 } // namespace mel

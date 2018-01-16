@@ -2,18 +2,9 @@
 
 #include <MEL/Utility/NonCopyable.hpp>
 #include <string>
+#include <memory>
 
 namespace mel {
-
-//==============================================================================
-// TYPEDEFS
-//==============================================================================
-
-#if defined(_WIN32)
-    typedef void* NamedMutexHandle;
-#elif __linux__
-    typedef int NamedMutexHandle;
-#endif
 
 //==============================================================================
 // CLASS DECLARATION
@@ -26,12 +17,12 @@ public:
 
     /// The mode by which a mutex is constructed
     enum Mode {
-        Create, ///< create the named mutex if it does not exit
-        Open    ///< only attempt to open an existing named mutex
+        OpenOrCreate, ///< create the named mutex if it does not exit
+        OpenOnly      ///< only attempt to open an existing named mutex
     };
 
     /// Defaut constructor
-    NamedMutex(std::string name, Mode mode = Create);
+    NamedMutex(std::string name, Mode mode = OpenOrCreate);
 
     /// Default destructor. Releases mutex if it is currently open.
     ~NamedMutex();
@@ -44,23 +35,9 @@ public:
 
 private:
 
-    static NamedMutexHandle create(std::string name);
-
-    static NamedMutexHandle open(std::string name);
-
-    static void close(NamedMutexHandle mutex);
-
-    static void lock(NamedMutexHandle mutex);
-
-    static void unlock(NamedMutexHandle mutex);
-
-private:
-
-    std::string name_;   /// Name of the mutex
-    NamedMutexHandle mutex_;  /// Handle to underlying named mutex
-
-    class Impl;
-    Impl* impl_;
+    class Impl;                   /// Pimpl idiom
+    std::unique_ptr<Impl> impl_;  ///< OS-specific implementation
+    std::string name_;            /// Name of the mutex
 
 };
 

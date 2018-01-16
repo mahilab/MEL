@@ -1,6 +1,7 @@
 # pragma once
 
 #include <MEL/Utility/NonCopyable.hpp>
+#include <memory>
 
 namespace mel {
 
@@ -27,8 +28,8 @@ public:
 
 private:
 
-    class Impl;   /// Pimpl idiom
-    Impl* impl_;  ///< OS-specific implementation
+    class Impl;                   /// Pimpl idiom
+    std::unique_ptr<Impl> impl_;  ///< OS-specific implementation
 
 };
 

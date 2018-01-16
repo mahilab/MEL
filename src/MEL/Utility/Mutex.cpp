@@ -82,20 +82,18 @@ void Mutex::Impl::unlock() {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Mutex::Mutex() {
-    impl_ = new Mutex::Impl;
+Mutex::Mutex() :
+    impl_(new Mutex::Impl)
+{
 }
 
 
 Mutex::~Mutex() {
-    delete impl_;
 }
-
 
 void Mutex::lock() {
     impl_->lock();
 }
-
 
 void Mutex::unlock() {
     impl_->unlock();
