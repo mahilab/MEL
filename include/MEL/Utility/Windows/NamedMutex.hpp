@@ -10,9 +10,9 @@ namespace mel {
 //==============================================================================
 
 #if defined(_WIN32)
-    typedef void* MutexHandle;
+    typedef void* NamedMutexHandle;
 #elif __linux__
-    typedef int MutexHandle;
+    typedef int NamedMutexHandle;
 #endif
 
 //==============================================================================
@@ -20,7 +20,7 @@ namespace mel {
 //==============================================================================
 
 /// Named mutex for local and interprocess synchronization
-class Mutex : NonCopyable {
+class NamedMutex : NonCopyable {
 
 public:
 
@@ -43,34 +43,34 @@ public:
     };
 
     /// Defaut constructor
-    Mutex(std::string name, Mode mode = Create);
+    NamedMutex(std::string name, Mode mode = Create);
 
     /// Default destructor. Releases mutex if it is currently open.
-    ~Mutex();
+    ~NamedMutex();
 
     /// Waits for mutex to release and attempts to lock it
-    Status try_lock();
+    Status lock();
 
     /// Releases lock on mutex
-    Status release();
+    Status unlock();
 
 private:
 
-    static MutexHandle create(std::string name);
+    static NamedMutexHandle create(std::string name);
 
-    static MutexHandle open(std::string name);
+    static NamedMutexHandle open(std::string name);
 
-    static Status close(MutexHandle mutex);
+    static Status close(NamedMutexHandle mutex);
 
-    static Status try_lock(MutexHandle mutex);
+    static Status lock(NamedMutexHandle mutex);
 
-    static Status release(MutexHandle mutex);
+    static Status unlock(NamedMutexHandle mutex);
 
 private:
 
     std::string name_;   /// Name of the mutex
-    Mode mode_;          /// Mode by which this Mutex instance was created
-    MutexHandle mutex_;  /// Handle to underlying named mutex
+    Mode mode_;          /// Mode by which this NamedMutex instance was created
+    NamedMutexHandle mutex_;  /// Handle to underlying named mutex
     bool has_lock_;      /// Indicates if this mutex has the lock
 
 };

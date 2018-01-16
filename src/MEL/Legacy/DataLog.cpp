@@ -95,8 +95,6 @@ void DataLog::save_data(std::string filename, std::string directory, bool timest
     else {
         full_filename = directory + get_path_slash() + filename + ".csv";
     }
-    // boost::filesystem::path dir(directory.c_str());
-    // boost::filesystem::create_directories(dir);
     create_directory(directory);
     print("Saving DataLog to <" + full_filename + ">.");
 

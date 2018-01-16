@@ -17,7 +17,6 @@ folders = ['build',
 
 files = []
 
-
 for folder in folders:
     try:
         files += [folder + "/" + f for f in os.listdir(folder)]

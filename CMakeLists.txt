@@ -72,7 +72,7 @@ if(WIN32)
 endif()
 
 # add configurations
-set(CMAKE_CONFIGURATION_TYPES Release)
+set(CMAKE_CONFIGURATION_TYPES release)
 
 #===============================================================================
 # PERFORM CHECKS

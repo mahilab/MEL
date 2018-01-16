@@ -1,4 +1,4 @@
-#include <MEL/Utility/Windows/Mutex.hpp>
+#include <MEL/Utility/Windows/NamedMutex.hpp>
 #include <iostream>
 #include <string>
 
@@ -14,7 +14,7 @@ namespace mel {
 // COMMON IMPLEMENTATION
 //==============================================================================
 
-Mutex::Mutex(std::string name, Mutex::Mode mode) :
+NamedMutex::NamedMutex(std::string name, NamedMutex::Mode mode) :
     name_(name),
     mode_(mode),
     has_lock_(false)
@@ -29,21 +29,21 @@ Mutex::Mutex(std::string name, Mutex::Mode mode) :
     }
 }
 
-Mutex::~Mutex() {
+NamedMutex::~NamedMutex() {
     if (has_lock_)
-        release(mutex_);
+        unlock(mutex_);
     close(mutex_);
 }
 
-Mutex::Status Mutex::try_lock() {
-    Mutex::Status status = try_lock(mutex_);
+NamedMutex::Status NamedMutex::lock() {
+    NamedMutex::Status status = lock(mutex_);
     if (status == LockAquired)
         has_lock_ = true;
     return status;
 }
 
-Mutex::Status Mutex::release() {
-    Mutex::Status status = release(mutex_);
+NamedMutex::Status NamedMutex::unlock() {
+    NamedMutex::Status status = unlock(mutex_);
     if (status == ReleaseSuccess)
         has_lock_ = false;
     return status;
@@ -63,9 +63,8 @@ Mutex::Status Mutex::release() {
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-
-MutexHandle Mutex::create(std::string name) {
-    MutexHandle handle;
+NamedMutexHandle NamedMutex::create(std::string name) {
+    NamedMutexHandle handle;
     handle = CreateMutexA(NULL, FALSE, name.c_str());
     if (handle == NULL) {
         std::cout << "ERROR: Failed to create mutex <" << name << ">." << std::endl;
@@ -80,8 +79,8 @@ MutexHandle Mutex::create(std::string name) {
     return handle;
 }
 
-MutexHandle Mutex::open(std::string name) {
-    MutexHandle handle;
+NamedMutexHandle NamedMutex::open(std::string name) {
+    NamedMutexHandle handle;
     handle = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
     if (handle == NULL) {
         std::cout << "ERROR: Failed to open mutex <" << name << ">." << std::endl;
@@ -90,14 +89,14 @@ MutexHandle Mutex::open(std::string name) {
     return handle;
 }
 
-Mutex::Status Mutex::close(MutexHandle mutex) {
+NamedMutex::Status NamedMutex::close(NamedMutexHandle mutex) {
     if (CloseHandle(mutex))
         return Status::CloseSuccess;
     else
         return Status::CloseFailed;
 }
 
-Mutex::Status Mutex::try_lock(MutexHandle mutex) {
+NamedMutex::Status NamedMutex::lock(NamedMutexHandle mutex) {
     if (mutex != NULL) {
         DWORD dwWaitStatus;
         dwWaitStatus = WaitForSingleObject(mutex, INFINITE);
@@ -126,9 +125,9 @@ Mutex::Status Mutex::try_lock(MutexHandle mutex) {
     }
 }
 
-Mutex::Status Mutex::release(MutexHandle mutex) {
+NamedMutex::Status NamedMutex::unlock(NamedMutexHandle mutex) {
     if (!ReleaseMutex(mutex)) {
-        std::cout << "ERROR: Failed to release mutex." << std::endl;
+        std::cout << "ERROR: Failed to unlock mutex." << std::endl;
         printf("WINDOWS ERROR: %d\n", (int)GetLastError());
         return Status::ReleaseFailed;
     }

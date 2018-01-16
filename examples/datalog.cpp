@@ -2,43 +2,16 @@
 
 using namespace mel;
 
-int main() {
-
-    DataLog log;
-
-    log.add_cols({"Col_A", "Col_B", "Col_C"});
-
-    log.add_row({1, 2, 3});
-    log.add_row({4, 5, 6});
-    log.add_row({7, 8, 9});
-
-    log.save_and_clear_data("my_log0", "logs");
-    // logs/my_log0_2018-01-14-21.34.16.csv
-    //-------------------------------------
-    // Col_A,Col_B,Col_C,
-    // 1,2,3,
-    // 4,5,6,
-    // 7,8,9,
-
-    log.add_col("Col_D");
-
-    log.add_row({10, 11, 12, 13});
-    log.add_row({14, 15, 16, 17});
-
-    log.save_data("my_log1", "logs");
-    // logs/my_log1_2018-01-14-21.34.16.csv
-    //-------------------------------------
-    // Col_A,Col_B,Col_C,Col_D,
-    // 10,11,12,13,
-    // 14,15,16,17,
-
-    log.add_row({18, 19, 20, 21});
-    // data_log_backups/log_2018-01-14-21.34.16.csv
-    //-------------------------------------
-    // Col_A,Col_B,Col_C,Col_D,
-    // 10,11,12,13,
-    // 14,15,16,17,
-    // 18,19,20,21,
-
+int main(int argc, char const *argv[])
+{
+    DataLog<double, double, std::string> my_log({"a", "b", "c"});
+    my_log.add_row(2.0, 3.0, "my_string");
+    my_log.add_row(5.12, 6.45, "evan");
+    my_log.add_row({6, 7, "monkey"});
+    print(my_log.get_row(2));
+    my_log.save_data("my_log1", "logs");
     return 0;
 }
+
+
+

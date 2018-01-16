@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MEL/Communications/Windows/SharedMemory.hpp>
-#include <MEL/Utility/Windows/Mutex.hpp>
+#include <MEL/Utility/Windows/NamedMutex.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <vector>
@@ -41,7 +41,7 @@ private:
 private:
 
     SharedMemory shm_;  ///< The memory mapped file for the data
-    Mutex mutex_;       ///< The mutex guarding the memory map
+    NamedMutex mutex_;  ///< The mutex guarding the memory map
 
 };
 
