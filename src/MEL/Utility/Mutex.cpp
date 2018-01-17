@@ -1,4 +1,5 @@
 #include <MEL/Utility/Mutex.hpp>
+#include <MEL/Utility/NonCopyable.hpp>
 #ifdef _WIN32
     #include <windows.h>
 #else

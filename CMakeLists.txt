@@ -297,9 +297,10 @@ if(EXAMPLES)
     add_executable(melscope examples/melscope.cpp)
     target_link_libraries(melscope MEL)
 
+    add_executable(lockables examples/lockables.cpp)
+    target_link_libraries(lockables MEL)
+
     if(WIN32)
-        add_executable(mutex examples/mutexes.cpp)
-        target_link_libraries(mutex MEL)
 
         add_executable(shared_memory examples/shared_memory.cpp)
         target_link_libraries(shared_memory MEL)

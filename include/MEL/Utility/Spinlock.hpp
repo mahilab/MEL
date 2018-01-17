@@ -1,22 +1,33 @@
 #pragma once
+
+#include <MEL/Utility/Lock.hpp>
 #include <atomic>
 
 namespace mel {
 
-class Spinlock {
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
+
+/// Blocks concurrent access to shared resources from multiple threads
+class Spinlock : public Lockable, NonCopyable {
 
 public:
 
-    Spinlock();
+    /// Lock the Spinlock
+    void lock() override;
 
-    void lock();
-    void unlock();
+    /// Unlock the Spinlock
+    void unlock() override;
 
 private:
 
-    typedef enum { Locked, Unlocked } LockState;
-    std::atomic<LockState> state_;
+    std::atomic_flag lock_ = ATOMIC_FLAG_INIT;  //< atomic flag lock
 
 };
 
 } // namespace mel
+
+//==============================================================================
+// CLASS DOCUMENTATION
+//==============================================================================

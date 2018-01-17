@@ -1,6 +1,6 @@
 # pragma once
 
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Utility/Lock.hpp>
 #include <memory>
 
 namespace mel {
@@ -10,7 +10,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple threads
-class Mutex : NonCopyable {
+class Mutex : public Lockable, NonCopyable {
 
 public:
 
@@ -21,10 +21,10 @@ public:
     ~Mutex();
 
     /// Lock the mutex
-    void lock();
+    void lock() override;
 
     /// Unlock the mutex
-    void unlock();
+    void unlock() override;
 
 private:
 
@@ -80,7 +80,7 @@ private:
 /// environments where exceptions can be thrown, you should
 /// use the helper class mel::Lock to lock/unlock mutexes.
 ///
-/// melML mutexes are recursive, which means that you can lock
+/// MEL mutexes are recursive, which means that you can lock
 /// a mutex multiple times in the same thread without creating
 /// a deadlock. In this case, the first call to lock() behaves
 /// as usual, and the following ones have no effect.

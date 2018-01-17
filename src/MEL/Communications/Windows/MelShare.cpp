@@ -15,36 +15,32 @@ MelShare::MelShare(const std::string& name, std::size_t max_size) :
 }
 
 void MelShare::write_data(const std::vector<double>& data) {
-    mutex_.lock();
+    Lock lock(mutex_);
     uint32 size = static_cast<uint32>(data.size() * sizeof(double));
     shm_.write(&size, sizeof(uint32));
     shm_.write(&data[0], size, sizeof(uint32));
-    mutex_.unlock();
 }
 
 std::vector<double> MelShare::read_data() {
-    mutex_.lock();
+    Lock lock(mutex_);
     uint32 size = get_size();
     std::vector<double> data(size / sizeof(double));
     shm_.read(&data[0], size, sizeof(uint32));
-    mutex_.unlock();
     return data;
 }
 
 void MelShare::write_message(const std::string &message) {
-    mutex_.lock();
+    Lock lock(mutex_);
     uint32 size = static_cast<uint32>(message.length() + 1);
     shm_.write(&size, sizeof(uint32));
     shm_.write(message.c_str(), size, sizeof(uint32));
-    mutex_.unlock();
 }
 
 std::string MelShare::read_message() {
-    mutex_.lock();
+    Lock lock(mutex_);
     uint32 size = get_size();
     std::vector<char> message(size);
     shm_.read(&message[0], size, sizeof(uint32));
-    mutex_.unlock();
     return std::string(&message[0]);
 }
 

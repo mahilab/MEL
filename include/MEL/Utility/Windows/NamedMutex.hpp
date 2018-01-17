@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Utility/Lock.hpp>
 #include <string>
 #include <memory>
 
@@ -11,7 +11,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple processes
-class NamedMutex : NonCopyable {
+class NamedMutex : public Lockable, NonCopyable {
 
 public:
 
@@ -28,10 +28,10 @@ public:
     ~NamedMutex();
 
     /// Waits for mutex to release and attempts to lock it
-    void lock();
+    void lock() override;
 
     /// Releases lock on mutex
-    void unlock();
+    void unlock() override;
 
 private:
 

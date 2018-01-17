@@ -1,6 +1,5 @@
 #include <MEL/Utility/Windows/NamedMutex.hpp>
-#include <iostream>
-#include <string>
+#include <MEL/Utility/Console.hpp>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -14,10 +13,8 @@ namespace mel {
 
 class NamedMutex::Impl : NonCopyable {
 public:
+    Impl(const std::string& name, NamedMutex::Mode mode);
     ~Impl();
-    void create(const std::string& name);
-    void open(const std::string& name);
-    void close();
     void lock();
     void unlock();
 private:
@@ -32,34 +29,31 @@ private:
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
+NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) {
+    switch(mode) {
+        case OpenOrCreate:
+            mutex_ = CreateMutexA(NULL, FALSE, name.c_str());
+            if (mutex_ == NULL) {
+                print("ERROR: Failed to create mutex <" + name + ">.");
+                printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+            }
+            else {
+                if (GetLastError() == ERROR_ALREADY_EXISTS)
+                    print("WARNING: Opened an existing mutex when trying to create mutex <" + name + ">.");
+                // ReleaseMutex(mutex_);
+            }
+            break;
+        case OpenOnly:
+            mutex_ = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
+            if (mutex_ == NULL) {
+                print("ERROR: Failed to open mutex <" + name + ">.");
+                printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+            }
+            break;
+    }
+}
+
 NamedMutex::Impl::~Impl() {
-    unlock();
-    close();
-}
-
-void NamedMutex::Impl::create(const std::string& name) {
-    mutex_ = CreateMutexA(NULL, FALSE, name.c_str());
-    if (mutex_ == NULL) {
-        std::cout << "ERROR: Failed to create mutex <" << name << ">." << std::endl;
-        printf("WINDOWS ERROR: %d\n", (int)GetLastError());
-    }
-    else {
-        if (GetLastError() == ERROR_ALREADY_EXISTS) {
-            // std::cout << "WARNING: Opened an existing mutex when trying to create mutex." << std::endl;
-        }
-        ReleaseMutex(mutex_);
-    }
-}
-
-void NamedMutex::Impl::open(const std::string& name) {
-    mutex_ = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
-    if (mutex_ == NULL) {
-        std::cout << "ERROR: Failed to open mutex <" << name << ">." << std::endl;
-        printf("WINDOWS ERROR: %d\n", (int)GetLastError());
-    }
-}
-
-void NamedMutex::Impl::close() {
     CloseHandle(mutex_);
 }
 
@@ -71,21 +65,21 @@ void NamedMutex::Impl::lock() {
         case WAIT_OBJECT_0:
             return;
         case WAIT_ABANDONED:
-            std::cout << "ERROR: Wait on mutex abandoned." << std::endl;
+            print("ERROR: Wait on mutex abandoned.");
             printf("WINDOWS ERROR: %d\n", (int)GetLastError());
             return;
         case WAIT_TIMEOUT:
-            std::cout << "ERROR: Wait on mutex timed out." << std::endl;
+            print("ERROR: Wait on mutex timed out.");
             printf("WINDOWS ERROR: %d\n", (int)GetLastError());
             return;
         case WAIT_FAILED:
-            std::cout << "ERROR: Wait on mutex failed." << std::endl;
+            print("ERROR: Wait on mutex failed.");
             printf("WINDOWS ERROR: %d\n", (int)GetLastError());
             return;
         }
     }
     else {
-        std::cout << "ERROR: Mutex is invalid." << std::endl;
+        print("ERROR: Mutex is invalid.");
         printf("WINDOWS ERROR: %d\n", (int)GetLastError());
     }
 }
@@ -93,7 +87,7 @@ void NamedMutex::Impl::lock() {
 void NamedMutex::Impl::unlock() {
     if (!ReleaseMutex(mutex_)) {
         if (GetLastError() != ERROR_NOT_OWNER) {
-            std::cout << "ERROR: Failed to unlock mutex." << std::endl;
+            print("ERROR: Failed to unlock mutex.");
             printf("WINDOWS ERROR: %d\n", (int)GetLastError());
         }
     }
@@ -107,16 +101,8 @@ void NamedMutex::Impl::unlock() {
 
 NamedMutex::NamedMutex(std::string name, NamedMutex::Mode mode) :
     name_(name),
-    impl_(new NamedMutex::Impl)
+    impl_(new NamedMutex::Impl(name, mode))
 {
-    switch(mode) {
-        case OpenOrCreate:
-            impl_->create(name_);
-            break;
-        case OpenOnly:
-            impl_->open(name_);
-            break;
-    }
 }
 
 NamedMutex::~NamedMutex() {
