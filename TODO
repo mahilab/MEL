@@ -18,6 +18,7 @@ Core:
   ☐ make safety check functions more descriptive
 
 Daq:
+ ☐ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation
 
 Q8 USB:
 

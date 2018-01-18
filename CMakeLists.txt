@@ -34,6 +34,8 @@ option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
 
 # set NI RT Linux specific options if enabled
 if (NI)
+    # add compiler to path
+    LIST(APPEND CMAKE_PROGRAM_PATH "C:/dev/nirlt-linux/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux")
     # set compiler (must be called before project/enable)
     set(CMAKE_C_COMPILER x86_64-nilrt-linux-gcc)
     set(CMAKE_CXX_COMPILER x86_64-nilrt-linux-g++)
@@ -41,8 +43,9 @@ if (NI)
     set(CMAKE_SYSTEM_NAME Generic)
     set(CMAKE_CROSSCOMPILING 1)
     # setup sysroot (for NI RT cross compiler)
-    set(CMAKE_SYSROOT C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread") # need pthread for multithreading
+    set(CMAKE_SYSROOT C:/dev/nirlt-linux/sysroots/core2-64-nilrt-linux)
+    # need pthread for multithreading
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
 # enable C++11
@@ -100,8 +103,8 @@ set(INCLUDE_DIRS include)
 # Hardware Lib(s)
 if (NI)
     list(APPEND INCLUDE_DIRS
-        C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
-        C:/dev/nirlt-linux-g++/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
+        C:/dev/nirlt-linux/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
+        C:/dev/nirlt-linux/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
 elseif (QUANSER)
     list(APPEND INCLUDE_DIRS "C:/Program Files/Quanser/QUARC/include")
 endif()
@@ -294,8 +297,8 @@ if(EXAMPLES)
     add_executable(options examples/options.cpp)
     target_link_libraries(options MEL)
 
-    add_executable(melscope examples/melscope.cpp)
-    target_link_libraries(melscope MEL)
+    add_executable(logging examples/logging.cpp)
+    target_link_libraries(logging MEL)
 
     add_executable(lockables examples/lockables.cpp)
     target_link_libraries(lockables MEL)
@@ -307,6 +310,9 @@ if(EXAMPLES)
 
         add_executable(melshare examples/melshare.cpp)
         target_link_libraries(melshare MEL)
+
+        add_executable(melscope examples/melscope.cpp)
+        target_link_libraries(melscope MEL)
 
     endif()
 

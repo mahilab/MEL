@@ -6,7 +6,7 @@
 #include <MEL/Daq/Quanser/QAnalogOutput.hpp>
 #include <MEL/Daq/Quanser/QDigitalInput.hpp>
 #include <MEL/Daq/Quanser/QDigitalOutput.hpp>
-#include <MEL/DAQ/Quanser/QEncoder.hpp>
+#include <MEL/Daq/Quanser/QEncoder.hpp>
 #include <MEL/Daq/Quanser/QVelocity.hpp>
 #include <MEL/Daq/Quanser/QWatchdog.hpp>
 
@@ -16,13 +16,12 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-/// Encapsulates Quanser Analog Input functionality
+/// Quanser Q8 USB class
 class Q8Usb : public QDaq {
 
 public:
 
-    /// Default constructor. Creates Q8 USB with all channels enabled and default
-    /// QOptions
+    /// Default constructor. Creates Q8 USB with all channels enabled and default QOptions
     Q8Usb(QOptions options = QOptions(), bool perform_sanity_check = true, uint32 id = next_id_);
 
     /// Overloaded constructor for defining specific channels to enable.
@@ -41,18 +40,16 @@ public:
 
     /// Enables the Q8Usb by sequentially calling the enable() function
     /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do. This function also stops 
+    /// details on what the enable functions do. This function also stops
     /// and clears the watchdog if it is running or expired, and will open
     /// the Q8Usb if it is not currently open.
     bool enable() override;
 
     /// Disables the Q8Usb by sequentially calling the disable() function
     /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do. This function also stops 
+    /// details on what the enable functions do. This function also stops
     /// and clears the watchdog if it is running or expired.
     bool disable() override;
-
-    bool reset() override;
 
     /// Updates all Input Modules simultaneously. It is generally more
     /// efficient to call this once per loop, than to call the update()
@@ -64,16 +61,16 @@ public:
     /// function on each module separately.
     bool update_output() override;
 
-    /// Quanser provides no software-based method of differntiating Q8 USBs 
-    /// when more than one is connected to the host. This funcion provides a 
+    /// Quanser provides no software-based method of differntiating Q8 USBs
+    /// when more than one is connected to the host. This funcion provides a
     /// physical means by checking for a digital loopback on same numbered
     /// digital input and output channels. For example, if you connect two Q8
-    /// USBs to the host, one which has DO5 connected to DI5 (arbitraily chosen), 
+    /// USBs to the host, one which has DO5 connected to DI5 (arbitraily chosen),
     /// and the MEL Q8Usb object with id = 0 returns identify(5) = true, you
     /// know Q8Usb(id = 0) is the Q8 USB with the loopback, and Q8Usb(id = 1)
     /// is the Q8 USB without a loopback. If identify(5) = false, you know
     /// Q8Usb(id = 0) is the Q8 USB without the loopback, and Q8Usb(id = 1)
-    /// can be infered as the Q8 USB with a loopback, and subsequently checked 
+    /// can be infered as the Q8 USB with a loopback, and subsequently checked
     /// by calling indentify(5) on it.
     bool identify(uint32 channel_number);
 
@@ -100,9 +97,8 @@ public:
 
 private:
 
-
     /// Quarc can sometimes fail to properly intialize a Q8 USB even if it says
-    /// otherwise. In these cases, velocity readings are widely incorrect and can 
+    /// otherwise. In these cases, velocity readings are widely incorrect and can
     /// result in catstrophic behavior. This function performs a sanity check by
     /// checking that all velocities are zero on startup if #perform_sanity_check_
     /// is true (default).

@@ -35,11 +35,6 @@ public:
     /// return true if successful, false otherwise, and set #open_ accordingly
     virtual bool close() = 0;
 
-    /// The function should call the DAQ's API to reset the device back to its
-    /// default or factory settings. It should return true if successful, false
-    /// otherwise.
-    virtual bool reset() = 0;
-
     /// This function should call the update function on all Input Modules
     /// contained on this DAQ. Alternatively, this function may call an API
     /// function that updates all input values simultaneously, but care should

@@ -1,9 +1,12 @@
-#include <MEL/Utility/Windows/NamedMutex.hpp>
+
 #include <MEL/Utility/Mutex.hpp>
 #include <MEL/Utility/Spinlock.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/System.hpp>
 #include <thread>
+#ifdef _WIN32
+#include <MEL/Utility/Windows/NamedMutex.hpp>
+#endif
 
 using namespace mel;
 
@@ -26,20 +29,7 @@ void thread2_func(Lockable& lockable) {
 int main(int argc, char *argv[]) {
     if (argc > 1) {
         std::string id = argv[1];
-        if (id == "named_mutex_A") {
-            NamedMutex named_mutex("my_named_mutex");
-            // lock the mutex using a Lock RAII wrapper
-            Lock lock(named_mutex);
-            prompt("Press ENTER to unlock the named_mutex");
-        } else if (id == "named_mutex_B") {
-            NamedMutex named_mutex("my_named_mutex", NamedMutex::OpenOnly);
-            // you *can* lock and unlock a mutex like this, but this is not
-            // exception safe and you run the risk of unlock never getting called.
-            named_mutex.lock();
-            print("B can continue now");
-            named_mutex.unlock();
-        }
-        else if (id == "mutex") {
+        if (id == "mutex") {
             print("Main: Spawning Threads");
             Mutex mutex;
             std::thread thread1(thread1_func, std::ref(mutex));
@@ -65,6 +55,21 @@ int main(int argc, char *argv[]) {
             sleep(milliseconds(10));
             print("Main: Thanks!");
         }
+        #ifdef _WIN32
+        else if (id == "named_mutex_A") {
+            NamedMutex named_mutex("my_named_mutex");
+            // lock the mutex using a Lock RAII wrapper
+            Lock lock(named_mutex);
+            prompt("Press ENTER to unlock the named_mutex");
+        } else if (id == "named_mutex_B") {
+            NamedMutex named_mutex("my_named_mutex", NamedMutex::OpenOnly);
+            // you *can* lock and unlock a mutex like this, but this is not
+            // exception safe and you run the risk of unlock never getting called.
+            named_mutex.lock();
+            print("B can continue now");
+            named_mutex.unlock();
+        }
+        #endif
     }
     return 0;
 }

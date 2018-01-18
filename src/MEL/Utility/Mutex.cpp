@@ -2,7 +2,7 @@
 #include <MEL/Utility/NonCopyable.hpp>
 #ifdef _WIN32
     #include <windows.h>
-#else
+#elif __linux__
     #include <pthread.h>
 #endif
 

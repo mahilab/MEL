@@ -15,13 +15,13 @@ namespace mel {
 //==============================================================================
 
 Q8Usb::Q8Usb(QOptions options, bool perform_sanity_check, uint32 id) :
-    Q8Usb(std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
-          std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
-          std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
-          std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
-          std::vector<uint32>{0, 1, 2, 3, 4, 5, 6, 7},
+    Q8Usb({0, 1, 2, 3, 4, 5, 6, 7},
+          {0, 1, 2, 3, 4, 5, 6, 7},
+          {0, 1, 2, 3, 4, 5, 6, 7},
+          {0, 1, 2, 3, 4, 5, 6, 7},
+          {0, 1, 2, 3, 4, 5, 6, 7},
           options,
-          perform_sanity_check, 
+          perform_sanity_check,
           id)
 {
 }
@@ -30,8 +30,8 @@ Q8Usb::Q8Usb(std::vector<uint32> ai_channels,
              std::vector<uint32> ao_channels,
              std::vector<uint32> di_channels,
              std::vector<uint32> do_channels,
-             std::vector<uint32> enc_channels,             
-             QOptions options, 
+             std::vector<uint32> enc_channels,
+             QOptions options,
              bool perform_sanity_check,
              uint32 id) :
     QDaq("q8_usb", id, options),
@@ -74,7 +74,7 @@ bool Q8Usb::enable() {
     // clear watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
-    watchdog.clear();    
+    watchdog.clear();
     // set options
     if (!set_options())
         return false;
@@ -125,21 +125,17 @@ bool Q8Usb::disable() {
     return Device::disable();
 }
 
-bool Q8Usb::reset() {
-    return false;
-}
-
 bool Q8Usb::update_input() {
     if (open_) {
         t_error result;
         result = hil_read(handle_,
-            analog_input.get_channel_count() > 0 ? &(analog_input.get_channel_numbers())[0] : NULL, 
+            analog_input.get_channel_count() > 0 ? &(analog_input.get_channel_numbers())[0] : NULL,
             static_cast<uint32>(analog_input.get_channel_count()),
-            encoder.get_channel_count() > 0 ? &(encoder.get_channel_numbers())[0] : NULL, 
+            encoder.get_channel_count() > 0 ? &(encoder.get_channel_numbers())[0] : NULL,
             static_cast<uint32>(encoder.get_channel_count()),
-            digital_input.get_channel_count() > 0 ? &(digital_input.get_channel_numbers())[0] : NULL, 
+            digital_input.get_channel_count() > 0 ? &(digital_input.get_channel_numbers())[0] : NULL,
             static_cast<uint32>(digital_input.get_channel_count()),
-            velocity.get_channel_count() > 0 ? &(velocity.get_converted_channel_numbers())[0] : NULL, 
+            velocity.get_channel_count() > 0 ? &(velocity.get_converted_channel_numbers())[0] : NULL,
             static_cast<uint32>(velocity.get_channel_count()),
             analog_input.get_channel_count() > 0 ? &(analog_input.get_values())[0] : NULL,
             encoder.get_channel_count() > 0 ? &(encoder.get_values())[0] : NULL,
@@ -162,10 +158,10 @@ bool Q8Usb::update_output() {
     if (open_) {
         t_error result;
         result = hil_write(handle_,
-            analog_output.get_channel_count() > 0 ? &(analog_output.get_channel_numbers())[0] : NULL, 
+            analog_output.get_channel_count() > 0 ? &(analog_output.get_channel_numbers())[0] : NULL,
             static_cast<uint32>(analog_output.get_channel_count()),
             NULL, 0,
-            digital_output.get_channel_count() > 0 ? &(digital_output.get_channel_numbers())[0] : NULL, 
+            digital_output.get_channel_count() > 0 ? &(digital_output.get_channel_numbers())[0] : NULL,
             static_cast<uint32>(digital_output.get_channel_count()),
             NULL, 0,
             analog_output.get_channel_count() > 0 ? &(analog_output.get_values())[0] : NULL,
@@ -205,7 +201,7 @@ bool Q8Usb::identify(uint32 channel_number) {
             if (di_ch.get_value() != LOW) {
                 return false;
             }
-        }        
+        }
         return true;
     }
     else {

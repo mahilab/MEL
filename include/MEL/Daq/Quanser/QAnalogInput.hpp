@@ -33,7 +33,7 @@ public:
 
     bool set_ranges(const std::vector<voltage>& min_values, const std::vector<voltage>& max_values) override;
 
-    bool set_range(uint32 channel_number, voltage min_value, voltage max_value);
+    bool set_range(uint32 channel_number, voltage min_value, voltage max_value) override;
 
 private:
 
