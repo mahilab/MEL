@@ -14,32 +14,32 @@ class QOptions {
 
 public:
 
-    enum UpdateRate {
+    enum class UpdateRate {
         Normal = 1, ///< 1 kHz
         Fast = 2    ///< 8 kHz
     };
 
-    enum EncoderDirection {
+    enum class EncoderDirection {
         Nonreversed = 0,
         Reversed = 1
     };
 
-    enum EncoderFilter {
+    enum class EncoderFilter {
         Unfiltered = 0,
         Filtered = 1
     };
 
-    enum EncoderDetection {
+    enum class EncoderDetection {
         High = 0,
         Low = 1
     };
 
-    enum EncoderReload {
+    enum class EncoderReload {
         NoReload = 0,
         OnPulse = 1
     };
 
-    enum AoMode {
+    enum class AoMode {
         VoltageMode = 0,
         CurrentMode2 = 1,
         CurrentMode1 = 2,
@@ -47,6 +47,11 @@ public:
         ControlMode2 = 4,
         ControlMode1 = 5,
         ControlMode0 = 6
+    };
+
+    enum class LedMode {
+        Auto = 0,
+        User = 1
     };
 
 public:
@@ -75,6 +80,8 @@ public:
         double a0, double a1, double a2, double b0, double b1, double post);
 
     void set_special_option(std::string option);
+
+    void set_led_mode(LedMode mode);
 
     std::string get_string();
 

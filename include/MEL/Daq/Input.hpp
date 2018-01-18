@@ -19,7 +19,7 @@ public:
 
     /// Default constructor
     Input(const std::string& name, const std::vector<uint32>& channel_numbers) :
-        Module<T>(name, IoType::Input, channel_numbers)
+        Module<T>(name, IoType::InputOnly, channel_numbers)
     {
     }
 

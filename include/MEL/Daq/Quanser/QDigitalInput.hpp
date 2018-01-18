@@ -6,37 +6,37 @@
 
 namespace mel {
 
-    //==============================================================================
-    // FORWARD DECLARATIONS
-    //==============================================================================
+//==============================================================================
+// FORWARD DECLARATIONS
+//==============================================================================
 
-    class QDaq;
+class QDaq;
 
-    //==============================================================================
-    // CLASS DECLARATION
-    //==============================================================================
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
 
-    class QDigitalInput : public Input<logic>, NonCopyable {
+class QDigitalInput : public Input<logic>, NonCopyable {
 
-    public:
+public:
 
-        QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers);
 
-        ~QDigitalInput();
+    ~QDigitalInput();
 
-        bool enable() override;
+    bool enable() override;
 
-        bool disable() override;
+    bool disable() override;
 
-        bool update() override;
+    bool update() override;
 
-        bool update_channel(uint32 channel_number) override;
+    bool update_channel(uint32 channel_number) override;
 
-    private:
+private:
 
-        QDaq& daq_;  ///< Reference to parent QDaq
+    QDaq& daq_;  ///< Reference to parent QDaq
 
-    };
+};
 
 } // namespace mel
 

@@ -15,9 +15,9 @@ namespace mel {
 
 /// The Module/Channel type
 enum class IoType {
-    Input,          ///< Module that reads in real-world values
-    Output,         ///< Module that writes out real-world values
-    Bidirectional   ///< Module that reads or writes real-world values
+    InputOnly,   ///< Module that reads in real-world values
+    OutputOnly,  ///< Module that writes out real-world values
+    InputOutput  ///< Module that reads or writes real-world values
 };
 
 //==============================================================================

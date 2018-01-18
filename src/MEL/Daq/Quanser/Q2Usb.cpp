@@ -18,8 +18,17 @@ Q2Usb::Q2Usb(QOptions options, uint32 id) :
     QDaq("q2_usb", id, options),
     analog_input(*this, {0, 1}),
     analog_output(*this, {0, 1}),
-    digital_input(*this, {0, 1}),
-    digital_output(*this, {0, 1}),
+    digital_io(*this, {0, 1, 2, 3, 4, 5, 6, 7, 8},
+                      { QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Input,
+                        QDigitalInputOutput::Direction::Output }
+                      ),
     encoder(*this, {0, 1}),
     watchdog(*this, milliseconds(100))
 {
@@ -53,16 +62,14 @@ bool Q2Usb::enable() {
         return false;
     if (!analog_output.enable())
         return false;
-    if (!digital_input.enable())
-        return false;
-    if (!digital_output.enable())
+    if (!digital_io.enable())
         return false;
     if (!encoder.enable())
         return false;
     // set default expire values (digital = LOW, analog = 0.0V)
-    if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0)))
+    if (!analog_output.set_expire_values(std::vector<voltage>(2, 0.0)))
         return false;
-    if (!digital_output.set_expire_values(std::vector<logic>(8, LOW)))
+    if (!digital_io.set_expire_values(std::vector<logic>(9, LOW)))
         return false;
     // allow changes to take effect
     sleep(milliseconds(10));
@@ -76,9 +83,7 @@ bool Q2Usb::disable() {
         return false;
     if (!analog_output.disable())
         return false;
-    if (!digital_input.disable())
-        return false;
-    if (!digital_output.disable())
+    if (!digital_io.disable())
         return false;
     if (!encoder.disable())
         return false;
@@ -93,24 +98,10 @@ bool Q2Usb::disable() {
 
 bool Q2Usb::update_input() {
     if (open_) {
-        t_error result;
-        result = hil_read(handle_,
-            analog_input.get_channel_count() > 0 ? &(analog_input.get_channel_numbers())[0] : NULL,
-            static_cast<uint32>(analog_input.get_channel_count()),
-            encoder.get_channel_count() > 0 ? &(encoder.get_channel_numbers())[0] : NULL,
-            static_cast<uint32>(encoder.get_channel_count()),
-            digital_input.get_channel_count() > 0 ? &(digital_input.get_channel_numbers())[0] : NULL,
-            static_cast<uint32>(digital_input.get_channel_count()),
-            NULL,
-            0,
-            analog_input.get_channel_count() > 0 ? &(analog_input.get_values())[0] : NULL,
-            encoder.get_channel_count() > 0 ? &(encoder.get_values())[0] : NULL,
-            digital_input.get_channel_count() > 0 ? &(digital_input.get_values())[0] : NULL,
-            NULL);
-        if (result == 0)
+
+        if (analog_input.update() && encoder.update() && digital_io.update())
             return true;
         else {
-            print(QDaq::get_quanser_error_message(result));
             return false;
         }
     }
@@ -122,24 +113,8 @@ bool Q2Usb::update_input() {
 
 bool Q2Usb::update_output() {
     if (open_) {
-        t_error result;
-        result = hil_write(handle_,
-            analog_output.get_channel_count() > 0 ? &(analog_output.get_channel_numbers())[0] : NULL,
-            static_cast<uint32>(analog_output.get_channel_count()),
-            NULL, 0,
-            digital_output.get_channel_count() > 0 ? &(digital_output.get_channel_numbers())[0] : NULL,
-            static_cast<uint32>(digital_output.get_channel_count()),
-            NULL, 0,
-            analog_output.get_channel_count() > 0 ? &(analog_output.get_values())[0] : NULL,
-            NULL,
-            digital_output.get_channel_count() > 0 ? &(digital_output.get_values())[0] : NULL,
-            NULL);
-        if (result == 0)
+        if (analog_output.update() && digital_io.update())
             return true;
-        else {
-            print(QDaq::get_quanser_error_message(result));
-            return false;
-        }
     }
     else {
         print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
@@ -147,10 +122,10 @@ bool Q2Usb::update_output() {
     }
 }
 
-bool Q2Usb::identify(uint32 channel_number) {
+bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
     if (open_) {
-        Input<logic>::Channel di_ch = digital_input.get_channel(channel_number);
-        Output<logic>::Channel do_ch = digital_output.get_channel(channel_number);
+        InputOutput<logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
+        InputOutput<logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
         bool loopback_detected = true;
         for (int i = 0; i < 5; ++i) {
             do_ch.set_value(HIGH);
@@ -176,12 +151,8 @@ bool Q2Usb::identify(uint32 channel_number) {
     }
 }
 
-int Q2Usb::identify() {
-    for (uint32 channel_number = 0; channel_number < 8; ++channel_number) {
-        if (identify(channel_number))
-            return (int)channel_number;
-    }
-    return -1;
+void Q2Usb::set_led(logic value) {
+    digital_io[8].set_value(value);
 }
 
 std::size_t Q2Usb::get_q2_usb_count() {

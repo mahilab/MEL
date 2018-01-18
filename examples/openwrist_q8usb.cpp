@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     // make Q8 USB that's configured for current control with VoltPAQ-X4
     QOptions qoptions;
-    qoptions.set_update_rate(QOptions::Fast);
+    qoptions.set_update_rate(QOptions::UpdateRate::Fast);
     qoptions.set_analog_output_mode(0, QOptions::AoMode::CurrentMode1, 0, 2.0, 20.0, 0, -1, 0, 1000);
     qoptions.set_analog_output_mode(1, QOptions::AoMode::CurrentMode1, 0, 2.0, 20.0, 0, -1, 0, 1000);
     qoptions.set_analog_output_mode(2, QOptions::AoMode::CurrentMode1, 0, 2.0, 20.0, 0, -1, 0, 1000);

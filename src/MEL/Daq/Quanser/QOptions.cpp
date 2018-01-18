@@ -7,7 +7,7 @@ namespace mel {
 //==============================================================================
 
 QOptions::QOptions() :
-    update_rate_(Normal),
+    update_rate_(UpdateRate::Fast),
     decimation_(1)
 { }
 
@@ -67,7 +67,7 @@ void QOptions::set_analog_output_mode(uint32 channel_number, AoMode mode, double
 
     std::string ch = "ch" + std::to_string(channel_number) + "_";
 
-    std::string mode_str = std::to_string(mode);
+    std::string mode_str = std::to_string(static_cast<int>(mode));
     std::string kff_str  = std::to_string(kff);     kff_str.resize(7);
     std::string a0_str   = std::to_string(a0);      a0_str.resize(7);
     std::string a1_str   = std::to_string(a1);      a1_str.resize(7);
@@ -86,6 +86,13 @@ void QOptions::set_analog_output_mode(uint32 channel_number, AoMode mode, double
     options_ += ch + "post=" + post_str + ";";
 }
 
+void QOptions::set_led_mode(LedMode mode) {
+    if (mode == LedMode::Auto)
+        options_ += "led=auto;";
+    else if (mode == LedMode::User)
+        options_ += "led=user;";
+}
+
 void QOptions::set_special_option(std::string option) {
     if (option[option.length()-1] != ';')
         option += ";";
@@ -94,7 +101,7 @@ void QOptions::set_special_option(std::string option) {
 
 std::string QOptions::get_string() {
     std::string base_options = "";
-    if (update_rate_ == Fast)
+    if (update_rate_ == UpdateRate::Fast)
         base_options += "update_rate=fast;";
     else
         base_options += "update_rate=normal;";

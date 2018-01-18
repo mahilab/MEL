@@ -19,7 +19,7 @@ public:
 
     /// Default constructor
     Output(const std::string& name, const std::vector<uint32>& channel_numbers) :
-        Module<T>(name, IoType::Output, channel_numbers),
+        Module<T>(name, IoType::OutputOnly, channel_numbers),
         enable_values_(Module<T>::channel_count_),
         disable_values_(Module<T>::channel_count_),
         expire_values_(Module<T>::channel_count_)
