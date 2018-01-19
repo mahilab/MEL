@@ -114,7 +114,7 @@ include_directories("include" "/path/to/.../MEL/include")
 # indicate where MEL.lib is
 link_directories("/path/to/.../MEL/lib/<platform>")
 # create application
-add_executable(MyApp include/MyClass.hpp src/MyClass.cpp src/main.cpp)
+add_executable(MyApp include/MyClass.hpp src/MyClass.cpp ... src/main.cpp)
 # link MEL
 target_link_libraries(MyApp MEL)
 ```
