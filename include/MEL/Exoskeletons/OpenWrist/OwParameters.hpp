@@ -1,6 +1,7 @@
-#pragma once 
+#pragma once
 
 #include <MEL/Math/Constants.hpp>
+#include <MEL/Utility/Types.hpp>
 #include <array>
 
 namespace mel {

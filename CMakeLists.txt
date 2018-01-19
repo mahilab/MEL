@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.7)
 
 # 1) Open console and navigate to the /build folder
 # 2) To generate makefile for NI hardware, run:
-#        $: cmake .. -G "MinGW Makefiles" -DNI=ON
+#        $: cmake .. -G "Ninja" -DNI=ON
 #    To generate Visual Studio MEL.sln file for Quanser hardware, run:
 #        $: cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
 # 3) To build OpenWrist or MAHI Exo-II classes, append -DOPENWRIST=ON or -DMAHIEXOII=ON
@@ -21,12 +21,16 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(NI "Turn ON if compiling for NI hardware and NI Realtime Linux" OFF)
-option(QUANSER "Turn ON if compiling for Quanser hardware and MSVC" OFF)
-option(OPENWRIST "Turn ON to include OpenWrist source code" OFF)
-option(MAHIEXOII "Turn ON to include MAHI Exo-II source code" OFF)
-option(EXAMPLES "Turn ON to build example executable(s)" OFF)
-option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
+option(NI        "Turn ON if compiling for NI hardware and NI Realtime Linux" OFF)
+option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
+option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
+option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
+option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
+option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
+
+set(NI_ROOT      "C:/dev/nirlt-linux"       CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(QUANSER_ROOT "C:/Program Files/Quanser" CACHE FILEPATH "Absolute path to Quanser installation."          )
+set(EIGEN_ROOT   "C:/dev/eigen"             CACHE FILEPATH "Absolute path to Eigen installation."            )
 
 #===============================================================================
 # SETUP BUILD
@@ -35,7 +39,7 @@ option(LEGACY "Turn ON if you need depreciated MEL classes." OFF)
 # set NI RT Linux specific options if enabled
 if (NI)
     # add compiler to path
-    LIST(APPEND CMAKE_PROGRAM_PATH "C:/dev/nirlt-linux/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux")
+    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux)
     # set compiler (must be called before project/enable)
     set(CMAKE_C_COMPILER x86_64-nilrt-linux-gcc)
     set(CMAKE_CXX_COMPILER x86_64-nilrt-linux-g++)
@@ -43,20 +47,20 @@ if (NI)
     set(CMAKE_SYSTEM_NAME Generic)
     set(CMAKE_CROSSCOMPILING 1)
     # setup sysroot (for NI RT cross compiler)
-    set(CMAKE_SYSROOT C:/dev/nirlt-linux/sysroots/core2-64-nilrt-linux)
+    set(CMAKE_SYSROOT ${NI_ROOT}/sysroots/core2-64-nilrt-linux)
     # need pthread for multithreading
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
+
+# enable C/C++
+enable_language(C)
+enable_language(CXX)
 
 # enable C++11
 set(CMAKE_CXX_STANDARD 11)
 
 # create project
 project(MEL)
-
-# enable C/C++
-enable_language(C)
-enable_language(CXX)
 
 # set binary output locations
 if(WIN32)
@@ -103,14 +107,14 @@ set(INCLUDE_DIRS include)
 # Hardware Lib(s)
 if (NI)
     list(APPEND INCLUDE_DIRS
-        C:/dev/nirlt-linux/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
-        C:/dev/nirlt-linux/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
+        ${NI_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
+        ${NI_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
 elseif (QUANSER)
-    list(APPEND INCLUDE_DIRS "C:/Program Files/Quanser/QUARC/include")
+    list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
 endif()
 
 if (MAHIEXOII)
-    list(APPEND INCLUDE_DIRS C:/dev/eigen)
+    list(APPEND INCLUDE_DIRS ${EIGEN_ROOT})
 endif()
 
 # include directories
@@ -254,9 +258,9 @@ if(NI)
     list(APPEND LINK_LIBS dl)
 elseif(QUANSER)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
-        link_directories("C:/Program Files/Quanser/QUARC/lib/win64")
+        link_directories("${QUANSER_ROOT}/QUARC/lib/win64")
     else()
-        link_directories("C:/Program Files/Quanser/QUARC/lib/windows")
+        link_directories("${QUANSER_ROOT}/QUARC/lib/windows")
     endif()
     list(APPEND LINK_LIBS
         hil

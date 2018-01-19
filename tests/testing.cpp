@@ -1,50 +1,31 @@
-#include <MEL/Daq/Quanser/Q8Usb.hpp>
-#include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Console.hpp>
-#include <memory>
+#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Utility/Windows/Keyboard.hpp>
+#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Limiter.hpp>
 
 using namespace mel;
 
-class Base {
-public:
-    Base(std::string something) : something_(something) {}
-
-    virtual void print_something() const {
-        print("Base: " + something_);
-    }
-
-    std::string something_;
-};
-
-class Derived : public Base {
-public:
-    Derived(std::string something) : Base(something) {}
-
-    void print_something() const override {
-        print("Derived: " + something_);
-    }
-};
-
-class Test {
-public:
-    Test(Base* b) : base(b) {}
-
-    std::shared_ptr<Base> base;
-
-    /** Something */
-    const Base& get_base() {
-        return *base;
-    }
-
-
-};
-
 int main() {
-    Test test(nullptr);
-    test.base->print_something();
-    test.get_base().print_something();
-    const Base* x = &(test.get_base());
-    x->print_something();
-    delete x;
+
+    MelShare ms("limiter");
+    std::vector<double> data{0, 0, 3, 10};
+
+    Limiter limiter(3, 10, seconds(10));
+
+    Timer timer(milliseconds(1));
+    while(!Keyboard::is_key_pressed(Keyboard::Escape)) {
+
+        if (Keyboard::is_key_pressed(Keyboard::Up))
+            data[0] += 0.01;
+        else if (Keyboard::is_key_pressed(Keyboard::Down))
+            data[0] -= 0.01;
+
+        data[1] = limiter.limit(data[0]);
+
+        ms.write_data(data);
+
+        timer.wait();
+    }
+
     return 0;
 }

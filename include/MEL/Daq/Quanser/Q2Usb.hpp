@@ -55,7 +55,7 @@ public:
     /// LED and will be updated on update_output()
     void set_led(logic value);
 
-    
+
     bool identify(uint32 input_channel_number, uint32 output_channel_number);
 
 public:

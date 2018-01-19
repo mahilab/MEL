@@ -46,11 +46,17 @@ extern double max(double a, double b);
 /// Returns maximum value in a a vector
 extern double max(const std::vector<double>& values);
 
+/// Computes the square root a number
+extern double sqrt(double value);
+
+/// Computes the square of a number efficicently
+extern double sq(double value);
+
 /// Computes the power of a base and exponent
 extern double pow(double base, double exp);
 
 /// Clamps value between min and max
-extern double saturate(double value, double max, double min);
+extern double saturate(double value, double min, double max);
 
 /// Clamps value between -abs_max and +abs_max
 extern double saturate(double value, double abs_max);
