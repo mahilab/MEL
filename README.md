@@ -92,6 +92,7 @@ my_project
 ├── build
 ├── include
 |   ├── MyClass.hpp
+|   ├── ...
 ├── src
 |   ├── MyClass.cpp
 |   ├── ...
