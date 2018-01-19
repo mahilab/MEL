@@ -5,34 +5,63 @@
 
 namespace mel {
 
+
+
 //==============================================================================
 // CLASS DEClARATION
 //==============================================================================
 
-/// Encapsulates an Output only Module, with added functionality
+/// Encapsulates an InputOutput only Module, with added functionality
 template <typename T>
-class Output : public Module<T> {
+class InputOutput : public Module<T> {
 
 public:
+
+    /// Represents an InputOutput direction
+    enum Direction {
+        Input,
+        Output
+    };
 
     class Channel;
 
     /// Default constructor
-    Output(const std::string& name, const std::vector<uint32>& channel_numbers) :
-        Module<T>(name, IoType::OutputOnly, channel_numbers),
+    InputOutput(const std::string& name,
+                const std::vector<uint32>& channel_numbers,
+                const std::vector<Direction>& directions) :
+        Module<T>(name, IoType::InputOutput, channel_numbers),
+        directions_(directions),
         enable_values_(Module<T>::channel_count_),
         disable_values_(Module<T>::channel_count_),
         expire_values_(Module<T>::channel_count_)
     {
+        sort_input_output_channel_numbers();
     }
 
     /// Default destructor
-    virtual ~Output() { }
+    virtual ~InputOutput() { }
 
-    /// This function should call the DAQ's API to set watchdog expire values if
-    /// the functionality exists. The vector of expire values must correspond to
-    /// the enabled channel numbers in acending order. The base implementation
-    /// below should be called in the derived implementation.
+    /// Sets the directions of all channels
+    virtual bool set_directions(const std::vector<Direction>& directions) {
+        if (validate_channel_count(directions)) {
+            directions_ = directions;
+            sort_input_output_channel_numbers();
+            return true;
+        }
+        return false;
+    }
+
+    /// Sets the direction of a single channel
+    virtual bool set_direction(uint32 channel_number, Direction direction) {
+        if (Module<T>::validate_channel_number(channel_number)) {
+            directions_[Module<T>::channel_map_.at(channel_number)] = direction;
+            sort_input_output_channel_numbers();
+            return true;
+        }
+        return false;
+    }
+
+    /// Sets the expire values of all channels
     virtual bool set_expire_values(const std::vector<T>& expire_values) {
         if (Module<T>::validate_channel_count(expire_values)) {
             expire_values_ = expire_values;
@@ -98,42 +127,62 @@ public:
         return get_channels(channel_numbers);
     }
 
+    void sort_input_output_channel_numbers() {
+        input_channel_numbers_.clear();
+        output_channel_numbers_.clear();
+        for (std::size_t i = 0; i < channel_numbers_.size(); ++i) {
+            if (directions_[i] == Direction::Input)
+                input_channel_numbers_.push_back(channel_numbers_[i]);
+            else if (directions_[i] == Direction::Output)
+                output_channel_numbers_.push_back(channel_numbers_[i]);
+        }
+    }
+
 protected:
 
-    std::vector<T> enable_values_;   ///< The initial values set when the Module is enabled
-    std::vector<T> disable_values_;  ///< The final values set when the Module is disabled
-    std::vector<T> expire_values_;   ///< The expire values when the Module expires
+    std::vector<Direction> directions_;           ///< The I/O directions of each channel
+    std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
+    std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
+    std::vector<T> enable_values_;                ///< The initial values set when the Module is enabled
+    std::vector<T> disable_values_;               ///< The final values set when the Module is disabled
+    std::vector<T> expire_values_;                ///< The expire values when the Module expires
 
 public:
 
     /// Encapsulates a Module channel
-    class Channel : public ChannelBase<T, Output<T>> {
+    class Channel : public ChannelBase<T, InputOutput<T>> {
 
     public:
 
         /// Default constructor. Creates invalid channel
-        Channel() : ChannelBase<T, Output<T>>() {}
+        Channel() : ChannelBase<T, InputOutput<T>>() {}
 
         /// Creates a valid channel.
-        Channel(Output* module, uint32 channel_number) :
-            ChannelBase<T, Output<T>>(module, channel_number) { }
+        Channel(InputOutput* module, uint32 channel_number) :
+            ChannelBase<T, InputOutput<T>>(module, channel_number) { }
+
+        /// Sets the direction of the channel
+        void set_direction(Direction direction) {
+            ChannelBase<T, InputOutput<T>>::module_->set_direction(
+                ChannelBase<T, InputOutput<T>>::channel_number_, direction);
+        }
 
         /// Sets the enable value of the channel
         void set_enable_value(T enable_value) {
-            ChannelBase<T, Output<T>>::module_->set_intial_value(
-                ChannelBase<T, Output<T>>::channel_number_, enable_value);
+            ChannelBase<T, InputOutput<T>>::module_->set_intial_value(
+                ChannelBase<T, InputOutput<T>>::channel_number_, enable_value);
         }
 
         /// Sets the disable value of the channel
         void set_disable_value(T disable_value) {
-            ChannelBase<T, Output<T>>::module_->set_disable_value(
-                ChannelBase<T, Output<T>>::channel_number_, disable_value);
+            ChannelBase<T, InputOutput<T>>::module_->set_disable_value(
+                ChannelBase<T, InputOutput<T>>::channel_number_, disable_value);
         }
 
         /// Sets the expiration value of the channel
         bool set_expire_value(T expire_value) {
-            return ChannelBase<T, Output<T>>::module_->set_expire_value(
-                ChannelBase<T, Output<T>>::channel_number_, expire_value);
+            return ChannelBase<T, InputOutput<T>>::module_->set_expire_value(
+                ChannelBase<T, InputOutput<T>>::channel_number_, expire_value);
         }
 
     };

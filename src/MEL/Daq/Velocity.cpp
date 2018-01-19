@@ -7,7 +7,7 @@ namespace mel {
     //==============================================================================
 
     Velocity::Velocity(const std::string& name, const std::vector<uint32>& channel_numbers) :
-        Module<double>(name, IoType::Input, channel_numbers),
+        Module<double>(name, IoType::InputOnly, channel_numbers),
         factors_(channel_count_, QuadFactor::X4),
         units_per_count_(channel_count_, 1.0),
         velocities_(channel_count_, 0.0),

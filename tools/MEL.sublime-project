@@ -3,33 +3,53 @@
 	[
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Make-Windows)",
-			"selector":
-			[
-				"source.cmake"
-			],
-			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/../build/windows_mingw"
-		},
-		{
-			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Make-Linux)",
+			"name": "CMake (Linux Make)",
 			"selector":
 			[
 				"source.cmake"
 			],
 			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/../build/linux_mingw"
+			"working_dir": "$project_path/../build/linux_make"
 		},
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (MSVC)",
+			"name": "CMake (Linux Ninja)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
+			"working_dir": "$project_path/../build/linux_ninja"
+		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Windows Make)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
+			"working_dir": "$project_path/../build/windows_make"
+		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Windows MSVC)",
 			"selector":
 			[
 				"source.cmake"
 			],
 			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DOPENWRIST=ON -DQUANSER=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build/windows_msvc"
+		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Windows Ninja)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DEXAMPLES=ON",
+			"working_dir": "$project_path/../build/windows_ninja"
 		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
@@ -39,8 +59,8 @@
 				"source.c++",
 				"source.c++.11"
 			],
-			"shell_cmd": "make -j",
-			"working_dir": "$project_path/../build/windows_mingw"
+			"shell_cmd": "mingw32-make -j",
+			"working_dir": "$project_path/../build/windows_make"
 		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
@@ -50,20 +70,36 @@
 				"source.c++",
 				"source.c++.11"
 			],
-			"shell_cmd": "make -j",
-			"working_dir": "$project_path/../build/linux_mingw"
+			"shell_cmd": "mingw32-make -j",
+			"working_dir": "$project_path/../build/linux_make"
+		},
+		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "Ninja (Linux)",
+			"selector":
+			[
+				"source.c++",
+				"source.c++.11"
+			],
+			"shell_cmd": "ninja",
+			"working_dir": "$project_path/../build/linux_ninja"
+		},
+		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "Ninja (Windows)",
+			"selector":
+			[
+				"source.c++",
+				"source.c++.11"
+			],
+			"shell_cmd": "ninja",
+			"working_dir": "$project_path/../build/windows_ninja"
 		},
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Clean",
+			"name": "CMake (Clean)",
 			"shell_cmd": "python clean.py",
 			"working_dir": "$project_path/../tools"
-		},
-		{
-			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Anaconda Python Builder",
-			"selector": "source.python",
-			"shell_cmd": "\"python\" -u \"$file\""
 		}
 	],
 	"folders":
@@ -76,10 +112,10 @@
 	{
 		"ecc_common_flags":
 		[
-			"-I$project_base_path/src",
+			// "-I$project_base_path/src",
 			"-I$project_base_path/include",
-			"-I$project_base_path/examples",
-			"-IC:/dev/quarc/include"
+			// "-I$project_base_path/examples",
+			// "-IC:/dev/quarc/include"
 		]
 	}
 }

@@ -6,6 +6,7 @@
 #include <MEL/Daq/Quanser/QAnalogOutput.hpp>
 #include <MEL/Daq/Quanser/QDigitalInput.hpp>
 #include <MEL/Daq/Quanser/QDigitalOutput.hpp>
+#include <MEL/Daq/Quanser/QDigitalInputOutput.hpp>
 #include <MEL/Daq/Quanser/QEncoder.hpp>
 #include <MEL/Daq/Quanser/QWatchdog.hpp>
 
@@ -50,23 +51,12 @@ public:
     /// function on each module separately.
     bool update_output() override;
 
-    /// Quanser provides no software-based method of differntiating Q2 USBs
-    /// when more than one is connected to the host. This funcion provides a
-    /// physical means by checking for a digital loopback on same numbered
-    /// digital input and output channels. For example, if you connect two Q2
-    /// USBs to the host, one which has DO0 connected to DI0 (arbitraily chosen),
-    /// and the MEL Q2Usb object with id = 0 returns identify(0) = true, you
-    /// know Q2Usb(id = 0) is the Q2 USB with the loopback, and Q2Usb(id = 1)
-    /// is the Q2 USB without a loopback. If identify(0) = false, you know
-    /// Q2Usb(id = 0) is the Q2 USB without the loopback, and Q2Usb(id = 1)
-    /// can be infered as the Q2 USB with a loopback, and subsequently checked
-    /// by calling indentify(0) on it.
-    bool identify(uint32 channel_number);
+    /// If QOptions::LedMode is User, this function sets the status of the
+    /// LED and will be updated on update_output()
+    void set_led(logic value);
 
-    /// This is an alternate version of identify() that checks for a loopback
-    /// connection on all digital channel pairs, and returns the channel number
-    /// of the first connection found. If no connection is found, it returns -1.
-    int identify();
+    
+    bool identify(uint32 input_channel_number, uint32 output_channel_number);
 
 public:
 
@@ -76,12 +66,11 @@ public:
 
 public:
 
-    QAnalogInput     analog_input;  ///< The analog input Module
-    QAnalogOutput   analog_output;  ///< The analog output Module
-    QDigitalInput   digital_input;  ///< The digital input Module
-    QDigitalOutput digital_output;  ///< The digital output Module
-    QEncoder              encoder;  ///< The encoder Module
-    QWatchdog            watchdog;  ///< The watchdog timer of this Q2 USB
+    QAnalogInput      analog_input;  ///< The analog input Module
+    QAnalogOutput    analog_output;  ///< The analog output Module
+    QDigitalInputOutput digital_io;  ///< The digital input/output module
+    QEncoder               encoder;  ///< The encoder Module
+    QWatchdog             watchdog;  ///< The watchdog timer of this Q2 USB
 
 private:
 

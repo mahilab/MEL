@@ -297,9 +297,6 @@ if(EXAMPLES)
     add_executable(options examples/options.cpp)
     target_link_libraries(options MEL)
 
-    add_executable(logging examples/logging.cpp)
-    target_link_libraries(logging MEL)
-
     add_executable(lockables examples/lockables.cpp)
     target_link_libraries(lockables MEL)
 
@@ -317,6 +314,9 @@ if(EXAMPLES)
     endif()
 
     if(QUANSER)
+        add_executable(q2usb examples/q2usb.cpp)
+        target_link_libraries(q2usb MEL)
+
         add_executable(q8usb examples/q8usb.cpp)
         target_link_libraries(q8usb MEL)
     elseif(NI)

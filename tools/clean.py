@@ -1,10 +1,9 @@
 # Evan Pezent (epezent@rice.edu)
-# MEL Clean Script
+# MEL Universal Clean Script
 # 1/2018
 
 # This script cleans the build and binary directories associated with MEL. If
 # a particular directory does not exist, it is created.
-
 
 import os
 import shutil
@@ -13,9 +12,11 @@ keep = ['bin/linux/sftp-config.json',
         'bin/linux/NiFpga_quadrature.lvbitx']
 
 folders = ['build',
-           'build/linux_mingw',
-           'build/windows_mingw',
+           'build/linux_make',
+           'build/linux_ninja',
+           'build/windows_make',
            'build/windows_msvc',
+           'build/windows_ninja',
            'bin',
            'bin/linux',
            'bin/windows',

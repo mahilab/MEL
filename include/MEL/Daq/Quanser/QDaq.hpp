@@ -18,6 +18,7 @@ class QAnalogInput;
 class QAnalogOutput;
 class QDigitalInput;
 class QDigitalOutput;
+class QDigitalInputOutput;
 class QEncoder;
 class QVelocity;
 
@@ -74,6 +75,7 @@ protected:
     friend class QAnalogOutput;
     friend class QDigitalInput;
     friend class QDigitalOutput;
+    friend class QDigitalInputOutput;
     friend class QEncoder;
     friend class QVelocity;
 

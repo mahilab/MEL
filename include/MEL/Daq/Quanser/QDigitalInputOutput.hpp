@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MEL/Daq/Input.hpp>
+#include <MEL/Daq/InputOutput.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 
@@ -16,13 +16,13 @@ class QDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QDigitalInput : public Input<logic>, NonCopyable {
+class QDigitalInputOutput : public InputOutput<logic>, NonCopyable {
 
 public:
 
-    QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    QDigitalInputOutput(QDaq& daq, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions);
 
-    ~QDigitalInput();
+    ~QDigitalInputOutput();
 
     bool enable() override;
 
@@ -31,6 +31,14 @@ public:
     bool update() override;
 
     bool update_channel(uint32 channel_number) override;
+
+    bool set_directions(const std::vector<Direction>& directions) override;
+
+    bool set_direction(uint32 channel_number, Direction direction) override;
+
+    bool set_expire_values(const std::vector<logic>& expire_values) override;
+
+    bool set_expire_value(uint32 channel_number, logic expire_value) override;
 
 private:
 
