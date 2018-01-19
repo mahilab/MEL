@@ -15,7 +15,11 @@ public:
 
     /// The digital logic level required to enable the Actuator (i.e. High
     /// is typically 5V or 10V, and Low is usually 0V).
-    enum class EnableMode { None, Low, High };
+    enum class EnableMode { 
+        None, 
+        Low, 
+        High 
+    };
 
 public:
 

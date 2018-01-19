@@ -11,23 +11,19 @@ OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
     config_(configuration),
     params_(parameters)
 {
-    motors_.reserve(3);
-
     // for every joint
     for (int i = 0; i < 3; i++) {
         std::string num = std::to_string(i);
 
         // construct motors
-        motors_.push_back( 
-            Motor("ow_motor_" + num,
+        motors_[i] = Motor("ow_motor_" + num,
             params_.kt_[i],
             config_.amplifier_gains_[i],
             config_.command_channels_[i],
             config_.enable_channels_[i],
             Actuator::EnableMode::High,
             config_.sense_channels_[i],
-            params_.motor_cont_limits_[i]) 
-        );
+            params_.motor_cont_limits_[i]);
 
         config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
         config_.velocity_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);

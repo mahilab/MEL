@@ -72,12 +72,19 @@ double max(const std::vector<double>& values) {
     return *max_element(values.begin(), values.end());
 }
 
-/// Computes the power of a number
+double sqrt(double value) {
+    return std::sqrt(value);
+}
+
+ double sq(double value) {
+    return value*value;
+ }
+
 double pow(double base, double exp){
     return std::pow(base, exp);
 }
 
-double saturate(double value, double max, double min) {
+double saturate(double value, double min, double max) {
     if (value > max)
         return max;
     else if (value < min)
@@ -87,8 +94,8 @@ double saturate(double value, double max, double min) {
 }
 
 double saturate(double value, double abs_max) {
-    double pos_max = std::abs(abs_max);
-    return saturate(value, pos_max, -pos_max);
+    abs_max = std::abs(abs_max);
+    return saturate(value, -abs_max, abs_max);
 }
 
 double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd) {

@@ -14,13 +14,17 @@ class ChannelBase {
 public:
 
     /// Default constructor. Creates invalid channel
-    ChannelBase() : module_(nullptr), channel_number_(-1) {}
+    ChannelBase() : 
+        module_(nullptr), 
+        channel_number_(-1) 
+    {}
 
     /// Creates a valid channel.
     ChannelBase(M* module, uint32 channel_number) :
         module_(module),
         channel_number_(channel_number) { }
 
+    /// Destructor
     virtual ~ChannelBase() {}
 
     /// Synchronizes the channel with the real-world
@@ -53,10 +57,19 @@ public:
         return channel_number_;
     }
 
+    /// Returns true if the Channel is valid
+    bool is_valid() {
+        if (module_ == nullptr)
+            return false;
+        if (!module_->validate_channel_number(channel_number_))
+            return false;
+        return true;
+    }
+
 protected:
 
-    M* module_;                    ///< Pointer to the module this channel is on
-    const uint32 channel_number_;  ///< The channel number of this channel
+    M* module_;              ///< Pointer to the module this channel is on
+    uint32 channel_number_;  ///< The channel number of this channel
 
 };
 
