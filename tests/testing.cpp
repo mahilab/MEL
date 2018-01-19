@@ -10,7 +10,7 @@ int main() {
     MelShare ms("limiter");
     std::vector<double> data{0, 0, 3, 10};
 
-    Limiter limiter(3, 10, seconds(10));
+    Limiter limiter(3, 10, seconds(2));
 
     Timer timer(milliseconds(1));
     while(!Keyboard::is_key_pressed(Keyboard::Escape)) {

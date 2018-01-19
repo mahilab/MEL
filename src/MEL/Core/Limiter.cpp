@@ -48,6 +48,7 @@ double Limiter::limit(double unlimited_value) {
             accumulator_ += (sq(unlimited_value) - sq(continouous_limit_)) * clock_.get_elapsed_time().as_seconds();
             accumulator_ = saturate(accumulator_, 0.0, accumulator_);
             print(accumulator_);
+            clock_.restart();
             if (accumulator_ > setpoint_)
                 return saturate(unlimited_value, continouous_limit_);
             else
