@@ -12,6 +12,7 @@
 
 
 
+
 namespace mel {
 
     class MahiExoII : public Exo {
@@ -51,7 +52,7 @@ namespace mel {
         //void disable() override;
 
 
-        std::vector<Motor> motors_;
+        std::array<Motor, N_rj_> motors_;
 
 
         class SmoothReferenceTrajectory {

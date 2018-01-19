@@ -78,6 +78,10 @@ if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()
 
+if (MAHIEXOII)
+    add_definitions(-DMEL_INCLUDE_EIGEN)
+endif()
+
 # add configurations
 set(CMAKE_CONFIGURATION_TYPES release)
 
