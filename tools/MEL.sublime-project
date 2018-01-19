@@ -100,6 +100,12 @@
 			"name": "CMake (Clean)",
 			"shell_cmd": "python clean.py",
 			"working_dir": "$project_path/../tools"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
 		}
 	],
 	"folders":
@@ -112,10 +118,7 @@
 	{
 		"ecc_common_flags":
 		[
-			// "-I$project_base_path/src",
-			"-I$project_base_path/include",
-			// "-I$project_base_path/examples",
-			// "-IC:/dev/quarc/include"
+			"-I$project_base_path/include"
 		]
 	}
 }
