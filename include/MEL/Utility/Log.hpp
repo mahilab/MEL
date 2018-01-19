@@ -75,8 +75,7 @@ private:
     void encode(char * arg);
     void encode(char const * arg);
     void encode(string_literal_t arg);
-    void encode_c_string(char const * arg, size_t length);
-    void resize_buffer_if_needed(size_t additional_bytes);
+    void encode_c_string(char const * arg, size_t length);git
     void stringify(std::ostream & os, char * start, char const * const end);
 
 private:
