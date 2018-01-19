@@ -234,7 +234,7 @@ Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>&
 double mat_spectral_norm(const Eigen::MatrixXd& mat) {
     Eigen::EigenSolver<Eigen::MatrixXd> eigensolver(mat.transpose() * mat, false);
     if (eigensolver.info() != Eigen::Success) {
-        util::print("ERROR: Eigensolver did not converge in mat_spectral_norm");
+        print("ERROR: Eigensolver did not converge in mat_spectral_norm");
         return 0;
     }
     Eigen::EigenSolver<Eigen::MatrixXd>::EigenvalueType lambda = eigensolver.eigenvalues();
@@ -249,7 +249,7 @@ double mat_spectral_norm(const Eigen::MatrixXd& mat) {
 
 double softmax(const Eigen::VectorXd& a, int k) {
     if (k < 0 || k > a.size()) {
-        util::print("ERROR: Function softmax received input index k outside of bounds of input vector a.");
+        print("ERROR: Function softmax received input index k outside of bounds of input vector a.");
         return NAN;
     }
     Eigen::VectorXd b(a.size());

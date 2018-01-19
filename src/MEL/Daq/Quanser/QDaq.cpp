@@ -36,7 +36,7 @@ bool QDaq::open() {
         if (result == 0) {
             // TODO: velocity sanity check
             print("Done");
-            return Daq::open();
+            return open();
         }
         else {
             print("Failed");
@@ -56,7 +56,7 @@ bool QDaq::close() {
     sleep(milliseconds(10));
     if (result == 0) {
         print("Done");
-        return Daq::close();
+        return close();
     }
     else {
         print("Failed");
