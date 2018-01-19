@@ -11,7 +11,7 @@ namespace mel {
         public:
 
             struct Config : public virtual MahiExoII::Config {
-                std::array < core::Daq::Ai, 6 > wrist_force_sensor_; // analog input channels that measure force/torque
+                std::array < :Ai, 6 > wrist_force_sensor_; // analog input channels that measure force/torque
             };
 
             struct Params : public virtual MahiExoII::Params {
@@ -23,7 +23,7 @@ namespace mel {
                     calib_mat_[4] = { 2.49045,   0.12279,  -1.26019,   0.59413,  -1.30218,  -0.70275 };
                     calib_mat_[5] = { 0.07348,  -1.36804,   0.08441,  -1.41171,   0.05780,  -1.37930 };
                 }
-                util::array_2D<double, 6, 6> calib_mat_;
+                array_2D<double, 6, 6> calib_mat_;
             };
 
             // CONSTRUCTOR
@@ -32,7 +32,7 @@ namespace mel {
 
             // PUBLIC VARIABLES
 
-            core::ForceSensor* wrist_force_sensor_;
+            :ForceSensor* wrist_force_sensor_;
 
         };
 

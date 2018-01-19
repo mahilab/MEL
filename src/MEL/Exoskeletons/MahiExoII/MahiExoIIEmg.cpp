@@ -6,15 +6,15 @@ namespace mel {
 
         MahiExoIIEmg::MahiExoIIEmg(Config configuration, Params parameters) :
             MahiExoII(configuration, parameters),
-            emg_voltages_(double_vec(N_emg_, 0.0))
+            emg_voltages_(std::vector<double>(N_emg_, 0.0))
         {
             for (int i = 0; i < N_emg_; ++i) {
                 std::string num = std::to_string(i);
-                emg_electrodes_[i] = core::EmgElectrode("emg_electrod_" + num, configuration.emg_[i]);
+                emg_electrodes_[i] = EmgElectrode("emg_electrod_" + num, configuration.emg_[i]);
             }
         }
 
-        double_vec MahiExoIIEmg::get_emg_voltages() {
+        std::vector<double> MahiExoIIEmg::get_emg_voltages() {
             double emg_voltage;
             uint16 i;
             for (auto it = emg_electrodes_.begin(); it != emg_electrodes_.end(); ++it) {
@@ -39,9 +39,9 @@ namespace mel {
             }
         }
 
-        void MahiExoIIEmg::EmgDataBuffer::push_back(double_vec data_vec) {
+        void MahiExoIIEmg::EmgDataBuffer::push_back(std::vector<double> data_vec) {
             if (data_vec.size() != num_channels_) {
-                util::print("ERROR: Incorrect number of rows when calling EmgDataBuffer::push_back().");
+                print("ERROR: Incorrect number of rows when calling EmgDataBuffer::push_back().");
             }
             for (int i = 0; i < num_channels_; ++i) {
                 data_buffer_[i].push_back(data_vec[i]);
@@ -54,16 +54,16 @@ namespace mel {
             }
         }
 
-        double_vec MahiExoIIEmg::EmgDataBuffer::at(int index) const {
-            double_vec data_vec(num_channels_);
+        std::vector<double> MahiExoIIEmg::EmgDataBuffer::at(int index) const {
+            std::vector<double> data_vec(num_channels_);
             for (int i = 0; i < num_channels_; ++i) {
                 data_vec[i] = data_buffer_[i][index];
             }
             return data_vec;
         }
 
-        double_vec MahiExoIIEmg::EmgDataBuffer::get_channel(int index) const {
-            double_vec channel_vec(length_);
+        std::vector<double> MahiExoIIEmg::EmgDataBuffer::get_channel(int index) const {
+            std::vector<double> channel_vec(length_);
             for (int i = 0; i < length_; ++i) {
                 channel_vec[i] = data_buffer_[index][i];
             }
@@ -82,7 +82,7 @@ namespace mel {
             tko_implementations_[0].tkeo(x, y);
         }
 
-        void MahiExoIIEmg::TeagerKaiserOperator::tkeo(const double_vec& x, double_vec& y) {
+        void MahiExoIIEmg::TeagerKaiserOperator::tkeo(const std::vector<double>& x, std::vector<double>& y) {
             if (x.size() != length_) {
                 std::cout << "ERROR: Input vector does not match size of TeagerKaiserOperator." << std::endl;
                 return;
@@ -106,7 +106,7 @@ namespace mel {
         
 
         MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperatorImplementation::TeagerKaiserOperatorImplementation() :
-            s_(double_vec(n_, 0.0))        
+            s_(std::vector<double>(n_, 0.0))        
         { }
 
         void MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperatorImplementation::tkeo(const double& x, double& y) {
@@ -116,7 +116,7 @@ namespace mel {
         }
 
         void MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperatorImplementation::reset() {
-            s_ = double_vec(n_, 0.0);
+            s_ = std::vector<double>(n_, 0.0);
         }
     }
 

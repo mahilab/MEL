@@ -57,6 +57,7 @@ public:
 public:
 
     std::array<Motor, 3> motors_;
+
 };
 
 } // namespace mel
