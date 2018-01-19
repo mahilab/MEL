@@ -1,8 +1,10 @@
 #pragma once
 #include <complex>
 #include <vector>
-//#include <Eigen\Dense>
-//#include <Eigen\StdVector>
+#ifdef MEL_INCLUDE_EIGEN
+    #include <Eigen\Dense>
+    #include <Eigen\StdVector>
+#endif
 
 namespace mel {
 
@@ -99,7 +101,7 @@ extern double stddev_s(const std::vector<double>& data);
 // EIGEN RELATED
 //==============================================================================
 
-/*
+#ifdef MEL_INCLUDE_EIGEN
 
 void eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec, std::vector<double>& std_vec);
 
@@ -118,7 +120,7 @@ double mat_spectral_norm(const Eigen::MatrixXd& mat);
 /// returns the value of the softmax function for element k of input vector a
 double softmax(const Eigen::VectorXd& a, int k);
 
-*/
+#endif
 
 } // namespace mel
 

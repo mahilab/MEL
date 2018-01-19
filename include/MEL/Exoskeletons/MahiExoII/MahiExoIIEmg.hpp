@@ -1,8 +1,8 @@
 #pragma once
-#include "MahiExoII.h"
-#include "EmgElectrode.h"
-#include "Filter.h"
-#include <boost/circular_buffer.hpp>
+#include "MEL\Exoskeletons\MahiExoII\MahiExoII.hpp"
+#include "MEL\Core\EmgElectrode.hpp"
+#include "MEL\Math\Filter.hpp"
+#include <boost\circular_buffer.hpp>
 
 namespace mel {
 

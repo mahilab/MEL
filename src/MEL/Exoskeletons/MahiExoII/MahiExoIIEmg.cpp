@@ -1,4 +1,4 @@
-#include "MahiExoIIEmg.h"
+#include "MEL\Exoskeletons\MahiExoII\MahiExoIIEmg.hpp"
 
 namespace mel {
 
