@@ -66,7 +66,7 @@ Here are a few examples:
 ```shell
 cmake ..
 ```
-This will generate a build file for the bare bones MEL library (i.e. no hardware implementations) using whatever the CMake thinks the default generator/compiler is. If you're on Linux using GCC, this will probably be a `makefile` in which case you simple run `make` to compile MEL. If you're on Windows using MSVC, this will be a `.sln` file which you can open, edit, compile, and debug using Visual Studio.
+This will generate a build file for the bare bones MEL library (i.e. no hardware implementations) using whatever CMake thinks the default generator/compiler is. If you're on Linux using GCC, this will probably be a `makefile` in which case you simple run `make` to compile MEL. If you're on Windows using MSVC, this will be a `.sln` file which you can open, edit, compile, and debug using Visual Studio.
 
 **Example 2: MEL + NI Hardware + OpenWrist + Ninja**
 ```shell
@@ -84,6 +84,8 @@ This generates a `.sln` file for MEL with Quanser hardware and MAHI Exo-II class
 ## Creating Projects for MEL
 
 After the build/compile process has completed, the library binary will be output to `MEL/lib/[platform]/` while example executables will be output to `MEL/bin/<platform>/` where `<platform>` may be either `linux` or `windows`. To use MEL, you simply need to include the `MEL/include` directory and link to the MEL library binary.
+
+#### With CMake
 
 Since you already have CMake installed, here's a typical CMake folder structure and `CMakeLists.txt` to get you started:
 ```
@@ -126,4 +128,16 @@ cmake ..   # run CMake (optionally pass -G "Generator String" to specify a non-d
 ```
 That's it! Now you can proceed to compile your project with the appropriate software. Remember, you should use the same compiler that compiled MEL.
 
+#### With Visual Studio
 
+If you'd rather use Visual Studio, first create a new Visual Studio solution and project. Go to ``File > New > Project``. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know what they are and want to use them).
+
+Right-click your project in the Solution Explorer and select **Properties**. Make the following changes/additions:
+
+- C/C++ > General > Additional Include Directories
+    - **append:** `C:\path\to\...\MEL\include;`
+    - **note:** you made need to add `C:\dev\eigen;` if `-DMAHIEXOII` was added
+- Linker > General > Additional Library Directories
+    - **append:** `C:\path\to\...\MEL\lib\windows;`
+- Linker > Input > Additional Dependencies
+    - **append:** `MEL.lib;`
