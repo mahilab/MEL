@@ -6,7 +6,7 @@ It should not be confused as a change log or road map, and it is not intended fo
 For those curious, the list is maintained using the Sublime Text package PlainTasks.
 
 All:
-  ☐ Documentation
+  ☐ Documentation!
 
 Communication:
   ☐ Write Linux implementation of SharedMemory
@@ -36,6 +36,9 @@ Utility:
 
 OpenWrist:
   ☐ figure out how to nicely integrate separate OpenWrist project outside of MEL
+
+MELScope:
+  ✔ fix crash on close @done (18-01-21 15:42)
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:

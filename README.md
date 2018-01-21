@@ -130,13 +130,13 @@ That's it! Now you can proceed to compile your project with the appropriate soft
 
 ### With Visual Studio
 
-If you'd rather use Visual Studio, first create a new Visual Studio solution and project. Go to ``File > New > Project``. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know what they are and want to use them).
+If you'd rather use Visual Studio for your projects, first create a new Visual Studio solution and project. Go to ``File > New > Project``. Choose **Win32 Console Application**  and give your Project and Solution a name. In the following wizard, uncheck **Precompiled Headers** (unless you know what they are and want to use them).
 
 Right-click your project in the Solution Explorer and select **Properties**. Make the following changes/additions:
 
 - C/C++ > General > Additional Include Directories
     - **append:** `C:\path\to\...\MEL\include;`
-    - **note:** you made need to add `C:\dev\eigen;` if `-DMAHIEXOII` was added
+    - **note:** you made need to add `C:\dev\eigen;` if `-DMAHIEXOII` was used
 - Linker > General > Additional Library Directories
     - **append:** `C:\path\to\...\MEL\lib\windows;`
 - Linker > Input > Additional Dependencies

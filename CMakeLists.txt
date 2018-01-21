@@ -26,6 +26,7 @@ option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OF
 option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
 option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
+option(TESTS      "Turn ON to build test executable(s)"                       OFF)
 option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
 
 set(NI_ROOT      "C:/dev/nirlt-linux"       CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
@@ -332,6 +333,9 @@ if(EXAMPLES)
         add_executable(melscope examples/melscope.cpp)
         target_link_libraries(melscope MEL)
 
+        add_executable(limiter examples/ex_limiter.cpp)
+        target_link_libraries(limiter MEL)
+
     endif()
 
     if(QUANSER)
@@ -352,6 +356,7 @@ if(EXAMPLES)
 
 endif()
 
-# testing
-add_executable(testing tests/testing.cpp)
-target_link_libraries(testing MEL)
+if(TESTS)
+    add_executable(testing tests/testing.cpp)
+    target_link_libraries(testing MEL)
+endif()

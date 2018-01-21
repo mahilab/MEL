@@ -48,7 +48,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DEXAMPLES=ON",
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DTESTS=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build/windows_ninja"
 		},
 		// {
@@ -100,6 +100,12 @@
 			"name": "CMake (Clean)",
 			"shell_cmd": "python clean.py",
 			"working_dir": "$project_path/../tools"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "MELScope",
+			"shell_cmd": "python MelScope.pyw",
+			"working_dir": "$project_path/../python"
 		},
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",

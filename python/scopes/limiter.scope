@@ -1,0 +1,37 @@
+DATA_SOURCES:
+- curve_colors:
+  - [255, 127, 0]
+  - [255, 127, 0]
+  - [227, 26, 28]
+  - [227, 26, 28]
+  - [178, 223, 138]
+  - [51, 160, 44]
+  - [166, 206, 227]
+  - [31, 120, 180]
+  curve_names: [cont_max, cont_min, peak_max, peak_min, unlimited, limited, setpoint,
+    accumulator]
+  curve_styles: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
+  curve_widths: [3, 3, 3, 3, 3, 3, 2, 2]
+  mode: Read Only
+  name: limiter
+  settings: null
+  size: 8
+  type: melshare
+GRID_COLS: 2
+GRID_ROWS: 1
+SCOPES:
+- filter:
+    limiter: [true, true, true, true, true, true, false, false]
+  index: 0
+  legend: false
+  mode: Plot
+  title: Scope0
+  yrange: [-20.0, 20.0]
+- filter:
+    limiter: [false, false, false, false, false, false, true, true]
+  index: 1
+  legend: false
+  mode: Plot
+  title: Scope1
+  yrange: [0.0, 300.0]
+THEME: Dark
