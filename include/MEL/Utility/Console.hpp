@@ -58,8 +58,18 @@ void print(T value, bool end_line = true) {
 
 /// Prints STL vector
 template <typename T>
-void print(std::vector<T> v, bool end_line = true) {
+void print(const std::vector<T>& v, bool end_line = true) {
     for (auto it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    if (end_line)
+        std::cout << std::endl;
+}
+
+/// Prints any STL container
+template <typename C>
+void print_stl(const C& c, bool end_line = true) {
+    for (auto it = c.begin(); it != c.end(); ++it) {
         std::cout << *it << " ";
     }
     if (end_line)
@@ -68,13 +78,15 @@ void print(std::vector<T> v, bool end_line = true) {
 
 /// Prints STL array
 template <typename T, std::size_t N>
-void print(std::array<T, N> a, bool end_line = true) {
+void print(const std::array<T, N>& a, bool end_line = true) {
     for (auto it = a.begin(); it != a.end(); ++it) {
         std::cout << *it << " ";
     }
     if (end_line)
         std::cout << std::endl;
 }
+
+
 
 /// Prints C-style array
 template <typename T>
@@ -88,7 +100,7 @@ void print(T* a, std::size_t size, bool end_line = true) {
 
 /// Prints MEL 2D array
 template <typename T, std::size_t N, std::size_t M>
-void print(array_2D<T,N,M> a, bool end_line = true) {
+void print(const array_2D<T,N,M>& a, bool end_line = true) {
     for (auto it_row = a.begin(); it_row != a.end(); ++it_row) {
         for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
             std::cout << *it_col << " ";

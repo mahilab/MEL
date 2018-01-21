@@ -308,6 +308,9 @@ if(EXAMPLES)
     add_executable(lockables examples/lockables.cpp)
     target_link_libraries(lockables MEL)
 
+    add_executable(ring_buffer examples/ring_buffer.cpp)
+    target_link_libraries(ring_buffer MEL)
+
     if(WIN32)
 
         add_executable(shared_memory examples/shared_memory.cpp)

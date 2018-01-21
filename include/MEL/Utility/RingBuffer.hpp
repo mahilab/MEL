@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <vector>
 
 namespace mel {
 
@@ -15,66 +15,149 @@ public:
 
     /// Default constructor
     RingBuffer(std::size_t capacity) :
-        size_(capacity + 1),
-        head_(0),
-        tail_(0),
-        buffer_(std::unique_ptr<T[]>(new T[size_]))
+        capacity_(capacity),
+        size_(0),
+        front_(0),
+        back_(0),
+        buffer_(capacity_)
     { }
 
     /// Read access
     const T& operator[](std::size_t index) const {
-        return buffer_[tail_ + index];
+        return buffer_[(front_ + index) % capacity_];
     }
 
     /// Write access
     T& operator[](std::size_t index) {
-        return buffer_[tail_ + index];
+        return buffer_[(front_ + index) % capacity_];
     }
 
-    /// Puts the value at the head of the RingBuffer
-    void push_back(T value) {
-        buffer_[head_] = value;
-        head_ = (head_ + 1) % size_;
-        if (head_ == tail_)
-            tail_ = (tail_ + 1) % size_;
+    /// Adds a new element at the back of the RingBuffer
+    void push_back(const T& value) {
+        buffer_[back_] = value;
+        if (full()) {
+            if (front_ == back_) {
+                if (++front_ == capacity_)
+                    front_ = 0;
+            }
+        }
+        else
+            ++size_;
+        if (++back_ == capacity_)
+            back_ = 0;
     }
 
-    /// Gets the value at the tail of the RingBuffer
-    T pop_front() {
-        if (is_empty())
+    /// Adds a new element at the front of the RingBuffer
+    void push_front(const T& value) {
+        if (full()) {
+            if (back_ == front_) {
+                if (back_ == 0)
+                    back_ = capacity_;
+                --back_;
+            }
+        }
+        else
+            ++size_;
+        if (front_ == 0)
+            front_ = capacity_;
+        --front_;
+        buffer_[front_] = value;
+    }
+
+    /// Removes the element from the back of the RingBuffer and returns it
+    T pop_back() {
+        if (empty())
             return T();
-        T value = buffer_[tail_];
-        tail_ = (tail_ + 1) % size_;
+        --size_;
+        if (back_ == 0)
+            back_ = capacity_;
+        --back_;
+        T value = buffer_[back_];
+        return value;
+    }
+
+    /// Removes the element from the front of the RingBuffer and returns it
+    T pop_front() {
+        if (empty())
+            return T();
+        --size_;
+        T value = buffer_[front_];
+        if (++front_ == capacity_)
+            front_ = 0;
         return value;
     }
 
     /// Returns true if the RingBuffer is empty
-    bool is_empty() const {
-        return head_ == tail_;
+    bool empty() const {
+        return size_ == 0;
     }
 
     /// Returns true if the RingBuffer is full
-    bool is_full() const  {
-        return ((head_ + 1) % size_) == tail_;
+    bool full() const {
+        return size_ == capacity_;
     }
+
+    /// Returns occupied size of the RingBuffer
+    size_t size() const {
+        return size_;
+    }
+
 
     /// Returns the capacity of the RingBuffer
     size_t capacity() const {
-        return size_ - 1;
+        return capacity_;
     }
 
-    /// Returns occupied size of RingBuffer
-    size_t size() const {
-        return head_ - tail_;
+    /// Resizes teh RingBuffer to a new capacity
+    void resize(std::size_t capacity) {
+        if (capacity <= size_) {
+            size_ = capacity;
+            back_ = 0;
+        }
+        else
+            back_ = size_;
+        std::vector<T> new_buffer(capacity);
+        for (std::size_t i = 0; i < size_; ++i)
+            new_buffer[i] = buffer_[(front_ + i) % capacity_];
+        capacity_ = capacity;
+        front_ = 0;
+        buffer_ = new_buffer;
     }
 
-private:
-
-    size_t size_;  ///< the internal size of the buffer (requested size + 1)
-    size_t head_;  ///< head of the RingBuffer
-    size_t tail_;  ///< tail of the RingBuffer
-    std::unique_ptr<T[]> buffer_; ///< underlying buffer array
-
+    size_t capacity_;        ///< the maximum capacity of the RingBuffer
+    size_t size_;            ///< current occupied size of the RingBuffer
+    size_t front_;           ///< front index of the RingBuffer
+    size_t back_;            ///< back index of the RingBuffer
+    std::vector<T> buffer_;  ///< underlying buffer array
 };
 
 } // mel
+
+//==============================================================================
+// CLASS DOCUMENTATION
+//==============================================================================
+//
+// https://en.wikipedia.org/wiki/Circular_buffer
+//
+//                                   ILLUSION        ACTUAL MEMORY
+//                                                  f/b
+// RingBuffer<int> x(5)    =>    [ ][ ][ ][ ][ ]    [0][0][0][0][0]
+//                                                   f  b
+// x.push_back(1)          =>    [1][ ][ ][ ][ ]    [1][0][0][0][0]
+//
+// ... 2, 3, ...
+//                                                   f           b
+// x.push_back(4)          =>    [1][2][3][4][ ]    [1][2][3][4][0]
+//                                                  b/f
+// x.push_back(5)          =>    [1][2][3][4][5]    [1][2][3][4][5]
+//                                                     b/f
+// x.push_back(6)          =>    [2][3][4][5][6]    [6][2][3][4][5]
+//                                                   b  f
+// x.pop_back()            =>    [2][3][4][5][ ]    [6][2][3][4][5]
+//                                                  b/f
+// x.push_front(1)         =>    [1][2][3][4][5]    [1][2][3][4][5]
+//                                                              b/f
+// x.push_front(0)         =>    [0][1][2][3][4]    [1][2][3][4][0]
+//                                                   f           b
+// x.pop_front()           =>    [1][2][3][4][ ]    [1][2][3][4][0]
+
