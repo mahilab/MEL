@@ -72,8 +72,7 @@ public:
         if (back_ == 0)
             back_ = capacity_;
         --back_;
-        T value = buffer_[back_];
-        return value;
+        return buffer_[back_];
     }
 
     /// Removes the element from the front of the RingBuffer and returns it
@@ -102,13 +101,12 @@ public:
         return size_;
     }
 
-
     /// Returns the capacity of the RingBuffer
     size_t capacity() const {
         return capacity_;
     }
 
-    /// Resizes teh RingBuffer to a new capacity
+    /// Resizes the RingBuffer to a new capacity
     void resize(std::size_t capacity) {
         if (capacity <= size_) {
             size_ = capacity;
@@ -123,6 +121,15 @@ public:
         front_ = 0;
         buffer_ = new_buffer;
     }
+
+    /// Removes all stored elements from the RingBuffer
+    void clear() {
+        size_ = 0;
+        front_ = 0;
+        back_ = 0;
+    }
+
+private:
 
     size_t capacity_;        ///< the maximum capacity of the RingBuffer
     size_t size_;            ///< current occupied size of the RingBuffer
@@ -139,25 +146,25 @@ public:
 //
 // https://en.wikipedia.org/wiki/Circular_buffer
 //
-//                                   ILLUSION        ACTUAL MEMORY
-//                                                  f/b
-// RingBuffer<int> x(5)    =>    [ ][ ][ ][ ][ ]    [0][0][0][0][0]
-//                                                   f  b
-// x.push_back(1)          =>    [1][ ][ ][ ][ ]    [1][0][0][0][0]
+//                                   ILLUSION               REALITY
+//                                                      f/b
+// RingBuffer<int> x(5)    =>    [ ][ ][ ][ ][ ]        [0][0][0][0][0]
+//                                                       f  b
+// x.push_back(1)          =>    [1][ ][ ][ ][ ]        [1][0][0][0][0]
 //
 // ... 2, 3, ...
-//                                                   f           b
-// x.push_back(4)          =>    [1][2][3][4][ ]    [1][2][3][4][0]
-//                                                  b/f
-// x.push_back(5)          =>    [1][2][3][4][5]    [1][2][3][4][5]
-//                                                     b/f
-// x.push_back(6)          =>    [2][3][4][5][6]    [6][2][3][4][5]
-//                                                   b  f
-// x.pop_back()            =>    [2][3][4][5][ ]    [6][2][3][4][5]
-//                                                  b/f
-// x.push_front(1)         =>    [1][2][3][4][5]    [1][2][3][4][5]
-//                                                              b/f
-// x.push_front(0)         =>    [0][1][2][3][4]    [1][2][3][4][0]
-//                                                   f           b
-// x.pop_front()           =>    [1][2][3][4][ ]    [1][2][3][4][0]
+//                                                       f           b
+// x.push_back(4)          =>    [1][2][3][4][ ]        [1][2][3][4][0]
+//                                                      b/f
+// x.push_back(5)          =>    [1][2][3][4][5]        [1][2][3][4][5]
+//                                                         b/f
+// x.push_back(6)          =>    [2][3][4][5][6]        [6][2][3][4][5]
+//                                                       b  f
+// x.pop_back()            =>    [2][3][4][5][ ]        [6][2][3][4][5]
+//                                                      b/f
+// x.push_front(1)         =>    [1][2][3][4][5]        [1][2][3][4][5]
+//                                                                  b/f
+// x.push_front(0)         =>    [0][1][2][3][4]        [1][2][3][4][0]
+//                                                       f           b
+// x.pop_front()           =>    [1][2][3][4][ ]        [1][2][3][4][0]
 

@@ -131,7 +131,7 @@ bool Keyboard::is_key_pressed(Keyboard::Key key, bool require_focus)
 }
 
 Keyboard::Key Keyboard::are_any_keys_pressed(std::vector<Keyboard::Key> keys, bool require_focus) {
-    for (int i = 0; i < keys.size(); ++i) {
+    for (std::size_t i = 0; i < keys.size(); ++i) {
         if (is_key_pressed(keys[i], require_focus)) {
             return keys[i];
         }
@@ -140,7 +140,7 @@ Keyboard::Key Keyboard::are_any_keys_pressed(std::vector<Keyboard::Key> keys, bo
 }
 
 bool Keyboard::are_all_keys_pressed(std::vector<Keyboard::Key> keys, bool require_focus) {
-    for (int i = 0; i < keys.size(); ++i) {
+    for (std::size_t i = 0; i < keys.size(); ++i) {
         if (!is_key_pressed(keys[i], require_focus)) {
             return false;
         }

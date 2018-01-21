@@ -71,7 +71,7 @@ public:
 
     /// Returns the limited command current since the last call to set_current()
     double get_torque_limited() override;
-    
+
 private:
 
     void limit_current_saturate();
@@ -101,8 +101,8 @@ private:
     double current_sense_;   ///< store the measured current since the last call to get_current_sense()
     bool has_current_sense_; ///< whether or not the Motor comes with current sensing, i.e., whether or not the ai_channel is provided
 
-    Output<voltage>::Channel ao_channel_;  ///< the DAQ analog output channel bound to this Motor (for commanding torque/current)
     Output<logic>::Channel   do_channel_;  ///< the DAQ digital output channel bound to this Motor (for enable/disable)
+    Output<voltage>::Channel ao_channel_;  ///< the DAQ analog output channel bound to this Motor (for commanding torque/current)
     Input<voltage>::Channel  ai_channel_;  ///< the DAQ analog input channel bound to this Motor (for current sensing)
 
 };

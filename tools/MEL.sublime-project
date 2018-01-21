@@ -1,16 +1,16 @@
 {
 	"build_systems":
 	[
-		{
-			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Linux Make)",
-			"selector":
-			[
-				"source.cmake"
-			],
-			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/../build/linux_make"
-		},
+		// {
+		// 	"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+		// 	"name": "CMake (Linux Make)",
+		// 	"selector":
+		// 	[
+		// 		"source.cmake"
+		// 	],
+		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
+		// 	"working_dir": "$project_path/../build/linux_make"
+		// },
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (Linux Ninja)",
@@ -21,16 +21,16 @@
 			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build/linux_ninja"
 		},
-		{
-			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Windows Make)",
-			"selector":
-			[
-				"source.cmake"
-			],
-			"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/../build/windows_make"
-		},
+		// {
+		// 	"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+		// 	"name": "CMake (Windows Make)",
+		// 	"selector":
+		// 	[
+		// 		"source.cmake"
+		// 	],
+		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
+		// 	"working_dir": "$project_path/../build/windows_make"
+		// },
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (Windows MSVC)",
@@ -51,34 +51,34 @@
 			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build/windows_ninja"
 		},
-		{
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Make (Windows)",
-			"selector":
-			[
-				"source.c++",
-				"source.c++.11"
-			],
-			"shell_cmd": "mingw32-make -j",
-			"working_dir": "$project_path/../build/windows_make"
-		},
-		{
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Make (Linux)",
-			"selector":
-			[
-				"source.c++",
-				"source.c++.11"
-			],
-			"shell_cmd": "mingw32-make -j",
-			"working_dir": "$project_path/../build/linux_make"
-		},
+		// {
+		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+		// 	"name": "Make (Windows)",
+		// 	"selector":
+		// 	[
+		// 		"source.c++",
+		// 		"source.c++.11"
+		// 	],
+		// 	"shell_cmd": "mingw32-make -j",
+		// 	"working_dir": "$project_path/../build/windows_make"
+		// },
+		// {
+		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+		// 	"name": "Make (Linux)",
+		// 	"selector":
+		// 	[
+		// 		"source.c++",
+		// 		"source.c++.11"
+		// 	],
+		// 	"shell_cmd": "mingw32-make -j",
+		// 	"working_dir": "$project_path/../build/linux_make"
+		// },
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "Ninja (Linux)",
 			"selector":
 			[
-				"source.c++",
+				//"source.c++",
 				"source.c++.11"
 			],
 			"shell_cmd": "ninja",
@@ -89,7 +89,7 @@
 			"name": "Ninja (Windows)",
 			"selector":
 			[
-				"source.c++",
+				//"source.c++",
 				"source.c++.11"
 			],
 			"shell_cmd": "ninja",

@@ -34,11 +34,11 @@ public:
 
     /// Default constructor
     DataLog(bool autosave = true, std::size_t max_rows = 1000000) :
-        max_rows_(max_rows),
-        col_count_(sizeof...(Ts)),
-        row_count_(0),
-        log_saved_(true),
         saving_(false),
+        log_saved_(true),
+        max_rows_(max_rows),
+        row_count_(0),
+        col_count_(sizeof...(Ts)),
         format_(Format::Default),
         precision_(6),
         autosave_(autosave)

@@ -86,6 +86,16 @@ endif()
 set(CMAKE_CONFIGURATION_TYPES release)
 
 #===============================================================================
+# COMPILER SPECIFIC
+#===============================================================================
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+endif()
+
+#===============================================================================
 # PERFORM CHECKS
 #===============================================================================
 
@@ -93,12 +103,12 @@ if(NI AND QUANSER)
     message(FATAL_ERROR "FATAL ERROR: MEL cannot be built for NI and Quanser hardware simultaneously. Choose only one.")
 endif()
 
-if(QUANSER AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "MSVC"))
-    message(FATAL_ERROR "FATAL ERROR: Must use MSVC compiler when using Quanser hardware.")
-endif()
-
 if(NI AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
     message(FATAL_ERROR "FATAL_ERROR: Must use Linux G++ compiler when using NI hardware.")
+endif()
+
+if(QUANSER AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "MSVC"))
+    message(FATAL_ERROR "FATAL ERROR: Must use MSVC compiler when using Quanser hardware.")
 endif()
 
 #===============================================================================

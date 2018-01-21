@@ -4,7 +4,8 @@
 namespace mel {
 
 Filter::Filter() :
-    Filter({ 0.020083365564211, 0.040166731128423, 0.020083365564211 }, { 1.000000000000000, -1.561018075800718, 0.641351538057563 })
+    Filter({ 0.020083365564211, 0.040166731128423, 0.020083365564211 },
+           { 1.000000000000000, -1.561018075800718, 0.641351538057563 })
 { }
 
 Filter::Filter(const std::vector<double>& b, const std::vector<double>& a) :
@@ -37,7 +38,7 @@ FilterImplementation::FilterImplementation(const std::vector<double>& b, const s
 
 void FilterImplementation::filter(const double& x, double& y) {
     y = (s_[0] + b_[0] * x) / a_[0];
-    for (int i = 0; i < n_ - 1; ++i) {
+    for (std::size_t i = 0; i < n_ - 1; ++i) {
         s_[i] = s_[i + 1] + b_[i + 1] * x - a_[i + 1] * y;
     }
     s_[n_ - 1] = b_[n_] * x - a_[n_] * y;

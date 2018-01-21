@@ -19,7 +19,7 @@ MelNet::MelNet(unsigned int local_port, unsigned int remote_port,
 
 void MelNet::send_data(const std::vector<double>& data) {
     packet_send_.clear();
-    for (auto i = 0; i < data.size(); ++i)
+    for (std::size_t i = 0; i < data.size(); ++i)
         packet_send_ << data[i];
     socket_.send(packet_send_, remote_address_, remote_port_);
 }
@@ -31,7 +31,7 @@ std::vector<double> MelNet::receive_data() {
         std::size_t bytes = packet_receive_.get_data_size();
         std::size_t size = bytes / 8;
         std::vector<double> data(size);
-        for (auto i = 0; i < size; ++i)
+        for (std::size_t i = 0; i < size; ++i)
             packet_receive_ >> data[i];
         packet_receive_.clear();
         return data;

@@ -58,9 +58,9 @@ std::vector<std::string> parse_path(std::string path) {
 
 void create_directory(std::string directory) {
     std::vector<std::string> dirs = parse_path(directory);
-    for (auto i = 0; i < dirs.size(); ++i) {
+    for (std::size_t i = 0; i < dirs.size(); ++i) {
         std::string sub_path;
-        for (auto j = 0; j <= i; ++j) {
+        for (std::size_t j = 0; j <= i; ++j) {
             sub_path += dirs[j];
             sub_path += get_path_slash();
         }

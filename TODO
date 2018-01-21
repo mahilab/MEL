@@ -16,6 +16,7 @@ Communication:
 Core:
   ☐ create class for amps
   ☐ make safety check functions more descriptive
+  ☐ complete Limiter and incorporate
 
 Daq:
  ☐ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation

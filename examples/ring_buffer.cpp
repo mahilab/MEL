@@ -42,13 +42,16 @@ int main() {
             std::cin >> value;
             x.resize(value);
         }
-        print(x.buffer_, false);
-        print(" f:" + stringify(x.front_) +
-         "  b:" + stringify(x.back_) +
-         "  e:" + stringify(x.empty()) +
-         "  f:" + stringify(x.full()) +
-         "  s:" + stringify(x.size()) + "  ", false);
-        print("x: ", false);
+        else if (method == "clear") {
+            x.clear();
+        }
+        // print(x.buffer_, false);
+        // print(" f:" + stringify(x.front_) +
+        //  "  b:" + stringify(x.back_) +
+        //  "  e:" + stringify(x.empty()) +
+        //  "  f:" + stringify(x.full()) +
+        //  "  s:" + stringify(x.size()) + "  ", false);
+        // print("x: ", false);
         for(std::size_t i = 0; i < x.size(); ++i) {
 
             std::cout << x[i] << " ";
