@@ -19,11 +19,14 @@ OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
         motors_[i] = Motor("ow_motor_" + num,
             params_.kt_[i],
             config_.amplifier_gains_[i],
-            config_.command_channels_[i],
-            config_.enable_channels_[i],
             Actuator::EnableMode::High,
+            config_.enable_channels_[i],
+            config_.command_channels_[i],
             config_.sense_channels_[i],
-            params_.motor_cont_limits_[i]);
+            Limiter(params_.motor_cont_limits_[i],
+                params_.motor_peak_limits_[i],
+                params_.motor_i2t_times_[i])
+            );
 
 
         config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);

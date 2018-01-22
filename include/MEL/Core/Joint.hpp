@@ -1,9 +1,9 @@
 #pragma once
 
+#include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
-#include <MEL/Core/Actuator.hpp>
 #include <array>
 #include <memory>
 
@@ -18,16 +18,16 @@ class Joint : public Device {
 public:
 
     /// Default constructor
-    Joint(const std::string& name, 
+    Joint(const std::string& name,
         Actuator& actuator,
         double actuator_transmission,
-        PositionSensor& position_sensor, 
+        PositionSensor& position_sensor,
         double position_sensor_transmission,
-        VelocitySensor& velocity_sensor, 
+        VelocitySensor& velocity_sensor,
         double velocity_sensor_transmission,
-        std::array<double, 2> position_limits, 
-        double velocity_limit, 
-        double torque_limit, 
+        std::array<double, 2> position_limits,
+        double velocity_limit,
+        double torque_limit,
         bool saturate = true);
 
     /// Enables the joint's position sensor, velocity sensor, and actuator
@@ -73,20 +73,19 @@ protected:
     const double position_sensor_transmission_;
     const double velocity_sensor_transmission_;
 
-    std::array<double, 2> position_limits_; ///< the [min, max] position limits of the Joint
-    double velocity_limit_; ///< the absolute limit on the Joint's velocity
-    bool has_torque_limit_; ///< whether or not the Joint should enforce torque limits
+    double torque_;   ///< the stored torque of the Joint since the last call to set_torque() or add_torque()
+    double position_; ///< the stored position of the Joint since the last call to get_position()
+    double velocity_; ///< the stored velocity of the Joint since the last call to get_velocity()
 
     bool saturate_; ///< command torques will be saturated at the torque limit if this is true
 
-    double position_; ///< the stored position of the Joint since the last call to get_position()
-    bool has_position_limits_; ///< whether or not the Joint should check position limits
-
-    double velocity_; ///< the stored velocity of the Joint since the last call to get_velocity()
-    bool has_velocity_limit_; ///< whether or not the Joint should check velocity limits
-
-    double torque_; ///< the stored torque of the Joint since the last call to set_torque() or add_torque()
     double torque_limit_; ///< the absolute limit on torque that should be allowed to the Joint
+    std::array<double, 2> position_limits_; ///< the [min, max] position limits of the Joint
+    double velocity_limit_; ///< the absolute limit on the Joint's velocity
+
+    bool has_torque_limit_; ///< whether or not the Joint should enforce torque limits
+    bool has_position_limits_; ///< whether or not the Joint should check position limits
+    bool has_velocity_limit_; ///< whether or not the Joint should check velocity limits
 
 };
 

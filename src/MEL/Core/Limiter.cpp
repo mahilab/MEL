@@ -13,14 +13,16 @@ Limiter::Limiter() :
 Limiter::Limiter(double abs_limit) :
     mode_(Saturate),
     min_limit_(-abs(abs_limit)),
-    max_limit_(abs(abs_limit))
+    max_limit_(abs(abs_limit)),
+    exceeded_(false)
 {
 }
 
 Limiter::Limiter(double min_limit, double max_limit) :
     mode_(Saturate),
     min_limit_(min_limit),
-    max_limit_(max_limit)
+    max_limit_(max_limit),
+    exceeded_(false)
 {
 }
 
@@ -32,7 +34,8 @@ Limiter::Limiter(double continuous_limit, double abs_limit, Time time_limit) :
     setpoint_( (sq(abs_limit) - sq(continuous_limit)) * time_limit.as_seconds() ),
     accumulator_(0.0),
     limited_value_(0.0),
-    clock_(Clock())
+    clock_(Clock()),
+    exceeded_(false)
 {
 }
 
@@ -53,6 +56,18 @@ double Limiter::limit(double unlimited_value) {
             else
                 limited_value_ = saturate(unlimited_value, min_limit_, max_limit_);
     }
+    if (limited_value_ != unlimited_value)
+        exceeded_ = true;
+    else
+        exceeded_ = false;
+    return limited_value_;
+}
+
+bool Limiter::limit_exceeded() {
+    return exceeded_;
+}
+
+double Limiter::get_limited_value() const {
     return limited_value_;
 }
 

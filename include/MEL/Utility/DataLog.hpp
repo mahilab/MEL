@@ -44,7 +44,7 @@ public:
         autosave_(autosave)
     {
         data_.reserve(max_rows);
-        for (int i = 0; i < col_count_; ++i)
+        for (std::size_t i = 0; i < col_count_; ++i)
             column_names_[i] = "column" + stringify(i);
     }
 

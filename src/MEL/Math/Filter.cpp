@@ -63,13 +63,13 @@ void Filter::filter(const std::vector<double>& x, std::vector<double>& y) {
         return;
     }
 
-    for (int j = 0; j < length_; ++j) {
+    for (std::size_t j = 0; j < length_; ++j) {
         filter_implementations_[j].filter(x[j], y[j]);
     }
 }
 
 void Filter::reset() {
-    for (int j = 0; j < length_; ++j) {
+    for (std::size_t j = 0; j < length_; ++j) {
         filter_implementations_[j].reset();
     }
 }

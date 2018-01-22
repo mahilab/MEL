@@ -121,8 +121,6 @@ public:
         return type_;
     }
 
-protected:
-
     /// Checks if a channel number is a number defined on this Module
     bool validate_channel_number(uint32 channel_number) const {
         if (channel_map_.count(channel_number) > 0)
@@ -132,6 +130,8 @@ protected:
         print(message);
         return false;
     }
+
+protected:
 
     /// Checks if the size of a vector equals the number of channels
     template <typename V>

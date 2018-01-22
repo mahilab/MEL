@@ -6,11 +6,11 @@
 namespace mel {
 
  Joint::Joint(const std::string& name,
-        Actuator& actuator, 
+        Actuator& actuator,
         double actuator_transmission,
         PositionSensor& position_sensor,
         double position_sensor_transmission,
-        VelocitySensor& velocity_sensor, 
+        VelocitySensor& velocity_sensor,
         double velocity_sensor_transmission,
         std::array<double, 2> position_limits,
         double velocity_limit,
@@ -18,35 +18,32 @@ namespace mel {
         bool saturate) :
     Device(name),
     actuator_(actuator),
-    actuator_transmission_(actuator_transmission),
     position_sensor_(position_sensor),
-    position_sensor_transmission_(position_sensor_transmission),
     velocity_sensor_(velocity_sensor),
+    actuator_transmission_(actuator_transmission),
+    position_sensor_transmission_(position_sensor_transmission),
     velocity_sensor_transmission_(velocity_sensor_transmission),
-    position_(0.0),
-    position_limits_(position_limits),
-    has_position_limits_(true),
-    velocity_(0.0),
-    velocity_limit_(velocity_limit),
-    has_velocity_limit_(true),
     torque_(0.0),
+    position_(0.0),
+    velocity_(0.0),
+    saturate_(saturate),
     torque_limit_(torque_limit),
+    position_limits_(position_limits),
+    velocity_limit_(velocity_limit),
     has_torque_limit_(true),
-    saturate_(saturate)
+    has_position_limits_(true),
+    has_velocity_limit_(true)
 { }
 
 bool Joint::enable() {
-    actuator_.enable();
-    if (position_sensor_.enable() && velocity_sensor_.enable() && actuator_.enable()) {
+    if (position_sensor_.enable() && velocity_sensor_.enable() && actuator_.enable())
         return Device::enable();
-    }
     return false;
 }
 
 bool Joint::disable() {
-    if (position_sensor_.disable() && velocity_sensor_.disable() && actuator_.disable()) {
+    if (position_sensor_.disable() && velocity_sensor_.disable() && actuator_.disable())
         return Device::disable();
-    }
     return false;
 }
 

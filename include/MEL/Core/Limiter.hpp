@@ -27,6 +27,12 @@ public:
     /// Limits the unlimited value using the Limiter mode
     double limit(double unlimited_value);
 
+    /// Returns true if previous value passed limit() tripped the Limiter
+    bool limit_exceeded();
+
+    /// Gets the limited value since the last call to limit()
+    double get_limited_value() const;
+
     /// Gets the Limiter setpoint (Accumulate mode only)
     double get_setpoint() const;
 
@@ -53,6 +59,7 @@ private:
     double accumulator_;
     double limited_value_;
     Clock clock_;
+    bool exceeded_;
 
 };
 

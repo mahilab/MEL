@@ -26,7 +26,7 @@ option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OF
 option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
 option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
-option(TESTS      "Turn ON to build test executable(s)"                       OFF)
+option(TESTS     "Turn ON to build test executable(s)"                        OFF)
 option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
 
 set(NI_ROOT      "C:/dev/nirlt-linux"       CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")

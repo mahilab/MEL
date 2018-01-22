@@ -80,7 +80,7 @@ MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
 
     if (hMapFile == NULL) {
        _tprintf(TEXT("Could not create file mapping object (%d).\n"),
-              GetLastError());
+              static_cast<int>(GetLastError()));
        return NULL;
     }
     return hMapFile;
@@ -100,7 +100,7 @@ void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
                 size);
     if (pBuf == NULL) {
        _tprintf(TEXT("Could not map view of file (%d).\n"),
-              GetLastError());
+              static_cast<int>(GetLastError()));
        return NULL;
     }
     return pBuf;
