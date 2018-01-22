@@ -115,6 +115,8 @@ bool Q2Usb::update_output() {
     if (open_) {
         if (analog_output.update() && digital_io.update())
             return true;
+        else
+            return false;
     }
     else {
         print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
@@ -126,22 +128,19 @@ bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) 
     if (open_) {
         InputOutput<logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
         InputOutput<logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
-        bool loopback_detected = true;
         for (int i = 0; i < 5; ++i) {
             do_ch.set_value(HIGH);
             do_ch.update();
             sleep(milliseconds(10));
             di_ch.update();
-            if (di_ch.get_value() != HIGH) {
+            if (di_ch.get_value() != HIGH)
                 return false;
-            }
             do_ch.set_value(LOW);
             do_ch.update();
             sleep(milliseconds(10));
             di_ch.update();
-            if (di_ch.get_value() != LOW) {
+            if (di_ch.get_value() != LOW)
                 return false;
-            }
         }
         return true;
     }

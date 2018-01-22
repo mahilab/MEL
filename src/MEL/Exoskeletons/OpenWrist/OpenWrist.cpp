@@ -145,8 +145,8 @@ void OpenWrist::calibrate(bool& stop) {
                     bool moving = true;
                     if (stored_positions.size() > 500) {
                         moving = false;
-                        for (size_t i = stored_positions.size() - 500; i < stored_positions.size(); i++) {
-                            moving = stored_positions[i] != stored_positions[i - 1];
+                        for (size_t j = stored_positions.size() - 500; j < stored_positions.size(); j++) {
+                            moving = stored_positions[j] != stored_positions[j - 1];
                             if (moving)
                                 break;
                         }

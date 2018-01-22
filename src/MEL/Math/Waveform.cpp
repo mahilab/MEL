@@ -19,7 +19,7 @@ Waveform::Waveform(Type type, Time period, double amplitude, double offset) :
 double Waveform::evaluate(Time t) {
     double seconds = t.as_seconds();
     double frequency = 1.0 / period_.as_seconds();
-    double value;
+    double value = 0.0;
     switch(type_) {
         case Sin:
             value = sin(2.0 * PI * frequency * seconds);

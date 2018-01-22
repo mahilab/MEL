@@ -55,15 +55,15 @@ public:
 
 protected:
 
-    virtual void wait_hardware(Time duration) {}
+    virtual void wait_hardware(const Time& duration);
 
 private:
 
     /// Implements Busy wait mode
-    void wait_busy(Time duration);
+    void wait_busy(const Time& duration);
 
     /// Implements Sleep wait mode
-    void wait_sleep(Time duration);
+    void wait_sleep(const Time& duration);
 
 private:
 

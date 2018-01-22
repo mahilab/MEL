@@ -16,7 +16,7 @@ public:
     /// Default constructor. Creates invalid channel
     ChannelBase() : 
         module_(nullptr), 
-        channel_number_(-1) 
+        channel_number_(0) 
     {}
 
     /// Creates a valid channel.

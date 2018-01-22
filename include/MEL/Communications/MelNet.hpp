@@ -18,7 +18,7 @@ class MelNet : NonCopyable {
 public:
 
     /// Default constructor. Use ports in the range of 49152 to 65535.
-    MelNet(unsigned int local_port, unsigned int remote_port,
+    MelNet(unsigned short local_port, unsigned short remote_port,
            IpAddress remote_address, bool blocking = true);
 
     /// Sends a vector of doubles to the remote host
@@ -47,8 +47,8 @@ public:
 
 private:
 
-    unsigned int local_port_;   ///< The port to receive data on on the local host
-    unsigned int remote_port_;  ///< The port to send data to on the remote host
+    unsigned short local_port_;   ///< The port to receive data on on the local host
+    unsigned short remote_port_;  ///< The port to send data to on the remote host
 
     IpAddress remote_address_;  ///< The remote IP address to send data too
 

@@ -7,7 +7,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-MelNet::MelNet(unsigned int local_port, unsigned int remote_port,
+MelNet::MelNet(unsigned short local_port, unsigned short remote_port,
                IpAddress remote_address, bool blocking) :
     local_port_(local_port),
     remote_port_(remote_port),
