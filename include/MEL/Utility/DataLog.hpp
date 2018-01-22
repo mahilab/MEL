@@ -33,18 +33,26 @@ class DataLog {
 public:
 
     /// Default constructor
-    DataLog(const std::array<std::string, sizeof...(Ts)>& column_names, bool autosave = true, std::size_t max_rows = 1000000) :
-        column_names_(column_names),
-        max_rows_(max_rows),
-        col_count_(sizeof...(Ts)),
-        row_count_(0),
-        log_saved_(true),
+    DataLog(bool autosave = true, std::size_t max_rows = 1000000) :
         saving_(false),
+        log_saved_(true),
+        max_rows_(max_rows),
+        row_count_(0),
+        col_count_(sizeof...(Ts)),
         format_(Format::Default),
         precision_(6),
         autosave_(autosave)
     {
         data_.reserve(max_rows);
+        for (std::size_t i = 0; i < col_count_; ++i)
+            column_names_[i] = "column" + stringify(i);
+    }
+
+    /// Constructor with custom column names
+    DataLog(const std::array<std::string, sizeof...(Ts)>& column_names, bool autosave = true, std::size_t max_rows = 1000000) :
+        DataLog(autosave, max_rows)
+    {
+        column_names_ = column_names;
     }
 
     /// Destructor. Waits for log to finish saving and performs autosave if reuqestd
@@ -170,11 +178,9 @@ private:
         for (auto it = column_names_.begin(); it != column_names_.end(); ++it)
             file_stream_ << *it << ",";
         file_stream_ << std::endl;
-        Clock clock;
         for (std::size_t i = 0; i < row_count_; i++) {
             file_stream_ << data_[i] << "," << std::endl;
         }
-        print(clock.get_elapsed_time());
         file_stream_.close();
         log_saved_ = true;
         saving_ = false;

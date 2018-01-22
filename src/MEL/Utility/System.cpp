@@ -58,9 +58,9 @@ std::vector<std::string> parse_path(std::string path) {
 
 void create_directory(std::string directory) {
     std::vector<std::string> dirs = parse_path(directory);
-    for (auto i = 0; i < dirs.size(); ++i) {
+    for (std::size_t i = 0; i < dirs.size(); ++i) {
         std::string sub_path;
-        for (auto j = 0; j <= i; ++j) {
+        for (std::size_t j = 0; j <= i; ++j) {
             sub_path += dirs[j];
             sub_path += get_path_slash();
         }
@@ -160,13 +160,13 @@ bool enable_realtime() {
         DWORD dwError;
         if (!SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS)) {
             dwError = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), dwError);
+            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), static_cast<int>(dwError));
             return false;
         }
         DWORD dwPriClass;
         if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL)){
             dwPriClass = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), dwPriClass);
+            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), static_cast<int>(dwPriClass));
             return false;
         }
         return true;
@@ -208,12 +208,12 @@ bool disable_realtime() {
         DWORD dwError;
         if (!SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS)) {
             dwError = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), dwError);
+            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), static_cast<int>(dwError));;
             return false;
         }
         if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL)) {
             dwError = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), dwError);
+            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), static_cast<int>(dwError));
             return false;
         }
         return true;

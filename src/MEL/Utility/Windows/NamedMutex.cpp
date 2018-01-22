@@ -100,8 +100,8 @@ void NamedMutex::Impl::unlock() {
 //==============================================================================
 
 NamedMutex::NamedMutex(std::string name, NamedMutex::Mode mode) :
-    name_(name),
-    impl_(new NamedMutex::Impl(name, mode))
+    impl_(new NamedMutex::Impl(name, mode)),
+    name_(name)
 {
 }
 

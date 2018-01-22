@@ -2,6 +2,7 @@
 
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Utility/Types.hpp>
+#include <MEL/Utility/Time.hpp>
 #include <array>
 
 namespace mel {
@@ -15,7 +16,7 @@ struct OwParameters {
         kt_                {  0.0603,             0.0603,             0.0538            }, // [Nm/A]
         motor_cont_limits_ {  3.17,               3.17,               1.74              }, // [A]
         motor_peak_limits_ {  4.0,                4.0,                4.0               }, // [A]
-        motor_i2t_times_   {  2.0,                2.0,                2.0               }, // [s]
+        motor_i2t_times_   {  seconds(2),         seconds(2),         seconds(2)        }, // [s]
         eta_               {  0.4706 / 8.750,     0.4735 / 9.000,     0.2210 / 6.000    }, // [inch/inch]
         encoder_res_       {  500,                500,                500               }, // [counts/rev]
         pos_limits_neg_    { -86.1123 * DEG2RAD, -63.2490 * DEG2RAD, -42.0321 * DEG2RAD }, // [rad]
@@ -32,7 +33,7 @@ struct OwParameters {
     /// motor peak current limits [A]
     std::array<double, 3> motor_peak_limits_;
     /// motor i^2*t times [s]
-    std::array<double, 3> motor_i2t_times_;
+    std::array<Time, 3> motor_i2t_times_;
     /// transmission ratios [inch/inch]
     std::array<double, 3> eta_;
     /// encoder resolutions [counts/rev]

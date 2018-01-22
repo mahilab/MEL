@@ -126,13 +126,13 @@ void Encoder::compute_conversions() {
 //==============================================================================
 
 Encoder::Channel::Channel() :
-    PositionSensor("invalid_encoder"),
-    ChannelBase()
-{ }    
+    ChannelBase(),
+    PositionSensor("invalid_encoder")
+{ }
 
 Encoder::Channel::Channel(Encoder* module, uint32 channel_number) :
-    PositionSensor(module->get_name() + "_encoder"),
-    ChannelBase(module, channel_number)
+    ChannelBase(module, channel_number),
+    PositionSensor(module->get_name() + "_encoder")
 { }
 
 bool Encoder::Channel::enable() {

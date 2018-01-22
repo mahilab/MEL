@@ -42,7 +42,7 @@ public:
 
 private:
 
-    const int length_;
+    const std::size_t length_;
 
     const std::vector<double> b_; /// numerator coefficients
     const std::vector<double> a_; /// denominator coefficients

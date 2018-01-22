@@ -1,3 +1,4 @@
+
 #==============================================================================
 # MEL Scope
 # Evan Pezent | epezent@rice.edu | evanpezent.com
@@ -1450,6 +1451,12 @@ sample_loop_timer.start(1000 / SAMPLE_TARGET)
 render_loop_timer = QtCore.QTimer()
 render_loop_timer.timeout.connect(render_loop)
 render_loop_timer.start(1000 / FPS_TARGET)
+
+# connect main window closeEvent to custom close to prevent crash
+def close(event):
+    print "Closing MELScope"
+    sys.exit()
+main_window.closeEvent = close
 
 # show the main window
 main_window.show()
