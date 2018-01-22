@@ -16,7 +16,7 @@ class QDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QDigitalInput : public Input<logic>, NonCopyable {
+class QDigitalInput : public DigitalInput, NonCopyable {
 
 public:
 

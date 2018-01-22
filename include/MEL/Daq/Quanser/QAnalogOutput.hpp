@@ -15,7 +15,7 @@ class QDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QAnalogOutput : public Output<voltage>, NonCopyable {
+class QAnalogOutput : public AnalogOutput, NonCopyable {
 
 public:
 

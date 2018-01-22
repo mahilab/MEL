@@ -105,7 +105,6 @@ public:
             values_[channel_map_.at(channel_number)] = value;
     }
 
-
     /// Gets the vector of channel numbers this Module maintains
     const std::vector<uint32>& get_channel_numbers() const {
         return channel_numbers_;

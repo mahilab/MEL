@@ -64,4 +64,11 @@ public:
 
 };
 
+//==============================================================================
+// TYPEDEFS
+//==============================================================================
+
+typedef Input<voltage> AnalogInput;
+typedef Input<logic>   DigitalInput;
+
 } // namespace mel
