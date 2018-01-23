@@ -1,10 +1,11 @@
 #include <MEL/Utility/DataLog.hpp>
+#include <MEL/Utility/Console.hpp>
 
 using namespace mel;
 
 class MyClass {
 public:
-    MyClass() : log_({"my_int", "my_double"}) { }
+    MyClass() : log_({"my_int", "my_double"}){ }
     DataLog<int, double> log_;
 };
 
