@@ -58,14 +58,20 @@ Time Timer::get_period() {
     return period_;
 }
 
-void Timer::wait_busy(Time duration) {
+void Timer::wait_hardware(const Time& duration) {
+    wait_busy(duration);
+}
+
+void Timer::wait_busy(const Time& duration) {
     Time start = Clock::get_current_time();
     while ((Clock::get_current_time() - start) < duration) {
     }
 }
 
-void Timer::wait_sleep(Time duration) {
+void Timer::wait_sleep(const Time& duration) {
     sleep(duration);
 }
+
+
 
 } // namespace mel

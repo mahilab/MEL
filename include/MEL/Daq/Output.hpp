@@ -140,4 +140,11 @@ public:
 
 };
 
+//==============================================================================
+// TYPEDEFS
+//==============================================================================
+
+typedef Output<voltage> AnalogOutput;
+typedef Output<logic>   DigitalOutput;
+
 } // namespace mel

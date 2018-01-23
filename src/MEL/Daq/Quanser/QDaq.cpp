@@ -34,9 +34,8 @@ bool QDaq::open() {
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);
         sleep(milliseconds(10));
         if (result == 0) {
-            // TODO: velocity sanity check
             print("Done");
-            return open();
+            return Daq::open();
         }
         else {
             print("Failed");
@@ -56,7 +55,7 @@ bool QDaq::close() {
     sleep(milliseconds(10));
     if (result == 0) {
         print("Done");
-        return close();
+        return Daq::close();
     }
     else {
         print("Failed");

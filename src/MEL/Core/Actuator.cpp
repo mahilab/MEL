@@ -2,18 +2,9 @@
 
 namespace mel {
 
-Actuator::Actuator() :
-    Device("invalid_actuator"),
-    enable_mode_(High),
-    torque_command_(0.0),
-    torque_sense_(0.0)
-{ }
-
-Actuator::Actuator(std::string name, EnableMode enable_mode) :
+Actuator::Actuator(const std::string& name) :
     Device(name),
-    enable_mode_(enable_mode),
-    torque_command_(0.0),
-    torque_sense_(0.0)
+    torque_command_(0.0)
 { }
 
 void Actuator::set_torque(double torque) {
@@ -29,7 +20,7 @@ double Actuator::get_torque_limited() {
 }
 
 double Actuator::get_torque_sense() {
-    return torque_sense_;
+    return 0.0;
 }
 
 } // namespace mel

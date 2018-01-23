@@ -132,7 +132,7 @@ double sigmoid(double a) {
 }
 
 double auto_diff(std::complex<double> (*f)(std::complex<double>), double x) {
-    return f(std::complex<double>(2.0, 1.0e-22)).imag() / 1.0e-22;
+    return f(std::complex<double>(x, 1.0e-22)).imag() / 1.0e-22;
 }
 
 //==============================================================================

@@ -185,7 +185,6 @@ bool Q8Usb::identify(uint32 channel_number) {
     if (open_) {
         Input<logic>::Channel di_ch = digital_input.get_channel(channel_number);
         Output<logic>::Channel do_ch = digital_output.get_channel(channel_number);
-        bool loopback_detected = true;
         for (int i = 0; i < 5; ++i) {
             do_ch.set_value(HIGH);
             do_ch.update();

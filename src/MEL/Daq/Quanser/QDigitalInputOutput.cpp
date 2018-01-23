@@ -76,7 +76,7 @@ namespace mel {
             t_error result;
             if (directions_[channel_map_.at(channel_number)] == Direction::Input)
                 result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_map_.at(channel_number)]);
-            else if (directions_[channel_map_.at(channel_number)] == Direction::Output)
+            else
                 result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_map_.at(channel_number)]);
             if (result == 0)
                 return true;
@@ -101,6 +101,8 @@ namespace mel {
                 &output_channel_numbers_[0], static_cast<uint32>(output_channel_numbers_.size()));
             if (result == 0)
                 return true;
+            else
+                return false;
         }
         else {
             print(namify(daq_.get_name()) + " has not been opened; unable to call " + __FUNCTION__);

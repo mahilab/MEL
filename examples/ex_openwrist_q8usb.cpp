@@ -49,12 +49,17 @@ int main(int argc, char *argv[]) {
     OwConfiguration config(
         q8,
         q8.watchdog,
+        std::vector<Amplifier::TtlLevel>(3, Amplifier::TtlLevel::High),
         q8.digital_output[{ 0, 1, 2 }],
+        { 1.0, 1.0, 1.0 },
         q8.analog_output[{ 0, 1, 2 }],
+        {Limiter(), Limiter(), Limiter()},
+        std::vector<Amplifier::TtlLevel>(3, Amplifier::TtlLevel::High),
+        q8.digital_input[{0, 1, 2}],
+        {1.0, 1.0, 1.0},
         q8.analog_input[{ 0, 1, 2 }],
         q8.encoder[{ 0, 1, 2 }],
-        q8.velocity[{ 0, 1, 2 }],
-        { 1.0, 1.0, 1.0 }
+        q8.velocity[{ 0, 1, 2 }]
     );
     OpenWrist ow(config);
 
