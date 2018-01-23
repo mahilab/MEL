@@ -6,6 +6,7 @@
 #include "MEL/Core/PdController.hpp"
 #include "MEL/Utility/DataLog.hpp"
 #include <array>
+#include <vector>
 #include <Eigen/Dense>
 #include <Eigen/LU>
 #include <Eigen/StdVector>
@@ -52,7 +53,7 @@ namespace mel {
         bool disable() override;
 
 
-        std::array<Motor, N_rj_> motors_;
+        std::vector<Motor> motors_;
 
 
         class SmoothReferenceTrajectory {

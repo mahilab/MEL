@@ -6,6 +6,7 @@
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Daq/Output.hpp>
 #include <MEL/Daq/Watchdog.hpp>
+#include <MEL/Core/Amplifier.hpp>
 #include <vector>
 
 namespace mel {
@@ -25,29 +26,34 @@ namespace mel {
 
     public:
 
-        /// Default constructor
+        /// Constructor for standard configuration
         MeiiConfiguration(
             Daq& daq,
             Watchdog& watchdog,
-            const std::vector<Output<logic>::Channel>& enable_channels,
-            const std::vector<Output<voltage>::Channel>& command_channels,
-            const std::vector<Input<voltage>::Channel>& sense_channels,
-            const std::vector<Encoder::Channel>& encoder_channels_,
-            const std::vector<Velocity::Channel>& velocity_channels_,
-            const std::vector<double>& amplifier_gains);
+            const std::vector<Encoder::Channel>& encoder_channels,
+            const std::vector<Velocity::Channel>& velocity_channels,
+            const std::vector<Amplifier>& amplifiers);
+
+        /// Constructor for EMG configuration
+        MeiiConfiguration(
+            Daq& daq,
+            Watchdog& watchdog,
+            const std::vector<Encoder::Channel>& encoder_channels,
+            const std::vector<Velocity::Channel>& velocity_channels,
+            const std::vector<Amplifier>& amplifiers,
+            const std::vector<AnalogInput::Channel>& emg_channels);
 
     private:
 
         friend class MahiExoII;
+        friend class MahiExoIIEMG;
 
         Daq&                                  daq_;                ///< DAQ controlling the MahiExoII
         Watchdog&                             watchdog_;           ///< watchdog the MahiExoII is guarded by
-        std::vector<Output<logic>::Channel>   enable_channels_;    ///< digital output channels that enable motors
-        std::vector<Output<voltage>::Channel> command_channels_;   ///< analog output channels that command motor currents
-        std::vector<Input<voltage>::Channel>  sense_channels_;     ///< analog input channels that sense motor current
         std::vector<Encoder::Channel>         encoder_channels_;   ///< encoder channels that measure motor positions
         std::vector<Velocity::Channel>        velocity_channels_;  ///< encoder channels that measure motor velocities
-        std::vector<double>                   amplifier_gains_;    ///< motor aplifier gains
+        std::vector<Amplifier>                amplifiers_;         ///< amplifiers used to control robot motors
+        std::vector<AnalogInput::Channel>     emg_channels_;       ///< analog input channels that measure EMG
 
     };
 

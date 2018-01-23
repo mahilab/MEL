@@ -2,7 +2,8 @@
 #include "MEL/Exoskeletons/MahiExoII/MahiExoII.hpp"
 #include "MEL/Core/EmgElectrode.hpp"
 #include "MEL/Math/Filter.hpp"
-#include <boost/circular_buffer.hpp>
+//#include <boost/circular_buffer.hpp>
+#include "MEL/Utility/RingBuffer.hpp"
 
 namespace mel {
 
@@ -13,13 +14,13 @@ namespace mel {
         static const int N_emg_ = 8; // number of EMG electrodes
 
 
-        struct Config : public virtual MahiExoII::Config {
-            std::array<Ai, N_emg_> emg_; // analog input channels that measure EMG voltages
-        };
+        //struct Config : public virtual MahiExoII::Config {
+        //    std::array<Ai, N_emg_> emg_; // analog input channels that measure EMG voltages
+        //};
 
-        struct Params : public virtual MahiExoII::Params {
+        //struct Params : public virtual MahiExoII::Params {
 
-        };
+        //};
 
         struct EmgDataBuffer {
 
@@ -35,7 +36,8 @@ namespace mel {
 
             size_t num_channels_;
             size_t length_;
-            std::vector<boost::circular_buffer<double>> data_buffer_;
+            //std::vector<boost::circular_buffer<double>> data_buffer_;
+            std::vector<RingBuffer<double>> data_buffer_;
         };
 
         class TeagerKaiserOperator {
@@ -77,7 +79,7 @@ namespace mel {
 
 
         // CONSTRUCTOR
-        MahiExoIIEmg(Config configuration, Params parameters = Params());
+        MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
 
 
         // PUBLIC FUNCTIONS
