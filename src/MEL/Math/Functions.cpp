@@ -1,4 +1,5 @@
 #include <MEL/Math/Functions.hpp>
+#include <MEL/Utility/Console.hpp>
 #include <numeric>
 #include <algorithm>
 #include <cmath>
@@ -245,7 +246,7 @@ double mat_spectral_norm(const Eigen::MatrixXd& mat) {
         return 0;
     }
     Eigen::EigenSolver<Eigen::MatrixXd>::EigenvalueType lambda = eigensolver.eigenvalues();
-    double_vec lambda_abs(lambda.size(), 0.0);
+    std::vector<double> lambda_abs(lambda.size(), 0.0);
     for (int i = 0; i < lambda.size(); ++i) {
         lambda_abs[i] = std::abs(lambda[i]);
     }
