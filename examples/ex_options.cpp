@@ -9,7 +9,7 @@ using namespace mel;
 int main(int argc, char *argv[]) {
 
     // create Options object
-    Options options("options.exe", "Simple Program Demonstratign Options");
+    Options options("options.exe", "Simple Program Demonstrating Options");
 
     // add options
     // options can be short, long, or both (short must come first)
