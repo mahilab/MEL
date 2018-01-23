@@ -4,7 +4,7 @@
 #include <MEL/Core/PdController.hpp>
 #include <MEL/Exoskeletons/OpenWrist/OwConfiguration.hpp>
 #include <MEL/Exoskeletons/OpenWrist/OwParameters.hpp>
-#include <array>
+#include <vector>
 
 namespace mel {
 
@@ -56,7 +56,7 @@ public:
 
 public:
 
-    std::array<Motor, 3> motors_;
+    std::vector<Motor> motors_;
 
 };
 

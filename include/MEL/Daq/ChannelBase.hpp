@@ -14,9 +14,9 @@ class ChannelBase {
 public:
 
     /// Default constructor. Creates invalid channel
-    ChannelBase() : 
-        module_(nullptr), 
-        channel_number_(0) 
+    ChannelBase() :
+        module_(nullptr),
+        channel_number_(0)
     {}
 
     /// Creates a valid channel.
@@ -38,7 +38,7 @@ public:
     }
 
     /// Returns the current value of the channel
-    T operator()() {
+    T operator()() const {
         return get_value();
     }
 
@@ -58,7 +58,7 @@ public:
     }
 
     /// Returns true if the Channel is valid
-    bool is_valid() {
+    bool is_valid() const {
         if (module_ == nullptr)
             return false;
         if (!module_->validate_channel_number(channel_number_))

@@ -11,27 +11,27 @@ OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
     config_(configuration),
     params_(parameters)
 {
-    // for every joint
-    for (int i = 0; i < 3; i++) {
-        std::string num = std::to_string(i);
+    // reserve space for motors so they don't get reallocated before passing to Joint()
+    motors_.reserve(3);
+
+    // construct each motor and joint
+    for (int i = 0; i < 3; ++i) {
+
+        std::string num = stringify(i);
 
         // construct motors
-        motors_[i] = Motor("ow_motor_" + num,
-            params_.kt_[i],
-            config_.amplifier_gains_[i],
-            Actuator::EnableMode::High,
-            config_.enable_channels_[i],
-            config_.command_channels_[i],
-            config_.sense_channels_[i],
-            Limiter(params_.motor_cont_limits_[i],
-                params_.motor_peak_limits_[i],
-                params_.motor_i2t_times_[i])
-            );
+        motors_[i] = Motor("ow_motor_" + num, 
+            params_.kt_[i], 
+            config_.amplifiers_[i], 
+            Limiter(params_.motor_cont_limits_[i], 
+                params_.motor_peak_limits_[i], 
+                params_.motor_i2t_times_[i]));
 
-
+        // set encoder counts
         config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
         config_.velocity_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
 
+        // create joint
         Joint joint(
             "ow_joint_" + num,
             motors_[i],

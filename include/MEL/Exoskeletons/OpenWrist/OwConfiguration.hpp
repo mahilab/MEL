@@ -1,5 +1,6 @@
 #pragma once
 
+#include <MEL/Core/Amplifier.hpp>
 #include <MEL/Daq/Daq.hpp>
 #include <MEL/Daq/Encoder.hpp>
 #include <MEL/Daq/Velocity.hpp>
@@ -21,33 +22,44 @@ class OpenWrist;
 //==============================================================================
 
 /// Encapsulates the hardware configuration for an OpenWrist
-class OwConfiguration {
+struct OwConfiguration {
 
 public:
 
-    /// Default constructor
+    /// Constructor Variant 1 (creates Amplifiers)
     OwConfiguration(
-        Daq& daq, 
+        Daq& daq,
         Watchdog& watchdog,
-        const std::vector<Output<logic>::Channel>& enable_channels,
-        const std::vector<Output<voltage>::Channel>& command_channels,
-        const std::vector<Input<voltage>::Channel>& sense_channels,
-        const std::vector<Encoder::Channel>& encoder_channels_,
-        const std::vector<Velocity::Channel>& velocity_channels_,
-        const std::vector<double>& amplifier_gains);
+        const std::vector<Amplifier::TtlLevel>& enable_levels,
+        const std::vector<DigitalOutput::Channel>& enable_channels,
+        const std::vector<double>& command_gains,
+        const std::vector<AnalogOutput::Channel>& command_channels,
+        const std::vector<Limiter>& amp_current_limiters,
+        const std::vector<Amplifier::TtlLevel>& fault_levels,
+        const std::vector<DigitalInput::Channel>& fault_channels,
+        const std::vector<double>& sense_gains,
+        const std::vector<AnalogInput::Channel>& sense_channel, 
+        const std::vector<Encoder::Channel>& encoder_channels,
+        const std::vector<Velocity::Channel>& velocity_channels);
+
+    /// Constructor Variant 2 (given Amplifiers)
+    OwConfiguration(
+        Daq& daq,
+        Watchdog& watchdog,
+        const std::vector<Encoder::Channel>& encoder_channels,
+        const std::vector<Velocity::Channel>& velocity_channels,
+        const std::vector<Amplifier>& amplifiers);
 
 private:
 
     friend class OpenWrist;
 
-    Daq&                                  daq_;                ///< DAQ controlling the OpenWrist
-    Watchdog&                             watchdog_;           ///< watchdog the OpenWrist is guarded by
-    std::vector<Output<logic>::Channel>   enable_channels_;    ///< digital output channels that enable motors
-    std::vector<Output<voltage>::Channel> command_channels_;   ///< analog output channels that command motor currents
-    std::vector<Input<voltage>::Channel>  sense_channels_;     ///< analog input channels that sense motor current
-    std::vector<Encoder::Channel>         encoder_channels_;   ///< encoder channels that measure motor positions
-    std::vector<Velocity::Channel>        velocity_channels_;  ///< encoder channels that measure motor velocities
-    std::vector<double>                   amplifier_gains_;    ///< motor aplifier gains
+    Daq&                            daq_;                ///< DAQ controlling the OpenWrist
+    Watchdog&                       watchdog_;           ///< watchdog the OpenWrist is guarded by
+    std::vector<Encoder::Channel>   encoder_channels_;   ///< encoder channels that measure motor positions
+    std::vector<Velocity::Channel>  velocity_channels_;  ///< encoder channels that measure motor velocities
+    std::vector<Amplifier>          amplifiers_;         ///< the amplifiers being use to control the OpenWrist's motors
+
 
 };
 
