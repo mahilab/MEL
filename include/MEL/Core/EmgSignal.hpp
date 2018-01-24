@@ -1,6 +1,7 @@
 #pragma once
-#include <MEL/Core/Device.hpp>
+#include <MEL/Math/Filter.hpp>
 #include <MEL/Daq/Input.hpp>
+#include <MEL/Utility/RingBuffer.hpp>
 
 namespace mel {
 
@@ -8,20 +9,27 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class EmgElectrode : public Device {
+class EmgSignal {
 
 public:
 
-    /// Default constructor
-    EmgElectrode(std::string name, Input<voltage>::Channel ai_channel);
+    /// Constructor
+    EmgSignal(AnalogInput::Channel channel, Filter filter, std::size_t buffer_size);
 
-    /// Gets the voltage measured by the EMG electrode
-    double get_voltage();
+    ///
+    voltage get_unfiltered_sample();
+
+    voltage get_filtered_sample();
+
+
 
 private:
 
-    Input<voltage>::Channel ai_channel_; ///< the DAQ analog input channel bound to this electrode
-    double voltage_;
+    AnalogInput::Channel channel_;
+
+    RingBuffer<voltage> buffer_;
+
+    Filter filter_;
 
 };
 

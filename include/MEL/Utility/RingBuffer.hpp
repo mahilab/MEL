@@ -13,7 +13,7 @@ class RingBuffer {
 
 public:
 
-    /// Default constructor
+    /// Constructor
     RingBuffer(std::size_t capacity) :
         capacity_(capacity),
         size_(0),

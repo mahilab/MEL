@@ -1,4 +1,5 @@
 #include "MEL/Exoskeletons/MahiExoII/MahiExoII.hpp"
+#include "MEL/Daq/Quanser/Q8Usb.hpp"
 #include "MEL/Math/Functions.hpp"
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Core/PositionSensor.hpp>
@@ -30,30 +31,21 @@ namespace mel {
         config_(configuration),
         params_(parameters)
     {
+        motors_.reserve(N_rj_);
 
         for (int i = 0; i < N_rj_; ++i) {
 
             std::string num = std::to_string(i);
 
-            //// construct encoders
-            //PositionSensor* encoder = new Encoder("encoder_" + num,
-            //    params_.encoder_res_[i] / (2 * PI),
-            //    config_.encoder_[i],
-            //    config_.encrate_[i]);
-
-            //position_sensors_.push_back(encoder);
-
             // construct motors
-            motors_[i] = Motor("meii_motor_" + num,
+            motors_.push_back(Motor("meii_motor_" + num,
                 params_.kt_[i],
-                config_.amplifier_gains_[i],
-                config_.command_channels_[i],
-                config_.enable_channels_[i],
-                Actuator::EnableMode::Low,
-                params_.motor_cont_limits_[i],
-                params_.motor_peak_limits_[i],
-                params_.motor_i2t_times_[i]);
+                config_.amplifiers_[i],
+                Limiter(params_.motor_cont_limits_[i],
+                    params_.motor_peak_limits_[i],
+                    params_.motor_i2t_times_[i])));
 
+            // set encoder counts
             config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
             config_.velocity_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
 
@@ -100,15 +92,15 @@ namespace mel {
 
     void MahiExoII::zero_encoders(Daq* daq) {
         daq->enable();
-        if (!Q8Usb::check_digital_loopback(0, 7)) {
-            return;
+        std::vector<int32> encoder_offsets = { 0, -33259, 29125, 29125, 29125 };
+        for (int i = 0; i < N_rj_; i++) {
+            config_.encoder_channels_[i].reset_count(encoder_offsets[i]);
         }
-        daq->offset_encoders({ 0, -33259, 29125, 29125, 29125 });
         daq->disable();
     }
 
 
-    void MahiExoII::disable() {
+    bool MahiExoII::disable() {
 
         // disable reference trajectories
         rps_init_par_ref_.stop();
@@ -120,15 +112,14 @@ namespace mel {
         // disable the robot
         if (enabled_) {
             // code executed by overridden function Robot::disable()
-            enabled_ = false;
+            //enabled_ = false;
             print("Disabling Robot <" + name_ + "> ... ", false);
             for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-                (*it)->disable();
+                it->disable();
             }
-            print("Done");
         }
 
-            
+        return Device::disable();
     }
 
     //-----------------------------------------------------------------------------
@@ -222,7 +213,7 @@ namespace mel {
                         command_torques[i] = 0.0;
                     }
                     else {
-                        command_torques[i] = robot_joint_pd_controllers_[i + 2].calculate(smooth_ref, joints_[i + 2]->get_position(), 0, joints_[i + 2]->get_velocity());
+                        command_torques[i] = robot_joint_pd_controllers_[i + 2].calculate(smooth_ref, joints_[i + 2].get_position(), 0, joints_[i + 2].get_velocity());
                     }
                 }
             }
@@ -249,7 +240,7 @@ namespace mel {
 
         default: print("WARNING: Invalid rps_control_mode_. Must be 0 or 1. Zero torques commanded.");
             for (auto i = 0; i < N_qs_; ++i) {
-                joints_[i + 2]->set_torque(0.0);
+                joints_[i + 2].set_torque(0.0);
             }
         }
 
@@ -271,7 +262,7 @@ namespace mel {
                 command_torques.at(0) = 0.0;
             }
             else {
-                command_torques.at(0) = robot_joint_pd_controllers_.at(0).calculate(smooth_ref, joints_.at(0)->get_position(), 0, joints_.at(0)->get_velocity());
+                command_torques.at(0) = robot_joint_pd_controllers_.at(0).calculate(smooth_ref, joints_.at(0).get_position(), 0, joints_.at(0).get_velocity());
             }
         }
 
@@ -285,7 +276,7 @@ namespace mel {
                 command_torques.at(1) = 0.0;
             }
             else {
-                command_torques.at(1) = robot_joint_pd_controllers_.at(1).calculate(smooth_ref, joints_.at(1)->get_position(), 0, joints_.at(1)->get_velocity());
+                command_torques.at(1) = robot_joint_pd_controllers_.at(1).calculate(smooth_ref, joints_.at(1).get_position(), 0, joints_.at(1).get_velocity());
             }
         }
             
@@ -331,15 +322,15 @@ namespace mel {
     void MahiExoII::update_kinematics() {
 
         // update q_par_ (q parallel) with the three prismatic link positions
-        q_par_ << joints_[2]->get_position(), joints_[3]->get_position(), joints_[4]->get_position();
-        q_par_dot_ << joints_[2]->get_velocity(), joints_[3]->get_velocity(), joints_[4]->get_velocity();
+        q_par_ << joints_[2].get_position(), joints_[3].get_position(), joints_[4].get_position();
+        q_par_dot_ << joints_[2].get_velocity(), joints_[3].get_velocity(), joints_[4].get_velocity();
 
         // run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
         forward_rps_kinematics_velocity(q_par_, q_ser_, qp_, rho_fk_, jac_fk_, q_par_dot_, q_ser_dot_, qp_dot_);
 
         // get positions from first two anatomical joints, which have encoders
-        anatomical_joint_positions_[0] = joints_[0]->get_position(); // elbow flexion/extension
-        anatomical_joint_positions_[1] = joints_[1]->get_position(); // forearm pronation/supination
+        anatomical_joint_positions_[0] = joints_[0].get_position(); // elbow flexion/extension
+        anatomical_joint_positions_[1] = joints_[1].get_position(); // forearm pronation/supination
 
         // get positions from forward kinematics solver for three wrist anatomical joints 
         anatomical_joint_positions_[2] = q_ser_[0]; // wrist flexion/extension
@@ -347,8 +338,8 @@ namespace mel {
         anatomical_joint_positions_[4] = q_ser_[2]; // arm translation
 
         // get velocities from first two anatomical joints, which have encoders
-        anatomical_joint_velocities_[0] = joints_[0]->get_velocity(); // elbow flexion/extension
-        anatomical_joint_velocities_[1] = joints_[1]->get_velocity(); // forearm pronation/supination
+        anatomical_joint_velocities_[0] = joints_[0].get_velocity(); // elbow flexion/extension
+        anatomical_joint_velocities_[1] = joints_[1].get_velocity(); // forearm pronation/supination
 
         // get velocities from forward kinematics solver for three wrist anatomical joints 
         anatomical_joint_velocities_[2] = q_ser_dot_[0]; // wrist flexion/extension
@@ -367,17 +358,17 @@ namespace mel {
     void MahiExoII::set_anatomical_joint_torques(std::vector<double> new_torques) {
 
         // set torques for first two anatomical joints, which have actuators
-        joints_[0]->set_torque(new_torques[0]);
-        joints_[1]->set_torque(new_torques[1]);
+        joints_[0].set_torque(new_torques[0]);
+        joints_[1].set_torque(new_torques[1]);
 
 
         // calculate the spectral norm of the transformation matrix
         Eigen::EigenSolver<Eigen::Matrix3d> eigensolver(jac_fk_.transpose() * jac_fk_, false);
         if (eigensolver.info() != Eigen::Success) {
-            joints_[2]->set_torque(0.0);
-            joints_[3]->set_torque(0.0);
-            joints_[4]->set_torque(0.0);
-            error_code_ = -1;
+            joints_[2].set_torque(0.0);
+            joints_[3].set_torque(0.0);
+            joints_[4].set_torque(0.0);
+            //error_code_ = -1;
         }
         Eigen::EigenSolver<Eigen::Matrix3d>::EigenvalueType lambda = eigensolver.eigenvalues();
         std::vector<double> lambda_abs;
@@ -391,7 +382,7 @@ namespace mel {
 
         // kill robot if norm too large
         if (spec_norm > 100) {
-            error_code_ = -3;
+            //error_code_ = -3;
         }
 
         if (spec_norm_prev_ != 0) {
@@ -402,7 +393,7 @@ namespace mel {
                 std::cout << qp_.transpose() << std::endl;
                 std::cout << jac_fk_ << std::endl;
                 //mel::print(lambda_abs);
-                error_code_ = -2;
+                //error_code_ = -2;
             }
         }
 
@@ -417,9 +408,9 @@ namespace mel {
         ser_torques(1) = new_torques[3];
         ser_torques(2) = new_torques[4];
         par_torques = jac_fk_.transpose()*ser_torques;
-        joints_[2]->set_torque(par_torques(0));
-        joints_[3]->set_torque(par_torques(1));
-        joints_[4]->set_torque(par_torques(2));
+        joints_[2].set_torque(par_torques(0));
+        joints_[3].set_torque(par_torques(1));
+        joints_[4].set_torque(par_torques(2));
 
           
         std::cout << ser_torques.transpose() << "\t" << par_torques.transpose() << std::endl;
@@ -433,7 +424,7 @@ namespace mel {
 
     void MahiExoII::set_rps_par_torques(std::vector<double>& tau_par) {
         for (int i = 0; i < N_qs_; ++i) {
-            joints_[i + 2]->set_torque(tau_par[i]);
+            joints_[i + 2].set_torque(tau_par[i]);
         }
         tau_par_rob_ = copy_stdvec_to_eigvec(tau_par);
         std::cout << tau_par_rob_.transpose() << std::endl;
@@ -451,7 +442,7 @@ namespace mel {
         tau_par_rob_ = jac_fk_.transpose() * tau_ser_eig;
         for (int i = 0; i < N_qs_; ++i) {
             //joints_[i + 2]->set_torque(tau_par[i]);
-            joints_[i + 2]->set_torque(tau_par_rob_[i]);
+            joints_[i + 2].set_torque(tau_par_rob_[i]);
         }
         tau_ser_rob_ = -tau_ser_eig;
     }
@@ -572,7 +563,7 @@ namespace mel {
     //-----------------------------------------------------------------------------
 
     void MahiExoII::init_robot_log() {
-        robot_log_.add_col("Time [s]")
+       /* robot_log_.add_col("Time [s]")
             .add_col("MEII Joint 0 Encoder Count [counts]").add_col("MEII Joint 0 Encoder Rate [counts/s]").add_col("MEII Joint 0 Motor Command Current [A]").add_col("MEII Joint 0 Motor Limited Current [A]")
             .add_col("MEII Joint 1 Encoder Count [counts]").add_col("MEII Joint 1 Encoder Rate [counts/s]").add_col("MEII Joint 1 Motor Command Current [A]").add_col("MEII Joint 1 Motor Limited Current [A]")
             .add_col("MEII Joint 2 Encoder Count [counts]").add_col("MEII Joint 2 Encoder Rate [counts/s]").add_col("MEII Joint 2 Motor Command Current [A]").add_col("MEII Joint 2 Motor Limited Current [A]")
@@ -589,39 +580,39 @@ namespace mel {
             .add_col("MEII RPS Alpha Velocity [rad/s]").add_col("MEII RPS Beta Velocity [rad/s]").add_col("MEII RPS Gamma Velocity [rad/s]")
             .add_col("MEII RPS X Velocity [m/s]").add_col("MEII RPS Y Velocity [m/s]").add_col("MEII RPS Z Velocity [m/s]")
             .add_col("MEII RPS L1 Force [N]").add_col("MEII RPS L2 Force [N]").add_col("MEII RPS L3 Force [N]")
-            .add_col("MEII RPS Alpha Torque [Nm]").add_col("MEII RPS Beta Torque [Nm]").add_col("MEII RPS X Force [N]");           
+            .add_col("MEII RPS Alpha Torque [Nm]").add_col("MEII RPS Beta Torque [Nm]").add_col("MEII RPS X Force [N]");*/        
     }
 
     void MahiExoII::log_robot_row(double time) {
 
-        std::vector<double> row;
+       /* std::vector<double> row;
         row.push_back(time);
-        row.push_back(static_cast<Encoder*>(joints_[0]->position_sensor_)->get_encoder_counts());
-        row.push_back(static_cast<Encoder*>(joints_[0]->position_sensor_)->get_encoder_rate());
-        row.push_back(static_cast<Motor*>(actuators_[0])->get_current_command());
-        row.push_back(static_cast<Motor*>(actuators_[0])->get_current_limited());
-        row.push_back(static_cast<Encoder*>(joints_[1]->position_sensor_)->get_encoder_counts());
-        row.push_back(static_cast<Encoder*>(joints_[1]->position_sensor_)->get_encoder_rate());
-        row.push_back(static_cast<Motor*>(actuators_[1])->get_current_command());
-        row.push_back(static_cast<Motor*>(actuators_[1])->get_current_limited());
-        row.push_back(static_cast<Encoder*>(joints_[2]->position_sensor_)->get_encoder_counts());
-        row.push_back(static_cast<Encoder*>(joints_[2]->position_sensor_)->get_encoder_rate());
-        row.push_back(static_cast<Motor*>(actuators_[2])->get_current_command());
-        row.push_back(static_cast<Motor*>(actuators_[2])->get_current_limited());
-        row.push_back(static_cast<Encoder*>(joints_[3]->position_sensor_)->get_encoder_counts());
-        row.push_back(static_cast<Encoder*>(joints_[3]->position_sensor_)->get_encoder_rate());
-        row.push_back(static_cast<Motor*>(actuators_[3])->get_current_command());
-        row.push_back(static_cast<Motor*>(actuators_[3])->get_current_limited());
-        row.push_back(static_cast<Encoder*>(joints_[4]->position_sensor_)->get_encoder_counts());
-        row.push_back(static_cast<Encoder*>(joints_[4]->position_sensor_)->get_encoder_rate());
+        row.push_back(static_cast<Encoder*>(joints_[0].position_sensor_)->get_encoder_counts());
+        row.push_back(static_cast<Encoder*>(joints_[0].position_sensor_)->get_encoder_rate());
+        row.push_back(static_cast<Motor*>(actuators_[0]).get_current_command());
+        row.push_back(static_cast<Motor*>(actuators_[0]).get_current_limited());
+        row.push_back(static_cast<Encoder*>(joints_[1].position_sensor_)->get_encoder_counts());
+        row.push_back(static_cast<Encoder*>(joints_[1].position_sensor_)->get_encoder_rate());
+        row.push_back(static_cast<Motor*>(actuators_[1]).get_current_command());
+        row.push_back(static_cast<Motor*>(actuators_[1]).get_current_limited());
+        row.push_back(static_cast<Encoder*>(joints_[2].position_sensor_)->get_encoder_counts());
+        row.push_back(static_cast<Encoder*>(joints_[2].position_sensor_)->get_encoder_rate());
+        row.push_back(static_cast<Motor*>(actuators_[2]).get_current_command());
+        row.push_back(static_cast<Motor*>(actuators_[2]).get_current_limited());
+        row.push_back(static_cast<Encoder*>(joints_[3].position_sensor_)->get_encoder_counts());
+        row.push_back(static_cast<Encoder*>(joints_[3].position_sensor_)->get_encoder_rate());
+        row.push_back(static_cast<Motor*>(actuators_[3]).get_current_command());
+        row.push_back(static_cast<Motor*>(actuators_[3]).get_current_limited());
+        row.push_back(static_cast<Encoder*>(joints_[4].position_sensor_)->get_encoder_counts());
+        row.push_back(static_cast<Encoder*>(joints_[4].position_sensor_)->get_encoder_rate());
         row.push_back(static_cast<Motor*>(actuators_[4])->get_current_command());
         row.push_back(static_cast<Motor*>(actuators_[4])->get_current_limited());
-        row.push_back(joints_[0]->get_position());
-        row.push_back(joints_[0]->get_velocity());
-        row.push_back(joints_[0]->get_torque());
-        row.push_back(joints_[1]->get_position());
-        row.push_back(joints_[1]->get_velocity());
-        row.push_back(joints_[1]->get_torque());
+        row.push_back(joints_[0].get_position());
+        row.push_back(joints_[0].get_velocity());
+        row.push_back(joints_[0].get_torque());
+        row.push_back(joints_[1].get_position());
+        row.push_back(joints_[1].get_velocity());
+        row.push_back(joints_[1].get_torque());
         for (int i = 0; i < N_qp_; ++i) {
             row.push_back(qp_[i]);
         }
@@ -634,12 +625,12 @@ namespace mel {
         for (int i = 0; i < N_qs_; ++i) {
             row.push_back(tau_ser_rob_[i]);
         }
-        robot_log_.add_row(row);
+        robot_log_.add_row(row);*/
     }
 
     void MahiExoII::save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp) {
-        robot_log_.save_and_clear_data(filename, directory, timestamp);
-        robot_log_ = DataLog("robot_log", false);
+        /*robot_log_.save_and_clear_data(filename, directory, timestamp);
+        robot_log_ = DataLog("robot_log", false);*/
     }
 
 

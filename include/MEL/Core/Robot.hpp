@@ -60,7 +60,7 @@ public:
 
 protected:
 
-    std::vector<Joint> joints_; ///< Vector of RobotJoint pointers.
+    std::vector<Joint> joints_; ///< Vector of RobotJoints.
 
     std::vector<double> joint_positions_; ///< Stores the robot joint positions since the last call of get_robot_joint_positions().
     std::vector<double> joint_velocities_; ///< Stores the robot joint velocities since the last call of get_robot_joint_velocities().

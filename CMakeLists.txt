@@ -354,6 +354,11 @@ if(EXAMPLES)
         target_link_libraries(openwrist_q8usb MEL)
     endif()
 
+    if (QUANSER AND MAHIEXOII)
+        add_executable(mahiexoii_q8usb examples/ex_mahiexoii_q8usb.cpp)
+        target_link_libraries(mahiexoii_q8usb MEL)
+    endif()
+
 endif()
 
 if(TESTS)

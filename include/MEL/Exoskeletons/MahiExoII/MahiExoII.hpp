@@ -6,9 +6,10 @@
 #include "MEL/Core/PdController.hpp"
 #include "MEL/Utility/DataLog.hpp"
 #include <array>
-#include <Eigen\Dense>
-#include <Eigen\LU>
-#include <Eigen\StdVector>
+#include <vector>
+#include <Eigen/Dense>
+#include <Eigen/LU>
+#include <Eigen/StdVector>
 
 
 
@@ -49,10 +50,10 @@ namespace mel {
 
 
         // exo disable
-        //void disable() override;
+        bool disable() override;
 
 
-        std::array<Motor, N_rj_> motors_;
+        std::vector<Motor> motors_;
 
 
         class SmoothReferenceTrajectory {
@@ -156,7 +157,7 @@ namespace mel {
         // PUBLIC VARIABLES
         //-------------------------------------------------------------------------
 
-        const MeiiConfiguration config_;
+        MeiiConfiguration config_;
         const MeiiParameters params_;
 
         // PD Control
@@ -194,7 +195,8 @@ namespace mel {
         //-------------------------------------------------------------------------
 
         // DATA LOGGING
-        //DataLog robot_log_ = DataLog("robot_log", false);
+        //DataLog<double, double, double, double, double, double> robot_log_({ "Time [s]", "MEII Joint 0 Encoder Count [counts]" ,"MEII Joint 1 Encoder Count [counts]" ,"MEII Joint 2 Encoder Count [counts]" ,"MEII Joint 3 Encoder Count [counts]" ,"MEII Joint 4 Encoder Count [counts]" });
+        //DataLog<int, double> my_log_;
 
     private:
 
