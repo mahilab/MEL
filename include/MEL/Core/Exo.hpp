@@ -11,9 +11,7 @@ class Exo : public Robot {
 
 public:
 
-    Exo();
-
-    Exo(std::string name);
+    Exo(const std::string& name);
 
     virtual ~Exo() {};
 

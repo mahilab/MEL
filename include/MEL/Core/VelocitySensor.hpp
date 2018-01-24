@@ -12,11 +12,8 @@ class VelocitySensor : public Device {
 
 public:
 
-    /// Default constructor
-    VelocitySensor();
-
     /// Prefered constructor
-    VelocitySensor(std::string name);
+    VelocitySensor(const std::string& name);
 
     /// This function should return the velocity of the VelocitySensor
     virtual double get_velocity() = 0;

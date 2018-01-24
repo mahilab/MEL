@@ -3,11 +3,7 @@
 
 namespace mel {
 
-Robot::Robot() :
-    Device("invalid_robot")
-{}
-
-Robot::Robot(std::string name) :
+Robot::Robot(const std::string& name) :
     Device(name)
 {}
 

@@ -3,11 +3,21 @@
 
 namespace mel {
 
+PdController::PdController(double kp, double kd) :
+    kp_(kp),
+    kd_(kd),
+    last_x_(0.0),
+    holding_(false),
+    move_started_(false)
+{ }
+
+void PdController::set_gains(double kp, double kd) {
+    kp_ = kp;
+    kd_ = kd;
+}
+
 double PdController::calculate(double x_ref, double x, double xdot_ref, double xdot) {
-    e_ = x_ref - x;
-    edot_ = xdot_ref - xdot;
-    effort_ = kp_ * e_ + kd_ * edot_;
-    return effort_;
+    return kp_ * (x_ref - x) + kd_ * (xdot_ref - xdot);
 }
 
 double PdController::move_to_hold(double x_ref, double x, double xdot_ref, double xdot, double delta_time, double hold_tol, double break_tol) {

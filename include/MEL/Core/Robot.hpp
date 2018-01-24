@@ -13,11 +13,8 @@ class Robot : public Device {
 
 public:
 
-    /// Default constructor.
-    Robot();
-
-    /// Prefered constructor.
-    Robot(std::string name);
+    /// Constructor.
+    Robot(const std::string& name);
 
     /// Destructor
     virtual ~Robot() { }

@@ -8,12 +8,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-VelocitySensor::VelocitySensor() :
-    Device("invalid_velocity_sensor"),
-    velocity_(0.0)
-{ }
-
-VelocitySensor::VelocitySensor(std::string name) :
+VelocitySensor::VelocitySensor(const std::string& name) :
     Device(name),
     velocity_(0.0)
 { }

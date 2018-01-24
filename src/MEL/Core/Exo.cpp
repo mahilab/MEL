@@ -6,11 +6,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Exo::Exo() :
-    Robot()
-{ }
-
-Exo::Exo(std::string name) :
+Exo::Exo(const std::string& name) :
     Robot(name)
 { }
 
