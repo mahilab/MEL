@@ -34,6 +34,7 @@ namespace mel {
 
             std::vector<double> get_channel(int index) const;
 
+
             size_t num_channels_;
             size_t length_;
             //std::vector<boost::circular_buffer<double>> data_buffer_;
@@ -87,7 +88,7 @@ namespace mel {
           
 
         // PUBLIC VARIABLES
-        std::vector<EmgElectrode> emg_electrodes_ = std::vector<EmgElectrode>(N_emg_);
+        std::vector<EmgElectrode> emg_electrodes_;// = std::vector<EmgElectrode>(N_emg_);
 
 
         // SIGNAL CHECKING PARAMETERS

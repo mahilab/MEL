@@ -31,28 +31,21 @@ namespace mel {
         config_(configuration),
         params_(parameters)
     {
+        motors_.reserve(N_rj_);
 
         for (int i = 0; i < N_rj_; ++i) {
 
             std::string num = std::to_string(i);
 
-            //// construct encoders
-            //PositionSensor* encoder = new Encoder("encoder_" + num,
-            //    params_.encoder_res_[i] / (2 * PI),
-            //    config_.encoder_[i],
-            //    config_.encrate_[i]);
-
-            //position_sensors_.push_back(encoder);
-
             // construct motors
-            motors_[i] = Motor("meii_motor_" + num,
+            motors_.push_back(Motor("meii_motor_" + num,
                 params_.kt_[i],
-                config_.amplifier_gains_[i],
-                Actuator::EnableMode::Low,
-                config_.enable_channels_[i],
-                config_.command_channels_[i],
-                Limiter(params_.motor_cont_limits_[i], params_.motor_peak_limits_[i], params_.motor_i2t_times_[i]));
+                config_.amplifiers_[i],
+                Limiter(params_.motor_cont_limits_[i],
+                    params_.motor_peak_limits_[i],
+                    params_.motor_i2t_times_[i])));
 
+            // set encoder counts
             config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
             config_.velocity_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
 

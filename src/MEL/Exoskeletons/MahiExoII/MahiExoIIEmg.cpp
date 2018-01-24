@@ -2,13 +2,15 @@
 
 namespace mel {
 
-MahiExoIIEmg::MahiExoIIEmg(Config configuration, Params parameters) :
+MahiExoIIEmg::MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters parameters) :
     MahiExoII(configuration, parameters),
     emg_voltages_(std::vector<double>(N_emg_, 0.0))
 {
+    emg_electrodes_.reserve(N_emg_);
+
     for (int i = 0; i < N_emg_; ++i) {
         std::string num = std::to_string(i);
-        emg_electrodes_[i] = EmgElectrode("emg_electrod_" + num, configuration.emg_[i]);
+        emg_electrodes_.push_back(EmgElectrode("emg_electrode_" + num, configuration.emg_[i]);
     }
 }
 
