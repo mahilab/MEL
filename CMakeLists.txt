@@ -79,6 +79,10 @@ if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()
 
+if (QUANSER)
+    add_definitions(-DMEL_INCLUDE_QUANSER)
+endif()
+
 if (MAHIEXOII)
     add_definitions(-DMEL_INCLUDE_EIGEN)
 endif()

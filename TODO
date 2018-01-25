@@ -20,6 +20,7 @@ Core:
 
 Daq:
  ☐ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation
+ ☐ get_module<TModule>
 
 Q8 USB:
 
