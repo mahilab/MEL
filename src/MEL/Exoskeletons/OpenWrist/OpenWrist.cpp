@@ -114,7 +114,7 @@ void OpenWrist::calibrate(bool& stop) {
     enable();
 
     // start the clock
-    Timer timer(milliseconds(1));
+    Timer timer(milliseconds(1), Timer::Hybrid);
 
     // start the calibration control loop
     while (!stop && timer.get_elapsed_time() < timeout) {
@@ -225,7 +225,7 @@ void OpenWrist::transparency_mode(bool& stop) {
     enable();
 
     // create and start the clock
-    Timer timer(milliseconds(1));
+    Timer timer(milliseconds(1), Timer::Hybrid);
 
     while (!stop) {
 

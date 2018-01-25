@@ -34,14 +34,15 @@ bool QDaq::open() {
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);
         sleep(milliseconds(10));
         if (result == 0) {
-            // successful open, try to set options
+            // successful open
+            Daq::open();
             if (!set_options(options_)) {
                 close();
                 return false;
             }
             print("Done");
-            return Daq::open();
-        }
+            return true;
+        } 
         else {
             // unsuccesful open, continue
             print("Failed");
@@ -72,6 +73,10 @@ bool QDaq::close() {
 }
 
 bool QDaq::set_options(const QOptions& options) {
+    if (!open_) {
+        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        return false;
+    }
     options_ = options;
     if (open_) {
         print("Setting " + namify(name_) + " options ... ", false);
@@ -90,6 +95,7 @@ bool QDaq::set_options(const QOptions& options) {
             return false;
         }
     }
+    return false;
 }
 
 QOptions QDaq::get_options() {

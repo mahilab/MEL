@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
         q8.enable();
         ow.enable();
         q8.watchdog.start();
-        Timer timer(milliseconds(1));
+        Timer timer(milliseconds(1), Timer::Hybrid);
         while (!stop) {
             q8.update_input();
             positions = ms.read_data();
