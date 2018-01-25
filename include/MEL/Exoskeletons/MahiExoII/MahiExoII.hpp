@@ -46,8 +46,7 @@ namespace mel {
         //-------------------------------------------------------------------------
 
         // exo setup
-        void zero_encoders(Daq* daq);
-
+        void calibrate(bool& stop_flag);
 
         // exo disable
         bool disable() override;

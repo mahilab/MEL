@@ -36,8 +36,8 @@ public:
 
     ///
     voltage get_unfiltered_sample();
-
     voltage get_filtered_sample();
+
 
 private:
 

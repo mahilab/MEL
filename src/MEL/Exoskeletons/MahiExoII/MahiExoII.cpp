@@ -90,13 +90,15 @@ namespace mel {
     // PUBLIC FUNCTIONS
     //-----------------------------------------------------------------------------
 
-    void MahiExoII::zero_encoders(Daq* daq) {
-        daq->enable();
+    void MahiExoII::calibrate(bool& stop) {
+
+        //enable DAQ
+        config_.daq_.enable();
         std::vector<int32> encoder_offsets = { 0, -33259, 29125, 29125, 29125 };
         for (int i = 0; i < N_rj_; i++) {
             config_.encoder_channels_[i].reset_count(encoder_offsets[i]);
         }
-        daq->disable();
+        config_.daq_.disable();
     }
 
 
