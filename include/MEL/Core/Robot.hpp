@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab, Rice University
+// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,7 +15,8 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#pragma once
+#ifndef MEL_ROBOT_HPP
+#define MEL_ROBOT_HPP
 
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/Joint.hpp>
@@ -25,6 +26,10 @@
 #include <vector>
 
 namespace mel {
+
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
 
 class Robot : public Device {
 
@@ -85,4 +90,11 @@ protected:
 
 };
 
-}
+} // namespace mel
+
+#endif // MEL_ROBOT_HPP
+
+//==============================================================================
+// CLASS DOCUMENTATION
+//==============================================================================
+
