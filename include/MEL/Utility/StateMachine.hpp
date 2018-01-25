@@ -1,7 +1,29 @@
-#pragma once
+// MIT License
+//
+// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
+
+#ifndef MEL_STATEMACHINE_HPP
+#define MEL_STATEMACHINE_HPP
+
 #include <string>
 
 namespace mel {
+
+//==============================================================================
+// FORWARD DECLARATIONS
+//==============================================================================
 
 class EventData {
 public:
@@ -39,19 +61,16 @@ struct StateMapRow
     const StateBase* const state;
 };
 
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
+
 class StateMachine {
 
 public:
 
-    //---------------------------------------------------------------------
-    // CONSTRUCTOR(S) / DESTRUCTOR(S)
-    //---------------------------------------------------------------------
 
     StateMachine(int num_states, int initial_state = 0);
-
-    //---------------------------------------------------------------------
-    // PUBLIC FUNCTIONS
-    //---------------------------------------------------------------------
 
     int get_current_state() { return current_state_; }
 
@@ -65,6 +84,12 @@ protected:
 
 private:
 
+    virtual const StateMapRow* get_state_map() = 0;
+
+    void set_current_state(int new_state) { current_state_ = new_state; }
+
+private:
+
     const int NUM_STATES;
 
     int current_state_;
@@ -75,10 +100,12 @@ private:
 
     const EventData* event_data_;
 
-    virtual const StateMapRow* get_state_map() = 0;
-
-    void set_current_state(int new_state) { current_state_ = new_state; }
-
 };
 
 } // namespace mel
+
+#endif // MEL_STATEMACHINE_HPP
+
+//==============================================================================
+// CLASS DOCUMENTATION
+//==============================================================================
