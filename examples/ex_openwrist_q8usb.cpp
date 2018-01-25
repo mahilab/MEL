@@ -6,6 +6,7 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>
+#include <MEL/Devices/VoltPaqX4.hpp>
 
 using namespace mel;
 
@@ -45,21 +46,15 @@ int main(int argc, char *argv[]) {
     qoptions.set_analog_output_mode(2, QOptions::AoMode::CurrentMode1, 0, 2.0, 20.0, 0, -1, 0, 1000);
     Q8Usb q8(qoptions);
 
+    VoltPaqX4 vpx4(q8.digital_output[{ 0, 1, 2 }], q8.analog_output[{ 0, 1, 2 }], q8.digital_input[{0, 1, 2}], q8.analog_input[{ 0, 1, 2 }]);
+
     // create OpenWrist and bind Q8 channels to it
     OwConfiguration config(
         q8,
         q8.watchdog,
-        std::vector<Amplifier::TtlLevel>(3, Amplifier::TtlLevel::High),
-        q8.digital_output[{ 0, 1, 2 }],
-        { 1.0, 1.0, 1.0 },
-        q8.analog_output[{ 0, 1, 2 }],
-        {Limiter(), Limiter(), Limiter()},
-        std::vector<Amplifier::TtlLevel>(3, Amplifier::TtlLevel::High),
-        q8.digital_input[{0, 1, 2}],
-        {1.0, 1.0, 1.0},
-        q8.analog_input[{ 0, 1, 2 }],
         q8.encoder[{ 0, 1, 2 }],
-        q8.velocity[{ 0, 1, 2 }]
+        q8.velocity[{ 0, 1, 2 }],
+        vpx4.amplifiers
     );
     OpenWrist ow(config);
 

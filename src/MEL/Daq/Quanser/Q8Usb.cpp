@@ -40,10 +40,15 @@ Q8Usb::Q8Usb(QOptions options,
 }
 
 Q8Usb::~Q8Usb() {
+    // set default options on program end
+    set_options(QOptions());
+    // if enabled, disable
     if (enabled_)
         disable();
+    // if open, close
     if (open_)
         close();
+    // decrement next_id_
     --next_id_;
 }
 

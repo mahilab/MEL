@@ -30,7 +30,7 @@ bool QDaq::open() {
     t_error result;
     // Try to open in 5 attempts
     for (int attempt = 0; attempt < 5; attempt++) {
-        print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") ... ", false);
+        print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") ... ");
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);
         sleep(milliseconds(10));
         if (result == 0) {
@@ -40,12 +40,12 @@ bool QDaq::open() {
                 close();
                 return false;
             }
-            print("Done");
+            print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") Succeeded");
             return true;
         } 
         else {
             // unsuccesful open, continue
-            print("Failed");
+            print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") Failed");
             print(get_quanser_error_message(result));
         }
     }
@@ -57,7 +57,6 @@ bool QDaq::close() {
     if (!open_)
         return false;
     print("Closing " + namify(name_) + " ... ");
-    set_options(QOptions());
     t_error result;
     result = hil_close(handle_);
     sleep(milliseconds(10));
@@ -66,7 +65,7 @@ bool QDaq::close() {
         return Daq::close();
     }
     else {
-        print("Failed");
+        print("Closing " + namify(name_) + "Failed");
         print(get_quanser_error_message(result));
         return false;
     }
