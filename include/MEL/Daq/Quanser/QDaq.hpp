@@ -39,20 +39,18 @@ class QDaq : public Daq, NonCopyable {
 public:
 
     /// Default constructor
-    QDaq(const std::string& card_type, uint32 id, QOptions options);
+    QDaq(const std::string& card_type, uint32 id, QOptions options = QOptions());
 
     /// Default destructor
     virtual ~QDaq();
 
 public:
 
-    bool open() override;
+    /// Opens the QDap and sets Options
+    virtual bool open() override;
 
-    bool close() override;
-
-    /// Use this function to set the QOptions. The function will immediately
-    /// apply the options to the Q8 USB and return true if successful.
-    bool set_options();
+    /// Closes the QDaq
+    virtual bool close() override;
 
     /// Overloaded version of set_options() that allows passing in new options
     bool set_options(const QOptions& options);

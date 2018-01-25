@@ -14,7 +14,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Q2Usb::Q2Usb(QOptions options, uint32 id) :
+Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
     QDaq("q2_usb", id, options),
     analog_input(*this, {0, 1}),
     analog_output(*this, {0, 1}),
@@ -33,6 +33,8 @@ Q2Usb::Q2Usb(QOptions options, uint32 id) :
     watchdog(*this, milliseconds(100))
 {
     ++next_id_;
+    if (open)
+        Q2Usb::open();
 }
 
 
@@ -44,19 +46,45 @@ Q2Usb::~Q2Usb() {
     --next_id_;
 }
 
-bool Q2Usb::enable() {
-    // open if not already
-    if (!open_)
-        if (!open())
-            return false;
-    print("Enabling " + namify(name_) + " ... ");
+bool Q2Usb::open() {
+    // open as QDaq
+    if (!QDaq::open())
+        return false;
     // clear watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
-    // set options
-    if (!set_options())
+    // set default expire values (digital = LOW, analog = 0.0V)
+    if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0))) {
+        close();
         return false;
+    }
+    if (!digital_io.set_expire_values(std::vector<logic>(8, LOW))) {
+        close();
+        return false;
+    }
+    // allow changes to take effect
+    sleep(milliseconds(10));
+    return true;
+}
+
+bool Q2Usb::close() {
+    // stop watchdog (precautionary, ok if fails)
+    watchdog.stop();
+    // clear the watchdog (precautionary, ok if fails)
+    watchdog.clear();
+    // allow changes to take effect
+    sleep(milliseconds(10));
+    // close as QDaq
+    return QDaq::close();
+}
+
+bool Q2Usb::enable() {
+    if (!open_) {
+        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        return false;
+    }
+    print("Enabling " + namify(name_) + " ... ");
     // enable each module
     if (!analog_input.enable())
         return false;
@@ -65,11 +93,6 @@ bool Q2Usb::enable() {
     if (!digital_io.enable())
         return false;
     if (!encoder.enable())
-        return false;
-    // set default expire values (digital = LOW, analog = 0.0V)
-    if (!analog_output.set_expire_values(std::vector<voltage>(2, 0.0)))
-        return false;
-    if (!digital_io.set_expire_values(std::vector<logic>(9, LOW)))
         return false;
     // allow changes to take effect
     sleep(milliseconds(10));

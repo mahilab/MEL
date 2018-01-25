@@ -21,34 +21,35 @@ class Q8Usb : public QDaq {
 
 public:
 
-    /// Default constructor. Creates Q8 USB with all channels enabled and default QOptions
-    Q8Usb(QOptions options = QOptions(), bool perform_sanity_check = true, uint32 id = next_id_);
-
-    /// Overloaded constructor for defining specific channels to enable.
-    Q8Usb(std::vector<uint32> ai_channels,
-          std::vector<uint32> ao_channels,
-          std::vector<uint32> di_channels,
-          std::vector<uint32> do_channels,
-          std::vector<uint32> enc_channels,
-          QOptions options = QOptions(),
-          bool perform_sanity_check = true,
-          uint32 id = next_id_);
+    /// Default constructor
+    Q8Usb(QOptions options                        = QOptions(),
+          bool open                               = true,
+          bool perform_sanity_check               = true,
+          const std::vector<uint32>& ai_channels  = {0,1,2,3,4,5,6,7},
+          const std::vector<uint32>& ao_channels  = {0,1,2,3,4,5,6,7},
+          const std::vector<uint32>& di_channels  = {0,1,2,3,4,5,6,7},
+          const std::vector<uint32>& do_channels  = {0,1,2,3,4,5,6,7},
+          const std::vector<uint32>& enc_channels = {0,1,2,3,4,5,6,7},
+          uint32 id                               = next_id_);
 
     /// Default destructor. First calls disable() if the Q8Usb is enabled
     /// then close() if the Q8Usb is open.
     ~Q8Usb();
 
+    /// Opens the Q8Usb and sets options and default expiration states (0.0 V, 0 V TTL)
+    bool open() override;
+
+    /// Closes the Q8Usb and clears the watchdog
+    bool close() override;
+
     /// Enables the Q8Usb by sequentially calling the enable() function
     /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do. This function also stops
-    /// and clears the watchdog if it is running or expired, and will open
-    /// the Q8Usb if it is not currently open.
+    /// details on what the enable functions do. 
     bool enable() override;
 
     /// Disables the Q8Usb by sequentially calling the disable() function
     /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do. This function also stops
-    /// and clears the watchdog if it is running or expired.
+    /// details on what the enable functions do.
     bool disable() override;
 
     /// Updates all Input Modules simultaneously. It is generally more

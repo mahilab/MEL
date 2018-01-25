@@ -22,11 +22,17 @@ class Q2Usb : public QDaq {
 public:
 
     /// Default constructor. Creates Q2 USB with all channels enabled and default QOptions
-    Q2Usb(QOptions options = QOptions(), uint32 id = next_id_);
+    Q2Usb(QOptions options = QOptions(), bool open = true, uint32 id = next_id_);
 
     /// Default destructor. First calls disable() if the Q2Usb is enabled
     /// then close() if the Q2Usb is open.
     ~Q2Usb();
+
+    /// Opens the Q2Usb and sets options and default expiration states (0.0 V, 0 V TTL)
+    bool open() override;
+
+    /// Closes the Q2Usb and clears the watchdog
+    bool close() override;
 
     /// Enables the Q2Usb by sequentially calling the enable() function
     /// on all I/O modules. Consult the documentation for each module for
