@@ -21,15 +21,11 @@ public:
 
     voltage get_filtered_sample();
 
-
-
 private:
 
     AnalogInput::Channel channel_;
-
-    RingBuffer<voltage> buffer_;
-
     Filter filter_;
+    RingBuffer<voltage> buffer_;
 
 };
 

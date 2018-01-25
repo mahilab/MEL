@@ -113,7 +113,7 @@ int main() {
     q8.watchdog.start();
     while (timer.get_elapsed_time() < seconds(5) && !stop) {
         // simulate a missed deadline if W pressed
-        if (Keyboard::is_key_pressed(Keyboard::W)) {
+        if (Keyboard::is_key_pressed(Key::W)) {
             print("The program missed it's deadline!");
             sleep(milliseconds(11));
         }

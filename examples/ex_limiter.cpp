@@ -19,11 +19,11 @@ int main() {
     data[6] = limiter.get_setpoint();
     // Start control loop
     Timer timer(milliseconds(1), Timer::Sleep);
-    while(!Keyboard::is_key_pressed(Keyboard::Escape)) {
+    while(!Keyboard::is_key_pressed(Key::Escape)) {
         // simulate a command (hold up to increase, down to decrease)
-        if (Keyboard::is_key_pressed(Keyboard::Up))
+        if (Keyboard::is_key_pressed(Key::Up))
             data[4] += 0.01;
-        else if (Keyboard::is_key_pressed(Keyboard::Down))
+        else if (Keyboard::is_key_pressed(Key::Down))
             data[4] -= 0.01;
         // compute the limited value
         data[5] = limiter.limit(data[4]);
