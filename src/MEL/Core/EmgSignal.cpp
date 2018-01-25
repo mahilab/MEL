@@ -14,9 +14,5 @@ voltage EmgSignal::get_unfiltered_sample() {
     return channel_.get_value();
 }
 
-voltage EmgSignal::get_filtered_sample() {
-
-}
-
 
 } // namespace mel
