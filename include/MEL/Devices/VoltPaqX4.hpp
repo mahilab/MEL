@@ -32,7 +32,13 @@ class VoltPaqX4 : public Device {
 public:
 
     VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,
-              );
+              const std::vector<AnalogOutput::Channel>& command_channels,
+              const std::vector<DigitalInput::Channel>& fault_channels,
+              const std::vector<AnalogInput::Channel>& sense_channel);
+
+    bool enable() override;
+
+    bool disable() override;
 
 
 
