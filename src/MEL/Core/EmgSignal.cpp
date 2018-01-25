@@ -15,4 +15,10 @@ voltage EmgSignal::get_unfiltered_sample() {
 }
 
 
+voltage EmgSignal::get_filtered_sample() {
+    return 0.0;
+}
+
+
+
 } // namespace mel

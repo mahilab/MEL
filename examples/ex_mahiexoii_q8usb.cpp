@@ -42,8 +42,11 @@ int main(int argc, char *argv[]) {
     // enable Windows realtime
     enable_realtime();
 
-    // make Q8 USB
+    // make Q8 USB and configure
     Q8Usb q8;
+    q8.digital_output.set_enable_values(std::vector<logic>(8, HIGH));
+    q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
+    q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
 
     // create MahiExoII and bind Q8 channels to it
     std::vector<Amplifier> amplifiers;
@@ -78,13 +81,11 @@ int main(int argc, char *argv[]) {
     // setpoint control with MelScope
     if (result.count("test") > 0) {
         std::vector<double> positions(1);
-        q8.enable();
-        q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
-        q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
+        q8.enable();        
         q8.watchdog.start();
         meii.enable();
         Clock clock;
-        Timer timer(milliseconds(1), Timer::Sleep);
+        Timer timer(milliseconds(1), Timer::Hybrid);
         RingBuffer<int64> e_time(500);
         while (!stop) {
             

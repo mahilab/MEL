@@ -94,7 +94,6 @@ namespace mel {
 
         //enable DAQ
         config_.daq_.enable();
-        // NEED TO SET DISABLE VALUES HERE
         std::vector<int32> encoder_offsets = { 0, -33259, 29125, 29125, 29125 };
         for (int i = 0; i < N_rj_; i++) {
             config_.encoder_channels_[i].reset_count(encoder_offsets[i]);

@@ -88,7 +88,7 @@ int main() {
 
     timer.restart();
     while (timer.get_elapsed_time() < seconds(10) && !stop) {
-        if (Keyboard::is_key_pressed(Keyboard::L))
+        if (Keyboard::is_key_pressed(Key::L))
             q2.set_led(HIGH);
         else
             q2.set_led(LOW);

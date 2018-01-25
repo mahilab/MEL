@@ -26,7 +26,7 @@ QDaq::~QDaq() {
 
 bool QDaq::open() {
     if (open_)
-        return false;
+        return false; // already open
     t_error result;
     // Try to open in 5 attempts
     for (int attempt = 0; attempt < 5; attempt++) {
@@ -34,14 +34,21 @@ bool QDaq::open() {
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);
         sleep(milliseconds(10));
         if (result == 0) {
+            // successful open, try to set options
+            if (!set_options(options_)) {
+                close();
+                return false;
+            }
             print("Done");
             return Daq::open();
         }
         else {
+            // unsuccesful open, continue
             print("Failed");
             print(get_quanser_error_message(result));
         }
     }
+    // all attempts to open were unsuccessful
     return false;
 }
 
@@ -64,7 +71,8 @@ bool QDaq::close() {
     }
 }
 
-bool QDaq::set_options() {
+bool QDaq::set_options(const QOptions& options) {
+    options_ = options;
     if (open_) {
         print("Setting " + namify(name_) + " options ... ", false);
         char options_str[4096];
@@ -82,15 +90,6 @@ bool QDaq::set_options() {
             return false;
         }
     }
-    else {
-        print(namify(name_) + " has not been opened; unable to call start_watchdog().");
-        return false;
-    }
-}
-
-bool QDaq::set_options(const QOptions& options) {
-    options_ = options;
-    return set_options();
 }
 
 QOptions QDaq::get_options() {

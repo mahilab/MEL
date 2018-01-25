@@ -4,12 +4,8 @@
 
 namespace mel {
 
-class Keyboard {
-
-public:
-
     /// \brief List of Keys
-    enum Key
+    enum class Key
     {
         Unknown = -1, ///< Unhandled key
         None = 0,     ///< No key
@@ -118,6 +114,10 @@ public:
 
         KeyCount      ///< Keep last -- the total number of keyboard keys
     };
+
+class Keyboard {
+
+public:
 
     /// \brief Check if a key is pressed and console window has focus
     /// \param key Key to check
