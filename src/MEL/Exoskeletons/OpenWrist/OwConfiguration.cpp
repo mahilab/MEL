@@ -1,7 +1,4 @@
 #include <MEL/Exoskeletons/OpenWrist/OwConfiguration.hpp>
-#ifdef MEL_INCLUDE_QUANSER
-#include <MEL/Daq/Quanser/Q8Usb.hpp>
-#endif
 
 namespace mel {
 
@@ -50,20 +47,4 @@ OwConfiguration::OwConfiguration(
 
 }  // namespace mel
 
-#ifdef MEL_INCLUDE_QUANSER
-OwConfiguration::OwConfiguration(Q8Usb& q8_usb)
-    : OwConfiguration(
-          q8_usb,
-          q8_usb.watchdog,
-          std::vector<Amplifier::TtlLevel>(3, Amplifier::TtlLevel::High),
-          q8_usb.digital_output[{0, 1, 2}],
-          {1.0, 1.0, 1.0},
-          q8_usb.analog_output[{0, 1, 2}],
-          {Limiter(), Limiter(), Limiter()},
-          std::vector<Amplifier::TtlLevel>(3, Amplifier::TtlLevel::High),
-          q8_usb.digital_input[{0, 1, 2}],
-          {1.0, 1.0, 1.0},
-          q8_usb.analog_input[{0, 1, 2}],
-          q8_usb.encoder[{0, 1, 2}],
-          q8_usb.velocity[{0, 1, 2}]) {}
-#endif
+

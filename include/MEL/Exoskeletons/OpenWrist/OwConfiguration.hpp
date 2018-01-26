@@ -65,8 +65,6 @@ public:
                     const std::vector<Velocity::Channel>& velocity_channels,
                     const std::vector<Amplifier>& amplifiers);
 
-    /// Q8Usb + VoltPAQ-X4 Configuration
-    OwConfiguration(Q8Usb& q8_usb);
 
 private:
 

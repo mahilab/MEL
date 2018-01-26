@@ -34,16 +34,23 @@ Q8Usb::Q8Usb(QOptions options,
     velocity(*this, enc_channels),
     watchdog(*this, milliseconds(100))
 {
+    // increment next_id_
     ++next_id_;
+    // if open true, open automatically
     if (open)
         Q8Usb::open();
 }
 
 Q8Usb::~Q8Usb() {
+    // set default options on program end
+    set_options(QOptions());
+    // if enabled, disable
     if (enabled_)
         disable();
+    // if open, close
     if (open_)
         close();
+    // decrement next_id_
     --next_id_;
 }
 
