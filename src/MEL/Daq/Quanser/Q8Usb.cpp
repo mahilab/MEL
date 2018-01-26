@@ -72,7 +72,6 @@ bool Q8Usb::open() {
         }
     }
     print("Passed");
-
     // set default expire values (digital = LOW, analog = 0.0V)
     if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0))) {
         close();

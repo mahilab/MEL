@@ -13,6 +13,7 @@ static void handler(int var) {
 }
 
 int main() {
+
     // register CTRL-C handler
     register_ctrl_c_handler(handler);
 
@@ -62,8 +63,6 @@ int main() {
         print(q8.encoder.get_value(0));
         timer.wait();
     }
-    // reset stop for next test
-    stop = false;
 
     //==============================================================================
     // ANALOG INPUT/OUTPUT
@@ -83,8 +82,6 @@ int main() {
         q8.update_output();
         timer.wait();
     }
-    // reset stop for next test
-    stop = false;
 
     //==============================================================================
     // DIGITAL INPUT/OUTPUT
@@ -103,8 +100,6 @@ int main() {
         q8.update_output();
         timer.wait();
     }
-    // reset stop for next test
-    stop = false;
 
     //==============================================================================
     // WATCHDOG
@@ -148,7 +143,6 @@ int main() {
     //==============================================================================
 
     prompt("Press Enter to disable the Q8 USB.");
-
     // disable Q8 USB
     q8.disable();
     // close Q8 USB

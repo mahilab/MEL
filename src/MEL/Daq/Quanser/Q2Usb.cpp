@@ -32,17 +32,24 @@ Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
     encoder(*this, {0, 1}),
     watchdog(*this, milliseconds(100))
 {
+    // increment next_id_
     ++next_id_;
+    // if open true, open automatically
     if (open)
         Q2Usb::open();
 }
 
 
 Q2Usb::~Q2Usb() {
+    // set default options on program end
+    set_options(QOptions());
+    // if enabled, disable
     if (enabled_)
         disable();
+    // if open, close
     if (open_)
         close();
+    // decrement next_id_
     --next_id_;
 }
 
@@ -55,11 +62,11 @@ bool Q2Usb::open() {
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
     // set default expire values (digital = LOW, analog = 0.0V)
-    if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0))) {
+    if (!analog_output.set_expire_values(std::vector<voltage>(2, 0.0))) {
         close();
         return false;
     }
-    if (!digital_io.set_expire_values(std::vector<logic>(8, LOW))) {
+    if (!digital_io.set_expire_values(std::vector<logic>(2, LOW))) {
         close();
         return false;
     }
@@ -100,6 +107,10 @@ bool Q2Usb::enable() {
 }
 
 bool Q2Usb::disable() {
+    if (!open_) {
+        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        return false;
+    }
     print("Disabling " + namify(name_) + " ... ");
     // disable each module
     if (!analog_input.disable())
@@ -121,7 +132,6 @@ bool Q2Usb::disable() {
 
 bool Q2Usb::update_input() {
     if (open_) {
-
         if (analog_input.update() && encoder.update() && digital_io.update())
             return true;
         else {
