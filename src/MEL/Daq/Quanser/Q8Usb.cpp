@@ -34,7 +34,9 @@ Q8Usb::Q8Usb(QOptions options,
     velocity(*this, enc_channels),
     watchdog(*this, milliseconds(100))
 {
+    // increment next_id_
     ++next_id_;
+    // if open true, open automatically
     if (open)
         Q8Usb::open();
 }
