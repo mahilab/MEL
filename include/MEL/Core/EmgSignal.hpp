@@ -17,7 +17,6 @@
 #ifndef MEL_EMGSIGNAL_HPP
 #define MEL_EMGSIGNAL_HPP
 
-#include <MEL/Math/Filter.hpp>
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Utility/RingBuffer.hpp>
 
@@ -32,17 +31,15 @@ class EmgSignal {
 public:
 
     /// Constructor
-    EmgSignal(AnalogInput::Channel channel, Filter filter, std::size_t buffer_size);
+    EmgSignal(AnalogInput::Channel channel, const std::size_t buffer_size);
 
     ///
-    voltage get_unfiltered_sample();
-    voltage get_filtered_sample();
+    voltage get_sample();
 
 
 private:
 
     AnalogInput::Channel channel_;
-    Filter filter_;
     RingBuffer<voltage> buffer_;
 
 };

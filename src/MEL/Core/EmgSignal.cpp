@@ -2,22 +2,18 @@
 
 namespace mel {
 
-EmgSignal::EmgSignal(AnalogInput::Channel channel, Filter filter, std::size_t buffer_size) :
+EmgSignal::EmgSignal(AnalogInput::Channel channel, const std::size_t buffer_size) :
     channel_(channel),
-    filter_(filter),
     buffer_(buffer_size)
 {
     
 }
 
-voltage EmgSignal::get_unfiltered_sample() {
+voltage EmgSignal::get_sample() {
+    buffer_.push_back(channel_.get_value());
     return channel_.get_value();
 }
 
-
-voltage EmgSignal::get_filtered_sample() {
-    return 0.0;
-}
 
 
 

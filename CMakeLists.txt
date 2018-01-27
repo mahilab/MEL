@@ -361,6 +361,9 @@ if(EXAMPLES)
     if (QUANSER AND MAHIEXOII)
         add_executable(mahiexoii_q8usb examples/ex_mahiexoii_q8usb.cpp)
         target_link_libraries(mahiexoii_q8usb MEL)
+
+        add_executable(emg_q8usb examples/ex_emg_q8usb.cpp)
+        target_link_libraries(emg_q8usb MEL)
     endif()
 
 endif()
