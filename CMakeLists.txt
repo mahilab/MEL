@@ -278,7 +278,7 @@ if(NI)
 elseif(QUANSER)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
         link_directories("${QUANSER_ROOT}/QUARC/lib/win64")
-    else()
+    else() # 32-bit
         link_directories("${QUANSER_ROOT}/QUARC/lib/windows")
     endif()
     list(APPEND LINK_LIBS

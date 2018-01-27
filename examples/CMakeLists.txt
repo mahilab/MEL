@@ -42,6 +42,9 @@ if(QUANSER)
 
     add_executable(q8usb ex_q8usb.cpp)
     target_link_libraries(q8usb MEL)
+
+    add_executable(emg_q8usb ex_emg_q8usb.cpp)
+    target_link_libraries(emg_q8usb MEL)
 elseif(NI)
     add_executable(crio ex_crio.cpp)
     target_link_libraries(crio MEL)
@@ -55,7 +58,4 @@ endif()
 if (QUANSER AND MAHIEXOII)
     add_executable(mahiexoii_q8usb ex_mahiexoii_q8usb.cpp)
     target_link_libraries(mahiexoii_q8usb MEL)
-
-    add_executable(emg_q8usb ex_emg_q8usb.cpp)
-    target_link_libraries(emg_q8usb MEL)
 endif()
