@@ -19,7 +19,7 @@
 
 #include <MEL/Core/Amplifier.hpp>
 #include <MEL/Core/Device.hpp>
-#include <MEL/Daq/Input.ggihpp>
+#include <MEL/Daq/Input.hpp>
 #include <MEL/Daq/Output.hpp>
 
 namespace mel {
