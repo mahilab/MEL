@@ -45,7 +45,7 @@ public:
     double limit(double unlimited_value);
 
     /// Returns true if previous value passed limit() tripped the Limiter
-    bool limit_exceeded();
+    bool limit_exceeded() const;
 
     /// Gets the limited value since the last call to limit()
     double get_limited_value() const;

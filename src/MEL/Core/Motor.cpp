@@ -34,15 +34,15 @@ void Motor::set_torque(double torque) {
     amplifier_.set_current(current_limiter_.limit(torque_command_ / kt_));
 }
 
-double Motor::get_torque_command() {
+double Motor::get_torque_command() const {
     return torque_command_;
 }
 
-double Motor::get_torque_limited() {
+double Motor::get_torque_limited() const {
     return kt_ * amplifier_.get_current_limited();
 }
 
-double Motor::get_torque_sense() {
+double Motor::get_torque_sense() const {
     return kt_ * amplifier_.get_current_sense();
 }
 

@@ -58,6 +58,9 @@ int main(int argc, char *argv[]) {
     );
     OpenWrist ow(config);
 
+    ow[0].get_actuator().set_torque(5.0);
+    ow[0].get_actuator<Motor>();  // returns Motor&
+
     // run calibration script
     if (result.count("calibrate") > 0) {
         ow.calibrate(stop);

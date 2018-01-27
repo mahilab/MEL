@@ -81,6 +81,24 @@ public:
     /// Gets current position, velocity, and torque, checks them against limits, and returns true if either exceeded, false otherwise
     bool any_limit_exceeded();
 
+    /// Gets the Joint Actuator
+    template <class T = Actuator>
+    T& get_actuator() {
+        return static_cast<T&>(actuator_);
+    }
+
+    /// Gets the Joint PositionSensor
+    template <class T = PositionSensor>
+    T& get_position_sensor() {
+        return static_cast<T&>(position_sensor_);
+    }
+
+    /// Gets the Joint VelocitySensor
+    template <class T = VelocitySensor>
+    T& get_velocity_sensor() {
+        return static_cast<T&>(velocity_sensor_);
+    }
+
 protected:
 
     Actuator&       actuator_;

@@ -11,15 +11,15 @@ void Actuator::set_torque(double torque) {
     torque_command_ = torque;
 }
 
-double Actuator::get_torque_command() {
+double Actuator::get_torque_command() const {
     return torque_command_;
 }
 
-double Actuator::get_torque_limited() {
+double Actuator::get_torque_limited() const {
     return torque_command_;
 }
 
-double Actuator::get_torque_sense() {
+double Actuator::get_torque_sense() const {
     return 0.0;
 }
 

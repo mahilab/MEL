@@ -46,13 +46,13 @@ public:
     void set_torque(double torque) override;
 
     /// Returns the attempted command current since the last call to set_current()
-    double get_torque_command() override;
+    double get_torque_command() const override;
 
     /// Returns the limited command current since the last call to set_current()
-    double get_torque_limited() override;
+    double get_torque_limited() const override;
 
     /// Returns the torque sense of the motor if it is available
-    double get_torque_sense() override;
+    double get_torque_sense() const override;
 
 private:
 

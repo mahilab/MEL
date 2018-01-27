@@ -63,7 +63,7 @@ double Limiter::limit(double unlimited_value) {
     return limited_value_;
 }
 
-bool Limiter::limit_exceeded() {
+bool Limiter::limit_exceeded() const {
     return exceeded_;
 }
 
