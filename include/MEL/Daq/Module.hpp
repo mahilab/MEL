@@ -38,30 +38,22 @@ enum class IoType {
 };
 
 //==============================================================================
-// CLASS DECLARATION
+// BASE DECLARATION
 //==============================================================================
 
-/// Template class that encapsulates a set of same-type DAQ channels
-template <typename T>
-class Module : public Device {
+/// Defines non-templated Module functions/members
+class ModuleBase : public Device {
 
 public:
 
-    /// Default constructor
-    Module(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
+    /// Constructor
+    ModuleBase(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
         Device(name),
         type_(type),
         channel_numbers_(sort_and_reduce_channels(channel_numbers)),
         channel_count_(channel_numbers_.size()),
-        channel_map_(make_channel_map(channel_numbers_)),
-        values_(channel_count_),
-        min_values_(channel_count_),
-        max_values_(channel_count_)
-    {
-    }
-
-    /// Default destructor
-    virtual ~Module() { }
+        channel_map_(make_channel_map(channel_numbers_))
+    { }
 
     /// This function should call the DAQ's API to update all channels with the
     /// real-world. If the Module is an input, it should read in current values
@@ -72,55 +64,6 @@ public:
     /// This function should call the DAQ's API to update a single channel with
     /// the real-world. It should not update any other channels.
     virtual bool update_channel(uint32 channel_number) = 0;
-
-    /// Sets the min and max possible values of each channel
-    virtual bool set_ranges(const std::vector<T>& min_values, const std::vector<T>& max_values) {
-        if (validate_channel_count(min_values) && validate_channel_count(max_values)) {
-            min_values_ = min_values;
-            max_values_ = max_values;
-            return true;
-        }
-        return false;
-    }
-
-    /// Sets the min and max possible value of a single channel
-    virtual bool set_range(uint32 channel_number, T min_value, T max_value) {
-        if (validate_channel_number(channel_number)) {
-            min_values_[channel_map_.at(channel_number)] = min_value;
-            max_values_[channel_map_.at(channel_number)] = max_value;
-            return true;
-        }
-        return false;
-    }
-
-public:
-
-    /// Gets non-const reference to the current channel values of this Module
-    std::vector<T>& get_values() {
-        return values_;
-    }
-
-    /// Gets the current value of a a single channel. If an invalid channel number
-    /// is passed, the default value of the underlying channel type is returned.
-    T get_value(uint32 channel_number) const {
-        if(validate_channel_number(channel_number))
-            return values_[channel_map_.at(channel_number)];
-        return T();
-    }
-
-    /// Sets the current channel values of this Module. If the incorrect number
-    /// of values is pass, no values are set.
-    void set_values(const std::vector<T>& values) {
-        if (validate_channel_count(values))
-            values_ = values;
-    }
-
-    /// Sets the current value of a single channel. If an invalid channel number
-    /// is passed, non value is set
-    void set_value(uint32 channel_number, T value) {
-        if (validate_channel_number(channel_number))
-            values_[channel_map_.at(channel_number)] = value;
-    }
 
     /// Gets the vector of channel numbers this Module maintains
     const std::vector<uint32>& get_channel_numbers() const {
@@ -179,10 +122,85 @@ protected:
 
 protected:
 
-    const IoType type_ ;                               ///< The IoType of this Module
-    const std::vector<uint32> channel_numbers_;        ///< The channel numbers used by this Module
-    const std::size_t channel_count_;                  ///< The total number of channels used by this Module
+    const IoType type_ ;                               ///< The IoType of this ModuleBase
+    const std::vector<uint32> channel_numbers_;        ///< The channel numbers used by this ModuleNase
+    const std::size_t channel_count_;                  ///< The total number of channels used by this ModuleBase
     const std::map<uint32, std::size_t> channel_map_;  ///< Associates a channel number with a vector index position
+
+};
+
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
+
+/// Defines templated Module functions/members
+template <typename T>
+class Module : public ModuleBase {
+
+public:
+
+    /// Default constructor
+    Module(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
+        ModuleBase(name, type, channel_numbers),
+        values_(channel_count_),
+        min_values_(channel_count_),
+        max_values_(channel_count_)
+    {
+    }
+
+    /// Default destructor
+    virtual ~Module() { }
+
+    /// Sets the min and max possible values of each channel
+    virtual bool set_ranges(const std::vector<T>& min_values, const std::vector<T>& max_values) {
+        if (validate_channel_count(min_values) && validate_channel_count(max_values)) {
+            min_values_ = min_values;
+            max_values_ = max_values;
+            return true;
+        }
+        return false;
+    }
+
+    /// Sets the min and max possible value of a single channel
+    virtual bool set_range(uint32 channel_number, T min_value, T max_value) {
+        if (validate_channel_number(channel_number)) {
+            min_values_[channel_map_.at(channel_number)] = min_value;
+            max_values_[channel_map_.at(channel_number)] = max_value;
+            return true;
+        }
+        return false;
+    }
+
+public:
+
+    /// Gets non-const reference to the current channel values of this Module
+    std::vector<T>& get_values() {
+        return values_;
+    }
+
+    /// Gets the current value of a a single channel. If an invalid channel number
+    /// is passed, the default value of the underlying channel type is returned.
+    T get_value(uint32 channel_number) const {
+        if(validate_channel_number(channel_number))
+            return values_[channel_map_.at(channel_number)];
+        return T();
+    }
+
+    /// Sets the current channel values of this Module. If the incorrect number
+    /// of values is pass, no values are set.
+    void set_values(const std::vector<T>& values) {
+        if (validate_channel_count(values))
+            values_ = values;
+    }
+
+    /// Sets the current value of a single channel. If an invalid channel number
+    /// is passed, non value is set
+    void set_value(uint32 channel_number, T value) {
+        if (validate_channel_number(channel_number))
+            values_[channel_map_.at(channel_number)] = value;
+    }
+
+protected:
 
     std::vector<T> values_;          ///< The real-world values of the channels in this Module
     std::vector<T> min_values_;      ///< The minimum possible values of each channel

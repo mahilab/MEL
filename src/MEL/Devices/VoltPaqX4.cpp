@@ -10,7 +10,7 @@ VoltPaqX4::VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,
 {
     std::size_t num_amps = enable_channels.size();
     if (command_channels.size() == num_amps && fault_channels.size() == num_amps && sense_channels.size() == num_amps) {
-        for (int i = 0; i < num_amps; ++i)
+        for (std::size_t i = 0; i < num_amps; ++i)
             amplifiers.push_back(Amplifier("voltpaq-x4_" + stringify(i), Amplifier::High, enable_channels[i], 1.0, command_channels[i], Limiter(), Amplifier::High, fault_channels[i], 1.0, sense_channels[i]));
     }
     else {
@@ -21,7 +21,7 @@ VoltPaqX4::VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,
 bool VoltPaqX4::enable() {
     for (std::size_t i = 0; i < amplifiers.size(); ++i)
         amplifiers[i].enable();
-    return Device::enable();        
+    return Device::enable();
 }
 
 bool VoltPaqX4::disable() {

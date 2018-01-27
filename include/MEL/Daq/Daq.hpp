@@ -18,23 +18,18 @@
 #define MEL_DAQ_HPP
 
 #include <MEL/Core/Device.hpp>
+#include <MEL/Daq/Module.hpp>
+#include <typeindex>
+#include <unordered_map>
 
 namespace mel {
-
-//==============================================================================
-// FORWARD DECLARATIONS
-//==============================================================================
-
-class Time;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
 class Daq : public Device {
-
 public:
-
     /// The default constructor
     Daq(const std::string& name);
 
@@ -45,7 +40,7 @@ public:
     /// an API, socket communication, etc. It should not perform any other task
     /// than opening the communication channel; start up procedures should be
     /// implemented in enable(). This function should return true if the open
-    ///was successful, false otherwise, and set #open_ accordingly
+    /// was successful, false otherwise, and set #open_ accordingly
     virtual bool open() = 0;
 
     /// This function should close communication with the device. It should
@@ -67,19 +62,32 @@ public:
     virtual bool update_output() = 0;
 
 public:
-
     /// Returns true if communication with the device is open, false if closed.
     bool is_open() const;
 
+    /// Gets a Module from the Daq
+    template <class T>
+    T& get_module() {
+        return *static_cast<T*>(modules_[std::type_index(typeid(T))]);
+    }
+
 protected:
 
+    /// Adds a a Module to the Daq
+    template <class T>
+    void add_module(T* module) {
+        modules_[std::type_index(typeid(T))] = module;
+    }
+
+protected:
     bool open_;  ///< The Daq open status
+    std::unordered_map<std::type_index, ModuleBase*> modules_;
 
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_DAQ_HPP
+#endif  // MEL_DAQ_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
