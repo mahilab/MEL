@@ -1,3 +1,7 @@
+#===============================================================================
+# GENERIC EXAMPLES
+#===============================================================================
+
 add_executable(tcp ex_tcp.cpp)
 target_link_libraries(tcp MEL)
 
@@ -22,6 +26,10 @@ target_link_libraries(lockables MEL)
 add_executable(ring_buffer ex_ring_buffer.cpp)
 target_link_libraries(ring_buffer MEL)
 
+#===============================================================================
+# WINDOWS EXAMPLES
+#===============================================================================
+
 if(WIN32)
     add_executable(shared_memory ex_shared_memory.cpp)
     target_link_libraries(shared_memory MEL)
@@ -36,6 +44,10 @@ if(WIN32)
     target_link_libraries(limiter MEL)
 endif()
 
+#===============================================================================
+# QUANSER EXAMPLES
+#===============================================================================
+
 if(QUANSER)
     add_executable(q2usb ex_q2usb.cpp)
     target_link_libraries(q2usb MEL)
@@ -45,17 +57,33 @@ if(QUANSER)
 
     add_executable(emg_q8usb ex_emg_q8usb.cpp)
     target_link_libraries(emg_q8usb MEL)
-elseif(NI)
+endif()
+
+#===============================================================================
+# NI EXAMPLES
+#===============================================================================
+
+if(NI)
     add_executable(crio ex_crio.cpp)
     target_link_libraries(crio MEL)
 endif()
 
-if (QUANSER AND OPENWRIST)
+#===============================================================================
+# OPENWRIST EXAMPLES
+#===============================================================================
+
+if (OPENWRIST AND QUANSER)
     add_executable(openwrist_q8usb ex_openwrist_q8usb.cpp)
     target_link_libraries(openwrist_q8usb MEL)
+elseif(OPENWRIST AND NI)
+    # ...
 endif()
 
-if (QUANSER AND MAHIEXOII)
+#===============================================================================
+# MAHI EXO-II EXAMPLES
+#===============================================================================
+
+if (MAHIEXOII AND QUANSER)
     add_executable(mahiexoii_q8usb ex_mahiexoii_q8usb.cpp)
     target_link_libraries(mahiexoii_q8usb MEL)
 endif()
