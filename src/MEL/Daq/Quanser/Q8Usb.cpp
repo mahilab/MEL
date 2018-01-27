@@ -36,6 +36,13 @@ Q8Usb::Q8Usb(QOptions options,
 {
     // increment next_id_
     ++next_id_;
+    // add modules
+    add_module(static_cast<AnalogInput*>(&analog_input));
+    add_module(static_cast<AnalogOutput*>(&analog_output));
+    add_module(static_cast<DigitalInput*>(&digital_input));
+    add_module(static_cast<DigitalOutput*>(&digital_output));
+    add_module(static_cast<Encoder*>(&encoder));
+    add_module(static_cast<Velocity*>(&velocity));
     // if open true, open automatically
     if (open)
         Q8Usb::open();

@@ -34,6 +34,11 @@ Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
 {
     // increment next_id_
     ++next_id_;
+    // add modules
+    add_module(static_cast<AnalogInput*>(&analog_input));
+    add_module(static_cast<AnalogOutput*>(&analog_output));
+    add_module(static_cast<DigitalInputOutput*>(&digital_io));
+    add_module(static_cast<Encoder*>(&encoder));
     // if open true, open automatically
     if (open)
         Q2Usb::open();

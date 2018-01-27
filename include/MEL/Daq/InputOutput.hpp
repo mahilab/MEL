@@ -204,6 +204,12 @@ public:
 
 };
 
+//==============================================================================
+// TYPEDEFS
+//==============================================================================
+
+typedef InputOutput<logic>   DigitalInputOutput;
+
 } // namespace mel
 
 #endif // MEL_INPUTOUTPUT_HPP
