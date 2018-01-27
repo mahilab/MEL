@@ -58,7 +58,7 @@ namespace mel {
                 params_.eta_[i],
                 config_.velocity_channels_[i],
                 params_.eta_[i],
-                std::array<double, 2>({ params_.pos_limits_neg_[i] , params_.pos_limits_pos_[i] }),
+                std::array<double, 2>({ params_.pos_limits_min_[i] , params_.pos_limits_max_[i] }),
                 params_.vel_limits_[i],
                 params_.joint_torque_limits[i]);
 
@@ -111,17 +111,7 @@ namespace mel {
         robot_ref_.stop();
         anat_ref_.stop();
 
-        // disable the robot
-        if (enabled_) {
-            // code executed by overridden function Robot::disable()
-            //enabled_ = false;
-            print("Disabling Robot <" + name_ + "> ... ", false);
-            for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-                it->disable();
-            }
-        }
-
-        return Device::disable();
+        return Robot::disable();
     }
 
     //-----------------------------------------------------------------------------
@@ -134,7 +124,9 @@ namespace mel {
             break;
         case 1: rps_control_mode_ = 1;
             break;
-        default: print("WARNING: Invalid input argument to set_rps_control_mode(). Must be 0 or 1. No change was made.");
+        case 2: rps_control_mode_ = 2;
+            break;
+        default: print("WARNING: Invalid input argument to set_rps_control_mode(). Must be 0, 1, or 2. No change was made.");
         }
     }
 
@@ -150,7 +142,7 @@ namespace mel {
         forearm_backdrive_ = backdrive;
     }
 
-    void MahiExoII::SmoothReferenceTrajectory::start(std::vector<double> current_pos, double current_time) {        
+    void MahiExoII::SmoothReferenceTrajectory::start(std::vector<double> current_pos, Time current_time) {        
         if (ref_init_) {
             started_ = true;
             prev_ref_ = current_pos;
@@ -161,14 +153,14 @@ namespace mel {
         }  
     }
 
-    void MahiExoII::SmoothReferenceTrajectory::start(std::vector<double> ref_pos, std::vector<double> current_pos, double current_time) {
+    void MahiExoII::SmoothReferenceTrajectory::start(std::vector<double> ref_pos, std::vector<double> current_pos, Time current_time) {
         started_ = true;
         prev_ref_ = current_pos;
         ref_ = ref_pos;
         start_time_ = current_time;
     }
 
-    void MahiExoII::SmoothReferenceTrajectory::set_ref(std::vector<double> ref_pos, double current_time) {   
+    void MahiExoII::SmoothReferenceTrajectory::set_ref(std::vector<double> ref_pos, Time current_time) {   
         if (!started_) {
             print("ERROR: Cannot call set_ref() before start().");
         }
@@ -181,12 +173,12 @@ namespace mel {
         }
     }
 
-    double MahiExoII::SmoothReferenceTrajectory::calculate_smooth_ref(int dof, double current_time) {
+    double MahiExoII::SmoothReferenceTrajectory::calculate_smooth_ref(int dof, Time current_time) {
         if (started_) {
             if (ref_[dof] == prev_ref_[dof]) {
                 return ref_[dof];
             }
-            return prev_ref_[dof] + (ref_[dof] - prev_ref_[dof]) * mel::saturate((current_time - start_time_) * speed_[dof] / std::abs(ref_[dof] - prev_ref_[dof]), 1.0, 0.0);
+            return prev_ref_[dof] + (ref_[dof] - prev_ref_[dof]) * saturate((current_time.as_seconds() - start_time_.as_seconds()) * speed_[dof] / std::abs(ref_[dof] - prev_ref_[dof]), 0.0, 1.0);
         }
         else {
             print("ERROR: Must give reference point first.");
@@ -199,18 +191,19 @@ namespace mel {
     }
 
 
-    std::vector<double> MahiExoII::set_rps_pos_ctrl_torques(SmoothReferenceTrajectory& rps_ref, double current_time) {
+    std::vector<double> MahiExoII::set_rps_pos_ctrl_torques(SmoothReferenceTrajectory& rps_ref, Time current_time) {
 
         std::vector<double> command_torques(N_qs_, 0.0);
 
         switch (rps_control_mode_) {
-        case 0: // control impedance of parralel joints
-            for (auto i = 0; i < N_qs_; ++i) {
+        case 0: // control impedance of parallel joints
+            for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
                     command_torques[i] = 0.0;
                 }
                 else {
                     double smooth_ref = rps_ref.calculate_smooth_ref(i, current_time);
+                    
                     if (std::isnan(smooth_ref)) {
                         command_torques[i] = 0.0;
                     }
@@ -221,9 +214,9 @@ namespace mel {
             }
             set_rps_par_torques(command_torques);
             break;
-        case 1: // control impedance of serial joints
+        case 1: // control impedance of serial joints with platform height backdrivable
                 
-            for (auto i = 0; i < N_qs_; ++i) {
+            for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
                     command_torques[i] = 0.0;
                 }
@@ -233,7 +226,27 @@ namespace mel {
                         command_torques[i] = 0.0;
                     }
                     else { 
-                        command_torques[i] = anatomical_joint_pd_controllers_[i + 2].calculate(smooth_ref, get_anatomical_joint_position(i+2), 0, get_anatomical_joint_velocity(i+2));   
+                        command_torques[i] = anatomical_joint_pd_controllers_[i + 2].calculate(smooth_ref, get_anatomical_joint_position(i+2), 0, get_anatomical_joint_velocity(i+2));
+                        command_torques[2] = 0.0; // set platform height commanded force to zero
+                    }
+                }
+            }
+            set_rps_ser_torques(command_torques);
+            break;
+
+        case 2: // control impedance of serial joints with all joints active
+
+            for (int i = 0; i < N_qs_; ++i) {
+                if (rps_backdrive_) {
+                    command_torques[i] = 0.0;
+                }
+                else {
+                    double smooth_ref = rps_ref.calculate_smooth_ref(i, current_time);
+                    if (std::isnan(smooth_ref)) {
+                        command_torques[i] = 0.0;
+                    }
+                    else {
+                        command_torques[i] = anatomical_joint_pd_controllers_[i + 2].calculate(smooth_ref, get_anatomical_joint_position(i + 2), 0, get_anatomical_joint_velocity(i + 2));
                     }
                 }
             }
@@ -241,7 +254,7 @@ namespace mel {
             break;
 
         default: print("WARNING: Invalid rps_control_mode_. Must be 0 or 1. Zero torques commanded.");
-            for (auto i = 0; i < N_qs_; ++i) {
+            for (int i = 0; i < N_qs_; ++i) {
                 joints_[i + 2].set_torque(0.0);
             }
         }
@@ -250,35 +263,35 @@ namespace mel {
    
     }
 
-    std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajectory& anat_ref, double current_time) {
+    std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajectory& anat_ref, Time current_time) {
 
         std::vector<double> command_torques(N_aj_, 0.0);
 
         // elbow joint
         if (elbow_backdrive_) {
-            command_torques.at(0) = 0.0;
+            command_torques[0] = 0.0;
         }
         else {
             double smooth_ref = anat_ref.calculate_smooth_ref(0, current_time);
             if (std::isnan(smooth_ref)) {
-                command_torques.at(0) = 0.0;
+                command_torques[0] = 0.0;
             }
             else {
-                command_torques.at(0) = robot_joint_pd_controllers_.at(0).calculate(smooth_ref, joints_.at(0).get_position(), 0, joints_.at(0).get_velocity());
+                command_torques[0] = robot_joint_pd_controllers_[0].calculate(smooth_ref, joints_[0].get_position(), 0, joints_[0].get_velocity());
             }
         }
 
         // forearm joint
         if (forearm_backdrive_) {
-            command_torques.at(1) = 0.0;
+            command_torques[1] = 0.0;
         }
         else {
             double smooth_ref = anat_ref.calculate_smooth_ref(1, current_time);
             if (std::isnan(smooth_ref)) {
-                command_torques.at(1) = 0.0;
+                command_torques[1] = 0.0;
             }
             else {
-                command_torques.at(1) = robot_joint_pd_controllers_.at(1).calculate(smooth_ref, joints_.at(1).get_position(), 0, joints_.at(1).get_velocity());
+                command_torques[1] = robot_joint_pd_controllers_[1].calculate(smooth_ref, joints_[1].get_position(), 0, joints_[1].get_velocity());
             }
         }
             
@@ -286,19 +299,38 @@ namespace mel {
         // rps mechanism
         std::vector<double> rps_command_torques(N_qs_, 0.0);
         switch (rps_control_mode_) {
-        case 1: // control impedance of serial joints
+        case 1: // control impedance of serial joints with platform height backdrivable
 
-            for (auto i = 0; i < N_qs_; ++i) {
+            for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
-                    rps_command_torques.at(i) = 0.0;
+                    rps_command_torques[i] = 0.0;
                 }
                 else {
                     double smooth_ref = anat_ref.calculate_smooth_ref(i+2, current_time);
                     if (std::isnan(smooth_ref)) {
-                        rps_command_torques.at(i) = 0.0;
+                        rps_command_torques[i] = 0.0;
                     }
                     else {
-                        rps_command_torques.at(i) = anatomical_joint_pd_controllers_.at(i+2).calculate(smooth_ref, get_anatomical_joint_position(i + 2), 0, get_anatomical_joint_velocity(i + 2));
+                        rps_command_torques[i] = anatomical_joint_pd_controllers_[i+2].calculate(smooth_ref, get_anatomical_joint_position(i + 2), 0, get_anatomical_joint_velocity(i + 2));
+                        rps_command_torques[2] = 0.0; // set platform height commanded force to zero
+                    }
+                }
+            }
+            break;
+
+        case 2: // control impedance of serial joints with all joints active
+
+            for (int i = 0; i < N_qs_; ++i) {
+                if (rps_backdrive_) {
+                    rps_command_torques[i] = 0.0;
+                }
+                else {
+                    double smooth_ref = anat_ref.calculate_smooth_ref(i + 2, current_time);
+                    if (std::isnan(smooth_ref)) {
+                        rps_command_torques[i] = 0.0;
+                    }
+                    else {
+                        rps_command_torques[i] = anatomical_joint_pd_controllers_[i+2].calculate(smooth_ref, get_anatomical_joint_position(i + 2), 0, get_anatomical_joint_velocity(i + 2));
                     }
                 }
             }
@@ -414,10 +446,6 @@ namespace mel {
         joints_[3].set_torque(par_torques(1));
         joints_[4].set_torque(par_torques(2));
 
-          
-        std::cout << ser_torques.transpose() << "\t" << par_torques.transpose() << std::endl;
-        print("");
-
         // store parallel and serial joint torques for data logging
         tau_par_rob_ = par_torques;
         tau_ser_rob_ = -ser_torques;
@@ -428,13 +456,14 @@ namespace mel {
         for (int i = 0; i < N_qs_; ++i) {
             joints_[i + 2].set_torque(tau_par[i]);
         }
-        tau_par_rob_ = copy_stdvec_to_eigvec(tau_par);
-        std::cout << tau_par_rob_.transpose() << std::endl;
-        print("");
+        
+        //tau_par_rob_ = copy_stdvec_to_eigvec(tau_par);
+        //std::cout << tau_par_rob_.transpose() << std::endl;
+        //print("");
 
-        Eigen::VectorXd tau_b(N_qp_ - N_qs_);
-        tau_b << 0.0, 0.0, 0.0, tau_par_rob_[0], tau_par_rob_[1], tau_par_rob_[2], 0.0, 0.0, 0.0;
-        solve_static_rps_torques(select_q_ser_, tau_b, qp_, tau_ser_rob_);
+        //Eigen::VectorXd tau_b(N_qp_ - N_qs_);
+        //tau_b << 0.0, 0.0, 0.0, tau_par_rob_[0], tau_par_rob_[1], tau_par_rob_[2], 0.0, 0.0, 0.0;
+        //solve_static_rps_torques(select_q_ser_, tau_b, qp_, tau_ser_rob_);
     }
 
     void MahiExoII::set_rps_ser_torques(std::vector<double>& tau_ser) {
