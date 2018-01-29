@@ -18,6 +18,8 @@ class MelNet
         {
             socket = new UdpClient(localPort);
             socket.Client.Blocking = blocking;
+            socket.Client.ReceiveTimeout = 10;
+            socket.Client.SendTimeout = 10;
             remoteHost = new IPEndPoint(remoteAddress, remotePort);
         }
         catch
