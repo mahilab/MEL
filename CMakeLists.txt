@@ -74,7 +74,12 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
 endif()
 
+
+
 # add definitons
+
+add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
+
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()

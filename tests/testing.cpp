@@ -1,75 +1,17 @@
+#include <MEL/Utility/Log.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <typeindex>
-#include <unordered_map>
+#include <MEL/Utility/Clock.hpp>
+#include <MEL/Utility/System.hpp>
 
-
-class ModuleX {
-public:
-    ModuleX(std::string name) : name_(name) { }
-    virtual void print() {
-        mel::print("Module X: " + name_);
-    }
-protected:
-    std::string name_;
-};
-
-class ModuleA : public ModuleX {
-public:
-    using ModuleX::ModuleX;
-    void print() override {
-        mel::print("Module A: " + name_);
-    }
-    void A() {
-        mel::print("I'm an A");
-    }
-};
-
-class ModuleB : public ModuleX {
-public:
-    using ModuleX::ModuleX;
-    void print() override {
-        mel::print("Module B: " + name_);
-    }
-    void B() {
-        mel::print("I'm a B");
-    }
-};
-
-class Daq {
-
-public:
-
-    Daq() : modx("eggs"), moda("eh"), modb("bee") {
-        add_module(&modx);
-        //add_module(&moda);
-        //add_module`(static_cast<ModuleX*>(&modb));
-    }
-
-    template <class T>
-    T& get_module() {
-        return *static_cast<T*>(modules[std::type_index(typeid(T))]);
-    }
-
-private:
-
-    ModuleX modx;
-    ModuleA moda;
-    ModuleB modb;
-
-    template <class T>
-    void add_module(T* module) {
-        modules[std::type_index(typeid(T))] = module;
-    }
-
-    std::unordered_map<std::type_index, void*> modules;
-};
-
+using namespace mel;
 
 int main(int argc, char const *argv[]) {
-    Daq daq;
-    daq.get_module<ModuleA>().print();
-    //daq.get_module<ModuleA>().print();
-    //daq.get_module<ModuleB>().print();
+
+    LOG(INFO) << "This is an INFO log.";
+    LOG(WARNING) << "This is a WARNING log.";
+    LOG(ERROR) << "This is an ERROR log.";
+    LOG(DEBUG) << "This is a DEBUG log.";
+    LOG(FATAL) << "This is a FATAL log."; // kills app!
+
     return 0;
 }
-
