@@ -14,7 +14,7 @@ Communication:
   ☐ Make MelNet not use packets (for string at least)
 
 Core:
-  ☐ create class for amps
+  ✔ create class for amps @done (18-01-27 18:22)
   ☐ make safety check functions more descriptive
   ☐ complete Limiter and incorporate
 
@@ -33,10 +33,10 @@ Utility:
   ☐ Write Linux version of Mutex
   ☐ get_last_os_error(), make static functions not print
   ☐ Clean up / rethink StateMachine
-  ☐ templatize DataLog
+  ✔ templatize DataLog @done (18-01-27 18:22)
 
 OpenWrist:
-  ☐ figure out how to nicely integrate separate OpenWrist project outside of MEL
+  ✔ figure out how to nicely integrate separate OpenWrist project outside of MEL @done (18-01-27 18:22)
 
 MELScope:
   ✔ fix crash on close @done (18-01-21 15:42)

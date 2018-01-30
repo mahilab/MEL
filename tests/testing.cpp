@@ -13,5 +13,7 @@ int main(int argc, char const *argv[]) {
     LOG(DEBUG) << "This is a DEBUG log.";
     LOG(FATAL) << "This is a FATAL log."; // kills app!
 
+
+
     return 0;
 }

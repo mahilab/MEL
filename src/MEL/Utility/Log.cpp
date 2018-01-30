@@ -317,12 +317,12 @@ void Configurations::setToDefault(void) {
   set(Level::Warning, ConfigurationType::ToStandardOutput, std::string("false"));
 
   setGlobally(ConfigurationType::Format, std::string("%datetime %level %msg"), true);
-  set(Level::Debug, ConfigurationType::Format, std::string("%datetime %level [%func] [%loc] %msg"));
+  set(Level::Debug, ConfigurationType::Format, std::string("%datetime %level [%file:%line] [%loc] %msg"));
   // INFO and WARNING are set to default by Level::Global
   set(Level::Error, ConfigurationType::Format, std::string("%datetime %level %msg"));
   set(Level::Fatal, ConfigurationType::Format, std::string("%datetime %level %msg"));
   set(Level::Verbose, ConfigurationType::Format, std::string("%datetime %level-%vlevel %msg"));
-  set(Level::Trace, ConfigurationType::Format, std::string("%datetime %level [%func] [%loc] %msg"));
+  set(Level::Trace, ConfigurationType::Format, std::string("%datetime %level [%file:%line] [%loc] %msg"));
 }
 
 void Configurations::setRemainingToDefault(void) {
@@ -360,13 +360,13 @@ void Configurations::setRemainingToDefault(void) {
   unsafeSetIfNotExist(Level::Global, ConfigurationType::MaxLogFileSize, std::string("0"));
   unsafeSetIfNotExist(Level::Global, ConfigurationType::Format, std::string("%datetime %level %msg"));
   unsafeSetIfNotExist(Level::Debug, ConfigurationType::Format,
-                      std::string("%datetime %level [%func] [%loc] %msg"));
+                      std::string("%datetime %level [%file:%line] [%loc] %msg"));
   // INFO and WARNING are set to default by Level::Global
   unsafeSetIfNotExist(Level::Error, ConfigurationType::Format, std::string("%datetime %level %msg"));
   unsafeSetIfNotExist(Level::Fatal, ConfigurationType::Format, std::string("%datetime %level %msg"));
   unsafeSetIfNotExist(Level::Verbose, ConfigurationType::Format, std::string("%datetime %level-%vlevel %msg"));
   unsafeSetIfNotExist(Level::Trace, ConfigurationType::Format,
-                      std::string("%datetime %level [%func] [%loc] %msg"));
+                      std::string("%datetime %level [%file:%line] [%loc] %msg"));
 }
 
 bool Configurations::Parser::parseFromFile(const std::string& configurationFile, Configurations* sender,
