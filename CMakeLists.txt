@@ -74,7 +74,13 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
 endif()
 
+
+
 # add definitons
+
+# easylogging++
+add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
+
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()
@@ -88,16 +94,18 @@ if (MAHIEXOII)
 endif()
 
 # add configurations
-set(CMAKE_CONFIGURATION_TYPES release)
+# set(CMAKE_CONFIGURATION_TYPES release)
 
 #===============================================================================
 # COMPILER SPECIFIC
 #===============================================================================
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall") # ALL WARNINGS
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # WARNING LEVEL 4
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP") # MULTICORE BUILDS
+
 endif()
 
 #===============================================================================

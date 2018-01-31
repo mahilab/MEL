@@ -11,15 +11,14 @@ using namespace mel;
 
 int main(int argc, char *argv[]) {
     if (argc > 1) {
+        MelShare ms("melshare");
         std::string id = argv[1];
         if (id == "A") {
-            MelShare ms("melshare");
             ms.write_message("Hello from C++! Please send me some data.");
             prompt("Press Enter after running B ...");
             print(ms.read_data());
         }
         else if (id == "B") {
-            MelShare ms("melshare");
             print(ms.read_message());
             ms.write_data({1.0, 2.0, 3.0});
         }
