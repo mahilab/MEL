@@ -73,7 +73,7 @@ class MelShare(object):
 # Example:
 #==============================================================================
 # import sys
-#
+
 # if len(sys.argv) > 1:
 #     ID = sys.argv[1]
 #     if ID is 'A':
@@ -85,5 +85,3 @@ class MelShare(object):
 #         ms = MelShare('melshare')
 #         print(ms.read_message())
 #         ms.write_data([4.0, 5.0, 6.0])
-
-

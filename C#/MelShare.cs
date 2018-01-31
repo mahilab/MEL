@@ -285,7 +285,7 @@ class SharedMemory
 #else
 
 //==============================================================================
-// ORIGINAL IMPLEMENTATION:
+// MEMORY MAPPED FILES IMPLEMENTATION:
 //==============================================================================
 
 using System.IO.MemoryMappedFiles;
