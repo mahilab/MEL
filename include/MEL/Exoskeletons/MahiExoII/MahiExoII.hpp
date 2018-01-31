@@ -17,29 +17,29 @@
 
 namespace mel {
 
-///==============================================================================
-/// CLASS DECLARATION
-///==============================================================================
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
 
 class MahiExoII : public Exo {
 
 public:
 
-    /// Static public variables 
-    static const int N_aj_ = 5; /// number of anatomical joints
-    static const int N_rj_ = 5; /// number of robotic joints
+    // Static public variables 
+    static const int N_aj_ = 5; // number of anatomical joints
+    static const int N_rj_ = 5; // number of robotic joints
 
-    static const int N_qp_ = 12; /// number of rps dependent DoF 
-    static const int N_qs_ = 3; /// number of rps independent DoF
+    static const int N_qp_ = 12; // number of rps dependent DoF 
+    static const int N_qs_ = 3; // number of rps independent DoF
 
-    /// Constructor
+    // Constructor
     MahiExoII(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
 
-    /// Destructor
+    // Destructor
     ~MahiExoII() override;
 
 
-    /// Manually zero the encoders
+    // Manually zero the encoders
     void calibrate(bool& stop_flag);
 
     /// Disables the robot and stops all smooth reference trajectories

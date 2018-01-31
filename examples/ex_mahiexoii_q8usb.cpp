@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
         { -15 * DEG2RAD, 15 * DEG2RAD },
         { -15 * DEG2RAD, 15 * DEG2RAD },
         {0.08, 0.115} };
-
+        ms_sp.write_data(setpoint);
 
         /// set up state machine
         uint16 state = 0;
@@ -173,13 +173,16 @@ int main(int argc, char *argv[]) {
             case 2: /// setpoint control
 
                 /// read in setpoint from MelShare
-                //setpoint = ms_sp.read_data();
+                setpoint = ms_sp.read_data();
 
                 /// update and saturate setpoint
-                //for (int i = 0; i < meii.N_aj_; ++i) {
-                //    setpoint[i] = saturate(setpoint[i], setpoint_ranges[i][0], setpoint_ranges[i][1]);
-                //}
-                //meii.anat_ref_.set_ref(setpoint, timer.get_elapsed_time());
+                for (int i = 0; i < meii.N_aj_; ++i) {
+                    if (i < meii.N_aj_ - 1) {
+                        setpoint[i] *= DEG2RAD;
+                    }
+                    setpoint[i] = saturate(setpoint[i], setpoint_ranges[i][0], setpoint_ranges[i][1]);
+                }
+                meii.anat_ref_.set_ref(setpoint, timer.get_elapsed_time());
                 
 
                 /// calculate commanded torques

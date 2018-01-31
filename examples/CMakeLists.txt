@@ -91,3 +91,13 @@ if (MAHIEXOII AND QUANSER)
     target_link_libraries(mahiexoiiemg_q8usb MEL)
 
 endif()
+
+
+#===============================================================================
+# OPENWRIST & MAHI EXO-II EXAMPLES
+#===============================================================================
+
+if (OPENWRIST AND MAHIEXOII AND QUANSER)
+    add_executable(udp_exo_teleop ex_udp_exo_teleop.cpp)
+    target_link_libraries(udp_exo_teleop MEL)
+endif()
