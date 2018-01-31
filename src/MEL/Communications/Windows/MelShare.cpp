@@ -24,9 +24,13 @@ void MelShare::write_data(const std::vector<double>& data) {
 std::vector<double> MelShare::read_data() {
     Lock lock(mutex_);
     uint32 size = get_size();
-    std::vector<double> data(size / sizeof(double));
-    shm_.read(&data[0], size, sizeof(uint32));
-    return data;
+    if (size > 0) {
+        std::vector<double> data(size / sizeof(double));
+        shm_.read(&data[0], size, sizeof(uint32));
+        return data;
+    }
+    else
+        return std::vector<double>();
 }
 
 void MelShare::write_message(const std::string &message) {
@@ -39,9 +43,13 @@ void MelShare::write_message(const std::string &message) {
 std::string MelShare::read_message() {
     Lock lock(mutex_);
     uint32 size = get_size();
-    std::vector<char> message(size);
-    shm_.read(&message[0], size, sizeof(uint32));
-    return std::string(&message[0]);
+    if (size > 0) {
+        std::vector<char> message(size);
+        shm_.read(&message[0], size, sizeof(uint32));
+        return std::string(&message[0]);
+    }
+    else
+        return std::string();
 }
 
 uint32 MelShare::get_size() {
