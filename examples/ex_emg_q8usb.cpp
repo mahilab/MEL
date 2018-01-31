@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     std::vector<EmgSignal> emg_signals;
     const int emg_buffer_size = 1000;
     for (int i = 0; i < N_emg; ++i) {
-        emg_signals.push_back(EmgSignal(q8.analog_input[i], emg_buffer_size));
+        emg_signals.push_back(EmgSignal(q8.analog_input[i]));
     }
 
     // read live EMG
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
             // store most recent readings from DAQ
             for (int i = 0; i < N_emg; ++i) {
-                raw_emg[i] = emg_signals[i].get_sample();
+                raw_emg[i] = emg_signals[i].get_voltage();
             }
 
             // write to MelShares

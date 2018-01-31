@@ -5,6 +5,11 @@ This TODO list contains things that need adding to MEL, cool ideas, and general 
 It should not be confused as a change log or road map, and it is not intended for public consumption.
 For those curious, the list is maintained using the Sublime Text package PlainTasks.
 
+CTRL-ENTER - new task
+CTRL+D - mark done
+CTRL+SHIFT+A - archive
+
+
 All:
   ☐ Documentation!
 

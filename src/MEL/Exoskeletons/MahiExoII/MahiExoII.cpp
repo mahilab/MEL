@@ -10,11 +10,11 @@
 
 namespace mel {
 
-    //-------------------------------------------------------------------------
-    // STATIC VARIABLES
-    //-------------------------------------------------------------------------
+    ///-------------------------------------------------------------------------
+    /// STATIC VARIABLES
+    ///-------------------------------------------------------------------------
 
-    // geometric parameters
+    /// geometric parameters
     const double MahiExoII::R_ = 0.1044956;
     const double MahiExoII::r_ = 0.05288174521;
     const double MahiExoII::a56_ = 0.0268986 - 0.0272820;
@@ -22,9 +22,9 @@ namespace mel {
     const double MahiExoII::alpha13_ = 5 * DEG2RAD;
 
 
-    //-------------------------------------------------------------------------
-    // CONSTRUCTOR / DESTRUCTOR
-    //-------------------------------------------------------------------------
+    ///-------------------------------------------------------------------------
+    /// CONSTRUCTOR / DESTRUCTOR
+    ///-------------------------------------------------------------------------
 
     MahiExoII::MahiExoII(MeiiConfiguration configuration, MeiiParameters parameters) :
         Exo("mahi_exo_ii"),
@@ -37,7 +37,7 @@ namespace mel {
 
             std::string num = std::to_string(i);
 
-            // construct motors
+            /// construct motors
             motors_.push_back(Motor("meii_motor_" + num,
                 params_.kt_[i],
                 config_.amplifiers_[i],
@@ -45,11 +45,11 @@ namespace mel {
                     params_.motor_peak_limits_[i],
                     params_.motor_i2t_times_[i])));
 
-            // set encoder counts
+            /// set encoder counts
             config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
             config_.velocity_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
 
-            // construct joints
+            /// construct joints
             Joint joint(
                 "meii_joint_" + num,
                 motors_[i],
@@ -86,13 +86,13 @@ namespace mel {
         }
     }
 
-    //-----------------------------------------------------------------------------
-    // PUBLIC FUNCTIONS
-    //-----------------------------------------------------------------------------
+    ///-----------------------------------------------------------------------------
+    /// PUBLIC FUNCTIONS
+    ///-----------------------------------------------------------------------------
 
     void MahiExoII::calibrate(bool& stop) {
 
-        //enable DAQ
+        ///enable DAQ
         config_.daq_.enable();
         std::vector<int32> encoder_offsets = { 0, -33259, 29125, 29125, 29125 };
         for (int i = 0; i < N_rj_; i++) {
@@ -104,7 +104,7 @@ namespace mel {
 
     bool MahiExoII::disable() {
 
-        // disable reference trajectories
+        /// disable reference trajectories
         rps_init_par_ref_.stop();
         rps_par_ref_.stop();
         rps_ser_ref_.stop();
@@ -114,9 +114,9 @@ namespace mel {
         return Robot::disable();
     }
 
-    //-----------------------------------------------------------------------------
-    // PUBLIC POSITION CONTROL FUNCTIONS
-    //-----------------------------------------------------------------------------
+    ///-----------------------------------------------------------------------------
+    /// PUBLIC POSITION CONTROL FUNCTIONS
+    ///-----------------------------------------------------------------------------
 
     void MahiExoII::set_rps_control_mode(int mode) {
         switch (mode) {
@@ -196,7 +196,7 @@ namespace mel {
         std::vector<double> command_torques(N_qs_, 0.0);
 
         switch (rps_control_mode_) {
-        case 0: // control impedance of parallel joints
+        case 0: /// control impedance of parallel joints
             for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
                     command_torques[i] = 0.0;
@@ -214,7 +214,7 @@ namespace mel {
             }
             set_rps_par_torques(command_torques);
             break;
-        case 1: // control impedance of serial joints with platform height backdrivable
+        case 1: /// control impedance of serial joints with platform height backdrivable
                 
             for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
@@ -227,14 +227,14 @@ namespace mel {
                     }
                     else { 
                         command_torques[i] = anatomical_joint_pd_controllers_[i + 2].calculate(smooth_ref, get_anatomical_joint_position(i+2), 0, get_anatomical_joint_velocity(i+2));
-                        command_torques[2] = 0.0; // set platform height commanded force to zero
+                        command_torques[2] = 0.0; /// set platform height commanded force to zero
                     }
                 }
             }
             set_rps_ser_torques(command_torques);
             break;
 
-        case 2: // control impedance of serial joints with all joints active
+        case 2: /// control impedance of serial joints with all joints active
 
             for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
@@ -267,7 +267,7 @@ namespace mel {
 
         std::vector<double> command_torques(N_aj_, 0.0);
 
-        // elbow joint
+        /// elbow joint
         if (elbow_backdrive_) {
             command_torques[0] = 0.0;
         }
@@ -281,7 +281,7 @@ namespace mel {
             }
         }
 
-        // forearm joint
+        /// forearm joint
         if (forearm_backdrive_) {
             command_torques[1] = 0.0;
         }
@@ -296,10 +296,10 @@ namespace mel {
         }
             
 
-        // rps mechanism
+        /// rps mechanism
         std::vector<double> rps_command_torques(N_qs_, 0.0);
         switch (rps_control_mode_) {
-        case 1: // control impedance of serial joints with platform height backdrivable
+        case 1: /// control impedance of serial joints with platform height backdrivable
 
             for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
@@ -312,13 +312,13 @@ namespace mel {
                     }
                     else {
                         rps_command_torques[i] = anatomical_joint_pd_controllers_[i+2].calculate(smooth_ref, get_anatomical_joint_position(i + 2), 0, get_anatomical_joint_velocity(i + 2));
-                        rps_command_torques[2] = 0.0; // set platform height commanded force to zero
+                        rps_command_torques[2] = 0.0; /// set platform height commanded force to zero
                     }
                 }
             }
             break;
 
-        case 2: // control impedance of serial joints with all joints active
+        case 2: /// control impedance of serial joints with all joints active
 
             for (int i = 0; i < N_qs_; ++i) {
                 if (rps_backdrive_) {
@@ -349,36 +349,36 @@ namespace mel {
 
         
 
-    //-----------------------------------------------------------------------------
-    // PUBLIC KINEMATICS FUNCTIONS
-    //-----------------------------------------------------------------------------
+    ///-----------------------------------------------------------------------------
+    /// PUBLIC KINEMATICS FUNCTIONS
+    ///-----------------------------------------------------------------------------
 
     void MahiExoII::update_kinematics() {
 
-        // update q_par_ (q parallel) with the three prismatic link positions
+        /// update q_par_ (q parallel) with the three prismatic link positions
         q_par_ << joints_[2].get_position(), joints_[3].get_position(), joints_[4].get_position();
         q_par_dot_ << joints_[2].get_velocity(), joints_[3].get_velocity(), joints_[4].get_velocity();
 
-        // run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
+        /// run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
         forward_rps_kinematics_velocity(q_par_, q_ser_, qp_, rho_fk_, jac_fk_, q_par_dot_, q_ser_dot_, qp_dot_);
 
-        // get positions from first two anatomical joints, which have encoders
-        anatomical_joint_positions_[0] = joints_[0].get_position(); // elbow flexion/extension
-        anatomical_joint_positions_[1] = joints_[1].get_position(); // forearm pronation/supination
+        /// get positions from first two anatomical joints, which have encoders
+        anatomical_joint_positions_[0] = joints_[0].get_position(); /// elbow flexion/extension
+        anatomical_joint_positions_[1] = joints_[1].get_position(); /// forearm pronation/supination
 
-        // get positions from forward kinematics solver for three wrist anatomical joints 
-        anatomical_joint_positions_[2] = q_ser_[0]; // wrist flexion/extension
-        anatomical_joint_positions_[3] = q_ser_[1]; // wrist radial/ulnar deviation
-        anatomical_joint_positions_[4] = q_ser_[2]; // arm translation
+        /// get positions from forward kinematics solver for three wrist anatomical joints 
+        anatomical_joint_positions_[2] = q_ser_[0]; /// wrist flexion/extension
+        anatomical_joint_positions_[3] = q_ser_[1]; /// wrist radial/ulnar deviation
+        anatomical_joint_positions_[4] = q_ser_[2]; /// arm translation
 
-        // get velocities from first two anatomical joints, which have encoders
-        anatomical_joint_velocities_[0] = joints_[0].get_velocity(); // elbow flexion/extension
-        anatomical_joint_velocities_[1] = joints_[1].get_velocity(); // forearm pronation/supination
+        /// get velocities from first two anatomical joints, which have encoders
+        anatomical_joint_velocities_[0] = joints_[0].get_velocity(); /// elbow flexion/extension
+        anatomical_joint_velocities_[1] = joints_[1].get_velocity(); /// forearm pronation/supination
 
-        // get velocities from forward kinematics solver for three wrist anatomical joints 
-        anatomical_joint_velocities_[2] = q_ser_dot_[0]; // wrist flexion/extension
-        anatomical_joint_velocities_[3] = q_ser_dot_[1]; // wrist radial/ulnar deviation
-        anatomical_joint_velocities_[4] = q_ser_dot_[2]; // arm translation
+        /// get velocities from forward kinematics solver for three wrist anatomical joints 
+        anatomical_joint_velocities_[2] = q_ser_dot_[0]; /// wrist flexion/extension
+        anatomical_joint_velocities_[3] = q_ser_dot_[1]; /// wrist radial/ulnar deviation
+        anatomical_joint_velocities_[4] = q_ser_dot_[2]; /// arm translation
     }
 
     std::vector<double> MahiExoII::get_wrist_parallel_positions() const {
@@ -391,12 +391,12 @@ namespace mel {
 
     void MahiExoII::set_anatomical_joint_torques(std::vector<double> new_torques) {
 
-        // set torques for first two anatomical joints, which have actuators
+        /// set torques for first two anatomical joints, which have actuators
         joints_[0].set_torque(new_torques[0]);
         joints_[1].set_torque(new_torques[1]);
 
 
-        // calculate the spectral norm of the transformation matrix
+        /// calculate the spectral norm of the transformation matrix
         Eigen::EigenSolver<Eigen::Matrix3d> eigensolver(jac_fk_.transpose() * jac_fk_, false);
         if (eigensolver.info() != Eigen::Success) {
             joints_[2].set_torque(0.0);
@@ -414,7 +414,7 @@ namespace mel {
         double spec_norm = std::sqrt(*lambda_max);
         //print(spec_norm);
 
-        // kill robot if norm too large
+        /// kill robot if norm too large
         if (spec_norm > 100) {
             //error_code_ = -3;
         }
@@ -435,7 +435,7 @@ namespace mel {
         spec_norm_prev_ = spec_norm;
         q_par_prev_ = q_par_;
 
-        // set torques for two wrist anatomical joints and arm translation
+        /// set torques for two wrist anatomical joints and arm translation
         Eigen::VectorXd par_torques = Eigen::VectorXd::Zero(N_qs_);
         Eigen::VectorXd ser_torques = Eigen::VectorXd::Zero(N_qs_);
         ser_torques(0) = new_torques[2];
@@ -446,7 +446,7 @@ namespace mel {
         joints_[3].set_torque(par_torques(1));
         joints_[4].set_torque(par_torques(2));
 
-        // store parallel and serial joint torques for data logging
+        /// store parallel and serial joint torques for data logging
         tau_par_rob_ = par_torques;
         tau_ser_rob_ = -ser_torques;
     }
@@ -593,8 +593,8 @@ namespace mel {
     // PUBLIC DATA LOGGING FUNCTIONS
     //-----------------------------------------------------------------------------
 
-    void MahiExoII::init_robot_log() {
-       /* robot_log_.add_col("Time [s]")
+    /*void MahiExoII::init_robot_log() {
+        robot_log_.add_col("Time [s]")
             .add_col("MEII Joint 0 Encoder Count [counts]").add_col("MEII Joint 0 Encoder Rate [counts/s]").add_col("MEII Joint 0 Motor Command Current [A]").add_col("MEII Joint 0 Motor Limited Current [A]")
             .add_col("MEII Joint 1 Encoder Count [counts]").add_col("MEII Joint 1 Encoder Rate [counts/s]").add_col("MEII Joint 1 Motor Command Current [A]").add_col("MEII Joint 1 Motor Limited Current [A]")
             .add_col("MEII Joint 2 Encoder Count [counts]").add_col("MEII Joint 2 Encoder Rate [counts/s]").add_col("MEII Joint 2 Motor Command Current [A]").add_col("MEII Joint 2 Motor Limited Current [A]")
@@ -611,12 +611,12 @@ namespace mel {
             .add_col("MEII RPS Alpha Velocity [rad/s]").add_col("MEII RPS Beta Velocity [rad/s]").add_col("MEII RPS Gamma Velocity [rad/s]")
             .add_col("MEII RPS X Velocity [m/s]").add_col("MEII RPS Y Velocity [m/s]").add_col("MEII RPS Z Velocity [m/s]")
             .add_col("MEII RPS L1 Force [N]").add_col("MEII RPS L2 Force [N]").add_col("MEII RPS L3 Force [N]")
-            .add_col("MEII RPS Alpha Torque [Nm]").add_col("MEII RPS Beta Torque [Nm]").add_col("MEII RPS X Force [N]");*/        
-    }
+            .add_col("MEII RPS Alpha Torque [Nm]").add_col("MEII RPS Beta Torque [Nm]").add_col("MEII RPS X Force [N]");      
+    }*/
 
-    void MahiExoII::log_robot_row(double time) {
+    /*void MahiExoII::log_robot_row(double time) {
 
-       /* std::vector<double> row;
+        std::vector<double> row;
         row.push_back(time);
         row.push_back(static_cast<Encoder*>(joints_[0].position_sensor_)->get_encoder_counts());
         row.push_back(static_cast<Encoder*>(joints_[0].position_sensor_)->get_encoder_rate());
@@ -656,18 +656,18 @@ namespace mel {
         for (int i = 0; i < N_qs_; ++i) {
             row.push_back(tau_ser_rob_[i]);
         }
-        robot_log_.add_row(row);*/
-    }
+        robot_log_.add_row(row);
+    }*/
 
-    void MahiExoII::save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp) {
-        /*robot_log_.save_and_clear_data(filename, directory, timestamp);
-        robot_log_ = DataLog("robot_log", false);*/
-    }
+    /*void MahiExoII::save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp) {
+        robot_log_.save_and_clear_data(filename, directory, timestamp);
+        robot_log_ = DataLog("robot_log", false);
+    }*/
 
 
-    //-----------------------------------------------------------------------------
-    // PRIVATE KINEMATICS FUNCTIONS
-    //-----------------------------------------------------------------------------
+    ///-----------------------------------------------------------------------------
+    /// PRIVATE KINEMATICS FUNCTIONS
+    ///-----------------------------------------------------------------------------
 
 
     void MahiExoII::solve_static_rps_torques(std::vector<uint8> select_q, const Eigen::VectorXd& tau_b, const Eigen::VectorXd& qp, Eigen::VectorXd& tau_s) const {
@@ -850,16 +850,16 @@ namespace mel {
 
     void MahiExoII::solve_rps_kinematics(std::vector<uint8> select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, Eigen::MatrixXd& rho_s, uint32 max_it, double tol) const {
 
-        // build selection matrix
+        /// build selection matrix
         Eigen::MatrixXd A = Eigen::MatrixXd::Zero(N_qs_, N_qp_);
         for (int i = 0; i < N_qs_; ++i) {
             A(i, select_q[i]) = 1;
         }
 
-        // initialize variable containing solution
+        /// initialize variable containing solution
         qp << PI / 4, PI / 4, PI / 4, 0.1305, 0.1305, 0.1305, 0, 0, 0, 0.0923, 0, 0;
 
-        // initialize temporary variables containing kinematic constraints etc.
+        /// initialize temporary variables containing kinematic constraints etc.
         Eigen::VectorXd phi = Eigen::VectorXd::Zero(N_qp_ - N_qs_);
         Eigen::MatrixXd phi_d_qp = Eigen::MatrixXd::Zero(N_qp_ - N_qs_, N_qp_);
         Eigen::VectorXd psi = Eigen::VectorXd::Zero(N_qp_);
@@ -867,22 +867,22 @@ namespace mel {
         Eigen::MatrixXd rho_rhs = Eigen::MatrixXd::Zero(N_qp_, N_qs_);
         rho_rhs.bottomRows(N_qs_) = Eigen::MatrixXd::Identity(N_qs_, N_qs_);
 
-        // initialize variables for keeping track of error
+        /// initialize variables for keeping track of error
         double err = 2 * tol;
         double a = 0;
         double b = 0;
         double c = 0;
         bool first_non_zero = true;
 
-        // run no more than max_it iterations of updating the solution for qp_
-        // exit loop once the error is below the input tolerance
+        /// run no more than max_it iterations of updating the solution for qp_
+        /// exit loop once the error is below the input tolerance
         uint32 it = 0;
         while (it < max_it && err > tol) {
-            psi_update(A, qs, qp, phi, psi); // calculate 9 constraints and tracking error on specified qs_
-            psi_d_qp_update(A, qp, phi_d_qp, psi_d_qp); // derivative of psi w.r.t. qp, giving a 12x12 matrix      
+            psi_update(A, qs, qp, phi, psi); /// calculate 9 constraints and tracking error on specified qs_
+            psi_d_qp_update(A, qp, phi_d_qp, psi_d_qp); /// derivative of psi w.r.t. qp, giving a 12x12 matrix      
             qp -= psi_d_qp.fullPivLu().solve(psi);
 
-            // update the error (don't know why it's like this, but it seems to work)
+            /// update the error (don't know why it's like this, but it seems to work)
             err = 0;
             c = 0;
             first_non_zero = true;
@@ -908,13 +908,13 @@ namespace mel {
             }
             err = c*sqrt(err);
 
-            // while iterator
+            /// while iterator
             it++;
         }
 
         rho_s = psi_d_qp.fullPivLu().solve(rho_rhs);
 
-        // remove rows corresponding to q_select indices
+        /// remove rows corresponding to q_select indices
         std::vector<uint8> indices = select_q_invert(select_q);
         for (int i = 0; i < N_qp_ - N_qs_; ++i) {
             rho.row(i) = rho_s.row(indices.at(i));
@@ -923,24 +923,24 @@ namespace mel {
 
     void MahiExoII::generate_rho(std::vector<uint8> select_q, const Eigen::VectorXd& qp, Eigen::MatrixXd& rho) const {
             
-        // build selection matrix
+        /// build selection matrix
         Eigen::MatrixXd A = Eigen::MatrixXd::Zero(N_qs_, N_qp_);
         for (int i = 0; i < N_qs_; ++i) {
             A(i, select_q[i]) = 1;
         }
 
-        // initialize temporary variables containing kinematic constraints etc.
+        /// initialize temporary variables containing kinematic constraints etc.
         Eigen::MatrixXd phi_d_qp = Eigen::MatrixXd::Zero(N_qp_ - N_qs_, N_qp_);
         Eigen::MatrixXd psi_d_qp = Eigen::MatrixXd::Zero(N_qp_, N_qp_);
         Eigen::MatrixXd rho_s = Eigen::MatrixXd::Zero(N_qp_, N_qs_);
         Eigen::MatrixXd rho_rhs = Eigen::MatrixXd::Zero(N_qp_, N_qs_);
         rho_rhs.bottomRows(N_qs_) = Eigen::MatrixXd::Identity(N_qs_, N_qs_);
 
-        // compute rho_s
+        /// compute rho_s
         psi_d_qp_update(A, qp, phi_d_qp, psi_d_qp);
         rho_s = psi_d_qp.fullPivLu().solve(rho_rhs);
 
-        // remove rows corresponding to q_select indices
+        /// remove rows corresponding to q_select indices
         std::vector<uint8> indices = select_q_invert(select_q);
         for (int i = 0; i < N_qp_ - N_qs_; ++i) {
             rho.row(i) = rho_s.row(indices.at(i));
@@ -995,9 +995,9 @@ namespace mel {
         return indices;
     }
 
-    //-----------------------------------------------------------------------------
-    // PRIVATE UTILITY FUNCTIONS
-    //-----------------------------------------------------------------------------
+    ///-----------------------------------------------------------------------------
+    /// PRIVATE UTILITY FUNCTIONS
+    ///-----------------------------------------------------------------------------
 
     bool MahiExoII::check_goal_pos(std::vector<double> goal_pos, std::vector<double> current_pos, std::vector<char> check_dof, std::vector<double> error_tol, bool print_output) const {
 

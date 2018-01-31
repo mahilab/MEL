@@ -7,10 +7,9 @@ MahiExoIIEmg::MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters param
     emg_voltages_(std::vector<double>(N_emg_, 0.0))
 {
     emg_electrodes_.reserve(N_emg_);
-
+    
     for (int i = 0; i < N_emg_; ++i) {
-        std::string num = std::to_string(i);
-        emg_electrodes_.push_back(EmgElectrode("emg_electrode_" + num, configuration.emg_[i]);
+        emg_electrodes_.push_back(EmgSignal(config_.emg_channels_[i]));
     }
 }
 
@@ -35,7 +34,7 @@ MahiExoIIEmg::EmgDataBuffer::EmgDataBuffer(size_t num_channels, size_t length) :
     length_(length)
 {
     for (size_t i = 0; i < num_channels_; ++i) {
-        data_buffer_.push_back(boost::circular_buffer<double>(length_, 0.0));
+        data_buffer_.push_back(RingBuffer<double>(length_));
     }
 }
 
@@ -48,9 +47,9 @@ void MahiExoIIEmg::EmgDataBuffer::push_back(std::vector<double> data_vec) {
     }
 }
 
-void MahiExoIIEmg::EmgDataBuffer::flush() {
+void MahiExoIIEmg::EmgDataBuffer::clear() {
     for (int i = 0; i < num_channels_; ++i) {
-        data_buffer_[i].insert(data_buffer_[i].end(), length_, 0.0);
+        data_buffer_[i].clear();
     }
 }
 
@@ -120,4 +119,4 @@ void MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperatorImplementation::res
 }
 
 
-} // namespace MEL
+} /// namespace MEL

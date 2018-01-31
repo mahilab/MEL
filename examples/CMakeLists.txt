@@ -86,4 +86,8 @@ endif()
 if (MAHIEXOII AND QUANSER)
     add_executable(mahiexoii_q8usb ex_mahiexoii_q8usb.cpp)
     target_link_libraries(mahiexoii_q8usb MEL)
+
+    add_executable(mahiexoiiemg_q8usb ex_mahiexoiiemg_q8usb.cpp)
+    target_link_libraries(mahiexoiiemg_q8usb MEL)
+
 endif()
