@@ -87,7 +87,7 @@ std::array<double, 3> OpenWrist::compute_gravity_compensation() {
 }
 
 
-void OpenWrist::calibrate(bool& stop) {
+void OpenWrist::calibrate(std::atomic<bool>& stop) {
 
     // create needed variables
     std::array<double, 3> zeros = { 0, 0, 0 }; // determined zero positions for each joint
@@ -215,7 +215,7 @@ void OpenWrist::calibrate(bool& stop) {
 }
 
 
-void OpenWrist::transparency_mode(bool& stop) {
+void OpenWrist::transparency_mode(std::atomic<bool>& stop) {
 
     // enable DAQs, zero encoders, and start watchdog
     config_.daq_.enable();
