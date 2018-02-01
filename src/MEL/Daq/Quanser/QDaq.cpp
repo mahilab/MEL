@@ -77,24 +77,21 @@ bool QDaq::set_options(const QOptions& options) {
         return false;
     }
     options_ = options;
-    if (open_) {
-        print("Setting " + namify(name_) + " options ... ", false);
-        char options_str[4096];
-        std::strcpy(options_str, options_.get_string().c_str());
-        t_error result;
-        result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
-        sleep(milliseconds(10));
-        if (result == 0) {
-            print("Done");
-            return true;
-        }
-        else {
-            print("Failed");
-            print(get_quanser_error_message(result));
-            return false;
-        }
+    print("Setting " + namify(name_) + " options ... ", false);
+    char options_str[4096];
+    std::strcpy(options_str, options_.get_string().c_str());
+    t_error result;
+    result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
+    sleep(milliseconds(10));
+    if (result == 0) {
+        print("Done");
+        return true;
     }
-    return false;
+    else {
+        print("Failed");
+        print(get_quanser_error_message(result));
+        return false;
+    }
 }
 
 QOptions QDaq::get_options() {

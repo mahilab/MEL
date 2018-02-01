@@ -10,7 +10,7 @@
 
 using namespace mel;
 
-static bool stop = false;
+std::atomic<bool> stop = false;
 static void handler(int var) {
     stop = true;
 }
@@ -57,9 +57,6 @@ int main(int argc, char *argv[]) {
         vpx4.amplifiers
     );
     OpenWrist ow(config);
-
-    ow[0].get_actuator().set_torque(5.0);
-    ow[0].get_actuator<Motor>();  // returns Motor&
 
     // run calibration script
     if (result.count("calibrate") > 0) {
