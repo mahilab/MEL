@@ -21,7 +21,7 @@ Encoder::~Encoder() {
 }
 
 bool Encoder::reset_counts(const std::vector<int32>& counts) {
-    if (validate_channel_count(counts)) {
+    if (validate_channel_count(counts.size())) {
         values_ = counts;
         return true;
     }
@@ -38,7 +38,7 @@ bool Encoder::reset_count(uint32 channel_number, int32 count) {
 
 
 bool Encoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
-    if (validate_channel_count(factors)) {
+    if (validate_channel_count(factors.size())) {
         factors_ = factors;
         compute_conversions();
         return true;
@@ -66,7 +66,7 @@ bool Encoder::zero_channel(uint32 channel_number) {
 }
 
 void Encoder::set_units_per_count(const std::vector<double>& units_per_count) {
-    if (validate_channel_count(units_per_count)) {
+    if (validate_channel_count(units_per_count.size())) {
         units_per_count_ = units_per_count;
         compute_conversions();
     }

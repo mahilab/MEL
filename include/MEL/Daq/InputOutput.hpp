@@ -58,7 +58,7 @@ public:
 
     /// Sets the directions of all channels
     virtual bool set_directions(const std::vector<Direction>& directions) {
-        if (validate_channel_count(directions)) {
+        if (validate_channel_count(directions.size())) {
             directions_ = directions;
             sort_input_output_channel_numbers();
             return true;
@@ -78,7 +78,7 @@ public:
 
     /// Sets the expire values of all channels
     virtual bool set_expire_values(const std::vector<T>& expire_values) {
-        if (Module<T>::validate_channel_count(expire_values)) {
+        if (Module<T>::validate_channel_count(expire_values.size())) {
             expire_values_ = expire_values;
             return true;
         }
@@ -98,7 +98,7 @@ public:
 
     /// Sets the initial values to be written on enable
     void set_enable_values(const std::vector<T>& enable_values) {
-        if (validate_channel_count(enable_values))
+        if (validate_channel_count(enable_values.size()))
             enable_values_ = enable_values;
     }
 
@@ -110,7 +110,7 @@ public:
 
     /// Sets the final values to be written on disable
     void set_disable_values(const std::vector<T>& disable_values) {
-        if (validate_channel_count(disable_values))
+        if (validate_channel_count(disable_values.size()))
             disable_values_ = disable_values;
     }
 

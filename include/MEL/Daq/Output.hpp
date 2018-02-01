@@ -51,7 +51,7 @@ public:
     /// the enabled channel numbers in acending order. The base implementation
     /// below should be called in the derived implementation.
     virtual bool set_expire_values(const std::vector<T>& expire_values) {
-        if (Module<T>::validate_channel_count(expire_values)) {
+        if (Module<T>::validate_channel_count(expire_values.size())) {
             expire_values_ = expire_values;
             return true;
         }
@@ -71,7 +71,7 @@ public:
 
     /// Sets the initial values to be written on enable
     void set_enable_values(const std::vector<T>& enable_values) {
-        if (validate_channel_count(enable_values))
+        if (validate_channel_count(enable_values.size()))
             enable_values_ = enable_values;
     }
 
@@ -83,7 +83,7 @@ public:
 
     /// Sets the final values to be written on disable
     void set_disable_values(const std::vector<T>& disable_values) {
-        if (validate_channel_count(disable_values))
+        if (validate_channel_count(disable_values.size()))
             disable_values_ = disable_values;
     }
 
