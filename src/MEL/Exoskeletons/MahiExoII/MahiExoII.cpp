@@ -90,7 +90,7 @@ namespace mel {
     /// PUBLIC FUNCTIONS
     ///-----------------------------------------------------------------------------
 
-    void MahiExoII::calibrate(bool& stop) {
+    void MahiExoII::calibrate(std::atomic<bool>& stop) {
 
         ///enable DAQ
         config_.daq_.enable();

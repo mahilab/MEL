@@ -12,7 +12,7 @@
 
 using namespace mel;
 
-static bool stop = false;
+std::atomic<bool> stop = false;
 static void handler(int var) {
     stop = true;
 }

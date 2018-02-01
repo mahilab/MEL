@@ -40,7 +40,7 @@ public:
 
 
     // Manually zero the encoders
-    void calibrate(bool& stop_flag);
+    void calibrate(std::atomic<bool>& stop_flag);
 
     /// Disables the robot and stops all smooth reference trajectories
     bool disable() override;
@@ -214,7 +214,7 @@ private:
     std::vector<double> anat_goal_err_tol_ = { 2.0 * DEG2RAD, 3.0 * DEG2RAD, 5.0 * DEG2RAD, 5.0 * DEG2RAD, 0.01 };
     std::vector<double> anat_neutral_err_tol_ = { 1.0 * DEG2RAD, 2.0 * DEG2RAD, 3.0 * DEG2RAD, 3.0 * DEG2RAD, 0.01 };
     const std::vector<double> robot_joint_speed_ = { 0.25, 0.25, 0.015, 0.015, 0.015 };
-    const std::vector<double> anat_joint_speed_ = { 0.25, 0.25, 0.125, 0.125, 0.015 }; /// constant speed at which anatomical joint reference trajectories are interpolated
+    const std::vector<double> anat_joint_speed_ = { 0.25, 0.75, 0.25, 0.25, 0.015 }; /// [rad/s] and [m/s] constant speed at which anatomical joint reference trajectories are interpolated
 
 
     /// geometric parameters
