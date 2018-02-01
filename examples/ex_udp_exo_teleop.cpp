@@ -30,8 +30,9 @@ void ow_comm_thread_func() {
         mutex.lock(); // protect data
         std::vector<double> temp = data;
         mutex.unlock();        
-        if (mnet.receive_message() == "send_data")
+        if (mnet.receive_message() == "send_data") {
             mnet.send_data(temp);
+        }
         sleep(milliseconds(10)); // ~100 Hz
     }
     print("Terminating OpenWrist communications thread");
@@ -104,8 +105,6 @@ int main(int argc, char *argv[]) {
             // start control loop
             Timer timer(milliseconds(1), Timer::Hybrid);
             while (!stop) {
-                // lock mutex
-                Lock lock(mutex);
                 // read and reload DAQs
                 q8.update_input();
                 q8.watchdog.kick();
@@ -120,9 +119,11 @@ int main(int argc, char *argv[]) {
                     stop = true;
                     break;
                 }
+                mutex.lock();
                 data[0] = ow[0].get_position();
                 data[1] = ow[1].get_position();
                 data[2] = ow[2].get_position();
+                mutex.unlock();
                 timer.wait();
             }
             // join comm thread
