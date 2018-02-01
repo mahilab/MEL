@@ -16,6 +16,7 @@
 
 #include <MEL/Utility/Log.hpp>
 
+#define AUTO_INITIALIZE_EASYLOGGINGPP // added by Evan
 #if defined(AUTO_INITIALIZE_EASYLOGGINGPP)
 INITIALIZE_EASYLOGGINGPP
 #endif

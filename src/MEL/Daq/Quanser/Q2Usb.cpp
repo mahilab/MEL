@@ -71,7 +71,7 @@ bool Q2Usb::open() {
         close();
         return false;
     }
-    if (!digital_io.set_expire_values(std::vector<logic>(2, LOW))) {
+    if (!digital_io.set_expire_values(std::vector<logic>(9, LOW))) {
         close();
         return false;
     }
