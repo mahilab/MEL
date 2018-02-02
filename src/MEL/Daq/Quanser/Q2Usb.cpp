@@ -46,14 +46,16 @@ Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
 
 
 Q2Usb::~Q2Usb() {
-    // set default options on program end
-    set_options(QOptions());
+
     // if enabled, disable
     if (enabled_)
         disable();
     // if open, close
-    if (open_)
+    if (open_) {
+        // set default options on program end
+        set_options(QOptions());
         close();
+    }
     // decrement next_id_
     --next_id_;
 }

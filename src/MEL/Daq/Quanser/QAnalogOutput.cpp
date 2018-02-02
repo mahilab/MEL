@@ -1,6 +1,7 @@
 #include <MEL/Daq/Quanser/QAnalogOutput.hpp>
 #include <MEL/Daq/Quanser/QDaq.hpp>
 #include <MEL/Utility/System.hpp>
+#include <MEL/Utility/Log.hpp>
 #include <hil.h>
 
 namespace mel {
@@ -21,15 +22,16 @@ QAnalogOutput::~QAnalogOutput() {
 
 bool QAnalogOutput::enable() {
     if (enabled_)
-        return true;
-    print("Enabling " + namify(name_) + " ... ", false);
+        return Device::enable();
     set_values(enable_values_);
     if (update()) {
-        print("Done");
+        LOG(INFO) << "Set <" << name_ << "> enable values to " << enable_values_;
         return Device::enable();
     }
-    print("Failed");
-    return false;
+    else {
+        LOG(ERROR) << "Failed to set <" << name_ << "> enable values to " << enable_values_;        
+        return false;
+    }
 }
 
 bool QAnalogOutput::disable() {

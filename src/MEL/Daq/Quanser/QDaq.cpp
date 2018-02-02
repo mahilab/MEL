@@ -36,11 +36,12 @@ bool QDaq::open() {
         if (result == 0) {
             // successful open
             Daq::open();
+            LOG(INFO) << "Opened " << namify(name_) << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
                 close();
                 return false;
             }
-            LOG(INFO) << "Opened " << namify(name_) << " (Attempt " << attempt + 1 << "/" << 5 << ")";
+            
             return true;
         }
         else {
@@ -74,6 +75,7 @@ bool QDaq::set_options(const QOptions& options) {
     if (!open_) {
         LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
             << name_ << "> is not open";
+        return false;
     }
     options_ = options;
     char options_str[4096];

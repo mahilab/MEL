@@ -1,5 +1,6 @@
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
 #include <MEL/Utility/System.hpp>
+#include <MEL/Utility/Log.hpp>
 #include <hil.h>
 
 namespace mel {
@@ -49,14 +50,16 @@ Q8Usb::Q8Usb(QOptions options,
 }
 
 Q8Usb::~Q8Usb() {
-    // set default options on program end
-    set_options(QOptions());
+
     // if enabled, disable
     if (enabled_)
         disable();
     // if open, close
-    if (open_)
+    if (open_) {
+        // set default options on program end
+        set_options(QOptions());
         close();
+    }
     // decrement next_id_
     --next_id_;
 }
@@ -71,14 +74,11 @@ bool Q8Usb::open() {
     watchdog.clear();
     // sanity check
     if (perform_sanity_check_) {
-        print("Sanity checking " + namify(name_) + " ... ", false);
         if (!sanity_check()) {
-            print("Failed. Reopening the device.");
             close();
             return open();
         }
     }
-    print("Passed");
     // set default expire values (digital = LOW, analog = 0.0V)
     if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0))) {
         close();
@@ -245,9 +245,12 @@ bool Q8Usb::sanity_check() {
     for (auto it = velocities.begin(); it != velocities.end(); ++it) {
         if (*it != 0.0) {
             sane = false;
+            LOG(ERROR) << "Sanity check on <" << name_ << "> failed";
             break;
         }
     }
+    if (sane)
+        LOG(INFO) << "Sanity check on <" << name_ << "> passed";
     return sane;
 }
 
