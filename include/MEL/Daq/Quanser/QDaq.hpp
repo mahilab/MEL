@@ -81,7 +81,7 @@ public:
     static std::size_t get_qdaq_count(const std::string& card_type);
 
     /// Gets the string message corresponding to a Quanser error number
-    static std::string get_quanser_error_message(int error);
+    static std::string get_quanser_error_message(int error, bool format = true);
 
 protected:
 

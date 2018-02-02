@@ -45,8 +45,8 @@ bool QDaq::open() {
         }
         else {
             // unsuccesful open, continue
-            LOG(ERROR) << "Failed to open " << namify(name_) << " (Attempt " << attempt + 1 << "/" << 5 << ")";
-            LOG(ERROR) << "^^^ Quanser error " << -result << ": " << get_quanser_error_message(result);
+            LOG(ERROR) << "Failed to open " << namify(name_) << " (Attempt " << attempt + 1 << "/" << 5 << ") " 
+                       << get_quanser_error_message(result);
         }
     }
     // all attempts to open were unsuccessful
@@ -64,16 +64,16 @@ bool QDaq::close() {
         return Daq::close();
     }
     else {
-        LOG(INFO) << "Failed to close " << namify(name_);
-        LOG(ERROR) << "^^^ Quanser error " << -result << ": " << get_quanser_error_message(result);
+        LOG(INFO) << "Failed to close " << namify(name_) << " "
+                  << get_quanser_error_message(result);
         return false;
     }
 }
 
 bool QDaq::set_options(const QOptions& options) {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because " << namify(name_) << " is not open";
-        return false;
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
     }
     options_ = options;
     char options_str[4096];
@@ -82,12 +82,12 @@ bool QDaq::set_options(const QOptions& options) {
     result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Set " << namify(name_) << " options to: " << options_.get_string();
+        LOG(INFO) << "Set " << namify(name_) << " options to: \"" << options_.get_string() << "\"";
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to set " << namify(name_) << " options to: " << options_.get_string();
-        LOG(ERROR) << "^^^ Quanser error " << -result << ": " << get_quanser_error_message(result);
+        LOG(ERROR) << "Failed to set " << namify(name_) << " options to: \"" << options_.get_string() << "\" "
+                   << get_quanser_error_message(result);
         return false;
     }
 }
@@ -117,10 +117,13 @@ std::size_t QDaq::get_qdaq_count(const std::string& card_type) {
     return id;
 }
 
-std::string QDaq::get_quanser_error_message(int error) {
+std::string QDaq::get_quanser_error_message(int error, bool format) {
     TCHAR message[512];
     msg_get_error_message(NULL, error, message, sizeof(message));
-    return std::string(message);
+    if (format)
+        return "(Quanser Error #" + stringify(-error) + ": " + std::string(message) + ")";
+    else
+        return std::string(message);
 }
 
 } // namespace mel
