@@ -3,6 +3,7 @@
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
+#include <MEL/Utility/Console.hpp>
 
 namespace mel {
 

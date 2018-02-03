@@ -7,6 +7,7 @@
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Devices/VoltPaqX4.hpp>
+#include <MEL/Utility/Console.hpp>
 
 using namespace mel;
 

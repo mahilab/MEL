@@ -3,6 +3,7 @@
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
+#include <MEL/Utility/Console.hpp>
 
 using namespace mel;
 

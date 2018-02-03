@@ -27,8 +27,8 @@ bool ModuleBase::validate_channel_number(uint32 channel_number) const {
     if (channel_map_.count(channel_number) > 0)
         return true;
     LOG(ERROR) << "Invalid channel number " << channel_number
-        << " not declared in channel numbers {"
-        << stringify(channel_numbers_) << "}";
+        << " not declared in channel numbers "
+        << channel_numbers_;
     return false;
 }
 

@@ -106,10 +106,10 @@ bool Q8Usb::close() {
 
 bool Q8Usb::enable() {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
-    print("Enabling " + namify(name_) + " ... ");
     // enable each module
     if (!analog_input.enable())
         return false;
@@ -130,10 +130,10 @@ bool Q8Usb::enable() {
 
 bool Q8Usb::disable() {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
-    print("Disabling " + namify(name_) + " ... ");
     // disable each module
     if (!analog_input.disable())
         return false;
@@ -154,7 +154,8 @@ bool Q8Usb::disable() {
 
 bool Q8Usb::update_input() {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
     t_error result;
@@ -174,14 +175,16 @@ bool Q8Usb::update_input() {
     if (result == 0)
         return true;
     else {
-        print(QDaq::get_quanser_error_message(result));
+        LOG(ERROR) << "Failed to update <" << name_ << "> input "
+            << QDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
 bool Q8Usb::update_output() {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
     t_error result;
@@ -199,14 +202,16 @@ bool Q8Usb::update_output() {
     if (result == 0)
         return true;
     else {
-        print(QDaq::get_quanser_error_message(result));
+        LOG(ERROR) << "Failed to update <" << name_ << "> output "
+            << QDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
 bool Q8Usb::identify(uint32 channel_number) {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
     Input<logic>::Channel di_ch = digital_input.get_channel(channel_number);

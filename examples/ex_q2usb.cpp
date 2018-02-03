@@ -2,6 +2,7 @@
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
+#include <MEL/Utility/Console.hpp>
 
 using namespace mel;
 

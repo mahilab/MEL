@@ -70,8 +70,8 @@ double Amplifier::get_current_limited() const {
 double Amplifier::get_current_sense() const {
   if (sense_channel_.is_valid())
     return sense_gain_ * sense_channel_.get_value();
-  std::cout << "WARNING: Amplifier <" << name_
-            << "> current sense channel. Returning 0." << std::endl;
+  //std::cout << "WARNING: Amplifier <" << name_
+  //          << "> current sense channel. Returning 0." << std::endl;
   return 0.0;
 }
 

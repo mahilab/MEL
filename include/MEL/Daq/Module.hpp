@@ -19,7 +19,6 @@
 #define MEL_MODULE_HPP
 
 #include <MEL/Core/Device.hpp>
-#include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <algorithm>
 #include <map>

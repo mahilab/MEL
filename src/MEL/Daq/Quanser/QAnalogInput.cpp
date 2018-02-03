@@ -30,7 +30,7 @@ bool QAnalogInput::disable() {
 bool QAnalogInput::update() {
     if (!daq_.open_) {
         LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            <<daq_.get_name() << "> is not open";
+                   << daq_.get_name() << "> is not open";
         return false;
     }
     t_error result;
@@ -47,7 +47,7 @@ bool QAnalogInput::update() {
 bool QAnalogInput::update_channel(uint32 channel_number) {
     if (!daq_.open_) {
         LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            << daq_.get_name() << "> is not open";
+                   << daq_.get_name() << "> is not open";
         return false;
     }
     t_error result;
@@ -72,11 +72,11 @@ bool QAnalogInput::set_ranges(const std::vector<voltage>& min_values, const std:
     t_error result;
     result = hil_set_analog_input_ranges(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &min_values_[0], &max_values_[0]);
     if (result == 0) {
-        LOG(INFO) << "Set ranges of <" << name_ << "> to min=" << min_values << ", max=" << max_values;
+        LOG(INFO) << "Set <" << name_ << "> ranges to min=" << min_values << ", max=" << max_values;
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to set ranges of <" << name_ << "> "
+        LOG(ERROR) << "Failed to set <" << name_ << "> ranges "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -93,11 +93,11 @@ bool QAnalogInput::set_range(uint32 channel_number, voltage min_value, voltage m
     t_error result;
     result = hil_set_analog_input_ranges(daq_.handle_, &channel_number, static_cast<uint32>(1), &min_values_[channel_map_.at(channel_number)], &max_values_[channel_map_.at(channel_number)]);
     if (result == 0) {
-        LOG(INFO) << "Set range of <" << name_ << "> channel number " << channel_number << " to min=" << min_value << ", max=" << max_value;
+        LOG(INFO) << "Set <" << name_ << "> channel number " << channel_number << " range to min=" << min_value << ", max=" << max_value;
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to set range of <" << name_ << "> channel number " << channel_number << " "
+        LOG(ERROR) << "Failed to set <" << name_ << "> channel number " << channel_number << " range "
             << QDaq::get_quanser_error_message(result);
         return false;
     }

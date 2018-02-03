@@ -27,11 +27,11 @@ bool QWatchdog::start() {
     t_error result;
     result = hil_watchdog_start(daq_.handle_, timeout_.as_seconds());
     if (result == 0) {
-        LOG(INFO) << "Started watchdog on " << namify(daq_.get_name());
+        LOG(INFO) << "Started watchdog on <" << daq_.get_name() << ">";
         return true;
     } 
     else {
-        LOG(ERROR) << "Failed to start watchdog on " << namify(daq_.get_name()) << " "
+        LOG(ERROR) << "Failed to start watchdog on <" << daq_.get_name() << "> "
             << QDaq::get_quanser_error_message(result);
 
         return false;
@@ -50,12 +50,12 @@ bool QWatchdog::kick() {
         return true;
     } 
     else if (result == 0) {
-        LOG(WARNING) << "Watchdog on " << namify(daq_.get_name()) << " expired";
+        LOG(WARNING) << "Watchdog on <" << daq_.get_name() << "> expired";
         watching_ = false;
         return false;
     } 
     else {
-        LOG(ERROR) << "Failed to kick watchdog on " << namify(daq_.get_name()) << " "
+        LOG(ERROR) << "Failed to kick watchdog on <" << daq_.get_name() << "> "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -70,12 +70,12 @@ bool QWatchdog::stop() {
     t_error result;
     result = hil_watchdog_stop(daq_.handle_);
     if (result == 0) {
-        LOG(INFO) << "Stopped watchdog on " << namify(daq_.get_name());
+        LOG(INFO) << "Stopped watchdog on <" << daq_.get_name() << ">";
         watching_ = false;
         return true;
     } 
     else {
-        LOG(ERROR) << "Failed to stop watchdog on " << namify(daq_.get_name()) << " "
+        LOG(ERROR) << "Failed to stop watchdog on <" << daq_.get_name() << "> "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -97,8 +97,8 @@ bool QWatchdog::is_expired() {
         return false;
     }
     else {
-        LOG(ERROR) << "Failed to check expiration of watchdog on "
-                   << namify(daq_.get_name()) << " "
+        LOG(ERROR) << "Failed to check expiration of watchdog on <"
+                   << daq_.get_name() << "> "
                    << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -113,11 +113,11 @@ bool QWatchdog::clear() {
     t_error result;
     result = hil_watchdog_clear(daq_.handle_);
     if (result == 0) {
-        LOG(INFO) << "Cleared watchdog on " << namify(daq_.get_name());
+        LOG(INFO) << "Cleared watchdog on <" << daq_.get_name() << ">";
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to clear watchdog on " << namify(daq_.get_name()) << " "
+        LOG(ERROR) << "Failed to clear watchdog on <" << daq_.get_name() << "> "
             << QDaq::get_quanser_error_message(result);
         return false;
     }

@@ -1,5 +1,6 @@
 #include <MEL/Daq/Quanser/Q2Usb.hpp>
 #include <MEL/Utility/System.hpp>
+#include <MEL/Utility/Log.hpp>
 #include <hil.h>
 
 namespace mel {
@@ -95,10 +96,10 @@ bool Q2Usb::close() {
 
 bool Q2Usb::enable() {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
-    print("Enabling " + namify(name_) + " ... ");
     // enable each module
     if (!analog_input.enable())
         return false;
@@ -115,10 +116,10 @@ bool Q2Usb::enable() {
 
 bool Q2Usb::disable() {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
-    print("Disabling " + namify(name_) + " ... ");
     // disable each module
     if (!analog_input.disable())
         return false;
@@ -138,56 +139,53 @@ bool Q2Usb::disable() {
 }
 
 bool Q2Usb::update_input() {
-    if (open_) {
-        if (analog_input.update() && encoder.update() && digital_io.update())
-            return true;
-        else {
-            return false;
-        }
-    }
-    else {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+    if (!open_) {
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
+    if (analog_input.update() && encoder.update() && digital_io.update())
+        return true;
+    else {
+        return false;
+    }    
 }
 
 bool Q2Usb::update_output() {
-    if (open_) {
-        if (analog_output.update() && digital_io.update())
-            return true;
-        else
-            return false;
-    }
-    else {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+    if (!open_) {
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
+    if (analog_output.update() && digital_io.update())
+        return true;
+    else
+        return false;
 }
 
 bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
-    if (open_) {
-        InputOutput<logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
-        InputOutput<logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
-        for (int i = 0; i < 5; ++i) {
-            do_ch.set_value(HIGH);
-            do_ch.update();
-            sleep(milliseconds(10));
-            di_ch.update();
-            if (di_ch.get_value() != HIGH)
-                return false;
-            do_ch.set_value(LOW);
-            do_ch.update();
-            sleep(milliseconds(10));
-            di_ch.update();
-            if (di_ch.get_value() != LOW)
-                return false;
-        }
-        return true;
-    }
-    else {
-        print(namify(name_) + " has not been opened; unable to call " + __FUNCTION__);
+    if (!open_) {
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
+            << name_ << "> is not open";
         return false;
     }
+    InputOutput<logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
+    InputOutput<logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
+    for (int i = 0; i < 5; ++i) {
+        do_ch.set_value(HIGH);
+        do_ch.update();
+        sleep(milliseconds(10));
+        di_ch.update();
+        if (di_ch.get_value() != HIGH)
+            return false;
+        do_ch.set_value(LOW);
+        do_ch.update();
+        sleep(milliseconds(10));
+        di_ch.update();
+        if (di_ch.get_value() != LOW)
+            return false;
+    }
+    return true;
 }
 
 void Q2Usb::set_led(logic value) {
