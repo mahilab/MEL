@@ -29,66 +29,35 @@ namespace mel {
 template <class Formatter>
 class ColorConsoleWriter : public ConsoleWriter<Formatter> {
 public:
-#ifdef _WIN32
-    ColorConsoleWriter() : m_originalAttr() {
-        if (this->m_isatty) {
-            CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-            GetConsoleScreenBufferInfo(this->m_stdoutHandle, &csbiInfo);
-
-            m_originalAttr = csbiInfo.wAttributes;
-        }
-    }
-#else
-    ColorConsoleAppender() {}
-#endif
 
     virtual void write(const Record& record) {
         std::string str = Formatter::format(record);
-        Lock lock(this->m_mutex);
-
+        Lock lock(mutex_);
         setColor(record.get_severity());
-        this->writestr(str);
-        resetColor();
+        print(str);
+        reset_text_color();
     }
 
 private:
     void setColor(Severity severity) {
-        if (this->m_isatty) {
+        if (STDOUT_IS_A_TTY) {
             switch (severity) {
 #ifdef _WIN32
                 case FATAL:
-                    SetConsoleTextAttribute(
-                        this->m_stdoutHandle,
-                        foreground::kRed | foreground::kGreen |
-                            foreground::kBlue | foreground::kIntensity |
-                            background::kRed);  // white on red background
+                    set_text_color(Color::White, Color::Red);
                     break;
 
                 case ERROR:
-                    SetConsoleTextAttribute(
-                        this->m_stdoutHandle,
-                        static_cast<WORD>(foreground::kRed |
-                                          foreground::kIntensity |
-                                          (m_originalAttr & 0xf0)));  // red
+                    set_text_color(Color::Red);
                     break;
 
                 case WARNING:
-                    SetConsoleTextAttribute(
-                        this->m_stdoutHandle,
-                        static_cast<WORD>(foreground::kRed |
-                                          foreground::kGreen |
-                                          foreground::kIntensity |
-                                          (m_originalAttr & 0xf0)));  // yellow
+                    set_text_color(Color::Yellow);
                     break;
 
                 case DEBUG:
                 case VERBOSE:
-                    SetConsoleTextAttribute(
-                        this->m_stdoutHandle,
-                        static_cast<WORD>(foreground::kGreen |
-                                          foreground::kBlue |
-                                          foreground::kIntensity |
-                                          (m_originalAttr & 0xf0)));  // cyan
+                    set_text_color(Color::Cyan);
                     break;
 #else
                 case Fatal:
@@ -114,20 +83,6 @@ private:
         }
     }
 
-    void resetColor() {
-        if (this->m_isatty) {
-#ifdef _WIN32
-            SetConsoleTextAttribute(this->m_stdoutHandle, m_originalAttr);
-#else
-            std::cout << "\x1B[0m\x1B[0K";
-#endif
-        }
-    }
-
-private:
-#ifdef _WIN32
-    WORD m_originalAttr;
-#endif
 };
 }  // namespace mel
 

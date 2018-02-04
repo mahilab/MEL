@@ -18,11 +18,9 @@
 #ifndef MEL_CONSOLEWRITER_HPP
 #define MEL_CONSOLEWRITER_HPP
 
-#include <io.h>
-#include <MEL/Logging/WinApi.hpp>
 #include <MEL/Logging/Writers/Writer.hpp>
 #include <MEL/Utility/Mutex.hpp>
-#include <iostream>
+#include <MEL/Utility/Console.hpp>
 
 namespace mel {
 
@@ -33,47 +31,16 @@ namespace mel {
 template <class Formatter>
 class ConsoleWriter : public Writer {
 public:
-#ifdef _WIN32
-    ConsoleWriter() : m_isatty(!!_isatty(_fileno(stdout))), m_stdoutHandle() {
-        if (m_isatty) {
-            m_stdoutHandle = GetStdHandle(stdHandle::kOutput);
-        }
-    }
-#else
-    ConsoleAppender() : m_isatty(!!isatty(fileno(stdout))) {}
-#endif
-
     virtual void write(const Record& record) {
         std::string str = Formatter::format(record);
-        Lock lock(m_mutex);
-
-        writestr(str);
+        Lock lock(mutex_);
+        print(str);
     }
 
 protected:
-    void writestr(const std::string& str) {
-#ifdef _WIN32
-        if (m_isatty) {
-            WriteConsoleA(m_stdoutHandle, str.c_str(),
-                          static_cast<DWORD>(str.size()), NULL, NULL);
-        } else {
-            // std::cout << util::toNarrow(str, codePage::kActive) <<
-            // std::flush;
-            std::cout << str << std::flush;
-        }
-#else
-        std::cout << str << std::flush;
-#endif
-    }
-
-private:
-protected:
-    Mutex m_mutex;
-    const bool m_isatty;
-#ifdef _WIN32
-    HANDLE m_stdoutHandle;
-#endif
+    Mutex mutex_;
 };
+
 }  // namespace mel
 
 #endif  // MEL_CONSOLEWRITER_HPP

@@ -23,6 +23,7 @@
 #define MEL_TIME_HPP
 
 #include <MEL/Utility/Types.hpp>
+#include <iostream>
 
 namespace mel
 {
@@ -39,6 +40,9 @@ public:
     /// Default constructor. Sets time value to zero. To construct valued time
     /// objects, use mel::seconds, mel::milliseconds or mel::microseconds.
     Time();
+
+    /// Overloads stream operator
+    friend std::ostream& operator << (std::ostream& os, const Time& t);
 
     /// Return the time value as a number of seconds.
     double as_seconds() const;
@@ -80,6 +84,9 @@ Time microseconds(int64 amount);
 //==============================================================================
 // OPERATOR OVERLOADS
 //==============================================================================
+
+/// Overload of << stream operator
+std::ostream& operator << (std::ostream& os, const Time& t);
 
 /// Overload of == operator to compare if two time values are equal
 bool operator ==(Time left, Time right);
