@@ -1,6 +1,6 @@
 #include <MEL/Daq/Quanser/Q2Usb.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Log.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <hil.h>
 
 namespace mel {
@@ -96,8 +96,8 @@ bool Q2Usb::close() {
 
 bool Q2Usb::enable() {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            << name_ << "> is not open";
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            << name_ << " is not open";
         return false;
     }
     // enable each module
@@ -116,8 +116,8 @@ bool Q2Usb::enable() {
 
 bool Q2Usb::disable() {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            << name_ << "> is not open";
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            << name_ << " is not open";
         return false;
     }
     // disable each module
@@ -140,21 +140,21 @@ bool Q2Usb::disable() {
 
 bool Q2Usb::update_input() {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            << name_ << "> is not open";
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            << name_ << " is not open";
         return false;
     }
     if (analog_input.update() && encoder.update() && digital_io.update())
         return true;
     else {
         return false;
-    }    
+    }
 }
 
 bool Q2Usb::update_output() {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            << name_ << "> is not open";
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            << name_ << " is not open";
         return false;
     }
     if (analog_output.update() && digital_io.update())
@@ -165,8 +165,8 @@ bool Q2Usb::update_output() {
 
 bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-            << name_ << "> is not open";
+        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            << name_ << " is not open";
         return false;
     }
     InputOutput<logic>::Channel di_ch = digital_io.get_channel(input_channel_number);

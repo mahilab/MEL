@@ -3,6 +3,8 @@
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
+#include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
 
 using namespace mel;
 
@@ -13,6 +15,10 @@ static void handler(int var) {
 }
 
 int main() {
+
+    // intialize logger
+    static ColorConsoleWriter<TxtFormatter> consoleAppender;
+    init_logger(VERBOSE, "log.csv").add_writer(&consoleAppender);
 
     // register CTRL-C handler
     register_ctrl_c_handler(handler);

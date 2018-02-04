@@ -1,7 +1,7 @@
 #include <hil.h>
 #include <MEL/Daq/Quanser/QDaq.hpp>
 #include <MEL/Daq/Quanser/QDigitalOutput.hpp>
-#include <MEL/Utility/Log.hpp>
+#include <MEL/Logging/Log.hpp>
 
 namespace mel {
 
@@ -24,11 +24,11 @@ namespace mel {
             return Device::enable();
         set_values(enable_values_);
         if (update()) {
-            LOG(INFO) << "Set <" << name_ << "> enable values to " << enable_values_;
+            LOG(INFO) << "Set " << name_ << " enable values to " << enable_values_;
             return Device::enable();
         }
         else {
-            LOG(ERROR) << "Failed to set <" << name_ << "> enable values to " << enable_values_;
+            LOG(ERROR) << "Failed to set " << name_ << " enable values to " << enable_values_;
             return false;
         }
     }
@@ -38,19 +38,19 @@ namespace mel {
             return Device::disable();
         set_values(disable_values_);
         if (update()) {
-            LOG(INFO) << "Set <" << name_ << "> disable values to " << disable_values_;
+            LOG(INFO) << "Set " << name_ << " disable values to " << disable_values_;
             return Device::disable();
         }
         else {
-            LOG(ERROR) << "Failed to set <" << name_ << "> disable values to " << disable_values_;
+            LOG(ERROR) << "Failed to set " << name_ << " disable values to " << disable_values_;
             return false;
         }
     }
 
     bool QDigitalOutput::update() {
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-                       << daq_.get_name() << "> is not open";
+            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+                       << daq_.get_name() << " is not open";
             return false;
         }
         t_error result;
@@ -58,7 +58,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(ERROR) << "Failed to update <" << name_ << "> "
+            LOG(ERROR) << "Failed to update " << name_ << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -66,8 +66,8 @@ namespace mel {
 
     bool QDigitalOutput::update_channel(uint32 channel_number) {
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-                       << daq_.get_name() << "> is not open";
+            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+                       << daq_.get_name() << " is not open";
             return false;
         }
         t_error result;
@@ -75,7 +75,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(ERROR) << "Failed to update <" << name_ << "> channel number " << channel_number << " "
+            LOG(ERROR) << "Failed to update " << name_ << " channel number " << channel_number << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -85,8 +85,8 @@ namespace mel {
         if (!Output::set_expire_values(expire_values))
             return false;
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-                       << daq_.get_name() << "> is not open";
+            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+                       << daq_.get_name() << " is not open";
             return false;
         }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
@@ -100,11 +100,11 @@ namespace mel {
         t_error result;
         result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_expire_values[0]);
         if (result == 0) {
-            LOG(INFO) << "Set <" << name_ << "> expire values to " << expire_values_;
+            LOG(INFO) << "Set " << name_ << " expire values to " << expire_values_;
             return true;
         }
         else {
-            LOG(ERROR) << "Failed to set <" << name_ << "> expire values "
+            LOG(ERROR) << "Failed to set " << name_ << " expire values "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -114,8 +114,8 @@ namespace mel {
         if (!Output::set_expire_value(channel_number, expire_value))
             return false;
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-                       << daq_.get_name() << "> is not open";
+            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+                       << daq_.get_name() << " is not open";
             return false;
         }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
@@ -127,11 +127,11 @@ namespace mel {
         t_error result;
         result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_expire_value);
         if (result == 0) {
-            LOG(INFO) << "Set <" << name_ << "> channel number " << channel_number << " expire value to " << expire_value;
+            LOG(INFO) << "Set " << name_ << " channel number " << channel_number << " expire value to " << expire_value;
             return true;
         }
         else {
-            LOG(ERROR) << "Failed to set <" << name_ << "> channel number " << channel_number << " expire value "
+            LOG(ERROR) << "Failed to set " << name_ << " channel number " << channel_number << " expire value "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }

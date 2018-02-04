@@ -188,8 +188,8 @@ private:
 // CLASS DOCUMENTATION
 //==============================================================================
 
-/// \class sf::Socket
-/// \ingroup network
+/// \class mel::Socket
+/// \ingroup Communications
 ///
 /// This class mainly defines internal stuff to be used by
 /// derived classes.

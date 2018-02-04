@@ -1,7 +1,7 @@
 #include <MEL/Daq/Quanser/QDaq.hpp>
 #include <MEL/Daq/Quanser/QVelocity.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Log.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <hil.h>
 
 namespace mel {
@@ -31,8 +31,8 @@ namespace mel {
 
     bool QVelocity::update() {
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-                       << daq_.get_name() << "> is not open";
+            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+                       << daq_.get_name() << " is not open";
             return false;
         }
         t_error result;
@@ -40,7 +40,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(ERROR) << "Failed to update <" << name_ << "> "
+            LOG(ERROR) << "Failed to update " << name_ << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -48,8 +48,8 @@ namespace mel {
 
     bool QVelocity::update_channel(uint32 channel_number) {
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because <"
-                       << daq_.get_name() << "> is not open";
+            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+                       << daq_.get_name() << " is not open";
             return false;
         }
         uint32 converted_channel_number = convert_channel_number(channel_number);
@@ -58,7 +58,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(ERROR) << "Failed to update <" << name_ << "> channel number " << channel_number << " "
+            LOG(ERROR) << "Failed to update " << name_ << " channel number " << channel_number << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }

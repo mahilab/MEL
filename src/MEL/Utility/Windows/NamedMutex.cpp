@@ -34,19 +34,19 @@ NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) {
         case OpenOrCreate:
             mutex_ = CreateMutexA(NULL, FALSE, name.c_str());
             if (mutex_ == NULL) {
-                print("ERROR: Failed to create mutex <" + name + ">.");
+                print("ERROR: Failed to create mutex " + name + ".");
                 printf("WINDOWS ERROR: %d\n", (int)GetLastError());
             }
             else {
                 if (GetLastError() == ERROR_ALREADY_EXISTS)
-                    print("WARNING: Opened an existing mutex when trying to create mutex <" + name + ">.");
+                    print("WARNING: Opened an existing mutex when trying to create mutex " + name + ".");
                 // ReleaseMutex(mutex_);
             }
             break;
         case OpenOnly:
             mutex_ = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
             if (mutex_ == NULL) {
-                print("ERROR: Failed to open mutex <" + name + ">.");
+                print("ERROR: Failed to open mutex " + name + ".");
                 printf("WINDOWS ERROR: %d\n", (int)GetLastError());
             }
             break;

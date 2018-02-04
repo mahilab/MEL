@@ -64,7 +64,7 @@ double Joint::get_torque() {
 void Joint::set_torque(double new_torque) {
     torque_ = new_torque;
     if (torque_limit_exceeded() && saturate_) {
-        print("WARNING: Joint " + namify(name_) + " command torque saturated to " + std::to_string(torque_limit_) + ".");
+        print("WARNING: Joint " + name_ + " command torque saturated to " + std::to_string(torque_limit_) + ".");
         torque_ = saturate(torque_, torque_limit_);
     }
     actuator_.set_torque(actuator_transmission_ * torque_);
@@ -78,7 +78,7 @@ void Joint::add_torque(double additional_torque) {
 bool Joint::torque_limit_exceeded() {
     bool exceeded = false;
     if (has_torque_limit_ && abs(torque_) > torque_limit_) {
-        print("WARNING: Joint " + namify(name_) + " command torque exceeded the torque limit " + std::to_string(torque_limit_) + " with a value of " + std::to_string(torque_) + ".");
+        print("WARNING: Joint " + name_ + " command torque exceeded the torque limit " + std::to_string(torque_limit_) + " with a value of " + std::to_string(torque_) + ".");
         exceeded = true;
     }
     return exceeded;
@@ -88,11 +88,11 @@ bool Joint::position_limit_exceeded() {
     get_position();
     bool exceeded = false;
     if (has_position_limits_ && position_ < position_limits_[0]) {
-        print("WARNING: Joint " + namify(name_) + " position exceeded the min position limit " + std::to_string(position_limits_[0]) + " with a value of " + std::to_string(position_) + ".");
+        print("WARNING: Joint " + name_ + " position exceeded the min position limit " + std::to_string(position_limits_[0]) + " with a value of " + std::to_string(position_) + ".");
         exceeded = true;
     }
     if (has_position_limits_ && position_ > position_limits_[1]) {
-        print("WARNING: Joint " + namify(name_) + " position exceeded the max position limit " + std::to_string(position_limits_[1]) + " with a value of " + std::to_string(position_) + ".");
+        print("WARNING: Joint " + name_ + " position exceeded the max position limit " + std::to_string(position_limits_[1]) + " with a value of " + std::to_string(position_) + ".");
         exceeded = true;
     }
     return exceeded;
@@ -102,7 +102,7 @@ bool Joint::velocity_limit_exceeded() {
     get_velocity();
     bool exceeded = false;
     if (has_velocity_limit_ && abs(velocity_) > velocity_limit_) {
-        print("WARNING: Joint " + namify(name_) + " velocity exceeded the velocity limit " + std::to_string(velocity_limit_) + " with a value of " + std::to_string(velocity_) + ".");
+        print("WARNING: Joint " + name_ + " velocity exceeded the velocity limit " + std::to_string(velocity_limit_) + " with a value of " + std::to_string(velocity_) + ".");
         exceeded = true;
     }
     return exceeded;

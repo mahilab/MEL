@@ -1231,22 +1231,22 @@ def prompt_add_melshare():
     name, mode, ok = AddMelShareDialog.get_input()
     if ok:
         if name in data_sources:
-            status_bar.showMessage("MELShare <" + name + "> already exists.")
+            status_bar.showMessage("MELShare " + name + " already exists.")
         else:
             add_data_source(name, 'melshare', mode, None, [], [], [], [])
             reload_data_sources()
-            status_bar.showMessage("Added MELShare <" + name + ">")
+            status_bar.showMessage("Added MELShare " + name + "")
 
 def prompt_add_melnet():
     local_port, remote_port, remote_address, ok = AddMelNetDialog.get_input()
     if ok:
         name = str(remote_port) + '@' + remote_address
         if name in data_sources:
-            status_bar.showMessage("MELNet <" + name + "> already exists.")
+            status_bar.showMessage("MELNet " + name + " already exists.")
         else:
             add_data_source(name, 'melnet', 'Read Only', [local_port, remote_port, remote_address], [], [], [], [])
             reload_data_sources()
-            status_bar.showMessage("Added MELNet <" + name + ">")
+            status_bar.showMessage("Added MELNet " + name + "")
 
 def prompt_remove_melshare():
     selection, ok = QtGui.QInputDialog.getItem(main_widget, 'Remove Data Source', 'Select Data Source:', list(data_sources.keys()), 0, False)
@@ -1254,7 +1254,7 @@ def prompt_remove_melshare():
         name = str(selection)
         remove_data_source(name)
         reload_data_sources()
-        status_bar.showMessage("Removed Data Source <" + name + ">")
+        status_bar.showMessage("Removed Data Source " + name + "")
 
 
 def prompt_resize_grid():

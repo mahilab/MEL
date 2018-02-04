@@ -27,6 +27,8 @@
 namespace mel
 {
 
+class Timer;
+
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
@@ -45,10 +47,12 @@ public:
     /// Restart the clock back to zero and return elapsed time since started.
     Time restart();
 
+private:
+
+    friend class Timer;
+
     /// Gets the time since epoch. Relative to nothing in particular.
     static Time get_current_time();
-
-private:
 
     Time start_time_; ///< Time of last reset, in microseconds.
 

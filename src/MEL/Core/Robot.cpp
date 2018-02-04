@@ -8,7 +8,7 @@ Robot::Robot(const std::string& name) :
 {}
 
 bool Robot::enable() {
-    print("Enabling Robot <" + name_ + "> ... ");
+    print("Enabling Robot " + name_ + " ... ");
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
         it->enable();
     }
@@ -16,7 +16,7 @@ bool Robot::enable() {
 }
 
 bool Robot::disable() {
-    print("Disabling Robot <" + name_ + "> ... ");
+    print("Disabling Robot " + name_ + " ... ");
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
         it->disable();
     }

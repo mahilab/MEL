@@ -38,12 +38,4 @@ void register_ctrl_c_handler(void (*function)(int)) {
     // signal(SIGBREAK, function);
 }
 
-//==============================================================================
-//  FORMATTING
-//==============================================================================
-
-std::string namify(std::string name) {
-    return "<" + name + ">";
-}
-
 }

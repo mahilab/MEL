@@ -155,7 +155,7 @@ void OpenWrist::calibrate(std::atomic<bool>& stop) {
 
                     // if it's not moving, it's at a hardstop so record the position and deduce the zero location
                     if (!moving) {
-                        std::cout << "Joint <" << joints_[i].get_name() << "> reached the reference position. Returning to zero ... ";
+                        std::cout << "Joint " << joints_[i].get_name() << " reached the reference position. Returning to zero ... ";
                         if (dir[i] > 0)
                             zeros[i] = pos_act - params_.pos_limits_pos_[i];
                         else if (dir[i] < 0)

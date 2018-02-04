@@ -45,6 +45,9 @@ std::vector<std::string> parse_path(std::string path);
 /// Creates a single folder or path of folders if it doesn't exist.
 void create_directory(std::string path);
 
+/// Splits "filename.ext" into "filename" and "ext"
+void split_file_name(const char* file_name, std::string& file_name_no_ext, std::string& file_ext);
+
 //==============================================================================
 // SYSTEM FUNCTIONS
 //==============================================================================
@@ -58,8 +61,11 @@ std::string get_last_os_error();
 /// Enables real-time OS priority. The program must be run 'As Administrator'.
 bool enable_realtime();
 
-///  Disables real-time OS priority. The program must be run 'As Administrator'.
+/// Disables real-time OS priority. The program must be run 'As Administrator'.
 bool disable_realtime();
+
+/// Gets the operating system's ID number of the calling thread
+uint32 get_thread_id();
 
 //==============================================================================
 // PEROFRMANCE MONITORING FUNCTIONS

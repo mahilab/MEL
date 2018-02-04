@@ -1,4 +1,4 @@
-#include <MEL/Utility/DataLog.hpp>
+#include <MEL/Logging/DataLog.hpp>
 #include <MEL/Utility/Console.hpp>
 
 using namespace mel;

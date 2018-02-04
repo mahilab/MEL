@@ -135,7 +135,7 @@ public:
             full_filename = directory + get_path_slash() + filename + "_" + get_ymdhms() + ".csv";
         else
             full_filename = directory + get_path_slash() + filename + ".csv";
-        print("Saving DataLog to <" + full_filename + ">.");
+        print("Saving DataLog to " + full_filename + ".");
         std::thread t(&DataLog::save_thread_func, this, full_filename, directory, timestamp);
         t.detach();
     }
