@@ -28,7 +28,7 @@ Initializer initializer;
 //==============================================================================
 
 #ifdef _WIN32
-void print(const std::string& str) {
+void print_string(const std::string& str) {
     WriteConsoleA(stdout_handle, str.c_str(), static_cast<DWORD>(str.size()),
                   NULL, NULL);
 }
@@ -43,7 +43,7 @@ void print(const std::string& str) {
 //==============================================================================
 
 void prompt(const std::string& message) {
-    print(message, false);
+    print_string(message);
     getchar();
 }
 

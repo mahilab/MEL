@@ -24,20 +24,20 @@ Device::~Device() {
 
 bool Device::enable() {
     if (enabled_) {
-        LOG(WARNING) << "Ignored attempt to enable " << name_ << " since it is already enabled";
+        LOG(Warning) << "Ignored attempt to enable " << name_ << " since it is already enabled";
         return true;
     }
-    LOG(INFO) << "Enabled " << name_;
+    LOG(Info) << "Enabled " << name_;
     enabled_ = true;
     return true;
 }
 
 bool Device::disable() {
     if (!enabled_) {
-        LOG(WARNING) << "Ignored attempt to disable " << name_ << " since it is already disabled";
+        LOG(Warning) << "Ignored attempt to disable " << name_ << " since it is already disabled";
         return true;
     }
-    LOG(INFO) << "Disabled " << name_;
+    LOG(Info) << "Disabled " << name_;
     enabled_ = false;
     return true;
 }

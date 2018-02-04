@@ -22,6 +22,7 @@
 #include <MEL/Utility/Time.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <MEL/Utility/StlStreams.hpp>
+#include <sstream>
 
 namespace mel {
 
@@ -29,16 +30,15 @@ namespace mel {
 // CONSOLE OUTPUT
 //==============================================================================
 
-/// Prints a string to the console using the OS's most efficient method
-void print(const std::string& str);
+/// Prints a string to the console using the fastest method the OS offers
+void print_string(const std::string& str);
 
-/// Prints anything that works with ostream operators <<
-/// end_line = true will print a new line after printing value
-template <typename T>
-void print(T value, bool end_line = true) {
-    std::cout << value;
-    if (end_line)
-        std::cout << std::endl;
+/// Prints anything that works with stream operators (appends new line character)
+template<typename T>
+void print(T value) {
+    std::stringstream ss;
+    ss << value << std::endl;
+    print_string(ss.str());
 }
 
 /// Prints MEL 2D array

@@ -20,28 +20,28 @@
 
 namespace mel {
 enum Severity {
-    NONE    = 0,
-    FATAL   = 1,
-    ERROR   = 2,
-    WARNING = 3,
-    INFO    = 4,
-    DEBUG   = 5,
-    VERBOSE = 6
+    None    = 0,
+    Fatal   = 1,
+    Error   = 2,
+    Warning = 3,
+    Info    = 4,
+    Debug   = 5,
+    Verbose = 6
 };
 
 inline const char* severity_to_string(Severity severity) {
     switch (severity) {
-        case FATAL:
+        case Fatal:
             return "FATAL";
-        case ERROR:
+        case Error:
             return "ERROR";
-        case WARNING:
+        case Warning:
             return "WARN";
-        case INFO:
+        case Info:
             return "INFO";
-        case DEBUG:
+        case Debug:
             return "DEBUG";
-        case VERBOSE:
+        case Verbose:
             return "VERB";
         default:
             return "NONE";
@@ -49,14 +49,14 @@ inline const char* severity_to_string(Severity severity) {
 }
 
 inline Severity string_to_severity(const char* str) {
-    for (Severity severity = FATAL; severity <= VERBOSE;
+    for (Severity severity = Fatal; severity <= Verbose;
          severity          = static_cast<Severity>(severity + 1)) {
         if (severity_to_string(severity)[0] == str[0]) {
             return severity;
         }
     }
 
-    return NONE;
+    return None;
 }
 }  // namespace mel
 

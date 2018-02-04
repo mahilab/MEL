@@ -42,13 +42,13 @@ namespace mel
     /// Empty initializer / one appender
 
     template<int instance>
-    inline Logger<instance>& init_logger(Severity maxSeverity = NONE, Writer* appender = NULL)
+    inline Logger<instance>& init_logger(Severity maxSeverity = None, Writer* appender = NULL)
     {
         static Logger<instance> logger(maxSeverity);
         return appender ? logger.add_writer(appender) : logger;
     }
 
-    inline Logger<DEFAULT_MEL_LOGGER>& init_logger(Severity maxSeverity = NONE, Writer* appender = NULL)
+    inline Logger<DEFAULT_MEL_LOGGER>& init_logger(Severity maxSeverity = None, Writer* appender = NULL)
     {
         return init_logger<DEFAULT_MEL_LOGGER>(maxSeverity, appender);
     }

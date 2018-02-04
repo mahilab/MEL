@@ -59,15 +59,15 @@ enum { Console = 1 };
 
 int main() {
     static ColorConsoleWriter<TxtFormatter> consoleAppender;
-    init_logger(VERBOSE, "log.csv").add_writer(&consoleAppender);
+    init_logger(Verbose, "log.csv").add_writer(&consoleAppender);
 
     // Log severity levels are printed in different colors.
-    LOG(VERBOSE) << "This is a VERBOSE message";
-    LOG(DEBUG) << "This is a DEBUG message";
-    LOG(INFO) << "This is an INFO message";
-    LOG(WARNING) << "This is a WARNING message";
-    LOG(ERROR) << "This is an ERROR message";
-    LOG(FATAL) << "This is a FATAL message";
+    LOG(Verbose) << "This is a VERBOSE message";
+    LOG(Debug) << "This is a DEBUG message";
+    LOG(Info) << "This is an INFO message";
+    LOG(Warning) << "This is a WARNING message";
+    LOG(Error) << "This is an ERROR message";
+    LOG(Fatal) << "This is a FATAL message";
 
     return 0;
 }

@@ -30,7 +30,7 @@ bool QEncoder::disable() {
 
 bool QEncoder::update() {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
         return false;
     }
@@ -39,7 +39,7 @@ bool QEncoder::update() {
     if (result == 0)
         return true;
     else {
-        LOG(ERROR) << "Failed to update " << name_ << " "
+        LOG(Error) << "Failed to update " << name_ << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -47,7 +47,7 @@ bool QEncoder::update() {
 
 bool QEncoder::update_channel(uint32 channel_number) {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
         return false;
     }
@@ -56,7 +56,7 @@ bool QEncoder::update_channel(uint32 channel_number) {
     if (result == 0)
         return true;
     else {
-        LOG(ERROR) << "Failed to update " << name_ << " channel number " << channel_number << " "
+        LOG(Error) << "Failed to update " << name_ << " channel number " << channel_number << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -66,7 +66,7 @@ bool QEncoder::reset_counts(const std::vector<int32>& counts) {
     if (!Encoder::reset_counts(counts))
         return false;
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
         return false;
     }
@@ -74,11 +74,11 @@ bool QEncoder::reset_counts(const std::vector<int32>& counts) {
     result = hil_set_encoder_counts(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &counts[0]);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Reset " << name_ << " counts to " << counts;
+        LOG(Info) << "Reset " << name_ << " counts to " << counts;
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to reset " << name_ << " counts "
+        LOG(Error) << "Failed to reset " << name_ << " counts "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -88,7 +88,7 @@ bool QEncoder::reset_count(uint32 channel_number, int32 count) {
     if (!Encoder::reset_count(channel_number, count))
         return false;
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
@@ -96,11 +96,11 @@ bool QEncoder::reset_count(uint32 channel_number, int32 count) {
     result = hil_set_encoder_counts(daq_.handle_, &channel_number, static_cast<uint32>(1), &count);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Reset " << name_ << " channel number " << channel_number << " count to " << count;
+        LOG(Info) << "Reset " << name_ << " channel number " << channel_number << " count to " << count;
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to reset " << name_ << " channel number " << channel_number << " count "
+        LOG(Error) << "Failed to reset " << name_ << " channel number " << channel_number << " count "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -111,7 +111,7 @@ bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
     if (!Encoder::set_quadrature_factors(factors))
         return false;
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
@@ -127,7 +127,7 @@ bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
         else if (*it == QuadFactor::X4)
             converted_factors.push_back(ENCODER_QUADRATURE_4X);
         else {
-            LOG(ERROR) << "QuadFactor X" << static_cast<uint32>(*it) << " not supported by Quanser";
+            LOG(Error) << "QuadFactor X" << static_cast<uint32>(*it) << " not supported by Quanser";
             return false;
         }
     }
@@ -135,11 +135,11 @@ bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
     result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_factors[0]);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Set " << name_ << " quadrature factors";
+        LOG(Info) << "Set " << name_ << " quadrature factors";
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to set " << name_ << " quadrature factors "
+        LOG(Error) << "Failed to set " << name_ << " quadrature factors "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -149,7 +149,7 @@ bool QEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
     if (!Encoder::set_quadrature_factor(channel_number, factor))
         return false;
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
@@ -164,18 +164,18 @@ bool QEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
     else if (factor == QuadFactor::X4)
         converted_factor = ENCODER_QUADRATURE_4X;
     else {
-        LOG(ERROR) << "QuadFactor X" << static_cast<uint32>(factor) << " not supported by Quanser";
+        LOG(Error) << "QuadFactor X" << static_cast<uint32>(factor) << " not supported by Quanser";
         return false;
     }
     t_error result;
     result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_factor);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Set " << name_ << " channel number " << channel_number << " quadrature factor";
+        LOG(Info) << "Set " << name_ << " channel number " << channel_number << " quadrature factor";
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to set " << name_ << " channel number " << channel_number << " quadrature factor"
+        LOG(Error) << "Failed to set " << name_ << " channel number " << channel_number << " quadrature factor"
             << QDaq::get_quanser_error_message(result);
         return false;
     }

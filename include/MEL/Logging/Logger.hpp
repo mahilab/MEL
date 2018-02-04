@@ -30,7 +30,7 @@ namespace mel {
 template <int instance>
 class Logger : public Singleton<Logger<instance> >, public Writer {
 public:
-    Logger(Severity maxSeverity = NONE) : max_severity_(maxSeverity) {}
+    Logger(Severity maxSeverity = None) : max_severity_(maxSeverity) {}
 
     Logger& add_writer(Writer* appender) {
         assert(appender != this);

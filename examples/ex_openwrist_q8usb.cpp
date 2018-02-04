@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
             torques[1] = ow.pd_controllers_[1].move_to_hold(positions[1] * DEG2RAD, ow[1].get_position(), 30 * DEG2RAD, ow[1].get_velocity(), 0.001, DEG2RAD, 10 * DEG2RAD);
             torques[2] = ow.pd_controllers_[2].move_to_hold(positions[2] * DEG2RAD, ow[2].get_position(), 30 * DEG2RAD, ow[2].get_velocity(), 0.001, DEG2RAD, 10 * DEG2RAD);
             ow.set_joint_torques(torques);
-            if (!q8.watchdog.kick() || ow.check_all_joint_limits())
+            if (!q8.watchdog.kick() || ow.any_limit_exceeded())
                 stop = true;
             q8.update_output();
             timer.wait();

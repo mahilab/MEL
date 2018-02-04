@@ -26,7 +26,7 @@ IoType ModuleBase::get_type() const {
 bool ModuleBase::validate_channel_number(uint32 channel_number) const {
     if (channel_map_.count(channel_number) > 0)
         return true;
-    LOG(ERROR) << "Invalid channel number " << channel_number
+    LOG(Error) << "Invalid channel number " << channel_number
         << " not declared in channel numbers";
     return false;
 }
@@ -34,7 +34,7 @@ bool ModuleBase::validate_channel_number(uint32 channel_number) const {
 bool ModuleBase::validate_channel_count(std::size_t size) const {
     if (channel_count_ == size)
         return true;
-    LOG(ERROR) << "Invalid number of elements (" << size
+    LOG(Error) << "Invalid number of elements (" << size
         << ") not equal to channel count of " << channel_count_;
     return false;
 }

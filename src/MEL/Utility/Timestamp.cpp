@@ -75,6 +75,17 @@ std::string Timestamp::hh_mm_ss_mmm() const {
     return ss.str();
 }
 
+std::string Timestamp::yyyy_mm_dd_hh_mm_ss() const {
+    std::ostringstream ss;
+    ss << year << "-"
+        << std::setfill('0') << std::setw(2) << month << ("-")
+        << std::setfill('0') << std::setw(2) << mday << ("_")
+        << std::setfill('0') << std::setw(2) << hour << (".")
+        << std::setfill('0') << std::setw(2) << min << (".")
+        << std::setfill('0') << std::setw(2) << sec;
+    return ss.str();
+}
+
 std::string Timestamp::yyyy_mm_dd_hh_mm_ss_mmm() const {
     std::ostringstream ss;
     ss << year << "-"

@@ -20,18 +20,18 @@ QWatchdog::~QWatchdog() {
 
 bool QWatchdog::start() {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
     t_error result;
     result = hil_watchdog_start(daq_.handle_, timeout_.as_seconds());
     if (result == 0) {
-        LOG(INFO) << "Started watchdog on " << daq_.get_name();
+        LOG(Info) << "Started watchdog on " << daq_.get_name();
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to start watchdog on " << daq_.get_name() << " "
+        LOG(Error) << "Failed to start watchdog on " << daq_.get_name() << " "
             << QDaq::get_quanser_error_message(result);
 
         return false;
@@ -40,7 +40,7 @@ bool QWatchdog::start() {
 
 bool QWatchdog::kick() {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
@@ -50,12 +50,12 @@ bool QWatchdog::kick() {
         return true;
     }
     else if (result == 0) {
-        LOG(WARNING) << "Watchdog on " << daq_.get_name() << " expired";
+        LOG(Warning) << "Watchdog on " << daq_.get_name() << " expired";
         watching_ = false;
         return false;
     }
     else {
-        LOG(ERROR) << "Failed to kick watchdog on " << daq_.get_name() << " "
+        LOG(Error) << "Failed to kick watchdog on " << daq_.get_name() << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -63,19 +63,19 @@ bool QWatchdog::kick() {
 
 bool QWatchdog::stop() {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
     t_error result;
     result = hil_watchdog_stop(daq_.handle_);
     if (result == 0) {
-        LOG(INFO) << "Stopped watchdog on " << daq_.get_name();
+        LOG(Info) << "Stopped watchdog on " << daq_.get_name();
         watching_ = false;
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to stop watchdog on " << daq_.get_name() << " "
+        LOG(Error) << "Failed to stop watchdog on " << daq_.get_name() << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -83,7 +83,7 @@ bool QWatchdog::stop() {
 
 bool QWatchdog::is_expired() {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
@@ -97,7 +97,7 @@ bool QWatchdog::is_expired() {
         return false;
     }
     else {
-        LOG(ERROR) << "Failed to check expiration of watchdog on "
+        LOG(Error) << "Failed to check expiration of watchdog on "
                    << daq_.get_name() << " "
                    << QDaq::get_quanser_error_message(result);
         return false;
@@ -106,18 +106,18 @@ bool QWatchdog::is_expired() {
 
 bool QWatchdog::clear() {
     if (!daq_.open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
         return false;
     }
     t_error result;
     result = hil_watchdog_clear(daq_.handle_);
     if (result == 0) {
-        LOG(INFO) << "Cleared watchdog on " << daq_.get_name();
+        LOG(Info) << "Cleared watchdog on " << daq_.get_name();
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to clear watchdog on " << daq_.get_name() << " "
+        LOG(Error) << "Failed to clear watchdog on " << daq_.get_name() << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }

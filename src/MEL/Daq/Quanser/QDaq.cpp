@@ -37,7 +37,7 @@ bool QDaq::open() {
         if (result == 0) {
             // successful open
             Daq::open();
-            LOG(INFO) << "Opened " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ")";
+            LOG(Info) << "Opened " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
                 close();
                 return false;
@@ -47,12 +47,12 @@ bool QDaq::open() {
         }
         else {
             // unsuccesful open, continue
-            LOG(ERROR) << "Failed to open " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ") "
+            LOG(Error) << "Failed to open " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ") "
                        << get_quanser_error_message(result);
         }
     }
     // all attempts to open were unsuccessful
-    LOG(FATAL) << "Exhausted all attempts to open " << name_ << ", exiting application";
+    LOG(Fatal) << "Exhausted all attempts to open " << name_ << ", exiting application";
     exit(1);
 }
 
@@ -63,11 +63,11 @@ bool QDaq::close() {
     result = hil_close(handle_);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Closed " << name_;
+        LOG(Info) << "Closed " << name_;
         return Daq::close();
     }
     else {
-        LOG(INFO) << "Failed to close " << name_ << " "
+        LOG(Info) << "Failed to close " << name_ << " "
                   << get_quanser_error_message(result);
         return false;
     }
@@ -75,7 +75,7 @@ bool QDaq::close() {
 
 bool QDaq::set_options(const QOptions& options) {
     if (!open_) {
-        LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << name_ << " is not open";
         return false;
     }
@@ -86,11 +86,11 @@ bool QDaq::set_options(const QOptions& options) {
     result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(INFO) << "Set " << name_ << " options to: \"" << options_.get_string() << "\"";
+        LOG(Info) << "Set " << name_ << " options to: \"" << options_.get_string() << "\"";
         return true;
     }
     else {
-        LOG(ERROR) << "Failed to set " << name_ << " options to: \"" << options_.get_string() << "\" "
+        LOG(Error) << "Failed to set " << name_ << " options to: \"" << options_.get_string() << "\" "
                    << get_quanser_error_message(result);
         return false;
     }

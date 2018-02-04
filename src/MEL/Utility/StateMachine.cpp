@@ -1,5 +1,6 @@
 #include <MEL/Utility/StateMachine.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>  
 
 namespace mel {
 
@@ -38,7 +39,7 @@ void StateMachine::execute() {
 
         // Error check that the new state is valid before proceeding
         if (new_state_ >= NUM_STATES) {
-            print("Error: Invalid State");
+            LOG(Error) << "Invalid state";
         }
 
         // Switch to the new current state

@@ -34,7 +34,7 @@ public:
     virtual void write(const Record& record) {
         std::string str = Formatter::format(record);
         Lock lock(mutex_);
-        print(str);
+        print_string(str);
     }
 
 protected:

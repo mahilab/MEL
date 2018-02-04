@@ -1,6 +1,7 @@
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Packet.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <algorithm>
 #include <cstring>
 
@@ -180,14 +181,11 @@ void TcpSocket::disconnect()
 }
 
 
-Socket::Status TcpSocket::send(const void* data, std::size_t size)
-{
+Socket::Status TcpSocket::send(const void* data, std::size_t size){
     if (!is_blocking()) {
-        // err() << "Warning: Partial sends might not be handled properly." << std::endl;
+        LOG(mel::Warning) << "Partial sends might not be handled properly";
     }
-
     std::size_t sent;
-
     return send(data, size, sent);
 }
 
@@ -197,7 +195,7 @@ Socket::Status TcpSocket::send(const void* data, std::size_t size, std::size_t& 
     // Check the parameters
     if (!data || (size == 0))
     {
-        // err() << "Cannot send data over the network (no data to send)" << std::endl;
+        LOG(mel::Error) << "Cannot send data over the network (no data to send)";
         return Error;
     }
 
@@ -232,7 +230,7 @@ Socket::Status TcpSocket::receive(void* data, std::size_t size, std::size_t& rec
     // Check the destination buffer
     if (!data)
     {
-        // err() << "Cannot receive data from the network (the destination buffer is invalid)" << std::endl;
+        LOG(mel::Error) << "Cannot receive data from the network (the destination buffer is invalid)";
         return Error;
     }
 

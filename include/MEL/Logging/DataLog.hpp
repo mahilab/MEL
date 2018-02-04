@@ -21,6 +21,8 @@
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Mutex.hpp>
+#include <MEL/Logging/Log.hpp>
+#include <MEL/Utility/Timestamp.hpp>
 #include <fstream>
 #include <thread>
 #include <algorithm>
@@ -77,7 +79,7 @@ public:
     ~DataLog() {
         if (autosave_ && row_count_ > 0 && !log_saved_ && !saving_) {
             save_data("log", "autosaved_logs", true);
-        }
+        }        
         wait_for_save();
     }
 
@@ -131,11 +133,13 @@ public:
     void save_data(const std::string& filename, const std::string& directory, bool timestamp = true) {
         saving_ = true;
         std::string full_filename;
-        if (timestamp)
-            full_filename = directory + get_path_slash() + filename + "_" + get_ymdhms() + ".csv";
+        if (timestamp) {
+            Timestamp stamp;
+            full_filename = directory + get_path_slash() + filename + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + ".csv";
+        }
         else
             full_filename = directory + get_path_slash() + filename + ".csv";
-        print("Saving DataLog to " + full_filename + ".");
+        LOG(Info) << "Saving DataLog to " << full_filename;
         std::thread t(&DataLog::save_thread_func, this, full_filename, directory, timestamp);
         t.detach();
     }
@@ -158,9 +162,7 @@ public:
     /// has completed.
     void wait_for_save() {
         if (saving_) {
-            print("Waiting for DataLog to finish saving ... ", false);
             Lock lock(mutex_);
-            print("Done");
         }
     }
 
@@ -178,7 +180,7 @@ private:
 
     /// Doubles the number of reserved rows in data_
     void double_rows() {
-        print("WARNING: DataLog max rows exceeded. Automatically doubling size. Increase max_rows in the constructor to avoid delays.");
+        LOG(Warning) << "DataLog max rows exceeded. Automatically doubling size. Increase max_rows in the constructor to avoid delays.";
         max_rows_ *= 2;
         data_.reserve(max_rows_);
     }
@@ -188,7 +190,6 @@ private:
         Lock lock(mutex_);
         create_directory(directory);
         file_stream_.open(full_filename, std::ofstream::out | std::ofstream::trunc);
-        file_stream_ << std::setprecision(precision_);
         if (format_ == Format::Fixed)
             file_stream_ << std::fixed;
         else if (format_ == Format::Scientific)
@@ -197,7 +198,12 @@ private:
             file_stream_ << *it << ",";
         file_stream_ << std::endl;
         for (std::size_t i = 0; i < row_count_; i++) {
-            file_stream_ << data_[i] << "," << std::endl;
+            std::stringstream ss;
+            ss << std::setprecision(precision_);
+            ss << data_[i];
+            std::string line = ss.str();
+            line = line.substr(1, line.size() - 2);
+            file_stream_ << line << std::endl;
         }
         file_stream_.close();
         log_saved_ = true;

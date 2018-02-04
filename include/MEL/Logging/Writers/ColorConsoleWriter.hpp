@@ -34,7 +34,7 @@ public:
         std::string str = Formatter::format(record);
         Lock lock(mutex_);
         setColor(record.get_severity());
-        print(str);
+        print_string(str);
         reset_text_color();
     }
 
@@ -43,20 +43,20 @@ private:
         if (STDOUT_IS_A_TTY) {
             switch (severity) {
 #ifdef _WIN32
-                case FATAL:
+                case Fatal:
                     set_text_color(Color::White, Color::Red);
                     break;
 
-                case ERROR:
+                case Error:
                     set_text_color(Color::Red);
                     break;
 
-                case WARNING:
+                case Warning:
                     set_text_color(Color::Yellow);
                     break;
 
-                case DEBUG:
-                case VERBOSE:
+                case Debug:
+                case Verbose:
                     set_text_color(Color::Cyan);
                     break;
 #else

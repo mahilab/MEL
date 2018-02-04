@@ -1,5 +1,6 @@
 #include <MEL/Utility/Windows/NamedMutex.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -25,6 +26,7 @@ private:
 
 #ifdef _WIN32
 
+
 //==============================================================================
 // WINDOWS IMPLEMENTATION
 //==============================================================================
@@ -34,20 +36,17 @@ NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) {
         case OpenOrCreate:
             mutex_ = CreateMutexA(NULL, FALSE, name.c_str());
             if (mutex_ == NULL) {
-                print("ERROR: Failed to create mutex " + name + ".");
-                printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+                LOG(Error) << "Failed to create NamedMutex " << name << "(Windows Error #" << (int)GetLastError() << ")";
             }
             else {
                 if (GetLastError() == ERROR_ALREADY_EXISTS)
-                    print("WARNING: Opened an existing mutex when trying to create mutex " + name + ".");
-                // ReleaseMutex(mutex_);
+                    LOG(Warning) << "Opened an existing mutex when trying to create NamedMutex " << name;
             }
             break;
         case OpenOnly:
             mutex_ = OpenMutexA(MUTEX_ALL_ACCESS, FALSE, name.c_str());
             if (mutex_ == NULL) {
-                print("ERROR: Failed to open mutex " + name + ".");
-                printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+                LOG(Error) << "Failed to open NamedMutex " << name << "(Windows Error #" << (int)GetLastError() << ")";
             }
             break;
     }
@@ -65,30 +64,25 @@ void NamedMutex::Impl::lock() {
         case WAIT_OBJECT_0:
             return;
         case WAIT_ABANDONED:
-            print("ERROR: Wait on mutex abandoned.");
-            printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+            LOG(Error) << "Wait on NamedMutex abandoned (Windows Error #" << (int)GetLastError() << ")";
             return;
         case WAIT_TIMEOUT:
-            print("ERROR: Wait on mutex timed out.");
-            printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+            LOG(Error) << "Wait on NamedMutex timed out (Windows Error #" << (int)GetLastError() << ")";
             return;
         case WAIT_FAILED:
-            print("ERROR: Wait on mutex failed.");
-            printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+            LOG(Error) << "Wait on NamedMutex failed (Windows Error #" << (int)GetLastError() << ")";
             return;
         }
     }
     else {
-        print("ERROR: Mutex is invalid.");
-        printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+        LOG(Error) << "NamedMutex is invalid (Windows Error #" << (int)GetLastError() << ")";
     }
 }
 
 void NamedMutex::Impl::unlock() {
     if (!ReleaseMutex(mutex_)) {
         if (GetLastError() != ERROR_NOT_OWNER) {
-            print("ERROR: Failed to unlock mutex.");
-            printf("WINDOWS ERROR: %d\n", (int)GetLastError());
+            LOG(Error) << "Failed to unlock NamedMutex (Windows Error #" << (int)GetLastError() << ")";
         }
     }
 }

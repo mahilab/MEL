@@ -19,7 +19,7 @@ int main() {
 
     // intialize logger
     static ColorConsoleWriter<TxtFormatter> consoleAppender;
-    init_logger(VERBOSE, "log.csv").add_writer(&consoleAppender);
+    init_logger(Verbose, "log.csv").add_writer(&consoleAppender);
 
     // register CTRL-C handler
     register_ctrl_c_handler(handler);

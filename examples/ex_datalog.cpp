@@ -9,23 +9,8 @@ public:
     DataLog<int, double> log_;
 };
 
-//template<typename T>
-//T sum(T v) {
-//    std::cout << __PRETTY_FUNCTION__ << "\n";
-//    return v;
-//}
-//
-//template <typename T, typename ... Ts>
-//T sum(T first, Ts ... rest) {
-//    std::cout << __PRETTY_FUNCTION__ << "\n";
-//    return first + sum(rest...);
-//}
 
 int main(int argc, char const *argv[]) {
-
-    /*int s = sum(1,2,3,4,5,6,7,8,9,10);
-    print(s);*/
-
     MyClass x;
     x.log_.set_format(Format::Scientific);
     x.log_.set_precision(10);

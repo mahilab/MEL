@@ -29,7 +29,7 @@ namespace mel {
 
     bool QDigitalInput::update() {
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
             return false;
         }
@@ -38,7 +38,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(ERROR) << "Failed to update " << name_ << " "
+            LOG(Error) << "Failed to update " << name_ << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -46,7 +46,7 @@ namespace mel {
 
     bool QDigitalInput::update_channel(uint32 channel_number) {
         if (!daq_.open_) {
-            LOG(ERROR) << "Unable to call " << __FUNCTION__ << " because "
+            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
             return false;
         }
@@ -55,7 +55,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(ERROR) << "Failed to update " << name_ << " channel number " << channel_number << " "
+            LOG(Error) << "Failed to update " << name_ << " channel number " << channel_number << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }

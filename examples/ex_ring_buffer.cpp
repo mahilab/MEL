@@ -20,22 +20,22 @@ int main() {
             x.push_front(value);
         }
         else if (method == "pop_back") {
-            print("a: ", false);
+            print_string("a: ");
             print(x.pop_back());
         }
         else if (method == "pop_front") {
-            print("a: ", false);
+            print_string("a: ");
             print(x.pop_front());
         }
         else if (method == "[]") {
             std::cin >> idx;
-            print("a: ", false);
+            print_string("a: ");
             print(x[idx]);
         }
         else if (method == "[]=") {
             std::cin >> idx;
             std::cin >> value;
-            print("a: ", false);
+            print_string("a: ");
             x[idx] = value;
         }
         else if (method == "resize") {
