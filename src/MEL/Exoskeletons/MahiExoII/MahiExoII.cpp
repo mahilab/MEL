@@ -81,7 +81,7 @@ namespace mel {
     }
 
     MahiExoII::~MahiExoII() {
-        if (enabled_) {
+        if (is_enabled()) {
             disable();
         }
     }
@@ -90,7 +90,7 @@ namespace mel {
     /// PUBLIC FUNCTIONS
     ///-----------------------------------------------------------------------------
 
-    void MahiExoII::calibrate(std::atomic<bool>& stop) {
+    void MahiExoII::calibrate(volatile std::atomic<bool>& stop) {
 
         ///enable DAQ
         config_.daq_.enable();

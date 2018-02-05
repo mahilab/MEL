@@ -28,9 +28,24 @@ namespace mel {
 
 class Writer {
 public:
+
+    Writer(Severity max_severity = Verbose) : max_severity_(max_severity) {}
+
     virtual ~Writer() {}
 
     virtual void write(const Record& record) = 0;
+
+    Severity get_max_severity() const { return max_severity_; }
+
+    void set_max_severity(Severity severity) { max_severity_ = severity; }
+
+    bool check_severity(Severity severity) const {
+        return severity <= max_severity_;
+    }
+
+protected:
+
+    Severity max_severity_;
 };
 }  // namespace mel
 

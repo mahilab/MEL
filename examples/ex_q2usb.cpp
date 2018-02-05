@@ -81,13 +81,13 @@ int main() {
     prompt("Connect DIO0 to DIO7 then press ENTER to start test.");
     // set directions
     q2.digital_io.set_direction(7, QDigitalInputOutput::Direction::Output);
-    logic signal = HIGH;
+    Logic signal = High;
     // start analog loopback loop
     timer.restart();
     while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q2.digital_io.update();
         print((int)q2.digital_io[0].get_value());
-        signal = !signal;
+        signal = (Logic)(High - signal);
         q2.digital_io[7].set_value(signal);
         q2.digital_io.update();
         timer.wait();
@@ -106,9 +106,9 @@ int main() {
     timer.restart();
     while (timer.get_elapsed_time() < seconds(10) && !stop) {
         if (Keyboard::is_key_pressed(Key::L))
-            q2.set_led(HIGH);
+            q2.set_led(High);
         else
-            q2.set_led(LOW);
+            q2.set_led(Low);
         q2.update_output();
         timer.wait();
     }

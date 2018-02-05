@@ -10,7 +10,7 @@ namespace mel {
 
     public:
 
-        static const int N_emg_ = 8; /// number of EMG electrodes
+        static const int N_emg_ = 8; // number of EMG electrodes
 
         struct EmgDataBuffer {
 
@@ -40,7 +40,7 @@ namespace mel {
 
                 void tkeo(const double& x, double& y);
 
-                void reset(); /// sets the internal states s_ to all be zero
+                void reset(); // sets the internal states s_ to all be zero
 
             private:
 
@@ -68,33 +68,33 @@ namespace mel {
         };
 
 
-        /// CONSTRUCTOR
+        // CONSTRUCTOR
         MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
 
 
-        /// PUBLIC FUNCTIONS
+        // PUBLIC FUNCTIONS
         std::vector<double> get_emg_voltages();
           
 
-        /// PUBLIC VARIABLES
+        // PUBLIC VARIABLES
         std::vector<EmgSignal> emg_electrodes_;
 
 
-        /// SIGNAL CHECKING PARAMETERS
+        // SIGNAL CHECKING PARAMETERS
         bool emg_signal_monitor_ = false;
         const double emg_voltage_max_ = 5.0;
 
 
-        /// EMG FILTERING
-        Filter butter_hp_ = Filter(N_emg_, { 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 });
+        // EMG FILTERING
+        Filter butter_hp_ = Filter({ 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 }, N_emg_); // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
         TeagerKaiserOperator tko_;
-        Filter tkeo_butter_lp_ = Filter(N_emg_, { 0.002898194633721,   0.008694583901164,   0.008694583901164,   0.002898194633721 }, { 1.000000000000000, -2.374094743709352,   1.929355669091215, -0.532075368312092 });
+        Filter tkeo_butter_lp_ = Filter({ 0.002898194633721,   0.008694583901164,   0.008694583901164,   0.002898194633721 }, { 1.000000000000000, -2.374094743709352,   1.929355669091215, -0.532075368312092 }, N_emg_);
             
             
 
     private:
 
-        /// PRIVATE VARIABLES
+        // PRIVATE VARIABLES
 
         std::vector<double> emg_voltages_;
 

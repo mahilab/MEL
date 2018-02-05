@@ -8,8 +8,8 @@ ForceSensor::ForceSensor() :
     voltages_({ 0 })
 { }
 
-ForceSensor::ForceSensor(std::string name, std::vector<Input<voltage>::Channel> ai_channels) :
-    Device(name),
+ForceSensor::ForceSensor(std::string name, std::vector<Input<Voltage>::Channel> ai_channels) :
+    Device("ForceSensor::" + name),
     num_channels_(static_cast<int>(ai_channels.size())),
     voltages_(std::vector<double>(ai_channels.size(), 0))
 {

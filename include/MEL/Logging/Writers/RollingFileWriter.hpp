@@ -32,96 +32,98 @@ namespace mel {
 template <class Formatter>
 class RollingFileWriter : public Writer {
 public:
-    RollingFileWriter(const char* fileName,
-                      size_t maxFileSize = 0,
-                      int maxFiles       = 0)
-        : m_fileSize(),
-          m_maxFileSize(
-              (std::max)(static_cast<off_t>(maxFileSize),
+    RollingFileWriter(const char* filename,
+                      size_t max_file_size = 0,
+                      int max_files       = 0,
+                      Severity max_severity = Verbose)
+        : Writer(max_severity),
+          file_size_(),
+          max_file_size_(
+              (std::max)(static_cast<off_t>(max_file_size),
                          static_cast<off_t>(
                              1000)))  // set a lower limit for the maxFileSize
           ,
-          m_lastFileNumber((std::max)(maxFiles - 1, 0)),
-          m_firstWrite(true) {
-        split_file_name(fileName, m_fileNameNoExt, m_fileExt);
+          last_file_number_((std::max)(max_files - 1, 0)),
+          first_write_(true) {
+        split_file_name(filename, filename_no_ext_, file_ext_);
     }
 
     virtual void write(const Record& record) {
-        Lock lock(m_mutex);
+        Lock lock(mutex_);
 
-        if (m_firstWrite) {
-            openLogFile();
-            m_firstWrite = false;
-        } else if (m_lastFileNumber > 0 && m_fileSize > m_maxFileSize &&
-                   -1 != m_fileSize) {
-            rollLogFiles();
+        if (first_write_) {
+            open_log_file();
+            first_write_ = false;
+        } else if (last_file_number_ > 0 && file_size_ > max_file_size_ &&
+                   -1 != file_size_) {
+            roll_log_files();
         }
 
-        int bytesWritten =
-            m_file.write(Formatter::format(record));
+        int bytes_written =
+            file_.write(Formatter::format(record));
 
 
-        if (bytesWritten > 0) {
-            m_fileSize += bytesWritten;
+        if (bytes_written > 0) {
+            file_size_ += bytes_written;
         }
     }
 
 private:
-    void rollLogFiles() {
-        m_file.close();
+    void roll_log_files() {
+        file_.close();
 
-        std::string lastFileName = buildFileName(m_lastFileNumber);
+        std::string lastFileName = build_file_name(last_file_number_);
         mel::File::unlink(lastFileName.c_str());
 
-        for (int fileNumber = m_lastFileNumber - 1; fileNumber >= 0;
+        for (int fileNumber = last_file_number_ - 1; fileNumber >= 0;
              --fileNumber) {
-            std::string currentFileName = buildFileName(fileNumber);
-            std::string nextFileName    = buildFileName(fileNumber + 1);
+            std::string currentFileName = build_file_name(fileNumber);
+            std::string nextFileName    = build_file_name(fileNumber + 1);
 
             File::rename(currentFileName.c_str(), nextFileName.c_str());
         }
 
-        openLogFile();
+        open_log_file();
     }
 
-    void openLogFile() {
-        std::string fileName = buildFileName();
-        m_fileSize           = m_file.open(fileName.c_str());
+    void open_log_file() {
+        std::string fileName = build_file_name();
+        file_size_           = file_.open(fileName.c_str());
 
-        if (0 == m_fileSize) {
+        if (0 == file_size_) {
             int bytesWritten =
-                m_file.write(Formatter::header());
+                file_.write(Formatter::header());
 
             if (bytesWritten > 0) {
-                m_fileSize += bytesWritten;
+                file_size_ += bytesWritten;
             }
         }
     }
 
-    std::string buildFileName(int fileNumber = 0) {
+    std::string build_file_name(int fileNumber = 0) {
         std::ostringstream ss;
-        ss << m_fileNameNoExt;
+        ss << filename_no_ext_;
 
         if (fileNumber > 0) {
             ss << '.' << fileNumber;
         }
 
-        if (!m_fileExt.empty()) {
-            ss << '.' << m_fileExt;
+        if (!file_ext_.empty()) {
+            ss << '.' << file_ext_;
         }
 
         return ss.str();
     }
 
 private:
-    Mutex m_mutex;
-    File m_file;
-    off_t m_fileSize;
-    const off_t m_maxFileSize;
-    const int m_lastFileNumber;
-    std::string m_fileExt;
-    std::string m_fileNameNoExt;
-    bool m_firstWrite;
+    Mutex mutex_;
+    File file_;
+    off_t file_size_;
+    const off_t max_file_size_;
+    const int last_file_number_;
+    std::string file_ext_;
+    std::string filename_no_ext_;
+    bool first_write_;
 };
 }  // namespace mel
 

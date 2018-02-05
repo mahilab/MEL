@@ -162,8 +162,8 @@ public:
 // TYPEDEFS
 //==============================================================================
 
-typedef Output<voltage> AnalogOutput;
-typedef Output<logic>   DigitalOutput;
+typedef Output<Voltage> AnalogOutput;
+typedef Output<Logic>   DigitalOutput;
 
 } // namespace mel
 

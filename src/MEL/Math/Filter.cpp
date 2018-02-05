@@ -8,11 +8,11 @@ Filter::Filter() :
            { 1.000000000000000, -1.561018075800718, 0.641351538057563 })
 { }
 
-Filter::Filter(const std::vector<double>& b, const std::vector<double>& a) :
-    Filter(1, b, a)
-{ }
+//Filter::Filter(const std::vector<double>& b, const std::vector<double>& a) :
+//    Filter(1, b, a)
+//{ }
 
-Filter::Filter(int length, const std::vector<double>& b, const std::vector<double>& a) :
+Filter::Filter(const std::vector<double>& b, const std::vector<double>& a, int length) :
     length_(length),
     b_(b),
     a_(a),

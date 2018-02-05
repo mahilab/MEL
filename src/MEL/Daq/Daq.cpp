@@ -9,7 +9,7 @@ namespace mel {
 //==============================================================================
 
 Daq::Daq(const std::string& name) :
-    Device(name),
+    Device("Daq::" + name),
     open_(false)
 {
 }

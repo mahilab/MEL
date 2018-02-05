@@ -5,15 +5,17 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/DataLog.hpp>
+#include <MEL/Logging/DataLog.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/RingBuffer.hpp>
 
 using namespace mel;
 
-std::atomic<bool> stop = false;
-static void handler(int var) {
+// create global stop variable CTRL-C handler function
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -35,7 +37,7 @@ int main(int argc, char *argv[]) {
     }
 
     // register ctrl-c handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     // make MelShares
     MelShare ms_pos("melscope_pos");
@@ -48,9 +50,9 @@ int main(int argc, char *argv[]) {
 
     // make Q8 USB and configure
     Q8Usb q8;
-    q8.digital_output.set_enable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
+    q8.digital_output.set_enable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_disable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_expire_values(std::vector<Logic>(8, High));
     if (!q8.identify(7)) {
         print("Incorrect DAQ");
         return 0;
@@ -62,7 +64,7 @@ int main(int argc, char *argv[]) {
     for (uint32 i = 0; i < 2; ++i) {
         amplifiers.push_back(
             Amplifier("meii_amp_" + std::to_string(i),
-                Amplifier::TtlLevel::Low,
+                Low,
                 q8.digital_output[i + 1],
                 1.8,
                 q8.analog_output[i + 1])
@@ -71,7 +73,7 @@ int main(int argc, char *argv[]) {
     for (uint32 i = 2; i < 5; ++i) {
         amplifiers.push_back(
             Amplifier("meii_amp_" + std::to_string(i),
-                Amplifier::TtlLevel::Low,
+                Low,
                 q8.digital_output[i + 1],
                 0.184,
                 q8.analog_output[i + 1])
@@ -209,7 +211,7 @@ int main(int argc, char *argv[]) {
             q8.update_output();
 
             // kick watchdog
-            if (!q8.watchdog.kick() || meii.check_all_joint_limits())
+            if (!q8.watchdog.kick() || meii.any_limit_exceeded())
                 stop = true;
 
             // wait for remainder of sample period
@@ -228,6 +230,9 @@ int main(int argc, char *argv[]) {
 
         // select EMG channel
         size_t emg_channel_select = 0; // between 0 and 7
+
+        // select DoF to be moved
+        int dof = 0; // between 0 and 4
 
         // set up state machine
         uint16 state = 0;
@@ -292,62 +297,63 @@ int main(int argc, char *argv[]) {
 
             case 1: // initialize rps
 
-                    /// calculate commanded torques
+                    // calculate commanded torques
                 rps_command_torques = meii.set_rps_pos_ctrl_torques(meii.rps_init_par_ref_, timer.get_elapsed_time());
                 std::copy(rps_command_torques.begin(), rps_command_torques.end(), command_torques.begin() + 2);
 
-                /// check for RPS Initialization target reached
+                // check for RPS Initialization target reached
                 if (meii.check_rps_init()) {
                     print("RPS Mechanism Initialized");
-                    meii.set_rps_control_mode(1); /// platform height backdrivable
+                    meii.set_rps_control_mode(1); // platform height backdrivable
                     meii.anat_ref_.start(setpoint, meii.get_anatomical_joint_positions(), timer.get_elapsed_time());
                     state = 2;
                 }
                 break;
 
-            case 2: /// read emg
+            case 2: // EMG trigger teleop
 
-                    /// emg signal processing
+                // emg signal processing
                 emg_voltages = meii.get_emg_voltages();
                 meii.butter_hp_.filter(emg_voltages, filtered_emg_voltages);
                 meii.tko_.tkeo(filtered_emg_voltages, tkeo_emg);
                 meii.tkeo_butter_lp_.filter(tkeo_emg, filtered_tkeo_emg);
 
-                /// store emg signal processing data for sharing
+                // store emg signal processing data for sharing
                 emg_share[0] = emg_voltages[emg_channel_select];
                 emg_share[1] = filtered_emg_voltages[emg_channel_select];
                 emg_share[2] = tkeo_emg[emg_channel_select];
                 emg_share[3] = filtered_tkeo_emg[emg_channel_select];
 
-                /// write to emg data log
+                // write to emg data log
                 emg_log.add_row({ timer.get_elapsed_time().as_seconds(), emg_voltages[emg_channel_select], filtered_emg_voltages[emg_channel_select], tkeo_emg[emg_channel_select], filtered_tkeo_emg[emg_channel_select] });
 
 
-                /// calculate commanded torques
+                // calculate commanded torques
                 command_torques = meii.set_anat_pos_ctrl_torques(meii.anat_ref_, timer.get_elapsed_time());
 
                 break;
             }
 
-            /// write to MelShares
+            // write to MelShares
             ms_pos.write_data(aj_positions);
             ms_vel.write_data(aj_velocities);
             ms_trq.write_data(command_torques);
             ms_emg.write_data(emg_share);
 
-            /// update all DAQ output channels
+            // update all DAQ output channels
             q8.update_output();
 
-            /// kick watchdog
-            if (!q8.watchdog.kick() || meii.check_all_joint_limits())
+
+            // kick watchdog
+            if (!q8.watchdog.kick() || meii.any_limit_exceeded())
                 stop = true;
 
-            /// wait for remainder of sample period
+            // wait for remainder of sample period
             timer.wait();
 
-        } /// end while loop
+        } // end while loop
 
-    } /// read emg
+    } // teleoperate the MAHI Exo-II in EMG triggered
 
     disable_realtime();
     return 0;

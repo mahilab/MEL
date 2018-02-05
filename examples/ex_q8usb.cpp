@@ -19,8 +19,7 @@ int handler(unsigned long param) {
 int main() {
 
     // intialize logger
-    static ColorConsoleWriter<TxtFormatter> consoleAppender;
-    init_logger(Verbose, "log.csv").add_writer(&consoleAppender);
+    init_logger();
 
     // register CTRL-C handler
     register_ctrl_handler(handler);
@@ -34,18 +33,12 @@ int main() {
     Q8Usb q8;
 
     // override default enable/disable/expiration states
-    q8.digital_output.set_enable_values(
-        std::vector<logic>(8, HIGH));  // default is LOW
-    q8.digital_output.set_disable_values(
-        std::vector<logic>(8, HIGH));  // default is LOW
-    q8.digital_output.set_expire_values(
-        std::vector<logic>(8, HIGH));  // default is LOW
-    q8.analog_output.set_enable_values(
-        std::vector<voltage>(8, 1.0));  // default is 0.0
-    q8.analog_output.set_disable_values(
-        std::vector<voltage>(8, 2.0));  // default is 0.0
-    q8.analog_output.set_expire_values(
-        std::vector<voltage>(8, 3.0));  // default is 0.0
+    q8.digital_output.set_enable_values(std::vector<Logic>(8, High));  // default is LOW
+    q8.digital_output.set_disable_values(std::vector<Logic>(8, High)); // default is LOW
+    q8.digital_output.set_expire_values(std::vector<Logic>(8, High));  // default is LOW
+    q8.analog_output.set_enable_values(std::vector<Voltage>(8, 1.0));  // default is 0.0
+    q8.analog_output.set_disable_values(std::vector<Voltage>(8, 2.0)); // default is 0.0
+    q8.analog_output.set_expire_values(std::vector<Voltage>(8, 3.0));  // default is 0.0
 
     //==============================================================================
     // ENABLE
@@ -101,13 +94,13 @@ int main() {
 
     // ask for user input
     prompt("Connect DI0 to DO0 then press ENTER to start DIO test.");
-    logic signal = HIGH;
+    Logic signal = High;
     // start analog loopback loop
     timer.restart();
     while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.digital_input.get_value(0));
-        signal = !signal;
+        signal = (Logic)(High - signal);
         q8.digital_output.set_value(0, signal);
         q8.update_output();
         timer.wait();
@@ -123,12 +116,13 @@ int main() {
     prompt(
         "Press Enter to start the watchdog test. Press W to simulate a missed "
         "deadline, or do nothing to allow normal operation.");
-    // set watchdog timeout (default value is 100ms)
-    q8.watchdog.set_timeout(milliseconds(10));
     // make a timer faster than our watchdog time out
     timer = Timer(milliseconds(1));
+    // set watchdog timeout (default value is 100ms)
+    q8.watchdog.set_timeout(milliseconds(10));
     // start watchdog
     q8.watchdog.start();
+    timer.restart();
     while (timer.get_elapsed_time() < seconds(5) && !stop) {
         // simulate a missed deadline if W pressed
         if (Keyboard::is_key_pressed(Key::W)) {

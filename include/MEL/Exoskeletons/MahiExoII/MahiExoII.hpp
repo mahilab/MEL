@@ -6,7 +6,7 @@
 #include "MEL/Core/Exo.hpp"
 #include "MEL/Core/Motor.hpp"
 #include "MEL/Core/PdController.hpp"
-#include "MEL/Utility/DataLog.hpp"
+#include "MEL/Logging/DataLog.hpp"
 #include "MEL/Utility/Time.hpp"
 #include <array>
 #include <vector>
@@ -40,7 +40,7 @@ public:
 
 
     // Manually zero the encoders
-    void calibrate(std::atomic<bool>& stop_flag);
+    void calibrate(volatile std::atomic<bool>& stop_flag);
 
     /// Disables the robot and stops all smooth reference trajectories
     bool disable() override;

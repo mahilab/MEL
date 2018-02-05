@@ -47,12 +47,13 @@ typedef unsigned long long uint64;  ///<                          0 to 18,446,74
 //==============================================================================
 
 /// Represents a voltage in [V]
-typedef double voltage;
+typedef double Voltage;
 
-/// Represents digital logic values
-typedef int8 logic;
-const        logic  LOW = 0;
-const        logic HIGH = 1;
+/// Represents a digital TTL logic level
+enum Logic {
+    Low  = 0, ///< Low TTL level  (typically 0V)    
+    High = 1  ///< High TTL level (typically 5V)
+};
 
 /// Represents encoder quadrature factors
 enum QuadFactor {

@@ -140,7 +140,7 @@ public:
         else
             full_filename = directory + get_path_slash() + filename + ".csv";
         LOG(Info) << "Saving DataLog to " << full_filename;
-        std::thread t(&DataLog::save_thread_func, this, full_filename, directory, timestamp);
+        std::thread t(&DataLog::save_thread_func, this, full_filename, directory);
         t.detach();
     }
 
@@ -186,7 +186,7 @@ private:
     }
 
     /// Function called by saving thread
-    void save_thread_func(const std::string& full_filename, const std::string& directory, bool timestamp) {
+    void save_thread_func(const std::string& full_filename, const std::string& directory) {
         Lock lock(mutex_);
         create_directory(directory);
         file_stream_.open(full_filename, std::ofstream::out | std::ofstream::trunc);

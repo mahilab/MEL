@@ -209,7 +209,7 @@ public:
 // TYPEDEFS
 //==============================================================================
 
-typedef InputOutput<logic>   DigitalInputOutput;
+typedef InputOutput<Logic>   DigitalInputOutput;
 
 } // namespace mel
 

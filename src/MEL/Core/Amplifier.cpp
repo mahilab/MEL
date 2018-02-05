@@ -7,16 +7,16 @@ namespace mel {
 //==============================================================================
 
 Amplifier::Amplifier(const std::string& name,
-                     TtlLevel enable_level,
+                     Logic enable_level,
                      DigitalOutput::Channel enable_channel,
                      double command_gain,
                      AnalogOutput::Channel command_channel,
                      Limiter current_limiter,
-                     TtlLevel fault_level,
+                     Logic fault_level,
                      DigitalInput::Channel fault_channel,
                      double sense_gain,
                      AnalogInput::Channel sense_channel)
-    : Device(name),
+    : Device("Amplifier::" + name),
       enable_level_(enable_level),
       fault_level_(fault_level),
       command_gain_(command_gain),
@@ -31,10 +31,7 @@ Amplifier::Amplifier(const std::string& name,
 bool Amplifier::enable() {
   current_limiter_.reset();
   command_channel_.set_value(0.0);
-  if (enable_level_ == TtlLevel::High)
-    enable_channel_.set_value(HIGH);
-  else if (enable_level_ == TtlLevel::Low)
-    enable_channel_.set_value(LOW);
+  enable_channel_.set_value(enable_level_);
   if (enable_channel_.update())
     return Device::enable();
   else
@@ -43,10 +40,10 @@ bool Amplifier::enable() {
 
 bool Amplifier::disable() {
   command_channel_.set_value(0.0);
-  if (enable_level_ == TtlLevel::High)
-    enable_channel_.set_value(LOW);
-  else if (enable_level_ == TtlLevel::Low)
-    enable_channel_.set_value(HIGH);
+  if (enable_level_ == High)
+    enable_channel_.set_value(Low);
+  else if (enable_level_ == Low)
+    enable_channel_.set_value(High);
   if (enable_channel_.update())
     return Device::disable();
   else
@@ -78,18 +75,11 @@ double Amplifier::get_current_sense() const {
 bool Amplifier::is_faulted(bool force_update) {
   if (force_update)
     fault_channel_.update();
-  logic value = fault_channel_.get_value();
-  if (fault_level_ == TtlLevel::High) {
-    if (value == HIGH)
+  if (fault_channel_.get_value() == fault_level_)
       return true;
-    else
+  else
       return false;
-  } else {
-    if (value == TtlLevel::Low)
-      return true;
-    else
-      return false;
-  }
+
 }
 
 }  // namespace mel

@@ -9,7 +9,7 @@ namespace mel {
 //==============================================================================
 
 PositionSensor::PositionSensor(const std::string& name) :
-    Device(name),
+    Device("PositionSensor::" + name),
     position_(0.0)
 { }
 

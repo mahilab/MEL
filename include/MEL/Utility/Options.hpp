@@ -566,7 +566,7 @@ namespace mel
           throw argument_incorrect_type(text);
         }
 
-        result = result * base + digit;
+        result = result * static_cast<US>(base) + static_cast<US>(digit);
       }
 
       detail::check_signed_range<T>(negative, result, text);

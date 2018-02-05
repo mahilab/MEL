@@ -9,7 +9,7 @@ namespace mel {
 //==============================================================================
 
 VelocitySensor::VelocitySensor(const std::string& name) :
-    Device(name),
+    Device("VelocitySensor::" + name),
     velocity_(0.0)
 { }
 

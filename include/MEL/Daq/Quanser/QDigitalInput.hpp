@@ -50,9 +50,12 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
+    std::vector<char>& get_quanser_values();
+
 private:
 
     QDaq& daq_;  ///< Reference to parent QDaq
+    std::vector<char> quanser_values_;
 
 };
 

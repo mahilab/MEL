@@ -40,6 +40,6 @@ void color_console() {
 }
 
 int main() {
-    performance();
+    color_console();
     return 0;
 }

@@ -23,7 +23,7 @@
 #include <vector>
 
 #ifndef DEFAULT_MEL_LOGGER
-#define DEFAULT_MEL_LOGGER 0
+#define DEFAULT_LOGGER 0
 #endif
 
 namespace mel {
@@ -54,8 +54,9 @@ public:
 
     void operator+=(const Record& record) {
         for (std::vector<Writer*>::iterator it = writers_.begin();
-             it != writers_.end(); ++it) {
-            (*it)->write(record);
+            it != writers_.end(); ++it) {
+            if ((*it)->check_severity(record.get_severity()))
+                (*it)->write(record);
         }
     }
 
@@ -69,8 +70,8 @@ inline Logger<instance>* get_logger() {
     return Logger<instance>::get_instance();
 }
 
-inline Logger<DEFAULT_MEL_LOGGER>* get_logger() {
-    return Logger<DEFAULT_MEL_LOGGER>::get_instance();
+inline Logger<DEFAULT_LOGGER>* get_logger() {
+    return Logger<DEFAULT_LOGGER>::get_instance();
 }
 }  // namespace mel
 
