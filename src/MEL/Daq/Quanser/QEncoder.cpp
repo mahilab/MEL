@@ -11,7 +11,7 @@ namespace mel {
 //==============================================================================
 
 QEncoder::QEncoder(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-    Encoder(daq.name_ + "_encoder", channel_numbers),
+    Encoder(daq.get_name() + "_encoder", channel_numbers),
     daq_(daq)
 {
 }
@@ -39,7 +39,7 @@ bool QEncoder::update() {
     if (result == 0)
         return true;
     else {
-        LOG(Error) << "Failed to update " << name_ << " "
+        LOG(Error) << "Failed to update " << get_name() << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -56,7 +56,7 @@ bool QEncoder::update_channel(uint32 channel_number) {
     if (result == 0)
         return true;
     else {
-        LOG(Error) << "Failed to update " << name_ << " channel number " << channel_number << " "
+        LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -74,11 +74,11 @@ bool QEncoder::reset_counts(const std::vector<int32>& counts) {
     result = hil_set_encoder_counts(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &counts[0]);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Reset " << name_ << " counts to " << counts;
+        LOG(Info) << "Reset " << get_name() << " counts to " << counts;
         return true;
     }
     else {
-        LOG(Error) << "Failed to reset " << name_ << " counts "
+        LOG(Error) << "Failed to reset " << get_name() << " counts "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -96,11 +96,11 @@ bool QEncoder::reset_count(uint32 channel_number, int32 count) {
     result = hil_set_encoder_counts(daq_.handle_, &channel_number, static_cast<uint32>(1), &count);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Reset " << name_ << " channel number " << channel_number << " count to " << count;
+        LOG(Info) << "Reset " << get_name() << " channel number " << channel_number << " count to " << count;
         return true;
     }
     else {
-        LOG(Error) << "Failed to reset " << name_ << " channel number " << channel_number << " count "
+        LOG(Error) << "Failed to reset " << get_name() << " channel number " << channel_number << " count "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -135,11 +135,11 @@ bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
     result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_factors[0]);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Set " << name_ << " quadrature factors";
+        LOG(Info) << "Set " << get_name() << " quadrature factors";
         return true;
     }
     else {
-        LOG(Error) << "Failed to set " << name_ << " quadrature factors "
+        LOG(Error) << "Failed to set " << get_name() << " quadrature factors "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -171,11 +171,11 @@ bool QEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
     result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_factor);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Set " << name_ << " channel number " << channel_number << " quadrature factor";
+        LOG(Info) << "Set " << get_name() << " channel number " << channel_number << " quadrature factor";
         return true;
     }
     else {
-        LOG(Error) << "Failed to set " << name_ << " channel number " << channel_number << " quadrature factor"
+        LOG(Error) << "Failed to set " << get_name() << " channel number " << channel_number << " quadrature factor"
             << QDaq::get_quanser_error_message(result);
         return false;
     }

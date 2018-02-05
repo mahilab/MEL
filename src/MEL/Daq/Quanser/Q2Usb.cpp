@@ -49,7 +49,7 @@ Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
 Q2Usb::~Q2Usb() {
 
     // if enabled, disable
-    if (enabled_)
+    if (is_enabled())
         disable();
     // if open, close
     if (open_) {
@@ -97,7 +97,7 @@ bool Q2Usb::close() {
 bool Q2Usb::enable() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     // enable each module
@@ -117,7 +117,7 @@ bool Q2Usb::enable() {
 bool Q2Usb::disable() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     // disable each module
@@ -141,7 +141,7 @@ bool Q2Usb::disable() {
 bool Q2Usb::update_input() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     if (analog_input.update() && encoder.update() && digital_io.update())
@@ -154,7 +154,7 @@ bool Q2Usb::update_input() {
 bool Q2Usb::update_output() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     if (analog_output.update() && digital_io.update())
@@ -166,7 +166,7 @@ bool Q2Usb::update_output() {
 bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     InputOutput<Logic>::Channel di_ch = digital_io.get_channel(input_channel_number);

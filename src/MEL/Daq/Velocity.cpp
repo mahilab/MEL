@@ -100,12 +100,12 @@ namespace mel {
 
     Velocity::Channel::Channel() :
         ChannelBase(),
-        VelocitySensor("invalid_velocity")
+        VelocitySensor("")
     { }
 
     Velocity::Channel::Channel(Velocity* module, uint32 channel_number) :
         ChannelBase(module, channel_number),
-        VelocitySensor(module->get_name() + "_velocity")
+        VelocitySensor(module->get_name() + "[" + std::to_string(channel_number) + "]")
     { }
 
     bool Velocity::Channel::enable() {

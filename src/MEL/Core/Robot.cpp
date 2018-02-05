@@ -4,7 +4,7 @@
 namespace mel {
 
 Robot::Robot(const std::string& name) :
-    Device(name)
+    Device("Robot::" + name)
 {}
 
 bool Robot::enable() {

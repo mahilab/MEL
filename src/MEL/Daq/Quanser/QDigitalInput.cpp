@@ -10,7 +10,7 @@ namespace mel {
     //==============================================================================
 
     QDigitalInput::QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-        Input(daq.name_ + "_digital_input", channel_numbers),
+        Input(daq.get_name() + "_digital_input", channel_numbers),
         daq_(daq),
         quanser_values_(channel_count_, char(0))
     {
@@ -43,7 +43,7 @@ namespace mel {
             return true;
         }
         else {
-            LOG(Error) << "Failed to update " << name_ << " "
+            LOG(Error) << "Failed to update " << get_name() << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -62,7 +62,7 @@ namespace mel {
             return true;
         }
         else {
-            LOG(Error) << "Failed to update " << name_ << " channel number " << channel_number << " "
+            LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }

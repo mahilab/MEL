@@ -56,16 +56,20 @@ public:
     /// Returns true if the device is enabled, false if disabled.
     bool is_enabled() const;
 
-    /// Returns the Device's string name
+    /// Returns the Device's name
     const std::string& get_name() const;
+
+    /// Returns the Device's long name which includes its class lineage
+    const std::string& get_long_name() const;
 
     /// Sets the Device's string name
     void set_name(const std::string& name);
 
-protected:
+private:
 
-    std::string name_;  ///< The Device name
-    bool enabled_;      ///< The Device enabled status
+    bool enabled_;          ///< The Device enabled status
+    std::string long_name_; ///< the Device long name
+    std::string name_;      ///< The Device short name
 
 };
 

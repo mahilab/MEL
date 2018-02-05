@@ -81,6 +81,7 @@ protected:
     }
 
 protected:
+
     bool open_;  ///< The Daq open status
     std::unordered_map<std::type_index, ModuleBase*> modules_;
 

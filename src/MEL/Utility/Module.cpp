@@ -4,7 +4,7 @@
 namespace mel {
 
 ModuleBase::ModuleBase(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
-    Device(name),
+    Device("Module::" + name),
     type_(type),
     channel_numbers_(sort_and_reduce_channels(channel_numbers)),
     channel_count_(channel_numbers_.size()),
