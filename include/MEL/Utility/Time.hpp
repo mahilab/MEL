@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -12,12 +13,17 @@
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
 //
+// This particular source file includes code which has been adapted from the
+// following open-source projects (all external licenses attached at bottom):
+//     SFML - Simple and Fast Multimedia Library
+//
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #ifndef MEL_TIME_HPP
 #define MEL_TIME_HPP
 
 #include <MEL/Utility/Types.hpp>
+#include <iostream>
 
 namespace mel
 {
@@ -34,6 +40,9 @@ public:
     /// Default constructor. Sets time value to zero. To construct valued time
     /// objects, use mel::seconds, mel::milliseconds or mel::microseconds.
     Time();
+
+    /// Overloads stream operator
+    friend std::ostream& operator << (std::ostream& os, const Time& t);
 
     /// Return the time value as a number of seconds.
     double as_seconds() const;
@@ -75,6 +84,9 @@ Time microseconds(int64 amount);
 //==============================================================================
 // OPERATOR OVERLOADS
 //==============================================================================
+
+/// Overload of << stream operator
+std::ostream& operator << (std::ostream& os, const Time& t);
 
 /// Overload of == operator to compare if two time values are equal
 bool operator ==(Time left, Time right);
@@ -200,8 +212,9 @@ Time& operator %=(Time& left, Time right);
 /// \see mel::Clock, mel::Timer, mel::seconds, mel::milliseconds, mel::microseconds
 
 //==============================================================================
-// APAPTED FROM: SFML (https://www.sfml-dev.org/)
+// LICENSES
 //==============================================================================
+
 // SFML - Simple and Fast Multimedia Library
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
@@ -221,4 +234,3 @@ Time& operator %=(Time& left, Time right);
 //    and must not be misrepresented as being the original software.
 //
 // 3. This notice may not be removed or altered from any source distribution.
-//==============================================================================

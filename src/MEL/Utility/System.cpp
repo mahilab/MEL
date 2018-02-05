@@ -1,6 +1,7 @@
 #include <MEL/Utility/System.hpp>
 #include <iomanip>
 #include <ctime>
+#include <cstring>
 
 #ifdef __linux__
     #include <sys/stat.h>
@@ -16,20 +17,6 @@
 #endif
 
 namespace mel {
-
-//==============================================================================
-// DATE FUNCTIONS
-//==============================================================================
-
-const std::string get_ymdhms() {
-    std::time_t rawtime;
-    std::tm* timeinfo;
-    char buffer [80];
-    std::time(&rawtime);
-    timeinfo = std::localtime(&rawtime);
-    std::strftime(buffer,80,"%Y-%m-%d-%H.%M.%S",timeinfo);
-    return buffer;
-}
 
 //==============================================================================
 // DIRECTORY FUNCTIONS
@@ -69,6 +56,20 @@ void create_directory(std::string directory) {
         #elif _WIN32
             CreateDirectory(sub_path.c_str(), NULL);
         #endif
+    }
+}
+
+void split_file_name(const char* file_name, std::string& file_name_no_ext, std::string& file_ext)
+{
+    const char* dot = std::strrchr(file_name, '.');
+
+    if (dot) {
+        file_name_no_ext.assign(file_name, dot);
+        file_ext.assign(dot + 1);
+    }
+    else {
+        file_name_no_ext.assign(file_name);
+        file_ext.clear();
     }
 }
 
@@ -217,6 +218,18 @@ bool disable_realtime() {
             return false;
         }
         return true;
+    #endif
+}
+
+uint32 get_thread_id() {
+    #ifdef _WIN32
+    return GetCurrentThreadId();
+    #elif defined(__linux__)
+    return static_cast<unsigned int>(::syscall(__NR_gettid));
+    #elif defined(__APPLE__)
+    uint64_t tid64;
+    pthread_threadid_np(NULL, &tid64);
+    return static_cast<unsigned int>(tid64);
     #endif
 }
 

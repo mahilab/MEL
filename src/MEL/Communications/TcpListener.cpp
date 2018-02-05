@@ -1,5 +1,6 @@
 #include <MEL/Communications/TcpListener.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <iostream>
 
 namespace mel
@@ -42,7 +43,7 @@ Socket::Status TcpListener::listen(unsigned short port, const IpAddress& address
     if (bind(get_handle(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == -1)
     {
         // Not likely to happen, but...
-        std::cout << "Failed to bind listener socket to port " << port << std::endl;
+        LOG(mel::Error) << "Failed to bind listener socket to port " << port;
         return Error;
     }
 
@@ -50,7 +51,7 @@ Socket::Status TcpListener::listen(unsigned short port, const IpAddress& address
     if (::listen(get_handle(), 0) == -1)
     {
         // Oops, socket is deaf
-        std::cout << "Failed to listen to port " << port << std::endl;
+        LOG(mel::Error) << "Failed to listen to port " << port;
         return Error;
     }
 
@@ -68,7 +69,7 @@ Socket::Status TcpListener::accept(TcpSocket& socket)
     // Make sure that we're listening
     if (get_handle() == Socket::invalid_socket())
     {
-        std::cout << "Failed to accept a new connection, the socket is not listening" << std::endl;
+        LOG(mel::Error) << "Failed to accept a new connection, the socket is not listening";
         return Error;
     }
 

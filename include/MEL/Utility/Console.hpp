@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,161 +21,134 @@
 
 #include <MEL/Utility/Time.hpp>
 #include <MEL/Utility/Types.hpp>
-#include <array>
-#include <iostream>
-#include <string>
-#include <tuple>
-#include <vector>
+#include <MEL/Utility/StlStreams.hpp>
+#include <sstream>
+#include <atomic>
 
 namespace mel {
-
-//==============================================================================
-// FORWARD DECLARATIONS
-//==============================================================================
-
-//==============================================================================
-// TUPLE PRINTING
-//==============================================================================
-
-namespace priv {
-template <std::size_t...> struct seq {};
-
-template <std::size_t N, std::size_t... Is>
-struct gen_seq : gen_seq<N - 1, N - 1, Is...> {};
-
-template <std::size_t... Is> struct gen_seq<0, Is...> : seq<Is...> {};
-
-template <class Ch, class Tr, class Tuple, std::size_t... Is>
-void print_tuple(std::basic_ostream<Ch, Tr> &os, Tuple const &t, seq<Is...>) {
-  using swallow = int[];
-  (void)swallow{0,
-                (void(os << (Is == 0 ? "" : ", ") << std::get<Is>(t)), 0)...};
-}
-} // namespace priv
-
-/// Outputs tuple to stream using << operator
-template <class Ch, class Tr, class... Args>
-auto operator<<(std::basic_ostream<Ch, Tr> &os, std::tuple<Args...> const &t)
-    -> std::basic_ostream<Ch, Tr> & {
-  priv::print_tuple(os, t, priv::gen_seq<sizeof...(Args)>());
-  return os;
-}
 
 //==============================================================================
 // CONSOLE OUTPUT
 //==============================================================================
 
-/// Prints anything that works with std::cout.
-/// end_line = true will print a new line after printing value
-template <typename T> void print(T value, bool end_line = true) {
-  std::cout << value;
-  if (end_line)
-    std::cout << std::endl;
-}
+/// Prints a string to the console using the fastest method the OS offers
+void print_string(const std::string& str);
 
-/// Prints STL vector
-template <typename T>
-void print(const std::vector<T> &v, bool end_line = true) {
-  for (auto it = v.begin(); it != v.end(); ++it) {
-    std::cout << *it << " ";
-  }
-  if (end_line)
-    std::cout << std::endl;
-}
-
-/// Prints any STL container
-template <typename C> void print_stl(const C &c, bool end_line = true) {
-  for (auto it = c.begin(); it != c.end(); ++it) {
-    std::cout << *it << " ";
-  }
-  if (end_line)
-    std::cout << std::endl;
-}
-
-/// Prints STL array
-template <typename T, std::size_t N>
-void print(const std::array<T, N> &a, bool end_line = true) {
-  for (auto it = a.begin(); it != a.end(); ++it) {
-    std::cout << *it << " ";
-  }
-  if (end_line)
-    std::cout << std::endl;
-}
-
-/// Prints C-style array
-template <typename T> void print(T *a, std::size_t size, bool end_line = true) {
-  for (int i = 0; i < size; i++) {
-    std::cout << a[i] << " ";
-  }
-  if (end_line)
-    std::cout << std::endl;
+/// Prints anything that works with stream operators (appends new line character)
+template<typename T>
+void print(T value) {
+    std::stringstream ss;
+    ss << value << std::endl;
+    print_string(ss.str());
 }
 
 /// Prints MEL 2D array
 template <typename T, std::size_t N, std::size_t M>
-void print(const array_2D<T, N, M> &a, bool end_line = true) {
-  for (auto it_row = a.begin(); it_row != a.end(); ++it_row) {
-    for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
-      std::cout << *it_col << " ";
+void print(const array_2D<T, N, M>& a, bool end_line = true) {
+    for (auto it_row = a.begin(); it_row != a.end(); ++it_row) {
+        for (auto it_col = (*it_row).begin(); it_col != (*it_row).end();
+             ++it_col) {
+            std::cout << *it_col << " ";
+        }
+        if (end_line)
+            std::cout << std::endl;
     }
-    if (end_line)
-      std::cout << std::endl;
-  }
 }
 
-void print(Time time, bool end_line = true);
-
 //==============================================================================
-// CONSOLE INPUT
+// CONSOLE INPUT & SIGNAL HANDLING
 //==============================================================================
 
 /// Prompts the user with a message and waits for Enter to be pressed.
-void prompt(std::string message);
+void prompt(const std::string& message);
 
 /// Registers a function so that it is called when Ctrl+C is pressed.
-/// The function must take an int argument and return void. If it is a class
-/// function, it must be static and thus contain only static member data.
-void register_ctrl_c_handler(void (*func)(int));
+///
+/// The handler should have an unsigned long input parameter and return an int.
+/// The input can be checked against the the control signal values below for 
+/// further processsing. If this function handles the event, it should return 1,
+/// otherwise it should return 0 in which case the next handler will be processed
+bool register_ctrl_handler(int (*handler)(unsigned long));
+
+#define CTRL_C_EVENT        0  ///< Ctrl+C pressed
+#define CTRL_BREAK_EVENT    1  ///< Ctrl+Break pressed
+#define CTRL_CLOSE_EVENT    2  ///< console closed
+#define CTRL_LOGOFF_EVENT   5  ///< user is logging off
+#define CTRL_SHUTDOWN_EVENT 6  ///< system is shutting down
+
+/// Special bool type that can safely be used by a Ctrl handler
+typedef volatile std::atomic<bool> ctrl_bool;
+
+//==============================================================================
+// CONSOLE FORMAT
+//==============================================================================
+
+/// Represents a console text color
+enum class Color {
+    None,
+    Black,
+    White,
+    Red,
+    Green,
+    Blue,
+    Cyan,
+    Magenta,
+    Yellow,
+};
+
+/// Sets the foreground and background text color in the console
+void set_text_color(Color foreground, Color background = Color::None);
+
+/// Resets the foreground and background text color to the default style
+void reset_text_color();
+
+//==============================================================================
+// MISC
+//==============================================================================
+
+/// True if stdout is a character device (a terminal, console, printer, or serial port)
+extern const bool STDOUT_IS_A_TTY;
 
 //==============================================================================
 // FORMATTING
 //==============================================================================
 
-/// Formats string name in between angle brackets for MEL printing puproses
-std::string namify(std::string name);
-
 /// Turns basic types into a string
-template <typename T> std::string stringify(T value) {
-  return std::to_string(value);
+template <typename T>
+std::string stringify(T value) {
+    return std::to_string(value);
 }
 
 /// Turns STL vector into horizontal string
-template <typename T> std::string stringify(std::vector<T> v) {
-  std::string s;
-  for (auto it = v.begin(); it != v.end(); ++it)
-    s += stringify(*it) + " ";
-  s.pop_back();
-  return s;
+template <typename T>
+std::string stringify(std::vector<T> v) {
+    std::string s;
+    for (auto it = v.begin(); it != v.end(); ++it)
+        s += stringify(*it) + " ";
+    s.pop_back();
+    return s;
 }
 
 /// Turns STL array into horizontal string
-template <typename T, std::size_t N> std::string stringify(std::array<T, N> a) {
-  std::string s;
-  for (auto it = a.begin(); it != a.end(); ++it)
-    s += stringify(*it) + " ";
-  s.pop_back();
-  return s;
+template <typename T, std::size_t N>
+std::string stringify(std::array<T, N> a) {
+    std::string s;
+    for (auto it = a.begin(); it != a.end(); ++it)
+        s += stringify(*it) + " ";
+    s.pop_back();
+    return s;
 }
 
 /// Turns C-style array into horizontal string
-template <typename T> std::string stringify(T *a, std::size_t size) {
-  std::string s;
-  for (int i = 0; i < size; i++)
-    s += stringify(a[i]) + " ";
-  s.pop_back();
-  return s;
+template <typename T>
+std::string stringify(T* a, std::size_t size) {
+    std::string s;
+    for (int i = 0; i < size; i++)
+        s += stringify(a[i]) + " ";
+    s.pop_back();
+    return s;
 }
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_CONSOLE_HPP
+#endif  // MEL_CONSOLE_HPP

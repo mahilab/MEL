@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -49,9 +50,12 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
+    std::vector<char>& get_quanser_values();
+
 private:
 
     QDaq& daq_;  ///< Reference to parent QDaq
+    std::vector<char> quanser_values_;
 
 };
 

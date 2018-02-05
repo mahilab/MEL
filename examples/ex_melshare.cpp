@@ -1,5 +1,6 @@
 #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <vector>
 
 // To run this example, open two terminals and run the following:
@@ -10,6 +11,10 @@
 using namespace mel;
 
 int main(int argc, char *argv[]) {
+
+    static ColorConsoleWriter<TxtFormatter> consoleAppender;
+    init_logger(Verbose, &consoleAppender);
+
     if (argc > 1) {
         MelShare ms("melshare");
         std::string id = argv[1];

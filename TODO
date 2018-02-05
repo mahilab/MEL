@@ -21,11 +21,12 @@ Communication:
 Core:
   ✔ create class for amps @done (18-01-27 18:22)
   ☐ make safety check functions more descriptive
-  ☐ complete Limiter and incorporate
+  ✔ complete Limiter and incorporate @done (18-01-31 21:19)
+  ☐ add Clock to PdController, generalize for all exos
 
 Daq:
  ☐ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation
- ☐ get_module<TModule>
+ ✔ get_module<TModule> @done (18-01-31 21:19)
 
 Q8 USB:
 
@@ -38,6 +39,7 @@ Utility:
   ☐ Write Linux version of Mutex
   ☐ get_last_os_error(), make static functions not print
   ☐ Clean up / rethink StateMachine
+  ☐ Socket.hpp includes winsock, which includes windows.h ... make SocketImpl.hpp
   ✔ templatize DataLog @done (18-01-27 18:22)
 
 OpenWrist:

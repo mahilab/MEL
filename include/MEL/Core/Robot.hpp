@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,16 +69,16 @@ public:
     void set_joint_torques(std::vector<double> new_torques);
 
     /// Checks position limits of all joints and returns true if any exceeded, false otherwise
-    bool check_all_joint_position_limits();
+    bool any_position_limit_exceeded();
 
     /// Checks velocity limits of all joints and returns true if any exceeded, false otherwise
-    bool check_all_joint_velocity_limits();
+    bool any_velocity_limit_exceeded();
 
     /// Checks torque limits of all joints and returns true if any exceeded, false otherwise
-    bool check_all_joint_torque_limits();
+    bool any_torque_limit_exceeded();
 
     /// Checks position, velocity, and torque limits of all joints and returns true if any exceeded, false otherwise
-    bool check_all_joint_limits();
+    bool any_limit_exceeded();
 
 
 protected:

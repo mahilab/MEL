@@ -26,6 +26,7 @@ option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OF
 option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
 option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
+option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
 option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
 
@@ -74,13 +75,7 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
 endif()
 
-
-
 # add definitons
-
-# easylogging++
-add_definitions(-DAUTO_INITIALIZE_EASYLOGGINGPP)
-
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()
@@ -203,6 +198,21 @@ file(GLOB SRC_LEGACY
     "${CMAKE_SOURCE_DIR}/src/MEL/Legacy/*.cpp"
 )
 
+file(GLOB SRC_LOGGING
+    "${CMAKE_SOURCE_DIR}/include/MEL/Logging/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Logging/*.cpp"
+)
+
+file(GLOB SRC_LOGGING_FORMATTERS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Logging/Formatters/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Logging/Formatters/*.cpp"
+)
+
+file(GLOB SRC_LOGGING_WRITERS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Logging/Writers/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Logging/Writers/*.cpp"
+)
+
 file(GLOB SRC_MATH
     "${CMAKE_SOURCE_DIR}/include/MEL/Math/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Math/*.cpp"
@@ -229,6 +239,10 @@ source_group("Devices" FILES ${SRC_DEVICES})
 source_group("Exoskeletons\\OpenWrist" FILES ${SRC_OPENWRIST})
 source_group("Exoskeletons\\MahiExoII" FILES ${SRC_MAHIEXOII})
 source_group("Legacy" FILES ${SRC_LEGACY})
+source_group("Logging" FILES ${SRC_LOGGING})
+source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
+source_group("Logging\\Writers" FILES ${SRC_LOGGING_WRITERS})
+
 source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
 source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
@@ -242,6 +256,9 @@ set(SOURCE_FILES
     ${SRC_CORE}
     ${SRC_DAQ}
     ${SRC_DEVICES}
+    ${SRC_LOGGING}
+    ${SRC_LOGGING_FORMATTERS}
+    ${SRC_LOGGING_WRITERS}
     ${SRC_MATH}
     ${SRC_UTILITY}
 )
@@ -305,7 +322,7 @@ endif()
 target_link_libraries(MEL ${LINK_LIBS})
 
 #===============================================================================
-# CREATE EXAMPLES EXECUTABLES
+# ADD SUBDIRECTORIES
 #===============================================================================
 
 if(EXAMPLES)
@@ -315,4 +332,8 @@ endif()
 if(TESTS)
     add_executable(testing tests/testing.cpp)
     target_link_libraries(testing MEL)
+endif()
+
+if(BUILD_DOC)
+    add_subdirectory(doc)
 endif()

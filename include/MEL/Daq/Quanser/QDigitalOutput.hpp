@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +33,7 @@ namespace mel {
     // CLASS DECLARATION
     //==============================================================================
 
-    class QDigitalOutput : public Output<logic>, NonCopyable {
+    class QDigitalOutput : public DigitalOutput, NonCopyable {
 
     public:
 
@@ -48,14 +49,16 @@ namespace mel {
 
         bool update_channel(uint32 channel_number) override;
 
-        bool set_expire_values(const std::vector<logic>& expire_values) override;
+        std::vector<char>& get_quanser_values();
 
-        bool set_expire_value(uint32 channel_number, logic expire_value) override;
+        bool set_expire_values(const std::vector<Logic>& expire_values) override;
+
+        bool set_expire_value(uint32 channel_number, Logic expire_value) override;
 
     private:
 
         QDaq& daq_;  ///< Reference to parent QDaq
-
+        std::vector<char> quanser_values_;
     };
 
 } // namespace mel

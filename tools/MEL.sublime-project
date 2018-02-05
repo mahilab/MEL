@@ -102,6 +102,11 @@
 			"working_dir": "$project_path/../tools"
 		},
 		{
+			"name": "Visual Studio",
+			"shell_cmd": "start MEL.sln",
+			"working_dir": "$project_path/../build/windows_msvc"
+		},
+		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "MELScope",
 			"shell_cmd": "python MelScope.pyw",
@@ -124,7 +129,8 @@
 	{
 		"ecc_common_flags":
 		[
-			"-I$project_base_path/include"
+			"-I$project_base_path/include",
+			"-IC:/Program Files/Quanser/QUARC/include"
 		]
 	}
 }

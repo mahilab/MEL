@@ -5,15 +5,17 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/DataLog.hpp>
+#include <MEL/Logging/DataLog.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/RingBuffer.hpp>
 
 using namespace mel;
 
-std::atomic<bool> stop = false;
-static void handler(int var) {
+// create global stop variable CTRL-C handler function
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -35,7 +37,7 @@ int main(int argc, char *argv[]) {
     }
 
     // register ctrl-c handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     // make MelShares
     MelShare ms_pos("melscope_pos");
@@ -48,9 +50,9 @@ int main(int argc, char *argv[]) {
 
     // make Q8 USB and configure
     Q8Usb q8;
-    q8.digital_output.set_enable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
+    q8.digital_output.set_enable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_disable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_expire_values(std::vector<Logic>(8, High));
     if (!q8.identify(7)) {
         print("Incorrect DAQ");
         return 0;
@@ -62,7 +64,7 @@ int main(int argc, char *argv[]) {
     for (uint32 i = 0; i < 2; ++i) {
         amplifiers.push_back(
             Amplifier("meii_amp_" + std::to_string(i),
-                Amplifier::TtlLevel::Low,
+                Low,
                 q8.digital_output[i + 1],
                 1.8,
                 q8.analog_output[i + 1])
@@ -71,7 +73,7 @@ int main(int argc, char *argv[]) {
     for (uint32 i = 2; i < 5; ++i) {
         amplifiers.push_back(
             Amplifier("meii_amp_" + std::to_string(i),
-                Amplifier::TtlLevel::Low,
+                Low,
                 q8.digital_output[i + 1],
                 0.184,
                 q8.analog_output[i + 1])
@@ -209,7 +211,7 @@ int main(int argc, char *argv[]) {
             q8.update_output();
 
             // kick watchdog
-            if (!q8.watchdog.kick() || meii.check_all_joint_limits())
+            if (!q8.watchdog.kick() || meii.any_limit_exceeded())
                 stop = true;
 
             // wait for remainder of sample period
@@ -341,8 +343,9 @@ int main(int argc, char *argv[]) {
             // update all DAQ output channels
             q8.update_output();
 
+
             // kick watchdog
-            if (!q8.watchdog.kick() || meii.check_all_joint_limits())
+            if (!q8.watchdog.kick() || meii.any_limit_exceeded())
                 stop = true;
 
             // wait for remainder of sample period

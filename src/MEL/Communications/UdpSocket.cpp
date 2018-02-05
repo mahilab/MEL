@@ -1,6 +1,7 @@
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/Socket.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <algorithm>
 
 namespace mel {
@@ -41,7 +42,7 @@ Socket::Status UdpSocket::bind(unsigned short port, const IpAddress& address) {
     // Bind the socket
     sockaddr_in addr = Socket::create_address(address.to_integer(), port);
     if (::bind(get_handle(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == -1) {
-        // err() << "Failed to bind socket to port " << port << std::endl;
+        LOG(mel::Error) << "Failed to bind socket to port " << port;
         return Error;
     }
 
@@ -59,8 +60,8 @@ Socket::Status UdpSocket::send(const void* data, std::size_t size, const IpAddre
 
     // Make sure that all the data will fit in one datagram
     if (size > MaxDatagramSize) {
-        //err() << "Cannot send data over the network "
-        //      << "(the number of bytes to send is greater than sf::UdpSocket::MaxDatagramSize)" << std::endl;
+        LOG(mel::Error) << "Cannot send data over the network "
+            << "(the number of bytes to send is greater than mel::UdpSocket::MaxDatagramSize)";
         return Error;
     }
 
@@ -85,7 +86,7 @@ Socket::Status UdpSocket::receive(void* data, std::size_t size, std::size_t& rec
 
     // Check the destination buffer
     if (!data) {
-        // err() << "Cannot receive data from the network (the destination buffer is invalid)" << std::endl;
+        LOG(mel::Error) << "Cannot receive data from the network (the destination buffer is invalid)";
         return Error;
     }
 

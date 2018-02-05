@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +33,7 @@ class QDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QDigitalInputOutput : public InputOutput<logic>, NonCopyable {
+class QDigitalInputOutput : public DigitalInputOutput, NonCopyable {
 
 public:
 
@@ -52,9 +53,9 @@ public:
 
     bool set_direction(uint32 channel_number, Direction direction) override;
 
-    bool set_expire_values(const std::vector<logic>& expire_values) override;
+    bool set_expire_values(const std::vector<Logic>& expire_values) override;
 
-    bool set_expire_value(uint32 channel_number, logic expire_value) override;
+    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
 
 private:
 

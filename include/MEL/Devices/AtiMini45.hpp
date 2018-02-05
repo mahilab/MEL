@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +33,7 @@ public:
 
     AtiMini45();
 
-    AtiMini45(std::string name, std::vector<Input<voltage>::Channel> ai_channels, array_2D<double, 6, 6> calib_mat);
+    AtiMini45(std::string name, std::vector<Input<Voltage>::Channel> ai_channels, array_2D<double, 6, 6> calib_mat);
 
     std::vector<double> get_forces() override;
 

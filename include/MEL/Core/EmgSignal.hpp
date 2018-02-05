@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,7 +37,8 @@ public:
     //EmgSignal(AnalogInput::Channel channel, const std::size_t buffer_size);
 
     /// return the EMG voltage on the associated channel when channel was last updated
-    voltage get_voltage();
+    Voltage get_voltage();
+
 
 
 private:

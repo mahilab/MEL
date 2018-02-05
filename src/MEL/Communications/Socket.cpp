@@ -1,5 +1,5 @@
 #include <MEL/Communications/Socket.hpp>
-// #include <SFML/System/Err.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <cstring>
 #include <iostream>
 
@@ -48,7 +48,7 @@ void Socket::create()
     if (socket_ == invalid_socket()) {
         SocketHandle handle = socket(PF_INET, type_ == Tcp ? SOCK_STREAM : SOCK_DGRAM, 0);
         if (handle == invalid_socket())         {
-            std::cout << "Failed to create socket" << std::endl;
+            LOG(mel::Error) << "Failed to create socket";
             return;
         }
         create(handle);
@@ -68,14 +68,14 @@ void Socket::create(SocketHandle handle) {
             // Disable the Nagle algorithm (i.e. removes buffering of TCP packets)
             int yes = 1;
             if (setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&yes), sizeof(yes)) == -1) {
-                std::cout << "Failed to set socket option \"TCP_NODELAY\" ; " << "all your TCP packets will be buffered" << std::endl;
+                LOG(Warning) << "Failed to set socket option \"TCP_NODELAY\" ; " << "all your TCP packets will be buffered";
             }
         }
         else {
             // Enable broadcast by default for UDP sockets
             int yes = 1;
             if (setsockopt(socket_, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*>(&yes), sizeof(yes)) == -1) {
-                std::cout << "Failed to enable broadcast on UDP socket" << std::endl;
+                LOG(mel::Error) << "Failed to enable broadcast on UDP socket";
             }
         }
     }
@@ -123,13 +123,13 @@ void Socket::set_blocking(SocketHandle sock, bool block) {
     if (block)
     {
         if (fcntl(sock, F_SETFL, status & ~O_NONBLOCK) == -1) {
-            std::cout << "Failed to set file status flags: " << errno << std::endl;
+            LOG(mel::Error) << "Failed to set file status flags: " << errno;
         }
     }
     else
     {
         if (fcntl(sock, F_SETFL, status | O_NONBLOCK) == -1) {
-           std::cout << "Failed to set file status flags: " << errno << std::endl;
+           LOG(mel::Error) << "Failed to set file status flags: " << errno;
         }
 
     }

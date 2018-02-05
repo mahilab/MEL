@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -71,7 +72,7 @@ private:
 /// the basis for mel::Mutex, mel::NameMutex, and mel::Spinlock.
 /// By unlocking the Lockable in its destructor, it ensures that
 /// the Lockable will always be released when the current scope
-/// (most likely a function) ends.
+/// (most likely a function or loop) ends.
 /// This is even more important when an exception or an early
 /// return statement can interrupt the execution flow of the
 /// function.

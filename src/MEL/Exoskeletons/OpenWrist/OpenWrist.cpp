@@ -3,6 +3,8 @@
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
+#include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 
 namespace mel {
 
@@ -87,7 +89,7 @@ std::array<double, 3> OpenWrist::compute_gravity_compensation() {
 }
 
 
-void OpenWrist::calibrate(std::atomic<bool>& stop) {
+void OpenWrist::calibrate(volatile std::atomic<bool>& stop) {
 
     // create needed variables
     std::array<double, 3> zeros = { 0, 0, 0 }; // determined zero positions for each joint
@@ -154,7 +156,6 @@ void OpenWrist::calibrate(std::atomic<bool>& stop) {
 
                     // if it's not moving, it's at a hardstop so record the position and deduce the zero location
                     if (!moving) {
-                        std::cout << "Joint <" << joints_[i].get_name() << "> reached the reference position. Returning to zero ... ";
                         if (dir[i] > 0)
                             zeros[i] = pos_act - params_.pos_limits_pos_[i];
                         else if (dir[i] < 0)
@@ -175,9 +176,7 @@ void OpenWrist::calibrate(std::atomic<bool>& stop) {
                         calibrating_joint += 1;
                         pos_ref = 0;
                         returning = false;
-                        std::cout << "Done" << std::endl;
-                        if (calibrating_joint == 3)
-                            std::cout << "All Joints are in their calibrated positions." << std::endl;
+                        LOG(Info) << "Joint " << joints_[i].get_name() << " calibrated";
                     }
                 }
 
@@ -195,7 +194,7 @@ void OpenWrist::calibrate(std::atomic<bool>& stop) {
         config_.daq_.update_output();
 
         // check joint velocity limits
-        if (check_all_joint_velocity_limits() && check_all_joint_torque_limits()) {
+        if (any_velocity_limit_exceeded() && any_torque_limit_exceeded()) {
             stop = true;
             break;
         }
@@ -215,7 +214,7 @@ void OpenWrist::calibrate(std::atomic<bool>& stop) {
 }
 
 
-void OpenWrist::transparency_mode(std::atomic<bool>& stop) {
+void OpenWrist::transparency_mode(volatile std::atomic<bool>& stop) {
 
     // enable DAQs, zero encoders, and start watchdog
     config_.daq_.enable();
@@ -243,7 +242,7 @@ void OpenWrist::transparency_mode(std::atomic<bool>& stop) {
         config_.daq_.update_output();
 
         // check joint limits
-        if (check_all_joint_torque_limits() && check_all_joint_velocity_limits()) {
+        if (any_torque_limit_exceeded() && any_velocity_limit_exceeded()) {
             stop = true;
             break;
         }

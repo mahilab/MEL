@@ -11,7 +11,7 @@ namespace mel {
 //    buffer_(buffer_size)
 //{}
 
-voltage EmgSignal::get_voltage() {
+Voltage EmgSignal::get_voltage() {
     //buffer_.push_back(channel_.get_value());
     return channel_.get_value();
 }

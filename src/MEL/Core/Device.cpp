@@ -1,4 +1,5 @@
 #include <MEL/Core/Device.hpp>
+#include <MEL/Logging/Log.hpp>
 
 namespace mel {
 
@@ -22,11 +23,21 @@ Device::~Device() {
 }
 
 bool Device::enable() {
+    if (enabled_) {
+        LOG(Warning) << "Ignored attempt to enable " << name_ << " since it is already enabled";
+        return true;
+    }
+    LOG(Info) << "Enabled " << name_;
     enabled_ = true;
     return true;
 }
 
 bool Device::disable() {
+    if (!enabled_) {
+        LOG(Warning) << "Ignored attempt to disable " << name_ << " since it is already disabled";
+        return true;
+    }
+    LOG(Info) << "Disabled " << name_;
     enabled_ = false;
     return true;
 }

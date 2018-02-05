@@ -1,10 +1,12 @@
 #include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/System.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <quanser_messages.h>
 #include <hil.h>
 #include <tchar.h>
 #include <cstring>
+#include <stdexcept>
+
 
 namespace mel {
 
@@ -30,66 +32,66 @@ bool QDaq::open() {
     t_error result;
     // Try to open in 5 attempts
     for (int attempt = 0; attempt < 5; attempt++) {
-        print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") ... ");
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);
         sleep(milliseconds(10));
         if (result == 0) {
             // successful open
             Daq::open();
+            LOG(Info) << "Opened " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
                 close();
                 return false;
             }
-            print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") Succeeded");
+
             return true;
-        } 
+        }
         else {
             // unsuccesful open, continue
-            print("Opening " + namify(name_) + " (Attempt " + stringify(attempt + 1) + ") Failed");
-            print(get_quanser_error_message(result));
+            LOG(Error) << "Failed to open " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ") "
+                       << get_quanser_error_message(result);
         }
     }
     // all attempts to open were unsuccessful
-    return false;
+    LOG(Fatal) << "Exhausted all attempts to open " << name_ << ", exiting application";
+    exit(1);
 }
 
 bool QDaq::close() {
     if (!open_)
         return false;
-    print("Closing " + namify(name_) + " ... ");
     t_error result;
     result = hil_close(handle_);
     sleep(milliseconds(10));
     if (result == 0) {
-        print("Done");
+        LOG(Info) << "Closed " << name_;
         return Daq::close();
     }
     else {
-        print("Closing " + namify(name_) + "Failed");
-        print(get_quanser_error_message(result));
+        LOG(Info) << "Failed to close " << name_ << " "
+                  << get_quanser_error_message(result);
         return false;
     }
 }
 
 bool QDaq::set_options(const QOptions& options) {
     if (!open_) {
-        print(namify(get_name()) + " has not been opened; unable to call " + __FUNCTION__);
+        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
+                   << name_ << " is not open";
         return false;
     }
     options_ = options;
-    print("Setting " + namify(name_) + " options ... ", false);
     char options_str[4096];
     std::strcpy(options_str, options_.get_string().c_str());
     t_error result;
     result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
     sleep(milliseconds(10));
     if (result == 0) {
-        print("Done");
+        LOG(Info) << "Set " << name_ << " options to: \"" << options_.get_string() << "\"";
         return true;
     }
     else {
-        print("Failed");
-        print(get_quanser_error_message(result));
+        LOG(Error) << "Failed to set " << name_ << " options to: \"" << options_.get_string() << "\" "
+                   << get_quanser_error_message(result);
         return false;
     }
 }
@@ -119,10 +121,13 @@ std::size_t QDaq::get_qdaq_count(const std::string& card_type) {
     return id;
 }
 
-std::string QDaq::get_quanser_error_message(int error) {
+std::string QDaq::get_quanser_error_message(int error, bool format) {
     TCHAR message[512];
     msg_get_error_message(NULL, error, message, sizeof(message));
-    return std::string(message);
+    if (format)
+        return "(Quanser Error #" + std::to_string(-error) + ": " + std::string(message) + ")";
+    else
+        return std::string(message);
 }
 
 } // namespace mel

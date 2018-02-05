@@ -17,11 +17,12 @@ using namespace mel;
 // Global data available to all threads
 Mutex mutex;
 std::vector<double> data = { 0, 0, 0 };
-std::atomic<bool> stop = false;
 
-// CTRL+C handler
-static void handler(int var) {
+// create global stop variable CTRL-C handler function
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 // Communications thread function for OpenWrist
@@ -32,8 +33,9 @@ void ow_comm_thread_func() {
         mutex.lock(); // protect data
         std::vector<double> temp = data;
         mutex.unlock();        
-        if (mnet.receive_message() == "send_data")
+        if (mnet.receive_message() == "send_data") {
             mnet.send_data(temp);
+        }
         sleep(milliseconds(10)); // ~100 Hz
     }
     print("Terminating OpenWrist communications thread");
@@ -61,7 +63,7 @@ void meii_comm_thread_func() {
 int main(int argc, char *argv[]) {
 
     // register ctrl-c handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     // create options
     Options options("udp_exo_teleop.exe", "OpenWrist + MAHI Exo-II teleoperation demo over MELNet (UDP)");
@@ -109,8 +111,6 @@ int main(int argc, char *argv[]) {
             // start control loop
             Timer timer(milliseconds(1), Timer::Hybrid);
             while (!stop) {
-                // lock mutex
-                Lock lock(mutex);
                 // read and reload DAQs
                 q8.update_input();
                 q8.watchdog.kick();
@@ -121,13 +121,15 @@ int main(int argc, char *argv[]) {
                 // write all DAQs
                 q8.update_output();
                 // check joint limits
-                if (ow.check_all_joint_torque_limits() && ow.check_all_joint_velocity_limits()) {
+                if (ow.any_torque_limit_exceeded() && ow.any_velocity_limit_exceeded()) {
                     stop = true;
                     break;
                 }
+                mutex.lock();
                 data[0] = ow[0].get_position();
                 data[1] = ow[1].get_position();
                 data[2] = ow[2].get_position();
+                mutex.unlock();
                 timer.wait();
             }
             // join comm thread
@@ -139,9 +141,9 @@ int main(int argc, char *argv[]) {
     else if (result.count("cm") > 0 || result.count("rm") > 0) {
         // make Q8 USB and configure
         Q8Usb q8;
-        q8.digital_output.set_enable_values(std::vector<logic>(8, HIGH));
-        q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
-        q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
+        q8.digital_output.set_enable_values(std::vector<Logic>(8, High));
+        q8.digital_output.set_disable_values(std::vector<Logic>(8, High));
+        q8.digital_output.set_expire_values(std::vector<Logic>(8, High));
         if (!q8.identify(7)) {
             print("Incorrect DAQ");
             return 0;
@@ -153,7 +155,7 @@ int main(int argc, char *argv[]) {
         for (uint32 i = 0; i < 2; ++i) {
             amplifiers.push_back(
                 Amplifier("meii_amp_" + std::to_string(i),
-                    Amplifier::TtlLevel::Low,
+                    Low,
                     q8.digital_output[i + 1],
                     1.8,
                     q8.analog_output[i + 1])
@@ -162,7 +164,7 @@ int main(int argc, char *argv[]) {
         for (uint32 i = 2; i < 5; ++i) {
             amplifiers.push_back(
                 Amplifier("meii_amp_" + std::to_string(i),
-                    Amplifier::TtlLevel::Low,
+                    Low,
                     q8.digital_output[i + 1],
                     0.184,
                     q8.analog_output[i + 1])
@@ -270,7 +272,7 @@ int main(int argc, char *argv[]) {
                 q8.update_output();
 
                 // kick watchdog
-                if (!q8.watchdog.kick() || meii.check_all_joint_limits())
+                if (!q8.watchdog.kick() || meii.any_limit_exceeded())
                     stop = true;
 
             }

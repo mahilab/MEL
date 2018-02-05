@@ -9,9 +9,10 @@
 
 using namespace mel;
 
-static bool stop = false;
-static void handler(int var) {
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 // number of EMG channels
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
     }
 
     // register ctrl-c handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     // make MelShares
     MelShare ms_emg("melscope_emg");
@@ -43,9 +44,9 @@ int main(int argc, char *argv[]) {
 
     // make Q8 USB and configure
     Q8Usb q8;
-    q8.digital_output.set_enable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
+    q8.digital_output.set_enable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_disable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_expire_values(std::vector<Logic>(8, High));
 
     // make EMG Signals
     std::vector<EmgSignal> emg_signals;

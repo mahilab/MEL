@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -81,7 +82,7 @@ public:
     static std::size_t get_qdaq_count(const std::string& card_type);
 
     /// Gets the string message corresponding to a Quanser error number
-    static std::string get_quanser_error_message(int error);
+    static std::string get_quanser_error_message(int error, bool format = true);
 
 protected:
 

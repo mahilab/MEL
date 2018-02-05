@@ -1,5 +1,6 @@
 ﻿// MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,11 +39,11 @@ class MelShare
         {
             shm_ = new SharedMemory(name);
             mutex_ = new Mutex(false, name + "_mutex");
-            Debug.Log("Opened MelShare <" + name + ">");
+            Debug.Log("Opened MelShare " + name);
         }
         catch
         {
-            Debug.Log("Failed to open MelShare <" + name + ">");
+            Debug.Log("Failed to open MelShare " + name + "");
         }
     }
 
@@ -69,7 +70,7 @@ class MelShare
             mutex_.ReleaseMutex();
         }
         else
-            Debug.Log("MelShare <" + shm_.Name + "> failed to write data. Data is larger than max size of " + shm_.MaxSize + " bytes");
+            Debug.Log("MelShare " + shm_.Name + " failed to write data. Data is larger than max size of " + shm_.MaxSize + " bytes");
     }
 
     /// <summary>
@@ -108,7 +109,7 @@ class MelShare
             mutex_.ReleaseMutex();
         }
         else
-            Debug.Log("MelShare <" + shm_.Name + "> failed to write message. Message is larger than max size of " + shm_.MaxSize + " bytes");
+            Debug.Log("MelShare " + shm_.Name + " failed to write message. Message is larger than max size of " + shm_.MaxSize + " bytes");
 
     }
 

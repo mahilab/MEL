@@ -53,6 +53,17 @@ Time microseconds(int64 amount) {
 // OPERATOR OVERLOADS
 //==============================================================================
 
+std::ostream& operator << (std::ostream& os, const Time& t) {
+    if (t.as_seconds() >= 1.0)
+        os << t.as_seconds() << " s";
+    else if (t.as_milliseconds() > 1)
+        os << t.as_milliseconds() << " ms";
+    else
+        os << t.as_microseconds() << " us";
+    return os;
+}
+
+
 bool operator ==(Time left, Time right) {
     return left.as_microseconds() == right.as_microseconds();
 }

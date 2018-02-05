@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -76,7 +77,7 @@ public:
 
     /// If QOptions::LedMode is User, this function sets the status of the
     /// LED and will be updated on update_output()
-    void set_led(logic value);
+    void set_led(Logic value);
 
 
     bool identify(uint32 input_channel_number, uint32 output_channel_number);

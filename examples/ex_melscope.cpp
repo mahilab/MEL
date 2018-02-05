@@ -11,10 +11,10 @@
 
 using namespace mel;
 
-// make a CTRL-C handler and global stop variable
-static bool stop = false;
-static void handler(int var) {
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     print(remote_address);
 
     // register CTRL-C handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     // make MelShares
     MelShare ms1("melscope1");

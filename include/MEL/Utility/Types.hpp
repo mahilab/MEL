@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,16 +47,17 @@ typedef unsigned long long uint64;  ///<                          0 to 18,446,74
 //==============================================================================
 
 /// Represents a voltage in [V]
-typedef double voltage;
+typedef double Voltage;
 
-/// Represents digital logic values
-typedef int8 logic;
-const        logic  LOW = 0;
-const        logic HIGH = 1;
+/// Represents a digital TTL logic level
+enum Logic {
+    Low  = 0, ///< Low TTL level  (typically 0V)    
+    High = 1  ///< High TTL level (typically 5V)
+};
 
 /// Represents encoder quadrature factors
 enum QuadFactor {
-    None = 0,  ///< no quadrature
+    X0 = 0,  ///< no quadrature
     X1   = 1,  ///< 1X counts per revolution
     X2   = 2,  ///< 2X counts per revolution,
     X4   = 4,  ///< 4X counts per revolution

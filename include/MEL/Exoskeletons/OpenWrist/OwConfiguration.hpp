@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,12 +47,12 @@ public:
     /// Generic Configuration 1 (creates Amplifiers)
     OwConfiguration(Daq& daq,
                     Watchdog& watchdog,
-                    const std::vector<Amplifier::TtlLevel>& enable_levels,
+                    const std::vector<Logic>& enable_levels,
                     const std::vector<DigitalOutput::Channel>& enable_channels,
                     const std::vector<double>& command_gains,
                     const std::vector<AnalogOutput::Channel>& command_channels,
                     const std::vector<Limiter>& amp_current_limiters,
-                    const std::vector<Amplifier::TtlLevel>& fault_levels,
+                    const std::vector<Logic>& fault_levels,
                     const std::vector<DigitalInput::Channel>& fault_channels,
                     const std::vector<double>& sense_gains,
                     const std::vector<AnalogInput::Channel>& sense_channel,

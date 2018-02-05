@@ -115,7 +115,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 # include directories (your includes and MEL's)
 include_directories("include" "/path/to/.../MEL/include")
 # indicate where MEL.lib is
-link_directories("/path/to/.../MEL/lib/<platform>")
+link_directories("/path/to/.../MEL/lib/<platform")
 # create application
 add_executable(MyApp include/MyClass.hpp src/MyClass.cpp ... src/main.cpp)
 # link MEL

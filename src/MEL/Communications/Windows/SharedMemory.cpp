@@ -1,4 +1,5 @@
 #include <MEL/Communications/Windows/SharedMemory.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <iostream>
 #include <cstring>
 
@@ -79,16 +80,15 @@ MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
                   name.c_str());            // name of mapping object
 
     if (hMapFile == NULL) {
-       _tprintf(TEXT("Could not create file mapping object (%d).\n"),
-              static_cast<int>(GetLastError()));
-       return NULL;
+        LOG(Error) << "Could not create file mapping object " << name << " (Windows Error #" << (int)GetLastError() << ")";
+        return NULL;
     }
     return hMapFile;
 }
 
 void SharedMemory::close(MapHandle map) {
     if (CloseHandle(map) == 0)
-        std::cout << "Failed to close handle" << std::endl;
+        LOG(Error) << "Failed to close handle (Windows Error #" << (int)GetLastError() << ")";
 }
 
 void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
@@ -99,8 +99,7 @@ void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
                 0,
                 size);
     if (pBuf == NULL) {
-       _tprintf(TEXT("Could not map view of file (%d).\n"),
-              static_cast<int>(GetLastError()));
+       LOG(Error) << "Could not map view of file (Windows Error #" << (int)GetLastError() << ")";
        return NULL;
     }
     return pBuf;

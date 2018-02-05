@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,11 +32,6 @@ namespace mel {
 /// Encapsulates a current controlled servo amplifier
 class Amplifier : public Device {
 public:
-    /// Represents a digital TTL logic level
-    enum TtlLevel {
-        High,  ///< High TTL level (typically 5V)
-        Low,   ///< Low TTL level  (typically 0V)
-    };
 
 public:
     /// Constructor
@@ -51,12 +47,12 @@ public:
     /// @param sense_gain the sense gain in [V/V]
     /// @param sense_channel the AI channel which reads in sensed current
     Amplifier(const std::string& name,
-              TtlLevel enable_level,
+              Logic enable_level,
               DigitalOutput::Channel enable_channel,
               double command_gain,
               AnalogOutput::Channel command_channel,
               Limiter current_limiter             = Limiter(),
-              TtlLevel fault_level                = High,
+              Logic fault_level                = High,
               DigitalInput::Channel fault_channel = DigitalInput::Channel(),
               double sense_gain                   = 1.0,
               AnalogInput::Channel sense_channel  = AnalogInput::Channel());
@@ -98,8 +94,8 @@ public:
     bool is_faulted(bool force_update = false);
 
 private:
-    TtlLevel enable_level_;  ///< TTL enable level
-    TtlLevel fault_level_;   ///< TTL fault level
+    Logic enable_level_;  ///< TTL enable level
+    Logic fault_level_;   ///< TTL fault level
 
     double command_gain_;  ///< command gain [A/V]
     double sense_gain_;    ///< sense gain [V/V]

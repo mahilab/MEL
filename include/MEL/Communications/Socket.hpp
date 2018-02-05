@@ -1,5 +1,6 @@
 // MIT License
 //
+// MEL - MAHI Exoskeleton Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,6 +12,10 @@
 //
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
+//
+// This particular source file includes code which has been adapted from the
+// following open-source projects (all external licenses attached at bottom):
+//     SFML - Simple and Fast Multimedia Library
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
@@ -183,8 +188,8 @@ private:
 // CLASS DOCUMENTATION
 //==============================================================================
 
-/// \class sf::Socket
-/// \ingroup network
+/// \class mel::Socket
+/// \ingroup Communications
 ///
 /// This class mainly defines internal stuff to be used by
 /// derived classes.
@@ -215,8 +220,9 @@ private:
 /// \see sf::TcpListener, sf::TcpSocket, sf::UdpSocket
 
 //==============================================================================
-// APAPTED FROM: SFML (https://www.sfml-dev.org/)
+// LICENSES
 //==============================================================================
+
 // SFML - Simple and Fast Multimedia Library
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
@@ -236,4 +242,3 @@ private:
 //    and must not be misrepresented as being the original software.
 //
 // 3. This notice may not be removed or altered from any source distribution.
-//==============================================================================
