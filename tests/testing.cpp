@@ -13,10 +13,10 @@ enum { Console = 1 };
 
  void performance() {
      // Initialize the logger that will be measured.
-     init_logger(Debug, "Performance.txt");
+     //init_logger(Debug, "Performance.txt");
      // Initialize the logger for printing info messages.
      static ConsoleWriter<TxtFormatter> consoleAppender;
-     init_logger<Console>(Debug, &consoleAppender);
+    // init_logger<Console>(Debug, &consoleAppender);
      LOG_(Console, Info) << "Test started";
      const int kCount = 50000;
      // Performance measure loop.
