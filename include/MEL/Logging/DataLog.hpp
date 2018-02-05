@@ -190,16 +190,16 @@ private:
         Lock lock(mutex_);
         create_directory(directory);
         file_stream_.open(full_filename, std::ofstream::out | std::ofstream::trunc);
-        if (format_ == Format::Fixed)
-            file_stream_ << std::fixed;
-        else if (format_ == Format::Scientific)
-            file_stream_ << std::scientific;
         for (auto it = column_names_.begin(); it != column_names_.end(); ++it)
             file_stream_ << *it << ",";
         file_stream_ << std::endl;
         for (std::size_t i = 0; i < row_count_; i++) {
             std::stringstream ss;
             ss << std::setprecision(precision_);
+            if (format_ == Format::Fixed)
+                ss << std::fixed;
+            else if (format_ == Format::Scientific)
+                ss << std::scientific;
             ss << data_[i];
             std::string line = ss.str();
             line = line.substr(1, line.size() - 2);

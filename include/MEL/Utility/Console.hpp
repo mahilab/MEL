@@ -65,7 +65,7 @@ void prompt(const std::string& message);
 ///
 /// The function must take an int argument and return void. If it is a class
 /// function, it must be static and thus contain only static member data.
-void register_ctrl_c_handler(void (*func)(int));
+void register_ctrl_c_handler(int (*func)(int));
 
 //==============================================================================
 // CONSOLE FORMAT

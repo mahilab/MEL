@@ -7,8 +7,9 @@ class MyClass {
 public:
     // function and data affected by ctrl+c handler must be static
     static bool class_block;
-    static void class_handler(int param) {
+    static int class_handler(int param) {
         class_block = false;
+        return 1;
     }
 };
 
@@ -16,8 +17,11 @@ bool MyClass::class_block(true); // must define static member data outside class
 
 // Method 2: Global function
 static bool global_block = true;
-static void global_handler(int param) {
+static int global_handler(int param) {
+    print("Ctrl-C Pressed");
+    print(param);
     global_block = false;
+    return 1;
 }
 
 int main(int argc, char *argv[]) {
