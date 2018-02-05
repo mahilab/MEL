@@ -36,7 +36,7 @@ public:
     //EmgSignal(AnalogInput::Channel channel, const std::size_t buffer_size);
 
     ///
-    voltage get_voltage();
+    Voltage get_voltage();
 
 
 private:

@@ -70,11 +70,11 @@ bool Q2Usb::open() {
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
     // set default expire values (digital = LOW, analog = 0.0V)
-    if (!analog_output.set_expire_values(std::vector<voltage>(2, 0.0))) {
+    if (!analog_output.set_expire_values(std::vector<Voltage>(2, 0.0))) {
         close();
         return false;
     }
-    if (!digital_io.set_expire_values(std::vector<logic>(9, LOW))) {
+    if (!digital_io.set_expire_values(std::vector<Logic>(9, Low))) {
         close();
         return false;
     }
@@ -169,26 +169,26 @@ bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) 
             << name_ << " is not open";
         return false;
     }
-    InputOutput<logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
-    InputOutput<logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
+    InputOutput<Logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
+    InputOutput<Logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
     for (int i = 0; i < 5; ++i) {
-        do_ch.set_value(HIGH);
+        do_ch.set_value(High);
         do_ch.update();
         sleep(milliseconds(10));
         di_ch.update();
-        if (di_ch.get_value() != HIGH)
+        if (di_ch.get_value() != High)
             return false;
-        do_ch.set_value(LOW);
+        do_ch.set_value(Low);
         do_ch.update();
         sleep(milliseconds(10));
         di_ch.update();
-        if (di_ch.get_value() != LOW)
+        if (di_ch.get_value() != Low)
             return false;
     }
     return true;
 }
 
-void Q2Usb::set_led(logic value) {
+void Q2Usb::set_led(Logic value) {
     digital_io[8].set_value(value);
 }
 

@@ -44,9 +44,9 @@ int main(int argc, char *argv[]) {
 
     // make Q8 USB and configure
     Q8Usb q8;
-    q8.digital_output.set_enable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_disable_values(std::vector<logic>(8, HIGH));
-    q8.digital_output.set_expire_values(std::vector<logic>(8, HIGH));
+    q8.digital_output.set_enable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_disable_values(std::vector<Logic>(8, High));
+    q8.digital_output.set_expire_values(std::vector<Logic>(8, High));
 
     // make EMG Signals
     std::vector<EmgSignal> emg_signals;

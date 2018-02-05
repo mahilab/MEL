@@ -1,6 +1,7 @@
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 
 namespace mel {
 
@@ -26,16 +27,18 @@ Time Timer::restart() {
 Time Timer::wait() {
     Time remaining_time = period_ - (Clock::get_current_time() - prev_time_);
     if (remaining_time < Time::Zero) {
-        remaining_time = Time::Zero; // deadline missed!
+        LOG_IF(Info, ticks_ > 0) << "Timer with period " << period_ << " missed deadline by " << -remaining_time << " on tick number " << ticks_;
     }
-    if (mode_ == WaitMode::Busy)
-        wait_busy(remaining_time);
-    else if (mode_ == WaitMode::Sleep)
-        wait_sleep(remaining_time);
-    else if (mode_ == WaitMode::Hybrid) {
-        wait_sleep(remaining_time * 0.9);
-        remaining_time = period_ - (Clock::get_current_time() - prev_time_);
-        wait_busy(remaining_time);
+    else {
+        if (mode_ == WaitMode::Busy)
+            wait_busy(remaining_time);
+        else if (mode_ == WaitMode::Sleep)
+            wait_sleep(remaining_time);
+        else if (mode_ == WaitMode::Hybrid) {
+            wait_sleep(remaining_time * 0.9);
+            remaining_time = period_ - (Clock::get_current_time() - prev_time_);
+            wait_busy(remaining_time);
+        }
     }
     ticks_ += 1;
     prev_time_ = Clock::get_current_time();

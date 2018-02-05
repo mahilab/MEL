@@ -61,7 +61,7 @@ bool QAnalogInput::update_channel(uint32 channel_number) {
     }
 }
 
-bool QAnalogInput::set_ranges(const std::vector<voltage>& min_values, const std::vector<voltage>& max_values) {
+bool QAnalogInput::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -82,7 +82,7 @@ bool QAnalogInput::set_ranges(const std::vector<voltage>& min_values, const std:
     }
 }
 
-bool QAnalogInput::set_range(uint32 channel_number, voltage min_value, voltage max_value) {
+bool QAnalogInput::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";

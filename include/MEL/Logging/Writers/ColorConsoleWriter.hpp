@@ -30,6 +30,8 @@ template <class Formatter>
 class ColorConsoleWriter : public ConsoleWriter<Formatter> {
 public:
 
+    ColorConsoleWriter(Severity max_severity = Verbose) : ConsoleWriter(max_severity) {}
+
     virtual void write(const Record& record) {
         std::string str = Formatter::format(record);
         Lock lock(mutex_);

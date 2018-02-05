@@ -54,17 +54,17 @@ namespace mel {
             return false;
         }
         // create intermediate buffers
-        std::vector<logic> read_buffer(input_channel_numbers_.size());
-        std::vector<logic> write_buffer(output_channel_numbers_.size());
+        std::vector<char> read_buffer(input_channel_numbers_.size());
+        std::vector<char> write_buffer(output_channel_numbers_.size());
         for (std::size_t i = 0; i < output_channel_numbers_.size(); ++i)
-            write_buffer[i] = values_[channel_map_.at(output_channel_numbers_[i])];
+            write_buffer[i] = static_cast<char>(values_[channel_map_.at(output_channel_numbers_[i])]);
         t_error result;
         result = hil_read_digital_write_digital(daq_.handle_,
             &input_channel_numbers_[0], static_cast<uint32>(input_channel_numbers_.size()),
             &output_channel_numbers_[0], static_cast<uint32>(output_channel_numbers_.size()),
             &read_buffer[0], &write_buffer[0]);
         for (std::size_t i = 0; i < input_channel_numbers_.size(); ++i)
-            values_[channel_map_.at(input_channel_numbers_[i])] = read_buffer[i];
+            values_[channel_map_.at(input_channel_numbers_[i])] = static_cast<Logic>(read_buffer[i]);
         if (result == 0)
             return true;
         else {
@@ -80,11 +80,16 @@ namespace mel {
                        << daq_.get_name() << " is not open";
             return false;
         }
+        char buffer;
         t_error result;
-        if (directions_[channel_map_.at(channel_number)] == Direction::Input)
-            result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_map_.at(channel_number)]);
-        else
-            result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_map_.at(channel_number)]);
+        if (directions_[channel_map_.at(channel_number)] == Direction::Input) {
+            result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
+            values_[channel_map_.at(channel_number)] = static_cast<Logic>(buffer);
+        }
+        else {
+            buffer = static_cast<char>(values_[channel_map_.at(channel_number)]);
+            result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
+        }
         if (result == 0)
             return true;
         else {
@@ -123,7 +128,7 @@ namespace mel {
         return set_directions(directions_);
     }
 
-    bool QDigitalInputOutput::set_expire_values(const std::vector<logic>& expire_values) {
+    bool QDigitalInputOutput::set_expire_values(const std::vector<Logic>& expire_values) {
         if (!InputOutput::set_expire_values(expire_values))
             return false;
         if (!daq_.open_) {
@@ -134,7 +139,7 @@ namespace mel {
         // convert MEL logic to Quanser t_encoder_quadratue_mode
         std::vector<t_digital_state> converted_expire_values;
         for (auto it = expire_values.begin(); it != expire_values.end(); ++it) {
-            if (*it == HIGH)
+            if (*it == High)
                 converted_expire_values.push_back(DIGITAL_STATE_HIGH);
             else
                 converted_expire_values.push_back(DIGITAL_STATE_LOW);
@@ -152,7 +157,7 @@ namespace mel {
         }
     }
 
-    bool QDigitalInputOutput::set_expire_value(uint32 channel_number, logic expire_value) {
+    bool QDigitalInputOutput::set_expire_value(uint32 channel_number, Logic expire_value) {
         if (!InputOutput::set_expire_value(channel_number, expire_value))
             return false;
         if (!daq_.open_) {
@@ -162,7 +167,7 @@ namespace mel {
         }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
         t_digital_state converted_expire_value;
-        if (expire_value == HIGH)
+        if (expire_value == High)
             converted_expire_value = DIGITAL_STATE_HIGH;
         else
             converted_expire_value = DIGITAL_STATE_LOW;

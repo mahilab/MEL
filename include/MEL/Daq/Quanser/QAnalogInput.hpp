@@ -49,9 +49,9 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
-    bool set_ranges(const std::vector<voltage>& min_values, const std::vector<voltage>& max_values) override;
+    bool set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) override;
 
-    bool set_range(uint32 channel_number, voltage min_value, voltage max_value) override;
+    bool set_range(uint32 channel_number, Voltage min_value, Voltage max_value) override;
 
 private:
 

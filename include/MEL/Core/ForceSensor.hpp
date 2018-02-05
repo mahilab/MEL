@@ -32,7 +32,7 @@ class ForceSensor : public Device {
 public:
 
     ForceSensor();
-    ForceSensor(std::string name, std::vector<Input<voltage>::Channel> ai_channels);
+    ForceSensor(std::string name, std::vector<Input<Voltage>::Channel> ai_channels);
 
     virtual std::vector<double> get_forces() = 0;
 
@@ -42,7 +42,7 @@ protected:
 
 protected:
 
-    std::vector<Input<voltage>::Channel> ai_channels_; // the DAQ analog input channels bound to this sensor
+    std::vector<Input<Voltage>::Channel> ai_channels_; // the DAQ analog input channels bound to this sensor
     int num_channels_;
     std::vector<double> forces_;
     std::vector<double> voltages_;

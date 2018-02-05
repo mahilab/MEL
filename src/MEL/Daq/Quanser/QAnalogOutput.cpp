@@ -81,7 +81,7 @@ bool QAnalogOutput::update_channel(uint32 channel_number) {
     }
 }
 
-bool QAnalogOutput::set_ranges(const std::vector<voltage>& min_values, const std::vector<voltage>& max_values) {
+bool QAnalogOutput::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
     if (!Module::set_ranges(min_values, max_values))
         return false;
     if (!daq_.open_) {
@@ -102,7 +102,7 @@ bool QAnalogOutput::set_ranges(const std::vector<voltage>& min_values, const std
     }
 }
 
-bool QAnalogOutput::set_range(uint32 channel_number, voltage min_value, voltage max_value) {
+bool QAnalogOutput::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
     if (!Module::set_range(channel_number, min_value, max_value))
         return false;
     if (!daq_.open_) {
@@ -123,7 +123,7 @@ bool QAnalogOutput::set_range(uint32 channel_number, voltage min_value, voltage 
     }
 }
 
-bool QAnalogOutput::set_expire_values(const std::vector<voltage>& expire_values) {
+bool QAnalogOutput::set_expire_values(const std::vector<Voltage>& expire_values) {
     if (!Output::set_expire_values(expire_values))
         return false;
     if (!daq_.open_) {
@@ -144,7 +144,7 @@ bool QAnalogOutput::set_expire_values(const std::vector<voltage>& expire_values)
     }
 }
 
-bool QAnalogOutput::set_expire_value(uint32 channel_number, voltage expire_value) {
+bool QAnalogOutput::set_expire_value(uint32 channel_number, Voltage expire_value) {
     if (!Output::set_expire_value(channel_number, expire_value))
         return false;
     if (!daq_.open_) {

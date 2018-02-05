@@ -15,7 +15,6 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-
 Q8Usb::Q8Usb(QOptions options,
              bool open,
              bool perform_sanity_check,
@@ -80,11 +79,11 @@ bool Q8Usb::open() {
         }
     }
     // set default expire values (digital = LOW, analog = 0.0V)
-    if (!analog_output.set_expire_values(std::vector<voltage>(8, 0.0))) {
+    if (!analog_output.set_expire_values(std::vector<Voltage>(8, 0.0))) {
         close();
         return false;
     }
-    if (!digital_output.set_expire_values(std::vector<logic>(8, LOW))) {
+    if (!digital_output.set_expire_values(std::vector<Logic>(8, Low))) {
         close();
         return false;
     }
@@ -170,8 +169,10 @@ bool Q8Usb::update_input() {
         static_cast<uint32>(velocity.get_channel_count()),
         analog_input.get_channel_count() > 0 ? &(analog_input.get_values())[0] : NULL,
         encoder.get_channel_count() > 0 ? &(encoder.get_values())[0] : NULL,
-        digital_input.get_channel_count() > 0 ? &(digital_input.get_values())[0] : NULL,
+        digital_input.get_channel_count() > 0 ? &(digital_input.get_quanser_values())[0] : NULL,
         velocity.get_channel_count() > 0 ? &(velocity.get_values())[0] : NULL);
+    for (std::size_t i = 0; i < digital_input.get_channel_count(); ++i)
+        digital_input.get_values()[i] = static_cast<Logic>(digital_input.get_quanser_values()[i]);
     if (result == 0)
         return true;
     else {
@@ -187,6 +188,9 @@ bool Q8Usb::update_output() {
             << name_ << " is not open";
         return false;
     }
+    // convert digitals
+    for (std::size_t i = 0; i < digital_output.get_channel_count(); ++i)
+        digital_output.get_quanser_values()[i] = static_cast<char>(digital_output.get_values()[i]);
     t_error result;
     result = hil_write(handle_,
         analog_output.get_channel_count() > 0 ? &(analog_output.get_channel_numbers())[0] : NULL,
@@ -197,7 +201,7 @@ bool Q8Usb::update_output() {
         NULL, 0,
         analog_output.get_channel_count() > 0 ? &(analog_output.get_values())[0] : NULL,
         NULL,
-        digital_output.get_channel_count() > 0 ? &(digital_output.get_values())[0] : NULL,
+        digital_output.get_channel_count() > 0 ? &(digital_output.get_quanser_values())[0] : NULL,
         NULL);
     if (result == 0)
         return true;
@@ -214,21 +218,21 @@ bool Q8Usb::identify(uint32 channel_number) {
             << name_ << " is not open";
         return false;
     }
-    Input<logic>::Channel di_ch = digital_input.get_channel(channel_number);
-    Output<logic>::Channel do_ch = digital_output.get_channel(channel_number);
+    Input<Logic>::Channel di_ch = digital_input.get_channel(channel_number);
+    Output<Logic>::Channel do_ch = digital_output.get_channel(channel_number);
     for (int i = 0; i < 5; ++i) {
-        do_ch.set_value(HIGH);
+        do_ch.set_value(High);
         do_ch.update();
         sleep(milliseconds(10));
         di_ch.update();
-        if (di_ch.get_value() != HIGH) {
+        if (di_ch.get_value() != High) {
             return false;
         }
-        do_ch.set_value(LOW);
+        do_ch.set_value(Low);
         do_ch.update();
         sleep(milliseconds(10));
         di_ch.update();
-        if (di_ch.get_value() != LOW) {
+        if (di_ch.get_value() != Low) {
             return false;
         }
     }
