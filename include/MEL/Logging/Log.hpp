@@ -22,6 +22,7 @@
 #include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
 #include <MEL/Logging/Writers/RollingFileWriter.hpp>
+#include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
 #include <cstring>
 
 namespace mel

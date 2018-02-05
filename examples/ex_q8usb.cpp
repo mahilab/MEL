@@ -10,9 +10,10 @@
 using namespace mel;
 
 // create global stop variable CTRL-C handler function
-static bool stop = false;
-static void handler(int var) {
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 int main() {
@@ -22,7 +23,7 @@ int main() {
     init_logger(Verbose, "log.csv").add_writer(&consoleAppender);
 
     // register CTRL-C handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     //==============================================================================
     // CONSTUCT/OPEN/CONFIGURE
@@ -68,9 +69,11 @@ int main() {
     // start encoder loop
     while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.encoder.get_value(0));
+        print(q8.encoder.get_value(0));        
         timer.wait();
     }
+    stop = false;
+
 
     //==============================================================================
     // ANALOG INPUT/OUTPUT
@@ -90,6 +93,7 @@ int main() {
         q8.update_output();
         timer.wait();
     }
+    stop = false;
 
     //==============================================================================
     // DIGITAL INPUT/OUTPUT
@@ -108,6 +112,8 @@ int main() {
         q8.update_output();
         timer.wait();
     }
+    stop = false;
+
 
     //==============================================================================
     // WATCHDOG
@@ -145,6 +151,7 @@ int main() {
         print("Watchdog did not expire. Stopping it.");
         q8.watchdog.stop();
     }
+    stop = false;
 
     //==============================================================================
     // DISABLE

@@ -37,7 +37,7 @@ public:
         ss << std::setfill(' ') << std::setw(5) << std::left
            << severity_to_string(record.get_severity()) << " ";
         ss << "[" << record.get_tid_() << "] ";
-        ss << "[" << record.get_func() << "@" << record.get_line() << "] ";
+        //ss << "[" << record.get_func() << "@" << record.get_line() << "] ";
         ss << record.get_message() << "\n";
         return ss.str();
     }

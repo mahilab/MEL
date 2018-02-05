@@ -8,10 +8,10 @@
 
 using namespace mel;
 
-// create global stop variable CTRL-C handler function
-static bool stop = false;
-static void handler(int var) {
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 int main() {
@@ -21,7 +21,7 @@ int main() {
     init_logger(Verbose, "log.csv").add_writer(&consoleAppender);
 
     // register CTRL-C handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     //==============================================================================
     // CONSTUCT/OPEN/CONFIGURE

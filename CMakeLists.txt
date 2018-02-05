@@ -203,11 +203,6 @@ file(GLOB SRC_LOGGING
     "${CMAKE_SOURCE_DIR}/src/MEL/Logging/*.cpp"
 )
 
-file(GLOB SRC_LOGGING_CONVERTERS
-    "${CMAKE_SOURCE_DIR}/include/MEL/Logging/Converters/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Logging/Converters/*.cpp"
-)
-
 file(GLOB SRC_LOGGING_FORMATTERS
     "${CMAKE_SOURCE_DIR}/include/MEL/Logging/Formatters/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Logging/Formatters/*.cpp"
@@ -245,7 +240,6 @@ source_group("Exoskeletons\\OpenWrist" FILES ${SRC_OPENWRIST})
 source_group("Exoskeletons\\MahiExoII" FILES ${SRC_MAHIEXOII})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
-source_group("Logging\\Converters" FILES ${SRC_LOGGING_CONVERTERS})
 source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
 source_group("Logging\\Writers" FILES ${SRC_LOGGING_WRITERS})
 
@@ -263,7 +257,6 @@ set(SOURCE_FILES
     ${SRC_DAQ}
     ${SRC_DEVICES}
     ${SRC_LOGGING}
-    ${SRC_LOGGING_CONVERTERS}
     ${SRC_LOGGING_FORMATTERS}
     ${SRC_LOGGING_WRITERS}
     ${SRC_MATH}

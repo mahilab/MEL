@@ -11,9 +11,10 @@
 
 using namespace mel;
 
-std::atomic<bool> stop = false;
-static void handler(int var) {
+ctrl_bool stop = false;
+int handler(unsigned long param) {
     stop = true;
+    return 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
     }
 
     // register ctrl-c handler
-    register_ctrl_c_handler(handler);
+    register_ctrl_handler(handler);
 
     // enable Windows realtime
     enable_realtime();

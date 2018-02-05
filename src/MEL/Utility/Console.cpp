@@ -47,9 +47,9 @@ void prompt(const std::string& message) {
     getchar();
 }
 
-void register_ctrl_c_handler(int (*function)(int)) {
+bool register_ctrl_handler(int(*handler)(unsigned long)) {
 #ifdef _WIN32
-    SetConsoleCtrlHandler((PHANDLER_ROUTINE)function, TRUE);
+    return !!SetConsoleCtrlHandler((PHANDLER_ROUTINE)handler, TRUE);
 #else
     signal(SIGINT, function);
 #endif

@@ -250,7 +250,7 @@ bool Q8Usb::sanity_check() {
     for (auto it = velocities.begin(); it != velocities.end(); ++it) {
         if (*it != 0.0) {
             sane = false;
-            LOG(Error) << "Sanity check on " << name_ << " failed";
+            LOG(Warning) << "Sanity check on " << name_ << " failed";
             break;
         }
     }

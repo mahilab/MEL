@@ -57,10 +57,10 @@ public:
     std::array<double, 3> compute_friction_compensation();
 
     /// Calibrates each joint position in sequence and zeros the encoders
-    void calibrate(std::atomic<bool>& stop_flag);
+    void calibrate(volatile std::atomic<bool>& stop_flag);
 
     /// Puts the OpenWrist in an endless graivity and friction compensated state
-    void transparency_mode(std::atomic<bool>& stop_flag);
+    void transparency_mode(volatile std::atomic<bool>& stop_flag);
 
 public:
 

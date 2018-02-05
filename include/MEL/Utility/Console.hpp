@@ -23,6 +23,7 @@
 #include <MEL/Utility/Types.hpp>
 #include <MEL/Utility/StlStreams.hpp>
 #include <sstream>
+#include <atomic>
 
 namespace mel {
 
@@ -55,7 +56,7 @@ void print(const array_2D<T, N, M>& a, bool end_line = true) {
 }
 
 //==============================================================================
-// CONSOLE INPUT
+// CONSOLE INPUT & SIGNAL HANDLING
 //==============================================================================
 
 /// Prompts the user with a message and waits for Enter to be pressed.
@@ -63,9 +64,20 @@ void prompt(const std::string& message);
 
 /// Registers a function so that it is called when Ctrl+C is pressed.
 ///
-/// The function must take an int argument and return void. If it is a class
-/// function, it must be static and thus contain only static member data.
-void register_ctrl_c_handler(int (*func)(int));
+/// The handler should have an unsigned long input parameter and return an int.
+/// The input can be checked against the the control signal values below for 
+/// further processsing. If this function handles the event, it should return 1,
+/// otherwise it should return 0 in which case the next handler will be processed
+bool register_ctrl_handler(int (*handler)(unsigned long));
+
+#define CTRL_C_EVENT        0  ///< Ctrl+C pressed
+#define CTRL_BREAK_EVENT    1  ///< Ctrl+Break pressed
+#define CTRL_CLOSE_EVENT    2  ///< console closed
+#define CTRL_LOGOFF_EVENT   5  ///< user is logging off
+#define CTRL_SHUTDOWN_EVENT 6  ///< system is shutting down
+
+/// Special bool type that can safely be used by a Ctrl handler
+typedef volatile std::atomic<bool> ctrl_bool;
 
 //==============================================================================
 // CONSOLE FORMAT

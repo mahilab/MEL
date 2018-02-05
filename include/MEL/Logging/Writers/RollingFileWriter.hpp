@@ -18,7 +18,6 @@
 #ifndef MEL_ROLLINGFILEWRITER_HPP
 #define MEL_ROLLINGFILEWRITER_HPP
 
-#include <MEL/Logging/Converters/UTF8Converter.hpp>
 #include <MEL/Logging/File.hpp>
 #include <MEL/Logging/Writers/Writer.hpp>
 #include <MEL/Utility/Mutex.hpp>
@@ -30,7 +29,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-template <class Formatter, class Converter = UTF8Converter>
+template <class Formatter>
 class RollingFileWriter : public Writer {
 public:
     RollingFileWriter(const char* fileName,
@@ -59,7 +58,8 @@ public:
         }
 
         int bytesWritten =
-            m_file.write(Converter::convert(Formatter::format(record)));
+            m_file.write(Formatter::format(record));
+
 
         if (bytesWritten > 0) {
             m_fileSize += bytesWritten;
@@ -90,7 +90,7 @@ private:
 
         if (0 == m_fileSize) {
             int bytesWritten =
-                m_file.write(Converter::header(Formatter::header()));
+                m_file.write(Formatter::header());
 
             if (bytesWritten > 0) {
                 m_fileSize += bytesWritten;
