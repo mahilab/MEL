@@ -50,8 +50,8 @@ class Filter {
 public:
 
     Filter();
-    Filter(const std::vector<double>& b, const std::vector<double>& a);
-    Filter(int length, const std::vector<double>& b, const std::vector<double>& a);
+    Filter(const std::vector<double>& b, const std::vector<double>& a, int length = 1);
+    //Filter(int length, const std::vector<double>& b, const std::vector<double>& a);
 
     void filter(const double& x, double& y);
     void filter(const std::vector<double>& x, std::vector<double>& y);

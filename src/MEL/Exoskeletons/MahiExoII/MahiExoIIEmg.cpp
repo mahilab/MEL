@@ -119,4 +119,4 @@ void MahiExoIIEmg::TeagerKaiserOperator::TeagerKaiserOperatorImplementation::res
 }
 
 
-} /// namespace MEL
+} // namespace MEL
