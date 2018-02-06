@@ -15,7 +15,7 @@ namespace mel {
 //==============================================================================
 
 QDaq::QDaq(const std::string& card_type, uint32 id, QOptions options) :
-    Daq(card_type + "_" + std::to_string(id)),
+    Daq("QDaq::" + card_type + "_" + std::to_string(id)),
     card_type_(card_type),
     id_(id),
     options_(options)
@@ -37,7 +37,7 @@ bool QDaq::open() {
         if (result == 0) {
             // successful open
             Daq::open();
-            LOG(Info) << "Opened " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ")";
+            LOG(Info) << "Opened " << get_name() << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
                 close();
                 return false;
@@ -47,12 +47,12 @@ bool QDaq::open() {
         }
         else {
             // unsuccesful open, continue
-            LOG(Error) << "Failed to open " << name_ << " (Attempt " << attempt + 1 << "/" << 5 << ") "
+            LOG(Error) << "Failed to open " << get_name() << " (Attempt " << attempt + 1 << "/" << 5 << ") "
                        << get_quanser_error_message(result);
         }
     }
     // all attempts to open were unsuccessful
-    LOG(Fatal) << "Exhausted all attempts to open " << name_ << ", exiting application";
+    LOG(Fatal) << "Exhausted all attempts to open " << get_name() << ", exiting application";
     exit(1);
 }
 
@@ -63,11 +63,11 @@ bool QDaq::close() {
     result = hil_close(handle_);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Closed " << name_;
+        LOG(Info) << "Closed " << get_name();
         return Daq::close();
     }
     else {
-        LOG(Info) << "Failed to close " << name_ << " "
+        LOG(Info) << "Failed to close " << get_name() << " "
                   << get_quanser_error_message(result);
         return false;
     }
@@ -76,7 +76,7 @@ bool QDaq::close() {
 bool QDaq::set_options(const QOptions& options) {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << name_ << " is not open";
+                   << get_name() << " is not open";
         return false;
     }
     options_ = options;
@@ -86,11 +86,11 @@ bool QDaq::set_options(const QOptions& options) {
     result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Set " << name_ << " options to: \"" << options_.get_string() << "\"";
+        LOG(Info) << "Set " << get_name() << " options to: \"" << options_.get_string() << "\"";
         return true;
     }
     else {
-        LOG(Error) << "Failed to set " << name_ << " options to: \"" << options_.get_string() << "\" "
+        LOG(Error) << "Failed to set " << get_name() << " options to: \"" << options_.get_string() << "\" "
                    << get_quanser_error_message(result);
         return false;
     }

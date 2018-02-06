@@ -30,16 +30,16 @@ namespace mel {
 class CsvFormatter {
 public:
     static std::string header() {
-        return "Date,Time,Severity,TID,Function,Message\n";
+        return "Date, Time, Severity, TID, Function, Message\n";
     }
 
     static std::string format(const Record& record) {
         std::ostringstream ss;
-        ss << record.get_timestamp().yyyy_mm_dd() << ",";
-        ss << record.get_timestamp().hh_mm_ss_mmm() << ",";
-        ss << severity_to_string(record.get_severity()) << ",";
-        ss << record.get_tid_() << ",";
-        ss << record.get_func() << "@" << record.get_line() << ",";
+        ss << record.get_timestamp().yyyy_mm_dd() << ", ";
+        ss << record.get_timestamp().hh_mm_ss_mmm() << ", ";
+        ss << severity_to_string(record.get_severity()) << ", ";
+        ss << record.get_tid_() << ", ";
+        ss << record.get_func() << "@" << record.get_line() << ", ";
 
         std::string message = record.get_message();
 

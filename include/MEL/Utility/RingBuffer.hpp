@@ -115,12 +115,12 @@ public:
     }
 
     /// Returns occupied size of the RingBuffer
-    size_t size() const {
+    std::size_t size() const {
         return size_;
     }
 
     /// Returns the capacity of the RingBuffer
-    size_t capacity() const {
+    std::size_t capacity() const {
         return capacity_;
     }
 
@@ -149,10 +149,10 @@ public:
 
 private:
 
-    size_t capacity_;        ///< the maximum capacity of the RingBuffer
-    size_t size_;            ///< current occupied size of the RingBuffer
-    size_t front_;           ///< front index of the RingBuffer
-    size_t back_;            ///< back index of the RingBuffer
+    std::size_t capacity_;        ///< the maximum capacity of the RingBuffer
+    std::size_t size_;            ///< current occupied size of the RingBuffer
+    std::size_t front_;           ///< front index of the RingBuffer
+    std::size_t back_;            ///< back index of the RingBuffer
     std::vector<T> buffer_;  ///< underlying buffer array
 };
 

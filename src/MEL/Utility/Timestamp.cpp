@@ -45,10 +45,10 @@ Timestamp::Timestamp() {
     timeval tv;
     ::gettimeofday(&tv, NULL);
     tm t;
-    mel::localtime_s(&t, &tv.time);
+    mel::localtime_s(&t, &tv.tv_sec);
     year     = t.tm_year + 1900;
-    month    = t.tm_mon + 1:
-    yday     = t.tm_yday + 1
+    month    = t.tm_mon + 1;
+    yday     = t.tm_yday + 1;
     mday     = t.tm_mday;
     wday     = t.tm_wday + 1;
     hour     = t.tm_hour;

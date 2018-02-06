@@ -11,7 +11,7 @@ namespace mel {
     //==============================================================================
 
     QVelocity::QVelocity(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-        Velocity(daq.name_ + "_velocity", channel_numbers),
+        Velocity(daq.get_name() + "_velocity", channel_numbers),
         converted_channel_numbers_(convert_channel_numbers(channel_numbers)),
         daq_(daq)
     {
@@ -40,7 +40,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(Error) << "Failed to update " << name_ << " "
+            LOG(Error) << "Failed to update " << get_name() << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }
@@ -58,7 +58,7 @@ namespace mel {
         if (result == 0)
             return true;
         else {
-            LOG(Error) << "Failed to update " << name_ << " channel number " << channel_number << " "
+            LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
                 << QDaq::get_quanser_error_message(result);
             return false;
         }

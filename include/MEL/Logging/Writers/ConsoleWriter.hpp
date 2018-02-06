@@ -33,7 +33,7 @@ class ConsoleWriter : public Writer {
 public:
 
     /// Default constructor
-    ConsoleWriter(Severity max_severity = Verbose) : Writer(max_severity) {}
+    ConsoleWriter(Severity max_severity = Debug) : Writer(max_severity) {}
 
     /// Formats then writers a Record to the console
     virtual void write(const Record& record) override {

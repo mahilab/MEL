@@ -32,9 +32,9 @@ class Logger : public Singleton<Logger<instance> >, public Writer {
 public:
     Logger(Severity maxSeverity = None) : max_severity_(maxSeverity) {}
 
-    Logger& add_writer(Writer* appender) {
-        assert(appender != this);
-        writers_.push_back(appender);
+    Logger& add_writer(Writer* writer) {
+        assert(writer != this);
+        writers_.push_back(writer);
         return *this;
     }
 

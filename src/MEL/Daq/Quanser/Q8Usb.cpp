@@ -51,7 +51,7 @@ Q8Usb::Q8Usb(QOptions options,
 Q8Usb::~Q8Usb() {
 
     // if enabled, disable
-    if (enabled_)
+    if (is_enabled())
         disable();
     // if open, close
     if (open_) {
@@ -106,7 +106,7 @@ bool Q8Usb::close() {
 bool Q8Usb::enable() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     // enable each module
@@ -130,7 +130,7 @@ bool Q8Usb::enable() {
 bool Q8Usb::disable() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     // disable each module
@@ -154,7 +154,7 @@ bool Q8Usb::disable() {
 bool Q8Usb::update_input() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     t_error result;
@@ -176,7 +176,7 @@ bool Q8Usb::update_input() {
     if (result == 0)
         return true;
     else {
-        LOG(Error) << "Failed to update " << name_ << " input "
+        LOG(Error) << "Failed to update " << get_name() << " input "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -185,7 +185,7 @@ bool Q8Usb::update_input() {
 bool Q8Usb::update_output() {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     // convert digitals
@@ -206,7 +206,7 @@ bool Q8Usb::update_output() {
     if (result == 0)
         return true;
     else {
-        LOG(Error) << "Failed to update " << name_ << " output "
+        LOG(Error) << "Failed to update " << get_name() << " output "
             << QDaq::get_quanser_error_message(result);
         return false;
     }
@@ -215,7 +215,7 @@ bool Q8Usb::update_output() {
 bool Q8Usb::identify(uint32 channel_number) {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << name_ << " is not open";
+            << get_name() << " is not open";
         return false;
     }
     Input<Logic>::Channel di_ch = digital_input.get_channel(channel_number);
@@ -254,12 +254,12 @@ bool Q8Usb::sanity_check() {
     for (auto it = velocities.begin(); it != velocities.end(); ++it) {
         if (*it != 0.0) {
             sane = false;
-            LOG(Warning) << "Sanity check on " << name_ << " failed";
+            LOG(Warning) << "Sanity check on " << get_name() << " failed";
             break;
         }
     }
     if (sane)
-        LOG(Info) << "Sanity check on " << name_ << " passed";
+        LOG(Info) << "Sanity check on " << get_name() << " passed";
     return sane;
 }
 

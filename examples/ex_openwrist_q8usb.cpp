@@ -8,10 +8,11 @@
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Devices/VoltPaqX4.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 
 using namespace mel;
 
-ctrl_bool stop = false;
+ctrl_bool stop(false);
 int handler(unsigned long param) {
     stop = true;
     return 1;
@@ -36,6 +37,8 @@ int main(int argc, char *argv[]) {
 
     // register ctrl-c handler
     register_ctrl_handler(handler);
+
+    init_logger();
 
     // enable Windows realtime
     enable_realtime();

@@ -3,7 +3,8 @@
 #include <sys/stat.h>
 
 #ifdef __linux__
-
+#include <sys/types.h>
+#include <unistd.h>
 #elif _WIN32
 #include <io.h>
 #include <share.h>

@@ -132,7 +132,7 @@ Encoder::Channel::Channel() :
 
 Encoder::Channel::Channel(Encoder* module, uint32 channel_number) :
     ChannelBase(module, channel_number),
-    PositionSensor(module->get_name() + "_encoder")
+    PositionSensor(module->get_name() + "[" + std::to_string(channel_number) + "]")
 { }
 
 bool Encoder::Channel::enable() {

@@ -1,6 +1,6 @@
 #pragma once
-#include "MEL/Exoskeletons/MahiExoII/MahiExoII.hpp"
-#include "MEL/Devices/AtiMini45.hpp"
+#include <MEL/Exoskeletons/MahiExoII/MahiExoII.hpp>
+#include <MEL/Devices/AtiMini45.hpp>
 
 namespace mel {
 
@@ -19,6 +19,5 @@ namespace mel {
 
         std::vector<double> wrist_forces_;
 
-    };
 
 }

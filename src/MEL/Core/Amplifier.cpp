@@ -16,7 +16,7 @@ Amplifier::Amplifier(const std::string& name,
                      DigitalInput::Channel fault_channel,
                      double sense_gain,
                      AnalogInput::Channel sense_channel)
-    : Device(name),
+    : Device("Amplifier::" + name),
       enable_level_(enable_level),
       fault_level_(fault_level),
       command_gain_(command_gain),

@@ -8,13 +8,15 @@ namespace mel {
 //==============================================================================
 
 Device::Device() :
-    name_("invalid_device"),
-    enabled_(false)
+    enabled_(false),
+    long_name_("Device::"),
+    name_("")
 { }
 
 Device::Device(const std::string& name) :
-    name_(name),
-    enabled_(false)
+    enabled_(false),
+    long_name_("Device::" + name),
+    name_(long_name_.substr(long_name_.find_last_of("::") + 1))
 {
 }
 
@@ -24,20 +26,20 @@ Device::~Device() {
 
 bool Device::enable() {
     if (enabled_) {
-        LOG(Warning) << "Ignored attempt to enable " << name_ << " since it is already enabled";
+        LOG(Warning) << "Ignored attempt to enable " << long_name_ << " since it is already enabled";
         return true;
     }
-    LOG(Info) << "Enabled " << name_;
+    LOG(Info) << "Enabled " << long_name_;
     enabled_ = true;
     return true;
 }
 
 bool Device::disable() {
     if (!enabled_) {
-        LOG(Warning) << "Ignored attempt to disable " << name_ << " since it is already disabled";
+        LOG(Warning) << "Ignored attempt to disable " << long_name_ << " since it is already disabled";
         return true;
     }
-    LOG(Info) << "Disabled " << name_;
+    LOG(Info) << "Disabled " << long_name_;
     enabled_ = false;
     return true;
 }
@@ -50,8 +52,14 @@ const std::string& Device::get_name() const {
     return name_;
 }
 
+const std::string& Device::get_long_name() const {
+    return long_name_;
+}
+
 void Device::set_name(const std::string& name) {
     name_ = name;
+    std::string lineage = long_name_.substr(0, long_name_.find_last_of("::"));
+    long_name_ = lineage + name;
 }
 
 } // namespace mel

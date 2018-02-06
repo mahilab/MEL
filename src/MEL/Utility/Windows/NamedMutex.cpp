@@ -39,8 +39,9 @@ NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) {
                 LOG(Error) << "Failed to create NamedMutex " << name << "(Windows Error #" << (int)GetLastError() << ")";
             }
             else {
-                if (GetLastError() == ERROR_ALREADY_EXISTS)
+                if (GetLastError() == ERROR_ALREADY_EXISTS) {
                     LOG(Warning) << "Opened an existing mutex when trying to create NamedMutex " << name;
+                }
             }
             break;
         case OpenOnly:

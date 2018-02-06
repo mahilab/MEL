@@ -87,8 +87,9 @@ MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
 }
 
 void SharedMemory::close(MapHandle map) {
-    if (CloseHandle(map) == 0)
+    if (CloseHandle(map) == 0) {
         LOG(Error) << "Failed to close handle (Windows Error #" << (int)GetLastError() << ")";
+    }
 }
 
 void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {

@@ -35,7 +35,7 @@ public:
     RollingFileWriter(const char* filename,
                       size_t max_file_size = 0,
                       int max_files       = 0,
-                      Severity max_severity = Verbose)
+                      Severity max_severity = Debug)
         : Writer(max_severity),
           file_size_(),
           max_file_size_(

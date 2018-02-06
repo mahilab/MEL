@@ -7,7 +7,7 @@ namespace mel {
 //==============================================================================
 
 Exo::Exo(const std::string& name) :
-    Robot(name)
+    Robot("Exo::" + name)
 { }
 
 std::vector<double> Exo::get_anatomical_joint_positions() const {

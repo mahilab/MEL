@@ -81,7 +81,7 @@ namespace mel {
     }
 
     MahiExoII::~MahiExoII() {
-        if (enabled_) {
+        if (is_enabled()) {
             disable();
         }
     }

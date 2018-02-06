@@ -13,7 +13,7 @@ using namespace mel;
 int main(int argc, char *argv[]) {
 
     static ColorConsoleWriter<TxtFormatter> consoleAppender;
-    init_logger(Verbose, &consoleAppender);
+    init_logger();
 
     if (argc > 1) {
         MelShare ms("melshare");
