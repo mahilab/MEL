@@ -30,11 +30,11 @@ template <class Formatter>
 class ColorConsoleWriter : public ConsoleWriter<Formatter> {
 public:
 
-    ColorConsoleWriter(Severity max_severity = Verbose) : ConsoleWriter(max_severity) {}
+    ColorConsoleWriter(Severity max_severity = Debug) : ConsoleWriter<Formatter>(max_severity) {}
 
-    virtual void write(const Record& record) {
+    virtual void write(const Record& record) override {
         std::string str = Formatter::format(record);
-        Lock lock(mutex_);
+        Lock lock(this->mutex_);
         setColor(record.get_severity());
         print_string(str);
         reset_text_color();
@@ -46,7 +46,7 @@ private:
             switch (severity) {
 #ifdef _WIN32
                 case Fatal:
-                    set_text_color(Color::White, Color::Red);
+                    set_text_color(Color::White, Color::DarkRed);
                     break;
 
                 case Error:
@@ -57,8 +57,8 @@ private:
                     set_text_color(Color::Yellow);
                     break;
 
-                case Debug:
                 case Verbose:
+                case Debug:
                     set_text_color(Color::Cyan);
                     break;
 #else
@@ -74,8 +74,8 @@ private:
                     std::cout << "\x1B[93m";  // yellow
                     break;
 
-                case Debug:
                 case Verbose:
+                case Debug:
                     std::cout << "\x1B[96m";  // cyan
                     break;
 #endif

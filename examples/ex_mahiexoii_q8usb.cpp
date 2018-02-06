@@ -13,7 +13,7 @@
 using namespace mel;
 
 // create global stop variable CTRL-C handler function
-ctrl_bool stop = false;
+ctrl_bool stop(false);
 int handler(unsigned long param) {
     stop = true;
     return 1;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
         std::vector<double> rps_command_torques(meii.N_qs_);
 
         // enable DAQ and exo
-        q8.enable();        
+        q8.enable();
         meii.enable();
 
         // initialize controller
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
         // start loop
         q8.watchdog.start();
         while (!stop) {
-            
+
             // update all DAQ input channels
             q8.update_input();
 
@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
                 aj_velocities[i] = meii.get_anatomical_joint_velocity(i);
             }
 
-            
+
 
 
             switch (state) {
@@ -185,12 +185,12 @@ int main(int argc, char *argv[]) {
                     setpoint[i] = saturate(setpoint[i], setpoint_ranges[i][0], setpoint_ranges[i][1]);
                 }
                 meii.anat_ref_.set_ref(setpoint, timer.get_elapsed_time());
-                
+
 
                 // calculate commanded torques
                 command_torques = meii.set_anat_pos_ctrl_torques(meii.anat_ref_, timer.get_elapsed_time());
 
-                
+
                 break;
             }
 
@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
             ms_pos.write_data(aj_positions);
             ms_vel.write_data(aj_velocities);
             ms_trq.write_data(command_torques);
-            
+
             // update all DAQ output channels
             q8.update_output();
 
@@ -208,9 +208,9 @@ int main(int argc, char *argv[]) {
 
             // wait for remainder of sample period
             timer.wait();
-            
+
         }
-        
+
     }
 
     disable_realtime();

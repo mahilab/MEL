@@ -11,7 +11,7 @@
 
 using namespace mel;
 
-ctrl_bool stop = false;
+ctrl_bool stop(false);
 int handler(unsigned long param) {
     stop = true;
     return 1;

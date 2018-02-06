@@ -29,7 +29,7 @@ namespace mel {
 class Writer {
 public:
 
-    Writer(Severity max_severity = Verbose) : max_severity_(max_severity) {}
+    Writer(Severity max_severity = Debug) : max_severity_(max_severity) {}
 
     virtual ~Writer() {}
 

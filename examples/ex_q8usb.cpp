@@ -10,7 +10,7 @@
 using namespace mel;
 
 // create global stop variable CTRL-C handler function
-ctrl_bool stop = false;
+ctrl_bool stop(false);
 int handler(unsigned long param) {
     stop = true;
     return 1;
@@ -62,7 +62,7 @@ int main() {
     // start encoder loop
     while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.encoder.get_value(0));        
+        print(q8.encoder.get_value(0));
         timer.wait();
     }
     stop = false;

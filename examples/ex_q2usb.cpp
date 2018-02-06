@@ -8,7 +8,7 @@
 
 using namespace mel;
 
-ctrl_bool stop = false;
+ctrl_bool stop(false);
 int handler(unsigned long param) {
     stop = true;
     return 1;
@@ -17,8 +17,7 @@ int handler(unsigned long param) {
 int main() {
 
     // intialize logger
-    static ColorConsoleWriter<TxtFormatter> consoleAppender;
-    init_logger(Verbose, "log.csv").add_writer(&consoleAppender);
+    init_logger();
 
     // register CTRL-C handler
     register_ctrl_handler(handler);

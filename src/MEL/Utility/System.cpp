@@ -1,19 +1,21 @@
 #include <MEL/Utility/System.hpp>
-#include <iomanip>
-#include <ctime>
 #include <cstring>
+#include <ctime>
+#include <iomanip>
 
 #ifdef __linux__
-    #include <sys/stat.h>
-    #include <errno.h>
-    #include <time.h>
-    #include <pthread.h>
-    #include <sched.h>
+#include <errno.h>
+#include <pthread.h>
+#include <sched.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <time.h>
+#include <unistd.h>
 #elif _WIN32
-    #include <windows.h>
-    #include <tchar.h>
-    #include <pdh.h>
-    #include <psapi.h>
+#include <pdh.h>
+#include <psapi.h>
+#include <tchar.h>
+#include <windows.h>
 #endif
 
 namespace mel {

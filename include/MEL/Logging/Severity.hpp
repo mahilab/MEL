@@ -19,14 +19,16 @@
 #define MEL_SEVERITY_HPP
 
 namespace mel {
+
+/// Represents a logging severity level
 enum Severity {
-    None    = 0,
-    Fatal   = 1,
-    Error   = 2,
-    Warning = 3,
-    Info    = 4,
-    Debug   = 5,
-    Verbose = 6
+    None    = 0,  ///< always written
+    Fatal   = 1,  ///< error that forces application abort
+    Error   = 2,  ///< error that is fatal to operation, but not application
+    Warning = 3,  ///< error that may cause issues, but has been accounted for
+    Info    = 4,  ///< useful information needed during normal operation
+    Verbose = 5,  ///< useful information not needed during normal operation
+    Debug   = 6,  ///< useful information needed for diagnostics
 };
 
 inline const char* severity_to_string(Severity severity) {
@@ -39,17 +41,17 @@ inline const char* severity_to_string(Severity severity) {
             return "WARN";
         case Info:
             return "INFO";
-        case Debug:
-            return "DEBUG";
         case Verbose:
             return "VERB";
+        case Debug:
+            return "DEBUG";
         default:
             return "NONE";
     }
 }
 
 inline Severity string_to_severity(const char* str) {
-    for (Severity severity = Fatal; severity <= Verbose;
+    for (Severity severity = Fatal; severity <= Debug;
          severity          = static_cast<Severity>(severity + 1)) {
         if (severity_to_string(severity)[0] == str[0]) {
             return severity;

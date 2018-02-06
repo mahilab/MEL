@@ -65,7 +65,7 @@ void prompt(const std::string& message);
 /// Registers a function so that it is called when Ctrl+C is pressed.
 ///
 /// The handler should have an unsigned long input parameter and return an int.
-/// The input can be checked against the the control signal values below for 
+/// The input can be checked against the the control signal values below for
 /// further processsing. If this function handles the event, it should return 1,
 /// otherwise it should return 0 in which case the next handler will be processed
 bool register_ctrl_handler(int (*handler)(unsigned long));
@@ -87,13 +87,20 @@ typedef volatile std::atomic<bool> ctrl_bool;
 enum class Color {
     None,
     Black,
+    Gray,
     White,
     Red,
+    DarkRed,
     Green,
+    DarkGreen,
     Blue,
+    DarkBlue,
     Cyan,
+    Aqua,
     Magenta,
+    Purple,
     Yellow,
+    Gold
 };
 
 /// Sets the foreground and background text color in the console
@@ -101,6 +108,9 @@ void set_text_color(Color foreground, Color background = Color::None);
 
 /// Resets the foreground and background text color to the default style
 void reset_text_color();
+
+/// Taste the rainbow
+void rainbow();
 
 //==============================================================================
 // MISC

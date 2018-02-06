@@ -12,7 +12,7 @@
 using namespace mel;
 
 // create global stop variable CTRL-C handler function
-ctrl_bool stop = false;
+ctrl_bool stop(false);
 int handler(unsigned long param) {
     stop = true;
     return 1;
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
         std::vector<double> tkeo_emg(meii.N_emg_);
         std::vector<double> filtered_tkeo_emg(meii.N_emg_);
         std::vector<double> emg_share(4);
-        
+
 
         // enable DAQ and exo
         q8.enable();

@@ -89,7 +89,7 @@ namespace mel
     }
 
     /// Initalizes the default MEL logger
-    inline Logger<DEFAULT_LOGGER>& init_logger(Severity file_max_severity = Info, Severity console_max_severity = Warning) {
+    inline Logger<DEFAULT_LOGGER>& init_logger(Severity file_max_severity = Verbose, Severity console_max_severity = Info) {
         static ColorConsoleWriter<TxtFormatter> console_writer(console_max_severity);
         Logger<DEFAULT_LOGGER>& logger = init_logger(file_max_severity, "MEL.log", 0, 0).add_writer(&console_writer);
         return logger;
