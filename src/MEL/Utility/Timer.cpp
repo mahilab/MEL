@@ -27,7 +27,7 @@ Time Timer::restart() {
 Time Timer::wait() {
     Time remaining_time = period_ - (Clock::get_current_time() - prev_time_);
     if (remaining_time < Time::Zero) {
-        LOG_IF(Info, ticks_ > 0) << "Timer with period " << period_ << " missed deadline by " << -remaining_time << " on tick number " << ticks_;
+        LOG_IF(Verbose, ticks_ > 0) << "Timer with period " << period_ << " missed deadline by " << -remaining_time << " on tick number " << ticks_;
     }
     else {
         if (mode_ == WaitMode::Busy)
