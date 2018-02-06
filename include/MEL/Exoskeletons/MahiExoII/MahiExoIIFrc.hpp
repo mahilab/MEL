@@ -4,20 +4,20 @@
 
 namespace mel {
 
-    class MahiExoIIFrc : public virtual MahiExoII {
+class MahiExoIIFrc : public virtual MahiExoII {
 
-    public:
-       
-
-        /// Constructor
-        MahiExoIIFrc(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
+public:
 
 
-        AtiMini45 wrist_force_sensor_;
-
-    private:
-
-        std::vector<double> wrist_forces_;
+    /// Constructor
+    MahiExoIIFrc(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
 
 
-}
+    AtiMini45 wrist_force_sensor_;
+
+private:
+
+    std::vector<double> wrist_forces_;
+};
+
+} // namespace mel
