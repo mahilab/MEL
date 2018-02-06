@@ -1,6 +1,6 @@
 #pragma once
-#include "MahiExoII.h"
-#include "AtiMini45.h"
+#include <MEL/Exoskeletons/MahiExoII/MahiExoII.hpp>
+#include <MEL/Devices/AtiMini45.hpp>
 
 namespace mel {
 
@@ -10,7 +10,7 @@ namespace mel {
 
         public:
 
-            struct Config : public virtual MahiExoII::Config {
+            struct Config : public virtual MeiiConfiguration {
                 std::array < :Ai, 6 > wrist_force_sensor_; // analog input channels that measure force/torque
             };
 
@@ -32,7 +32,7 @@ namespace mel {
 
             // PUBLIC VARIABLES
 
-            :ForceSensor* wrist_force_sensor_;
+            ForceSensor* wrist_force_sensor_;
 
         };
 

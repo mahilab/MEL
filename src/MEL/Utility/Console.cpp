@@ -139,7 +139,7 @@ void reset_text_color() {
 
 void rainbow() {
     for (std::size_t i = 0; i < 256; ++i) {
-        SetConsoleTextAttribute(stdout_handle, i);
+        SetConsoleTextAttribute(stdout_handle, (WORD)i);
         print(i);
     }
     reset_text_color();
