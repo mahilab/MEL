@@ -34,26 +34,29 @@ namespace mel {
             const std::vector<Velocity::Channel>& velocity_channels,
             const std::vector<Amplifier>& amplifiers);
 
-        /// Constructor for EMG configuration
+        /// Constructor for EMG or Force Sensor configuration
         MeiiConfiguration(
             Daq& daq,
             Watchdog& watchdog,
             const std::vector<Encoder::Channel>& encoder_channels,
             const std::vector<Velocity::Channel>& velocity_channels,
             const std::vector<Amplifier>& amplifiers,
-            const std::vector<AnalogInput::Channel>& emg_channels);
+            const std::vector<AnalogInput::Channel>& ai_channels);
+
+
 
     private:
 
         friend class MahiExoII;
         friend class MahiExoIIEmg;
+        friend class MahiExoIIFrc;
 
         Daq&                                  daq_;                ///< DAQ controlling the MahiExoII
         Watchdog&                             watchdog_;           ///< watchdog the MahiExoII is guarded by
         std::vector<Encoder::Channel>         encoder_channels_;   ///< encoder channels that measure motor positions
         std::vector<Velocity::Channel>        velocity_channels_;  ///< encoder channels that measure motor velocities
         std::vector<Amplifier>                amplifiers_;         ///< amplifiers used to control robot motors
-        std::vector<AnalogInput::Channel>     emg_channels_;       ///< analog input channels that measure EMG
+        std::vector<AnalogInput::Channel>     ai_channels_;        ///< analog input channels that measure EMG
 
     };
 

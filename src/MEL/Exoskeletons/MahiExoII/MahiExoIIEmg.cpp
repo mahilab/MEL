@@ -9,7 +9,7 @@ MahiExoIIEmg::MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters param
     emg_electrodes_.reserve(N_emg_);
     
     for (int i = 0; i < N_emg_; ++i) {
-        emg_electrodes_.push_back(EmgSignal(config_.emg_channels_[i]));
+        emg_electrodes_.push_back(EmgSignal(config_.ai_channels_[i]));
     }
 }
 

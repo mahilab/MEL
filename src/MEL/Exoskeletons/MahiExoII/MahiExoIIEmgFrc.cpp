@@ -1,14 +1,11 @@
-#include "MahiExoIIEmgFrc.h"
+#include "MEL/Exoskeletons/MahiExoII/MahiExoIIEmgFrc.hpp"
 
 namespace mel {
 
-    namespace exo {
+    MahiExoIIEmgFrc::MahiExoIIEmgFrc(MeiiConfiguration configuration, MeiiParameters parameters) :
+        MahiExoII(configuration, parameters),
+        MahiExoIIEmg(configuration, parameters),
+        MahiExoIIFrc(configuration, parameters)
+    {}
 
-        MahiExoIIEmgFrc::MahiExoIIEmgFrc(Config configuration, Params parameters) :
-            MahiExoII(configuration, parameters),
-            MahiExoIIEmg(configuration, parameters),
-            MahiExoIIFrc(configuration, parameters)
-        {}
-
-    }
 }

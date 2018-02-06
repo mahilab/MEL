@@ -31,15 +31,22 @@ class AtiMini45 : public ForceSensor {
 
 public:
 
-    AtiMini45();
+    //AtiMini45();
 
     AtiMini45(std::string name, std::vector<Input<Voltage>::Channel> ai_channels, array_2D<double, 6, 6> calib_mat);
 
     std::vector<double> get_forces() override;
 
+    bool enable() override;
+
+    bool disable() override;
+
 private:
 
+    std::vector<AnalogInput::Channel> ai_channels_;
     array_2D<double, 6, 6> calib_mat_;
+
+
 
 };
 

@@ -68,7 +68,7 @@ namespace mel {
         };
 
 
-        // CONSTRUCTOR
+        /// Constructor
         MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
 
 

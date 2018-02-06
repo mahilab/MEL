@@ -26,13 +26,13 @@ MeiiConfiguration::MeiiConfiguration(
     const std::vector<Encoder::Channel>& encoder_channels,
     const std::vector<Velocity::Channel>& velocity_channels,
     const std::vector<Amplifier>& amplifiers,
-    const std::vector<AnalogInput::Channel>& emg_channels) :
+    const std::vector<AnalogInput::Channel>& ai_channels) :
     daq_(daq),
     watchdog_(watchdog),
     encoder_channels_(encoder_channels),
     velocity_channels_(velocity_channels),
     amplifiers_(amplifiers),
-    emg_channels_(emg_channels)
+    ai_channels_(ai_channels)
 {
 }
 

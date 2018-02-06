@@ -1,31 +1,21 @@
 #pragma once
-#include "MahiExoIIEmg.h"
-#include "MahiExoIIFrc.h"
+#include "MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp"
+#include "MEL/Exoskeletons/MahiExoII/MahiExoIIFrc.hpp"
 
 namespace mel {
 
-    namespace exo {
 
-        class MahiExoIIEmgFrc : public MahiExoIIEmg, public MahiExoIIFrc {
+    class MahiExoIIEmgFrc : public MahiExoIIEmg, public MahiExoIIFrc {
 
-        public:
-
-            struct Config : public MahiExoIIEmg::Config, public MahiExoIIFrc::Config {
-
-            };
-
-            struct Params : public MahiExoIIEmg::Params, public MahiExoIIFrc::Params {
-
-            };
+    public:
 
 
-            //---------------------------------------------------------------------
-            // CONSTRUCTOR(S) / DESTRUCTOR(S)
-            //---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        // CONSTRUCTOR(S) / DESTRUCTOR(S)
+        //---------------------------------------------------------------------
 
-            MahiExoIIEmgFrc(Config configuration, Params parameters = Params());
-        };
+        MahiExoIIEmgFrc(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
+    };
 
-    }
 
 }
