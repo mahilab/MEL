@@ -1,27 +1,11 @@
+#include <atomic>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/System.hpp>
-#include <thread>
-#include <mutex>
-#include <MEL/Utility/Clock.hpp>
-#include <MEL/Utility/Mutex.hpp>
-#include <MEL/Utility/Windows/NamedMutex.hpp>
-#include <MEL/Utility/Spinlock.hpp>
+#include <vector>
 
 using namespace mel;
 
 int main() {
-
-    Spinlock mutex;
-
-    Clock clock;
-    int j = 0;
-    for (int i = 0; i < 1000000; ++i) {
-        mutex.lock();
-        ++j;
-        mutex.unlock();
-    }
-    print(j);
-    print(clock.get_elapsed_time());
-
+    std::atomic<std::size_t> head;
+    print(head.is_lock_free());
     return 0;
 }

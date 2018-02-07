@@ -79,7 +79,7 @@ public:
     ~DataLog() {
         if (autosave_ && row_count_ > 0 && !log_saved_ && !saving_) {
             save_data("log", "autosaved_logs", true);
-        }        
+        }
         wait_for_save();
     }
 
@@ -139,7 +139,7 @@ public:
         }
         else
             full_filename = directory + get_path_slash() + filename + ".csv";
-        LOG(Info) << "Saving DataLog to " << full_filename;
+        LOG(Verbose) << "Saving DataLog to " << full_filename;
         std::thread t(&DataLog::save_thread_func, this, full_filename, directory);
         t.detach();
     }
