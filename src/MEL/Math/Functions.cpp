@@ -234,7 +234,7 @@ Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>&
             }
         }
         else {
-            LOG(ERROR) << "Input must have same number of cols in each row to be converted into Eigen Matrix type";
+            LOG(Error) << "Input must have same number of cols in each row to be converted into Eigen Matrix type";
         }
     }
     return eigen_mat;
