@@ -1,5 +1,6 @@
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <numeric>
 #include <algorithm>
 #include <cmath>
@@ -233,7 +234,7 @@ Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>&
             }
         }
         else {
-            std::cout << "ERROR: Input must have same number of cols in each row to be converted into Eigen Matrix type." << std::endl;
+            LOG(ERROR) << "Input must have same number of cols in each row to be converted into Eigen Matrix type";
         }
     }
     return eigen_mat;

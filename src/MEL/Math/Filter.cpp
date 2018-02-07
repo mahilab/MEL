@@ -1,4 +1,5 @@
 #include <MEL/Math/Filter.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <iostream>
 
 namespace mel {
@@ -24,10 +25,10 @@ FilterImplementation::FilterImplementation(const std::vector<double>& b, const s
     a_(a)
 {
     if (a_.size() != b_.size()) {
-        std::cout << "ERROR: Coefficient vector sizes do not match." << std::endl;
+        LOG(Error) << "Filter coefficient vector sizes do not match";
     }
     else if (a_.size() < 2) {
-        std::cout << "ERROR: Coefficient vector must be longer than 1." << std::endl;
+        LOG(Error) << "Coefficient vector must be longer than 1";
     }
     else {
         n_ = a_.size() - 1;
@@ -46,7 +47,7 @@ void FilterImplementation::filter(const double& x, double& y) {
 
 void Filter::filter(const double& x, double& y) {
     if (length_ != 1) {
-        std::cout << "ERROR: Input vector does not match size of filter bank." << std::endl;
+        LOG(Error) << "ERROR: Input vector does not match size of filter bank.";
         return;
     }
     filter_implementations_[0].filter(x, y);
@@ -55,11 +56,11 @@ void Filter::filter(const double& x, double& y) {
 void Filter::filter(const std::vector<double>& x, std::vector<double>& y) {
 
     if (x.size() != length_) {
-        std::cout << "ERROR: Input vector does not match size of filter bank." << std::endl;
+        LOG(Error) << "ERROR: Input vector does not match size of filter bank.";
         return;
     }
     if (y.size() != length_) {
-        std::cout << "ERROR: Output vector does not match size of filter bank." << std::endl;
+        LOG(Error) << "ERROR: Output vector does not match size of filter bank.";
         return;
     }
 
