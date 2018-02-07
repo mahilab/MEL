@@ -203,7 +203,7 @@ private:
 /// the socket often enough, and cannot afford blocking
 /// this loop.
 ///
-/// \see sf::TcpListener, sf::TcpSocket, sf::UdpSocket
+/// \see mel::TcpListener, mel::TcpSocket, mel::UdpSocket
 
 //==============================================================================
 // LICENSES
