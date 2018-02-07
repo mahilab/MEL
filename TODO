@@ -40,6 +40,9 @@ Utility:
   ☐ Socket.hpp includes winsock, which includes windows.h ... make SocketImpl.hpp
   ☐ async console printing (new thread, tcp/ip server, or something else?)
 
+Logging:
+  ☐ LogSever / RemoteWriter for remote logging
+
 OpenWrist:
 
 MELScope:

@@ -3,6 +3,30 @@
 #include <cstring>
 #include <cwchar>
 
+#ifdef __linux__
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#elif _WIN32
+#include <basetsd.h>
+#ifdef _WIN32_WINDOWS
+    #undef _WIN32_WINDOWS
+#endif
+#ifdef _WIN32_WINNT
+    #undef _WIN32_WINNT
+#endif
+#define _WIN32_WINDOWS 0x0501
+#define _WIN32_WINNT   0x0501
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
+
 namespace mel
 {
 

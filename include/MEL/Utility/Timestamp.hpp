@@ -8,6 +8,7 @@ namespace mel {
 /// Encapsulates a timestamp
 class Timestamp {
 public:
+
     /// Default constructor
     Timestamp();
 
@@ -18,7 +19,6 @@ public:
     std::string yyyy_mm_dd_hh_mm_ss() const;
 
     std::string yyyy_mm_dd_hh_mm_ss_mmm() const;
-    
 
 public:
 

@@ -97,10 +97,14 @@ operator<<(std::wostringstream& stream, const T& data) {
 /// Encapsulates a log line record
 class Record {
 public:
-    // Constructor
-    Record(Severity severity, const char* func, size_t line, const char* file);
+    /// Constructor
+    Record(Severity severity,
+           const char* func,
+           size_t line,
+           const char* file,
+           Timestamp timestamp = Timestamp());
 
-    // Destructor
+    /// Destructor
     virtual ~Record();
 
     Record& operator<<(char data);
