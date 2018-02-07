@@ -27,26 +27,12 @@
 #include <vector>
 
 #ifdef __linux__
-    #include <sys/types.h>
     #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <netinet/tcp.h>
-    #include <arpa/inet.h>
-    #include <netdb.h>
-    #include <unistd.h>
 #elif _WIN32
     #include <basetsd.h>
-    #ifdef _WIN32_WINDOWS
-        #undef _WIN32_WINDOWS
-    #endif
-    #ifdef _WIN32_WINNT
-        #undef _WIN32_WINNT
-    #endif
-    #define _WIN32_WINDOWS 0x0501
-    #define _WIN32_WINNT   0x0501
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
 #endif
+
+struct sockaddr_in;
 
 namespace mel {
 
@@ -79,6 +65,12 @@ class Packet;
 class Socket : NonCopyable {
 
 public:
+
+    /// Types of protocols that the socket can use
+    enum Type {
+        Tcp, ///< TCP protocol
+        Udp  ///< UDP protocol
+    };
 
     /// Status codes that may be returned by socket functions
     enum Status {
@@ -121,12 +113,6 @@ public:
     bool is_blocking() const;
 
 protected:
-
-    /// Types of protocols that the socket can use
-    enum Type {
-        Tcp, ///< TCP protocol
-        Udp  ///< UDP protocol
-    };
 
     /// Default constructor.
     /// This constructor can only be accessed by derived classes.
@@ -217,7 +203,7 @@ private:
 /// the socket often enough, and cannot afford blocking
 /// this loop.
 ///
-/// \see sf::TcpListener, sf::TcpSocket, sf::UdpSocket
+/// \see mel::TcpListener, mel::TcpSocket, mel::UdpSocket
 
 //==============================================================================
 // LICENSES

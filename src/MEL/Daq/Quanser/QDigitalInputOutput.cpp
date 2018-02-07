@@ -24,7 +24,7 @@ namespace mel {
             return Device::enable();
         set_values(enable_values_);
         if (update()) {
-            LOG(Info) << "Set " << get_name() << " enable values to " << enable_values_;
+            LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
             return Device::enable();
         }
         else {
@@ -38,7 +38,7 @@ namespace mel {
             return Device::disable();
         set_values(disable_values_);
         if (update()) {
-            LOG(Info) << "Set " << get_name() << " disable values to " << disable_values_;
+            LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
             return Device::disable();
         }
         else {
@@ -112,7 +112,7 @@ namespace mel {
             &input_channel_numbers_[0], static_cast<uint32>(input_channel_numbers_.size()),
             &output_channel_numbers_[0], static_cast<uint32>(output_channel_numbers_.size()));
         if (result == 0) {
-            LOG(Info) << "Set " << get_name() << " directions";
+            LOG(Verbose) << "Set " << get_name() << " directions";
             return true;
         }
         else {
@@ -147,7 +147,7 @@ namespace mel {
         t_error result;
         result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_expire_values[0]);
         if (result == 0) {
-            LOG(Info) << "Set " << get_name() << " expire values to " << expire_values_;
+            LOG(Verbose) << "Set " << get_name() << " expire values to " << expire_values_;
             return true;
         }
         else {
@@ -174,7 +174,7 @@ namespace mel {
         t_error result;
         result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_expire_value);
         if (result == 0) {
-            LOG(Info) << "Set " << get_name() << " channel number " << channel_number << " expire value to " << expire_value;
+            LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " expire value to " << expire_value;
             return true;
         }
         else {

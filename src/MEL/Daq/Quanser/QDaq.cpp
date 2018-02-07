@@ -37,7 +37,7 @@ bool QDaq::open() {
         if (result == 0) {
             // successful open
             Daq::open();
-            LOG(Info) << "Opened " << get_name() << " (Attempt " << attempt + 1 << "/" << 5 << ")";
+            LOG(Verbose) << "Opened " << get_name() << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
                 close();
                 return false;
@@ -63,11 +63,11 @@ bool QDaq::close() {
     result = hil_close(handle_);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Closed " << get_name();
+        LOG(Verbose) << "Closed " << get_name();
         return Daq::close();
     }
     else {
-        LOG(Info) << "Failed to close " << get_name() << " "
+        LOG(Verbose) << "Failed to close " << get_name() << " "
                   << get_quanser_error_message(result);
         return false;
     }
@@ -86,7 +86,7 @@ bool QDaq::set_options(const QOptions& options) {
     result = hil_set_card_specific_options(handle_, options_str, std::strlen(options_str));
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Set " << get_name() << " options to: \"" << options_.get_string() << "\"";
+        LOG(Verbose) << "Set " << get_name() << " options to: \"" << options_.get_string() << "\"";
         return true;
     }
     else {

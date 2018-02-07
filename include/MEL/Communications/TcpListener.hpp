@@ -25,7 +25,6 @@
 #include <MEL/Communications/Socket.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 
-
 namespace mel
 {
 

@@ -90,7 +90,7 @@ void client(int iterations, int bytes, const IpAddress& remote_address) {
 int main(int argc, char *argv[]) {
 
     // Setup program options
-    Options options("udp.exe", "UDP Ping Test");
+    Options options("udp.exe", "TCP/IP Ping Test");
     options.add_options()
     ("s", "Sever Mode")
     ("c", "Client Mode")

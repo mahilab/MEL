@@ -6,8 +6,10 @@ namespace mel {
     Record::Record(Severity severity,
         const char* func,
         size_t line,
-        const char* file)
-        : severity_(severity),
+        const char* file,
+        Timestamp timestamp)
+        : timestamp_(timestamp),
+        severity_(severity),
         tid_(mel::get_thread_id()),
         line_(line),
         func_(func),

@@ -38,7 +38,7 @@ void print_string(const std::string& str);
 template<typename T>
 void print(T value) {
     std::stringstream ss;
-    ss << value << std::endl;
+    ss << value << "\n";
     print_string(ss.str());
 }
 
@@ -51,7 +51,7 @@ void print(const array_2D<T, N, M>& a, bool end_line = true) {
             std::cout << *it_col << " ";
         }
         if (end_line)
-            std::cout << std::endl;
+            std::cout << "\n";
     }
 }
 
