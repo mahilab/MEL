@@ -26,8 +26,8 @@ target_link_libraries(lockables MEL)
 add_executable(ring_buffer ex_ring_buffer.cpp)
 target_link_libraries(ring_buffer MEL)
 
-add_executable(logger ex_logger.cpp)
-target_link_libraries(logger MEL)
+# add_executable(logger ex_logger.cpp)
+# target_link_libraries(logger MEL)
 
 #===============================================================================
 # WINDOWS EXAMPLES
