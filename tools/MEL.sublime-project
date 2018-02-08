@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON -DTESTS=ON",
 			"working_dir": "$project_path/../build/linux_ninja"
 		},
 		// {
@@ -114,7 +114,7 @@
 		},
 		{
 			"name": "PuTTY",
-			"shell_cmd": "putty admin@169.254.105.30 -pw mahimahi",
+			"shell_cmd": "putty admin@192.168.1.3 -pw mahimahi",
 
 		},
 		{

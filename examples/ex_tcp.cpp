@@ -6,6 +6,7 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Math/Functions.hpp>
+#include <MEL/Logging/Log.hpp>
 
 // To run this example, open two terminals (same or different computers) and
 // run the following:
@@ -74,6 +75,8 @@ void client(int iterations, int bytes, const IpAddress& remote_address) {
 }
 
 int main(int argc, char *argv[]) {
+
+    init_logger();
 
     // Setup program options
     Options options("udp.exe", "UDP Ping Test");
