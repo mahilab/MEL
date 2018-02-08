@@ -33,7 +33,7 @@ Error:
 Utility:
   ☐ add json parser? header only on github seems good
   ☐ add CSV header only lib
-  ☐ Write Linux version of Mutex
+  ✔ Write Linux version of Mutex @done (18-02-07 22:03)
   ☐ ctrl handler Linux
   ☐ get_last_os_error(), make static functions not print
   ☐ Clean up / rethink StateMachine

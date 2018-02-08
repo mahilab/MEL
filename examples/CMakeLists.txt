@@ -26,8 +26,11 @@ target_link_libraries(lockables MEL)
 add_executable(ring_buffer ex_ring_buffer.cpp)
 target_link_libraries(ring_buffer MEL)
 
-# add_executable(logger ex_logger.cpp)
-# target_link_libraries(logger MEL)
+add_executable(logger ex_logger.cpp)
+target_link_libraries(logger MEL)
+
+add_executable(melscope ex_melscope.cpp)
+target_link_libraries(melscope MEL)
 
 #===============================================================================
 # WINDOWS EXAMPLES
@@ -39,9 +42,6 @@ if(WIN32)
 
     add_executable(melshare ex_melshare.cpp)
     target_link_libraries(melshare MEL)
-
-    add_executable(melscope ex_melscope.cpp)
-    target_link_libraries(melscope MEL)
 
     add_executable(limiter ex_limiter.cpp)
     target_link_libraries(limiter MEL)

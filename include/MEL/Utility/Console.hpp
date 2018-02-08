@@ -62,19 +62,22 @@ void print(const array_2D<T, N, M>& a, bool end_line = true) {
 /// Prompts the user with a message and waits for Enter to be pressed.
 void prompt(const std::string& message);
 
+/// Types of events that can be caught in in a console
+enum class CtrlEvent {
+    CtrlC     = 0, ///< user pressed Ctrl+C
+    CtrlQuit = 1, ///< user pressed Ctrl+Break (Windows) or Ctrl+\ (Unix)
+    Close     = 2, ///< user has closed the console (Windows only)
+    Logoff    = 3, ///< user is logging off (Windows only)
+    Shutdown  = 4  ///< system is shutting down (Windows only)
+};
+
 /// Registers a function so that it is called when Ctrl+C is pressed.
 ///
 /// The handler should have an unsigned long input parameter and return an int.
-/// The input can be checked against the the control signal values below for
-/// further processsing. If this function handles the event, it should return 1,
-/// otherwise it should return 0 in which case the next handler will be processed
-bool register_ctrl_handler(int (*handler)(unsigned long));
-
-#define CTRL_C_EVENT        0  ///< Ctrl+C pressed
-#define CTRL_BREAK_EVENT    1  ///< Ctrl+Break pressed
-#define CTRL_CLOSE_EVENT    2  ///< console closed
-#define CTRL_LOGOFF_EVENT   5  ///< user is logging off
-#define CTRL_SHUTDOWN_EVENT 6  ///< system is shutting down
+/// The input can be checked against the the control event values above for
+/// further processsing. If this function handles the event, it should return
+/// true, otherwise it should return false.
+bool register_ctrl_handler(bool (*handler)(CtrlEvent));
 
 /// Special bool type that can safely be used by a Ctrl handler
 typedef volatile std::atomic<bool> ctrl_bool;
@@ -108,9 +111,6 @@ void set_text_color(Color foreground, Color background = Color::None);
 
 /// Resets the foreground and background text color to the default style
 void reset_text_color();
-
-/// Taste the rainbow
-void rainbow();
 
 //==============================================================================
 // MISC

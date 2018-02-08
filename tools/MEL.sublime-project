@@ -113,6 +113,11 @@
 			"working_dir": "$project_path/../python"
 		},
 		{
+			"name": "PuTTY",
+			"shell_cmd": "putty admin@169.254.105.30 -pw mahimahi",
+
+		},
+		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Anaconda Python Builder",
 			"selector": "source.python",
