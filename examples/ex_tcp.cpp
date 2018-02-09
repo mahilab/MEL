@@ -17,8 +17,8 @@
 
 using namespace mel;
 
-void server() {
-    std::cout << "Starting TCP server on port 55001@" << IpAddress::get_local_address() << std::endl;
+void server(const IpAddress& local_address) {
+    std::cout << "Starting TCP server on port 55001@" << local_address << std::endl;
     while (true) {
         // Listen for connections
         TcpListener listener;
@@ -80,7 +80,8 @@ int main(int argc, char *argv[]) {
     options.add_options()
     ("s", "Sever Mode")
     ("c", "Client Mode")
-    ("r", "Remote Server Address", value<std::string>())
+    ("l", "Local Address", value<std::string>())
+    ("r", "Remote Address", value<std::string>())
     ("i", "Ping Iterations", value<int>())
     ("b", "Message Size in Bytes", value<int>())
     ("h,help", "Help Message");
@@ -105,9 +106,13 @@ int main(int argc, char *argv[]) {
     if (input.count("r") > 0)
         remote_address = IpAddress(input["r"].as<std::string>());
 
+    IpAddress local_address = IpAddress::get_local_address();
+    if (input.count("l") > 0)
+        local_address = IpAddress(input["l"].as<std::string>());
+
     // Run TCP server/client code
     if (input.count("s") > 0)
-        server();
+        server(local_address);
     else if (input.count("c") > 0)
         client(i, bytes, remote_address);
     else
