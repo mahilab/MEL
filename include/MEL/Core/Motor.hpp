@@ -33,7 +33,6 @@ class Motor : public Actuator {
 
 public:
 
-
     /// constructor
     Motor(const std::string& name, double kt, Amplifier amplifier, Limiter current_limiter = Limiter());
 
@@ -55,7 +54,7 @@ public:
     /// Returns the torque sense of the motor if it is available
     double get_torque_sense() const override;
 
-private:
+protected:
 
     double kt_;                ///< torque constant of the Motor
     Amplifier amplifier_;      ///< the current amplifier controlling the motor

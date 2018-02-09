@@ -52,12 +52,10 @@ unsigned short TcpListener::get_local_port() const
     // We failed to retrieve the port
     return 0;
 }
-
 Socket::Status TcpListener::listen(unsigned short port, const IpAddress& address)
 {
     // Create the internal socket if it doesn't exist
     create();
-
     // Check if the address is valid
     if ((address == IpAddress::None) || (address == IpAddress::Broadcast))
         return Error;
@@ -72,13 +70,12 @@ Socket::Status TcpListener::listen(unsigned short port, const IpAddress& address
     }
 
     // Listen to the bound port
-    if (::listen(get_handle(), 0) == -1)
+    if (::listen(get_handle(), SOMAXCONN) == -1) // backlog = 0 failed on Linux
     {
         // Oops, socket is deaf
         LOG(mel::Error) << "Failed to listen to port " << port;
         return Error;
     }
-
     return Done;
 }
 

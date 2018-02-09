@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON -DTESTS=ON",
 			"working_dir": "$project_path/../build/linux_ninja"
 		},
 		// {
@@ -111,6 +111,11 @@
 			"name": "MELScope",
 			"shell_cmd": "python MelScope.pyw",
 			"working_dir": "$project_path/../python"
+		},
+		{
+			"name": "PuTTY",
+			"shell_cmd": "putty admin@169.254.105.30 -pw mahimahi",
+
 		},
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",

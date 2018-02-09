@@ -6,6 +6,7 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Math/Functions.hpp>
+#include <MEL/Logging/Log.hpp>
 
 // To run this example, open two terminals (same or different computers) and
 // run the following:
@@ -22,7 +23,7 @@ void server(const IpAddress& local_address) {
     while (true) {
         // Listen for connections
         TcpListener listener;
-        listener.listen(55001);
+        listener.listen(55001, local_address);
         // Accept connection
         TcpSocket socket;
         listener.accept(socket);
@@ -75,13 +76,15 @@ void client(int iterations, int bytes, const IpAddress& remote_address) {
 
 int main(int argc, char *argv[]) {
 
+    init_logger();
+
     // Setup program options
     Options options("udp.exe", "UDP Ping Test");
     options.add_options()
     ("s", "Sever Mode")
     ("c", "Client Mode")
-    ("l", "Local Address", value<std::string>())
     ("r", "Remote Address", value<std::string>())
+    ("l", "Local Address", value<std::string>())
     ("i", "Ping Iterations", value<int>())
     ("b", "Message Size in Bytes", value<int>())
     ("h,help", "Help Message");
@@ -106,8 +109,8 @@ int main(int argc, char *argv[]) {
     if (input.count("r") > 0)
         remote_address = IpAddress(input["r"].as<std::string>());
 
-    IpAddress local_address = IpAddress::get_local_address();
-    if (input.count("l") > 0)
+    IpAddress local_address = IpAddress::Any;
+    if(input.count("l") > 0)
         local_address = IpAddress(input["l"].as<std::string>());
 
     // Run TCP server/client code
