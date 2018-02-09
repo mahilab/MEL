@@ -1,5 +1,12 @@
 #include <MEL/Core/Motor.hpp>
 #include <MEL/Core/Robot.hpp>
+#include <MEL/Daq/Quanser/Q8Usb.hpp>
+#include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/Log.hpp>
+#include <MEL/Utility/Timer.hpp>
+#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Math/Differentiator.hpp>
+#include <MEL/Math/Filter.hpp>
 
 using namespace mel;
 
@@ -58,10 +65,71 @@ private:
 };
 
 //==============================================================================
+// MISC
+//==============================================================================
+
+// create global stop variable CTRL-C handler function
+ctrl_bool stop(false);
+bool handler(CtrlEvent event) {
+    print("Ctrl+C Pressed");
+    stop = true;
+    return true;
+}
+
+//==============================================================================
 // MAIN
 //==============================================================================
 
 int main(int argc, char const* argv[]) {
-    /* code */
+
+    // intialize logger
+    init_logger();
+
+    // register CTRL-C handler
+    register_ctrl_handler(handler);
+
+    // create MEL Share
+    std::vector<double> data(3);
+    MelShare ms("haptic_paddle");
+
+    // create Q8 USB
+    Q8Usb q8;
+
+    // enable Q8 Usb
+    q8.enable();
+
+    // create HallEffectSensor
+    HallEffectSensor sensor("haptic_paddle_hall", q8.analog_input[0], -30.292, 86.32);
+
+    // create control loop timer
+    Timer timer(milliseconds(1), Timer::Hybrid);
+
+    // create Differentiator
+    Differentiator diff(Differentiator::Technique::CentralDifference);
+
+    // create filter -- 2nd order, Butterworth, low-pass filter, 50 Hz cuttoff "MATLAB: [b,a] = butter(2, 50/500)"
+    Filter filter({ 0.031238976917092e-3, 
+        0.124955907668367e-3,   
+        0.187433861502551e-3,   
+        0.124955907668367e-3,  
+        0.031238976917092e-3}, 
+        { 1.000000000000000, 
+        -3.589733887112174,   
+        4.851275882519412,
+        -2.924052656162454,  
+        0.663010484385890 }); 
+
+    // enter control loop
+    while (!stop) {
+        q8.update_input();
+
+        data[0] = sensor.get_position();
+        data[1] = diff.differentiate(data[0], timer.get_elapsed_time());
+        data[2] = filter.process(data[1]);
+
+        ms.write_data(data);
+        timer.wait();
+    }
+
     return 0;
 }

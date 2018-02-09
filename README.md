@@ -19,7 +19,7 @@ Depending on how you use MEL, you may need to install a few additional hardware 
 
 #### National Instruments Linux Real-Time (Optional)
 
-If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO), you'll need to install [NI's GNU/Linux cross-compiler](http://www.ni.com/download/labview-real-time-module-2017/6762/en/). MEL expects the top level of the compiler directories to be in `C:/dev/nirlt-linux`, which should contain `sysroots/`, `environment-setup-core2-64-nilrt-linux`, `relocate_sdk.py`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
+If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO), you'll need to install NI's GNU/Linux cross-compiler [[x64](http://www.ni.com/download/labview-real-time-module-2017/6762/en/)] [[ARM](http://www.ni.com/download/labview-real-time-module-2017/6761/en/)]. MEL expects the top level of the compiler directories to be in `C:/dev/nirlt-linux`, which should contain `sysroots/`, `environment-setup-core2-64-nilrt-linux`, `relocate_sdk.py`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
 
 You will also want a suitable build system. The recommended tool is the [Ninja](https://ninja-build.org/), but you can also `make`, (Linux host) `mingw32-make`, or `nmake` (Windows host).
 
