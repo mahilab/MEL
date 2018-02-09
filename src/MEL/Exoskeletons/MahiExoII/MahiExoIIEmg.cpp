@@ -6,26 +6,26 @@ MahiExoIIEmg::MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters param
     MahiExoII(configuration, parameters),
     emg_voltages_(std::vector<double>(N_emg_, 0.0))
 {
-    emg_electrodes_.reserve(N_emg_);
-    
-    for (int i = 0; i < N_emg_; ++i) {
-        emg_electrodes_.push_back(EmgSignal(config_.ai_channels_[i]));
-    }
+    //emg_electrodes_.reserve(N_emg_);
+    //
+    //for (int i = 0; i < N_emg_; ++i) {
+    //    emg_electrodes_.push_back(EmgSignal(config_.ai_channels_[i]));
+    //}
 }
 
 std::vector<double> MahiExoIIEmg::get_emg_voltages() {
     double emg_voltage;
-    uint16 i;
-    for (auto it = emg_electrodes_.begin(); it != emg_electrodes_.end(); ++it) {
-        emg_voltage = it->get_voltage();
-        i = std::distance(emg_electrodes_.begin(), it);
-        if (emg_signal_monitor_) {
-            if (emg_voltage < -std::abs(emg_voltage_max_) || emg_voltage > std::abs(emg_voltage_max_)) {
-                std::cout << "WARNING: EMG voltage outside of expected range for channel " + std::to_string(i) + " with a value of " + std::to_string(emg_voltage) << std::endl;
-            }
-        }
-        emg_voltages_[i] = emg_voltage;               
-    }
+    //uint16 i;
+    //for (auto it = emg_electrodes_.begin(); it != emg_electrodes_.end(); ++it) {
+    //    emg_voltage = (double) it->get_raw_voltage();
+    //    i = std::distance(emg_electrodes_.begin(), it);
+    //    if (emg_signal_monitor_) {
+    //        if (emg_voltage < -std::abs(emg_voltage_max_) || emg_voltage > std::abs(emg_voltage_max_)) {
+    //            std::cout << "WARNING: EMG voltage outside of expected range for channel " + std::to_string(i) + " with a value of " + std::to_string(emg_voltage) << std::endl;
+    //        }
+    //    }
+    //    emg_voltages_[i] = emg_voltage;               
+    //}
     return emg_voltages_;
 }
 

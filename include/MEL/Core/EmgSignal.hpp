@@ -32,20 +32,72 @@ class EmgSignal {
 
 public:
 
+    class TeagerKaiserEngergyOperator {
+
+    public:
+
+        /// Default constructor
+        TeagerKaiserEngergyOperator() :
+            s_(std::vector<double>(n_, 0.0)) {};
+
+        double tkeo(const double x);
+
+        void reset();
+
+    private:
+
+        std::vector<double> s_;
+        static const int n_ = 2;
+
+    };
+
+
     /// Constructor
-    EmgSignal(AnalogInput::Channel channel, Filter demean_filter = Filter({ 0.814254556886246, -3.257018227544984,   4.885527341317476, -3.257018227544984,   0.814254556886246 }, { 1.000000000000000, -3.589733887112175,   4.851275882519415, -2.924052656162457,   0.663010484385890 })); // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
-    //EmgSignal(AnalogInput::Channel channel, const std::size_t buffer_size);
+    EmgSignal(AnalogInput::Channel channel, 
+              Filter hp_filter = Filter({ 0.814254556886246, -3.257018227544984, 4.885527341317476, -3.257018227544984, 0.814254556886246 }, { 1.000000000000000, -3.589733887112175, 4.851275882519415, -2.924052656162457, 0.663010484385890 }), // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
+              Filter lp_filter = Filter({ 0.058451424277128e-6, 0.233805697108513e-6, 0.350708545662770e-6, 0.233805697108513e-6, 0.058451424277128e-6 }, { 1.000000000000000, -3.917907865391990, 5.757076379118074, -3.760349507694534, 0.921181929191239 }), // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
+              Filter tkeo_lp_filter = Filter({ 0.058451424277128e-6, 0.233805697108513e-6, 0.350708545662770e-6, 0.233805697108513e-6, 0.058451424277128e-6 }, { 1.000000000000000, -3.917907865391990, 5.757076379118074, -3.760349507694534, 0.921181929191239 })); // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
+
+    /// run all signal processing operations for a single time step
+    void update_signal();
+
+    /// resets the filter and tkeo internal memory
+    void reset_signal();
 
     /// return the EMG voltage on the associated channel when channel was last updated
-    Voltage get_voltage();
+    Voltage get_raw_voltage();
+
+    double get_hp_signal();
+
+    double get_rect_signal();
+
+    double get_env_signal();
+
+    double get_tkeo_signal();
+
+    double get_tkeo_rect_signal();
+
+    double get_tkeo_env_signal();
 
 
 
 private:
 
     AnalogInput::Channel channel_;
-    Filter demean_filter_;
+    Filter hp_filter_;
+    Filter lp_filter_;
+    TeagerKaiserEngergyOperator tkeo_;
+    Filter tkeo_lp_filter_;
     //RingBuffer<voltage> buffer_;
+
+    Voltage raw_voltage_;
+    double hp_signal_;
+    double rect_signal_;
+    double env_signal_;
+    double tkeo_signal_;
+    double tkeo_rect_signal_;
+    double tkeo_env_signal_;
+
 
 };
 

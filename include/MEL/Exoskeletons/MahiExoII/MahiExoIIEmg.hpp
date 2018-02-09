@@ -1,6 +1,6 @@
 #pragma once
 #include "MEL/Exoskeletons/MahiExoII/MahiExoII.hpp"
-#include "MEL/Core/EmgSignal.hpp"
+//#include "MEL/Core/EmgSignal.hpp"
 #include "MEL/Math/Filter.hpp"
 #include "MEL/Utility/RingBuffer.hpp"
 
@@ -77,7 +77,7 @@ namespace mel {
           
 
         // PUBLIC VARIABLES
-        std::vector<EmgSignal> emg_electrodes_;
+        //std::vector<EmgSignal> emg_electrodes_;
 
 
         // SIGNAL CHECKING PARAMETERS
@@ -86,9 +86,9 @@ namespace mel {
 
 
         // EMG FILTERING
-        Filter butter_hp_ = Filter({ 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 }, N_emg_); // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
-        TeagerKaiserOperator tko_;
-        Filter tkeo_butter_lp_ = Filter({ 0.002898194633721,   0.008694583901164,   0.008694583901164,   0.002898194633721 }, { 1.000000000000000, -2.374094743709352,   1.929355669091215, -0.532075368312092 }, N_emg_);
+        //Filter butter_hp_ = Filter({ 0.814254556886246, - 3.257018227544984,   4.885527341317476, - 3.257018227544984,   0.814254556886246 }, { 1.000000000000000, - 3.589733887112175,   4.851275882519415, - 2.924052656162457,   0.663010484385890 }, N_emg_); // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
+        //TeagerKaiserOperator tko_;
+        //Filter tkeo_butter_lp_ = Filter({ 0.002898194633721,   0.008694583901164,   0.008694583901164,   0.002898194633721 }, { 1.000000000000000, -2.374094743709352,   1.929355669091215, -0.532075368312092 }, N_emg_);
             
             
 

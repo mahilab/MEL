@@ -18,56 +18,83 @@
 #ifndef MEL_FILTER_HPP
 #define MEL_FILTER_HPP
 
+#include <MEL/Math/Process.hpp>
 #include <vector>
 
 namespace mel {
 
-//-------------------------------------------------------------------------
-// INDIVIDUAL FILTER IMPLEMENTATION
-//-------------------------------------------------------------------------
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
 
-class FilterImplementation {
-
-public:
-
-    FilterImplementation(const std::vector<double>& b, const std::vector<double>& a);
-
-    void filter(const double& x, double& y);
-
-    void reset(); /// sets the internal states s_ to all be zero
-
-private:
-
-    std::size_t n_; /// order
-
-    const std::vector<double> b_; /// numerator coefficients
-    const std::vector<double> a_; /// denominator coefficients
-
-    std::vector<double> s_;
-};
-
-class Filter {
+class Filter : public Process {
 
 public:
 
-    Filter();
-    Filter(const std::vector<double>& b, const std::vector<double>& a, int length = 1);
-    //Filter(int length, const std::vector<double>& b, const std::vector<double>& a);
+    Filter(const std::vector<double>& b, const std::vector<double>& a);
 
-    void filter(const double& x, double& y);
-    void filter(const std::vector<double>& x, std::vector<double>& y);
+    /// applies the filter operation for one time step
+    double process(const double x, const Time& current_time = Time::Zero) override;
 
-    void reset(); /// sets the internal states s_ to all be zero
+    /// sets the internal states s_ to all be zero
+    void reset() override;
 
 private:
 
-    const std::size_t length_;
+    
+    std::size_t n_; ///< filter order
+                    
+    const std::vector<double> b_; ///< numerator coefficients
+    const std::vector<double> a_; ///< denominator coefficients
+                    
+    std::vector<double> s_; ///< internal memory
 
-    const std::vector<double> b_; /// numerator coefficients
-    const std::vector<double> a_; /// denominator coefficients
-
-    std::vector<FilterImplementation> filter_implementations_;
 };
+
+
+
+//class FilterImplementation {
+//
+//public:
+//
+//    FilterImplementation(const std::vector<double>& b, const std::vector<double>& a);
+//
+//    void filter(const double& x, double& y);
+//
+//    void reset(); /// sets the internal states s_ to all be zero
+//
+//private:
+//
+//    std::size_t n_; /// order
+//
+//    const std::vector<double> b_; /// numerator coefficients
+//    const std::vector<double> a_; /// denominator coefficients
+//
+//    std::vector<double> s_;
+//};
+//
+//class Filter {
+//
+//public:
+//
+//    Filter();
+//    Filter(const std::vector<double>& b, const std::vector<double>& a, int length = 1);
+//    //Filter(int length, const std::vector<double>& b, const std::vector<double>& a);
+//
+//    void filter(const double& x, double& y);
+//    void filter(const std::vector<double>& x, std::vector<double>& y);
+//
+//    void reset(); /// sets the internal states s_ to all be zero
+//
+//private:
+//
+//    const std::size_t length_;
+//
+//    const std::vector<double> b_; /// numerator coefficients
+//    const std::vector<double> a_; /// denominator coefficients
+//
+//    std::vector<FilterImplementation> filter_implementations_;
+//};
 
 } // namespace mel
 

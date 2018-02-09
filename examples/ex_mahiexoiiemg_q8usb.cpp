@@ -2,12 +2,16 @@
 #include <MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp>
 #include <vector>
 #include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Math/TeagerKaiserEnergyOperator.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Logging/DataLog.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/RingBuffer.hpp>
+#include <MEL/Math/Filter.hpp>
+#include <MEL/Math/Rectifier.hpp>
+#include <MEL/Math/SignalProcessor.hpp>
 
 using namespace mel;
 
@@ -82,6 +86,27 @@ int main(int argc, char *argv[]) {
     MeiiConfiguration config(q8, q8.watchdog, q8.encoder[{1, 2, 3, 4, 5}], q8.velocity[{1, 2, 3, 4, 5}], amplifiers, q8.analog_input[{0, 1, 2, 3, 4, 5, 6, 7}]);
     MahiExoIIEmg meii(config);
 
+    // make EMG Signals
+    std::vector<AnalogInput::Channel> emg_channels;
+    for (size_t i = 0; i < meii.N_emg_; ++i) {
+        emg_channels.push_back(q8.analog_input[i]);
+    }
+
+    // make myoelectric signal processors
+    std::vector<Filter> hp_filter(meii.N_emg_, Filter({ 0.814254556886246, -3.257018227544984, 4.885527341317476, -3.257018227544984, 0.814254556886246 }, { 1.000000000000000, -3.589733887112175, 4.851275882519415, -2.924052656162457, 0.663010484385890 })); // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
+    std::vector<Rectifier> rect(meii.N_emg_, Rectifier());
+    std::vector<Filter> lp_filter(meii.N_emg_, Filter({ 0.058451424277128e-6, 0.233805697108513e-6, 0.350708545662770e-6, 0.233805697108513e-6, 0.058451424277128e-6 }, { 1.000000000000000, -3.917907865391990, 5.757076379118074, -3.760349507694534, 0.921181929191239 })); // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
+    std::vector<Filter> tkeo_hp_filter(meii.N_emg_, Filter({ 0.814254556886246, -3.257018227544984, 4.885527341317476, -3.257018227544984, 0.814254556886246 }, { 1.000000000000000, -3.589733887112175, 4.851275882519415, -2.924052656162457, 0.663010484385890 })); // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
+    std::vector<TeagerKaiserEnergyOperator> tkeo(meii.N_emg_, TeagerKaiserEnergyOperator());
+    std::vector<Rectifier> tkeo_rect(meii.N_emg_, Rectifier());
+    std::vector<Filter> tkeo_lp_filter(meii.N_emg_, Filter({ 0.058451424277128e-6, 0.233805697108513e-6, 0.350708545662770e-6, 0.233805697108513e-6, 0.058451424277128e-6 }, { 1.000000000000000, -3.917907865391990, 5.757076379118074, -3.760349507694534, 0.921181929191239 })); // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
+    std::vector<SignalProcessor> mes_standard_processor;
+    std::vector<SignalProcessor> mes_tkeo_processor;
+    for (int i = 0; i < meii.N_emg_; ++i) {
+        mes_standard_processor.push_back(SignalProcessor({ &hp_filter[i], &rect[i], &lp_filter[i] }));
+        mes_tkeo_processor.push_back(SignalProcessor({ &tkeo_hp_filter[i], &tkeo[i], &tkeo_rect[i], &tkeo_lp_filter[i] }));
+    }
+
     // create data log for EMG data
     DataLog<double, double, double, double, double> emg_log({ "Time [s]", "Raw EMG Voltage", "Filtered EMG Voltage", "TKEO EMG", "Filtered TKEO EMG" });
 
@@ -101,6 +126,8 @@ int main(int argc, char *argv[]) {
         // select EMG channel
         size_t emg_channel_select = 2;
 
+
+
         // set up state machine
         uint16 state = 0;
         Time backdrive_time = seconds(3);
@@ -112,10 +139,10 @@ int main(int argc, char *argv[]) {
         std::vector<double> aj_velocities(meii.N_aj_);
         std::vector<double> command_torques(meii.N_aj_);
         std::vector<double> rps_command_torques(meii.N_qs_);
-        std::vector<double> emg_voltages(meii.N_emg_);
-        std::vector<double> filtered_emg_voltages(meii.N_emg_);
+        std::vector<double> raw_emg(meii.N_emg_);
+        std::vector<double> env_emg(meii.N_emg_);
         std::vector<double> tkeo_emg(meii.N_emg_);
-        std::vector<double> filtered_tkeo_emg(meii.N_emg_);
+        std::vector<double> tkeo_env_emg(meii.N_emg_);
         std::vector<double> emg_share(4);
 
 
@@ -180,19 +207,23 @@ int main(int argc, char *argv[]) {
             case 2: // read emg
 
                 // emg signal processing
-                emg_voltages = meii.get_emg_voltages();
-                meii.butter_hp_.filter(emg_voltages, filtered_emg_voltages);
-                meii.tko_.tkeo(filtered_emg_voltages, tkeo_emg);
-                meii.tkeo_butter_lp_.filter(tkeo_emg, filtered_tkeo_emg);
+                for (int i = 0; i < meii.N_emg_; ++i) {
+                    mes_standard_processor[i].process(emg_channels[i].get_value());
+                    mes_tkeo_processor[i].process(emg_channels[i].get_value());
+                    raw_emg[i] = mes_standard_processor[i].get_signal(0);
+                    env_emg[i] = mes_standard_processor[i].get_signal(1);
+                    tkeo_emg[i] = mes_tkeo_processor[i].get_signal(0);
+                    tkeo_env_emg[i] = mes_tkeo_processor[i].get_signal(1);
+                }
 
                 // store emg signal processing data for sharing
-                emg_share[0] = emg_voltages[emg_channel_select];
-                emg_share[1] = filtered_emg_voltages[emg_channel_select];
+                emg_share[0] = raw_emg[emg_channel_select];
+                emg_share[1] = env_emg[emg_channel_select];
                 emg_share[2] = tkeo_emg[emg_channel_select];
-                emg_share[3] = filtered_tkeo_emg[emg_channel_select];
+                emg_share[3] = tkeo_env_emg[emg_channel_select];
 
                 // write to emg data log
-                emg_log.add_row({ timer.get_elapsed_time().as_seconds(), emg_voltages[emg_channel_select], filtered_emg_voltages[emg_channel_select], tkeo_emg[emg_channel_select], filtered_tkeo_emg[emg_channel_select] });
+                emg_log.add_row({ timer.get_elapsed_time().as_seconds(), raw_emg[emg_channel_select], env_emg[emg_channel_select], tkeo_emg[emg_channel_select], tkeo_env_emg[emg_channel_select] });
 
 
                 // calculate commanded torques
@@ -245,10 +276,10 @@ int main(int argc, char *argv[]) {
         std::vector<double> aj_velocities(meii.N_aj_);
         std::vector<double> command_torques(meii.N_aj_);
         std::vector<double> rps_command_torques(meii.N_qs_);
-        std::vector<double> emg_voltages(meii.N_emg_);
-        std::vector<double> filtered_emg_voltages(meii.N_emg_);
+        std::vector<double> raw_emg(meii.N_emg_);
+        std::vector<double> env_emg(meii.N_emg_);
         std::vector<double> tkeo_emg(meii.N_emg_);
-        std::vector<double> filtered_tkeo_emg(meii.N_emg_);
+        std::vector<double> tkeo_env_emg(meii.N_emg_);
         std::vector<double> emg_share(4);
 
 
@@ -313,19 +344,23 @@ int main(int argc, char *argv[]) {
             case 2: // EMG trigger teleop
 
                 // emg signal processing
-                emg_voltages = meii.get_emg_voltages();
-                meii.butter_hp_.filter(emg_voltages, filtered_emg_voltages);
-                meii.tko_.tkeo(filtered_emg_voltages, tkeo_emg);
-                meii.tkeo_butter_lp_.filter(tkeo_emg, filtered_tkeo_emg);
+                for (int i = 0; i < meii.N_emg_; ++i) {
+                    mes_standard_processor[i].process(emg_channels[i].get_value());
+                    mes_tkeo_processor[i].process(emg_channels[i].get_value());
+                    raw_emg[i] = mes_standard_processor[i].get_signal(0);
+                    env_emg[i] = mes_standard_processor[i].get_signal(1);
+                    tkeo_emg[i] = mes_tkeo_processor[i].get_signal(0);
+                    tkeo_env_emg[i] = mes_tkeo_processor[i].get_signal(1);
+                }
 
                 // store emg signal processing data for sharing
-                emg_share[0] = emg_voltages[emg_channel_select];
-                emg_share[1] = filtered_emg_voltages[emg_channel_select];
+                emg_share[0] = raw_emg[emg_channel_select];
+                emg_share[1] = env_emg[emg_channel_select];
                 emg_share[2] = tkeo_emg[emg_channel_select];
-                emg_share[3] = filtered_tkeo_emg[emg_channel_select];
+                emg_share[3] = tkeo_env_emg[emg_channel_select];
 
                 // write to emg data log
-                emg_log.add_row({ timer.get_elapsed_time().as_seconds(), emg_voltages[emg_channel_select], filtered_emg_voltages[emg_channel_select], tkeo_emg[emg_channel_select], filtered_tkeo_emg[emg_channel_select] });
+                emg_log.add_row({ timer.get_elapsed_time().as_seconds(), raw_emg[emg_channel_select], env_emg[emg_channel_select], tkeo_emg[emg_channel_select], tkeo_env_emg[emg_channel_select] });
 
 
                 // calculate commanded torques
