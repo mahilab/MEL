@@ -149,10 +149,10 @@ public:
 
 private:
 
-    std::size_t capacity_;        ///< the maximum capacity of the RingBuffer
-    std::size_t size_;            ///< current occupied size of the RingBuffer
-    std::size_t front_;           ///< front index of the RingBuffer
-    std::size_t back_;            ///< back index of the RingBuffer
+    std::size_t capacity_;   ///< the maximum capacity of the RingBuffer
+    std::size_t size_;       ///< current occupied size of the RingBuffer
+    std::size_t front_;      ///< front index of the RingBuffer
+    std::size_t back_;       ///< back index of the RingBuffer
     std::vector<T> buffer_;  ///< underlying buffer array
 };
 
