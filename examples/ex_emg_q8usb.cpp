@@ -124,18 +124,18 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < N_emg; ++i) {       
 
             // standard processing
-            mes_standard_processor[i].process(emg_channels[i].get_value());
-            raw_emg[i] = mes_standard_processor[i].get_signal(0);
-            hp_emg[i] = mes_standard_processor[i].get_signal(1);
-            rect_emg[i] = mes_standard_processor[i].get_signal(2);
-            env_emg[i] = mes_standard_processor[i].get_signal(3);
+            mes_standard_processor[i].update(emg_channels[i].get_value());
+            raw_emg[i] = mes_standard_processor[i].get_unprocessed();
+            hp_emg[i] = mes_standard_processor[i].get_processed(0);
+            rect_emg[i] = mes_standard_processor[i].get_processed(1);
+            env_emg[i] = mes_standard_processor[i].get_processed(2);
 
             // tkeo processing
-            mes_tkeo_processor[i].process(emg_channels[i].get_value());
-            tkeo_hp_emg[i] = mes_tkeo_processor[i].get_signal(1);
-            tkeo_emg[i] = mes_tkeo_processor[i].get_signal(2);
-            tkeo_rect_emg[i] = mes_tkeo_processor[i].get_signal(3);
-            tkeo_env_emg[i] = mes_tkeo_processor[i].get_signal(4);
+            mes_tkeo_processor[i].update(emg_channels[i].get_value());
+            tkeo_hp_emg[i] = mes_tkeo_processor[i].get_processed(0);
+            tkeo_emg[i] = mes_tkeo_processor[i].get_processed(1);
+            tkeo_rect_emg[i] = mes_tkeo_processor[i].get_processed(2);
+            tkeo_env_emg[i] = mes_tkeo_processor[i].get_processed(3);
 
         }
 

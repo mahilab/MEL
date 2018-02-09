@@ -8,7 +8,8 @@ namespace mel {
 
 Integrator::Integrator(double initial_condition,
                        Integrator::Technique technique)
-    : technique_(technique),
+    : Process(),
+      technique_(technique),
       step_count_(0),
       last_last_x_(0),
       last_x_(0),
@@ -16,7 +17,7 @@ Integrator::Integrator(double initial_condition,
       last_t_(Time::Zero),
       integral_(initial_condition) {}
 
-double Integrator::integrate(double x, Time t) {
+double Integrator::update(const double x, const Time& t) {
     switch (technique_) {
         case Technique::Trapezoidal:
             if (step_count_ > 0)
@@ -41,13 +42,17 @@ double Integrator::integrate(double x, Time t) {
     return integral_;
 }
 
-void Integrator::reset(double initial_value) {
-    integral_    = initial_value;
+void Integrator::reset() {
+    integral_    = 0.0;
     step_count_  = 0;
     last_last_x_ = 0.0;
     last_x_      = 0.0;
     last_last_t_ = Time::Zero;
     last_t_      = Time::Zero;
+}
+
+void Integrator::set_init(double initial_value) {
+    integral_ = initial_value;
 }
 
 }  // namespace mel

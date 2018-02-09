@@ -18,6 +18,7 @@
 #ifndef MEL_INTEGRATOR_HPP
 #define MEL_INTEGRATOR_HPP
 
+#include <MEL/Math/Process.hpp>
 #include <MEL/Utility/Time.hpp>
 
 namespace mel {
@@ -27,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Integrates a continous waveform
-class Integrator {
+class Integrator : public Process {
 
 public:
 
@@ -40,10 +41,13 @@ public:
     Integrator(double initial_value, Technique technique = Trapezoidal);
 
     /// Integrats x with respect to time
-    double integrate(double x, Time t);
+    double update(const double x, const Time& t) override;
 
     /// Resets the integrators
-    void reset(double initial_value);
+    void reset() override;
+
+    /// Set the initial value
+    void set_init(double initial_value);
 
 private:
 
@@ -57,7 +61,7 @@ private:
 
 };
 
-} // namespace mel
+} // mel
 
 #endif // MEL_INTEGRATOR_HPP
 

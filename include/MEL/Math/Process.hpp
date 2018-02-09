@@ -37,7 +37,7 @@ public:
     virtual ~Process() {};
 
     /// applies the process operation for one sample
-    virtual double process(const double x, const Time& current_time = Time::Zero) {
+    virtual double update(const double x, const Time& current_time = Time::Zero) {
         return x;
     }
 

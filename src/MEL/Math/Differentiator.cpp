@@ -11,7 +11,7 @@ Differentiator::Differentiator(Technique technique)
       last_t_(Time::Zero),
       derivative_(0.0) {}
 
-double Differentiator::differentiate(double x, Time t) {
+double Differentiator::update(const double x, const Time& t) {
     switch (technique_) {
         case BackwardDifference:
             if (step_count_ > 0) {
@@ -33,6 +33,13 @@ double Differentiator::differentiate(double x, Time t) {
     last_t_      = t;
     ++step_count_;
     return derivative_;
+}
+
+void Differentiator::reset() {
+    last_last_x_ = 0.0;
+    last_x_ = 0.0;
+    last_last_t_ = Time::Zero;
+    last_t_ = Time::Zero;
 }
 
 }  // namespace mel

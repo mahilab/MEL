@@ -35,7 +35,7 @@ namespace mel {
         Rectifier() {};
 
         /// applies the process operation for one sample
-        double process(const double x, const Time& currnet_time = Time::Zero) override { return std::abs(x); };
+        double update(const double x, const Time& currnet_time = Time::Zero) override { return std::abs(x); };
 
         /// resets internal memory
         void reset() override {};
