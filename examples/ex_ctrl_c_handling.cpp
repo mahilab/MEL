@@ -3,11 +3,11 @@
 using namespace mel;
 
 ctrl_bool flag(false);
-int my_handler(unsigned long param) {
-    if (param == CTRL_C_EVENT)
+bool my_handler(CtrlEvent event) {
+    if (event == CtrlEvent::CtrlC)
         print("Ctrl-C Pressed");
-    else if (param == CTRL_BREAK_EVENT) {
-        print("Ctrl-Break Pressed");
+    else if (event == CtrlEvent::CtrlQuit) {
+        print("Ctrl-Break or Ctrl-\\ Pressed");
         flag = true;
     }
     // ... check other Ctrl values as needed

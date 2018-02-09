@@ -74,7 +74,7 @@ bool QEncoder::reset_counts(const std::vector<int32>& counts) {
     result = hil_set_encoder_counts(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &counts[0]);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Reset " << get_name() << " counts to " << counts;
+        LOG(Verbose) << "Reset " << get_name() << " counts to " << counts;
         return true;
     }
     else {
@@ -96,7 +96,7 @@ bool QEncoder::reset_count(uint32 channel_number, int32 count) {
     result = hil_set_encoder_counts(daq_.handle_, &channel_number, static_cast<uint32>(1), &count);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Reset " << get_name() << " channel number " << channel_number << " count to " << count;
+        LOG(Verbose) << "Reset " << get_name() << " channel number " << channel_number << " count to " << count;
         return true;
     }
     else {
@@ -135,7 +135,7 @@ bool QEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
     result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_factors[0]);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Set " << get_name() << " quadrature factors";
+        LOG(Verbose) << "Set " << get_name() << " quadrature factors";
         return true;
     }
     else {
@@ -171,7 +171,7 @@ bool QEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
     result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_factor);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Info) << "Set " << get_name() << " channel number " << channel_number << " quadrature factor";
+        LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " quadrature factor";
         return true;
     }
     else {

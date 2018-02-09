@@ -3,6 +3,30 @@
 #include <MEL/Logging/Log.hpp>
 #include <iostream>
 
+#ifdef __linux__
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#elif _WIN32
+#include <basetsd.h>
+#ifdef _WIN32_WINDOWS
+    #undef _WIN32_WINDOWS
+#endif
+#ifdef _WIN32_WINNT
+    #undef _WIN32_WINNT
+#endif
+#define _WIN32_WINDOWS 0x0501
+#define _WIN32_WINNT   0x0501
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
+
 namespace mel
 {
 
@@ -28,12 +52,10 @@ unsigned short TcpListener::get_local_port() const
     // We failed to retrieve the port
     return 0;
 }
-
 Socket::Status TcpListener::listen(unsigned short port, const IpAddress& address)
 {
     // Create the internal socket if it doesn't exist
     create();
-
     // Check if the address is valid
     if ((address == IpAddress::None) || (address == IpAddress::Broadcast))
         return Error;
@@ -48,13 +70,12 @@ Socket::Status TcpListener::listen(unsigned short port, const IpAddress& address
     }
 
     // Listen to the bound port
-    if (::listen(get_handle(), 0) == -1)
+    if (::listen(get_handle(), SOMAXCONN) == -1) // backlog = 0 failed on Linux
     {
         // Oops, socket is deaf
         LOG(mel::Error) << "Failed to listen to port " << port;
         return Error;
     }
-
     return Done;
 }
 

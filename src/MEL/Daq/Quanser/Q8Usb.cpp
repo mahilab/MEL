@@ -259,7 +259,7 @@ bool Q8Usb::sanity_check() {
         }
     }
     if (sane)
-        LOG(Info) << "Sanity check on " << get_name() << " passed";
+        LOG(Verbose) << "Sanity check on " << get_name() << " passed";
     return sane;
 }
 

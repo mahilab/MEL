@@ -79,7 +79,7 @@ public:
     ~DataLog() {
         if (autosave_ && row_count_ > 0 && !log_saved_ && !saving_) {
             save_data("log", "autosaved_logs", true);
-        }        
+        }
         wait_for_save();
     }
 
@@ -139,7 +139,7 @@ public:
         }
         else
             full_filename = directory + get_path_slash() + filename + ".csv";
-        LOG(Info) << "Saving DataLog to " << full_filename;
+        LOG(Verbose) << "Saving DataLog to " << full_filename;
         std::thread t(&DataLog::save_thread_func, this, full_filename, directory);
         t.detach();
     }
@@ -192,7 +192,7 @@ private:
         file_stream_.open(full_filename, std::ofstream::out | std::ofstream::trunc);
         for (auto it = column_names_.begin(); it != column_names_.end(); ++it)
             file_stream_ << *it << ",";
-        file_stream_ << std::endl;
+        file_stream_ << "\n";
         for (std::size_t i = 0; i < row_count_; i++) {
             std::stringstream ss;
             ss << std::setprecision(precision_);
@@ -203,7 +203,7 @@ private:
             ss << data_[i];
             std::string line = ss.str();
             line = line.substr(1, line.size() - 2);
-            file_stream_ << line << std::endl;
+            file_stream_ << line << "\n";
         }
         file_stream_.close();
         log_saved_ = true;

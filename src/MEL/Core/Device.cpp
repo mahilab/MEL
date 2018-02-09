@@ -29,7 +29,7 @@ bool Device::enable() {
         LOG(Warning) << "Ignored attempt to enable " << long_name_ << " since it is already enabled";
         return true;
     }
-    LOG(Info) << "Enabled " << long_name_;
+    LOG(Verbose) << "Enabled " << long_name_;
     enabled_ = true;
     return true;
 }
@@ -39,7 +39,7 @@ bool Device::disable() {
         LOG(Warning) << "Ignored attempt to disable " << long_name_ << " since it is already disabled";
         return true;
     }
-    LOG(Info) << "Disabled " << long_name_;
+    LOG(Verbose) << "Disabled " << long_name_;
     enabled_ = false;
     return true;
 }

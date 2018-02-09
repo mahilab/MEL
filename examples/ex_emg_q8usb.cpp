@@ -16,9 +16,9 @@
 using namespace mel;
 
 ctrl_bool stop(false);
-int handler(unsigned long param) {
+bool handler(CtrlEvent event) {
     stop = true;
-    return 1;
+    return true;
 }
 
 

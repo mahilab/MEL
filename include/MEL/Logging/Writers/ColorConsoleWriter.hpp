@@ -44,41 +44,19 @@ private:
     void setColor(Severity severity) {
         if (STDOUT_IS_A_TTY) {
             switch (severity) {
-#ifdef _WIN32
                 case Fatal:
                     set_text_color(Color::White, Color::DarkRed);
                     break;
-
                 case Error:
                     set_text_color(Color::Red);
                     break;
-
                 case Warning:
                     set_text_color(Color::Yellow);
                     break;
-
                 case Verbose:
                 case Debug:
                     set_text_color(Color::Cyan);
                     break;
-#else
-                case Fatal:
-                    std::cout << "\x1B[97m\x1B[41m";  // white on red background
-                    break;
-
-                case Error:
-                    std::cout << "\x1B[91m";  // red
-                    break;
-
-                case Warning:
-                    std::cout << "\x1B[93m";  // yellow
-                    break;
-
-                case Verbose:
-                case Debug:
-                    std::cout << "\x1B[96m";  // cyan
-                    break;
-#endif
                 default:
                     break;
             }

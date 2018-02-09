@@ -17,40 +17,49 @@ Communication:
   ☐ Write Linux implementation of SharedMemory
   ☐ Add methods for vector to Packet (just use underlying in loop?)
   ☐ Make MelNet not use packets (for string at least)
+  ☐ BTP? http://ieeexplore.ieee.org/document/5089429/
 
 Core:
-  ✔ create class for amps @done (18-01-27 18:22)
   ☐ make safety check functions more descriptive
-  ✔ complete Limiter and incorporate @done (18-01-31 21:19)
   ☐ add Clock to PdController, generalize for all exos
 
 Daq:
  ☐ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation
- ✔ get_module<TModule> @done (18-01-31 21:19)
 
 Q8 USB:
 
 Error:
-  ✔ make an error output stream or something like that @done (18-02-05 18:49)
 
 Utility:
   ☐ add json parser? header only on github seems good
   ☐ add CSV header only lib
-  ☐ Write Linux version of Mutex
+  ✔ Write Linux version of Mutex @done (18-02-07 22:03)
   ☐ ctrl handler Linux
   ☐ get_last_os_error(), make static functions not print
   ☐ Clean up / rethink StateMachine
   ☐ Socket.hpp includes winsock, which includes windows.h ... make SocketImpl.hpp
-  ✔ templatize DataLog @done (18-01-27 18:22)
+  ☐ async console printing (new thread, tcp/ip server, or something else?)
+
+Logging:
+  ☐ LogSever / RemoteWriter for remote logging
 
 OpenWrist:
-  ✔ figure out how to nicely integrate separate OpenWrist project outside of MEL @done (18-01-27 18:22)
 
 MELScope:
-  ✔ fix crash on close @done (18-01-21 15:42)
+
+Long Term Plans/Ideas:
+  ☐ entity-component based core library
+
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ make an error output stream or something like that @done (18-02-06 21:50) @project(Error)
+ ✔ get_module<TModule> @done (18-02-06 21:50) @project(Daq)
+ ✔ complete Limiter and incorporate @done (18-01-31 21:19) @project(Core)
+ ✔ templatize DataLog @done (18-01-27 18:22) @project(Utility)
+ ✔ figure out how to nicely integrate separate OpenWrist project outside of MEL @done (18-01-27 18:22) @project(OpenWrist)
+ ✔ create class for amps @done (18-01-27 18:22) @project(Core)
+ ✔ fix crash on close @done (18-01-21 15:42) @project(MELScope)
  ✔ figure out how to do inheritance with the Channel classes @done (18-01-11 21:41) @project(Daq)
  ✔ overload [] operator for robot to go to joint @done (18-01-11 21:40) @project(Core)
  ✔ on disable/close needs to reset settings to factory so current mode doesn't cause kick @done (18-01-10 21:31) @project(Q8 USB)

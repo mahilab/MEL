@@ -11,9 +11,9 @@ using namespace mel;
 
 // create global stop variable CTRL-C handler function
 ctrl_bool stop(false);
-int handler(unsigned long param) {
+bool handler(CtrlEvent event) {
     stop = true;
-    return 1;
+    return true;
 }
 
 int main() {

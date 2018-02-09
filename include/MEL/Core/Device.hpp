@@ -44,12 +44,12 @@ public:
     /// The function should enable the device, performing start up and
     /// initialization procedures. It should return true if successful,
     /// false otherwise, and set #enabled_ accordingly
-    virtual bool enable() = 0;
+    virtual bool enable();
 
     /// The function should disable the device, performing necessary shutdown
     /// procedures. It should  return true if successful, false otherwise,
     /// and set #enabled_ accordingly
-    virtual bool disable() = 0;
+    virtual bool disable();
 
 public:
 

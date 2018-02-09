@@ -27,7 +27,7 @@ bool QWatchdog::start() {
     t_error result;
     result = hil_watchdog_start(daq_.handle_, timeout_.as_seconds());
     if (result == 0) {
-        LOG(Info) << "Started watchdog on " << daq_.get_name();
+        LOG(Verbose) << "Started watchdog on " << daq_.get_name();
         return true;
     }
     else {
@@ -70,7 +70,7 @@ bool QWatchdog::stop() {
     t_error result;
     result = hil_watchdog_stop(daq_.handle_);
     if (result == 0) {
-        LOG(Info) << "Stopped watchdog on " << daq_.get_name();
+        LOG(Verbose) << "Stopped watchdog on " << daq_.get_name();
         watching_ = false;
         return true;
     }
@@ -113,7 +113,7 @@ bool QWatchdog::clear() {
     t_error result;
     result = hil_watchdog_clear(daq_.handle_);
     if (result == 0) {
-        LOG(Info) << "Cleared watchdog on " << daq_.get_name();
+        LOG(Verbose) << "Cleared watchdog on " << daq_.get_name();
         return true;
     }
     else {

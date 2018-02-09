@@ -1,26 +1,20 @@
-#include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/System.hpp>
-#include <thread>
-#include <mutex>
-#include <MEL/Utility/Clock.hpp>
 #include <MEL/Utility/Mutex.hpp>
-#include <MEL/Utility/Windows/NamedMutex.hpp>
-#include <MEL/Utility/Spinlock.hpp>
+#include <mutex>
+#include <thread>
+#include <MEL/Utility/Clock.hpp>
+#include <MEL/Utility/Console.hpp>
 
 using namespace mel;
 
-int main() {
-
-    Spinlock mutex;
+int main(int argc, char const *argv[]) {
 
     Clock clock;
-    int j = 0;
-    for (int i = 0; i < 1000000; ++i) {
+    std::mutex mutex;
+    for (std::size_t i = 0; i < 1000000; ++i) {
         mutex.lock();
-        ++j;
         mutex.unlock();
     }
-    print(j);
+
     print(clock.get_elapsed_time());
 
     return 0;

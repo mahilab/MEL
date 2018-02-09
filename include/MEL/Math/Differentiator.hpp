@@ -15,51 +15,42 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_INTEGRATOR_HPP
-#define MEL_INTEGRATOR_HPP
+#ifndef MEL_DIFFERENTIATOR_HPP
+#define MEL_DIFFERENTIATOR_HPP
 
 #include <MEL/Utility/Time.hpp>
 
 namespace mel {
 
 //==============================================================================
-// CLASS DECLARATION
+// CLASS DECLARATIONS
 //==============================================================================
 
-/// Integrates a continous waveform
-class Integrator {
+class Differentiator {
+public:
+    enum Technique { BackwardDifference, CentralDifference };
 
 public:
 
-    enum Technique {
-        Trapezoidal,
-        Simpsons
-    };
-
     /// Constructor
-    Integrator(double initial_value, Technique technique = Trapezoidal);
+    Differentiator(Technique technique = BackwardDifference);
 
-    /// Integrats x with respect to time
-    double integrate(double x, Time t);
-
-    /// Resets the integrators
-    void reset(double initial_value);
+    /// Differentiates a signal
+    double differentiate(double x, Time t);
 
 private:
-
-    Technique technique_; ///< Integration technique to be used
-    int step_count_;      ///< Running conter of calls to integrate()
-    double last_last_x_;  ///< Integrand at two previous calls to integrate()
-    double last_x_;       ///< Integrand at previous call to integrate()
-    Time last_last_t_ ;   ///< Time at two previous calls to integrate()
-    Time last_t_;         ///< Time at previous call to integrate()
-    double integral_;     ///< The integral value
-
+    Technique technique_;  ///< Differentiation technique to be used
+    int step_count_;       ///< Running conter of calls to integrate()
+    double last_last_x_;   ///< Integrand at two previous calls to integrate()
+    double last_x_;        ///< Integrand at previous call to integrate()
+    Time last_last_t_;     ///< Time at two previous calls to integrate()
+    Time last_t_;          ///< Time at previous call to integrate()
+    double derivative_;    ///< The derivative value
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_INTEGRATOR_HPP
+#endif  // MEL_DIFFERENTIATOR_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
