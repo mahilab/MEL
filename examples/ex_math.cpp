@@ -35,11 +35,11 @@ int main(int argc, char const* argv[]) {
         // dx/dt = 1/2 * [-sin(t) - 49 * sin(7t)]
         data[1] = 0.5 * (-mel::sin(t) - 49.0 * mel::sin(7.0 * t));
         // dx/dt ~ differentiate(x);
-        data[2] = differentiator.differentiate(data[0], timer.get_elapsed_time_ideal());
+        data[2] = differentiator.update(data[0], timer.get_elapsed_time_ideal());
         // S(x) = sin(4t) * cos(3t) + 5
         data[3] = mel::sin(4 * t) * mel::cos(3 * t) + 5;
         // S(x) ~ integrate(dx/dt)
-        data[4] = integrator.integrate(data[0], timer.get_elapsed_time_ideal());
+        data[4] = integrator.update(data[0], timer.get_elapsed_time_ideal());
 
         ms.write_data(data);
         timer.wait();

@@ -21,7 +21,7 @@ Filter::Filter(const std::vector<double>& b, const std::vector<double>& a) :
     }
 }
 
-double Filter::process(const double x, const Time& current_time) {
+double Filter::update(const double x, const Time& current_time) {
     double y;
     y = (s_[0] + b_[0] * x) / a_[0];
     for (std::size_t i = 0; i < n_ - 1; ++i) {

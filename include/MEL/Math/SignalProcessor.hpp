@@ -34,54 +34,75 @@ public:
     /// Constructor
     SignalProcessor(std::vector<Process*> processes) :
         processes_(processes),
-        n_(processes.size() + 1),
-        s_(n_)
+        n_(processes.size()),
+        s_(n_),
+        x_(0.0)
         { };
 
     /// Default destructor
     ~SignalProcessor() {};
 
     /// applies the process operations for one sample
-    double process(const double x, const Time& current_time = Time::Zero) {
+    double update(const double x, const Time& current_time = Time::Zero) {
         if (n_ > 0) {
-            s_[0] = x;
+            x_ = x;
+            s_[0] = processes_[0]->update(x_, current_time);
             for (size_t i = 1; i < n_; ++i) {
-                s_[i] = processes_[i-1]->process(s_[i-1], current_time);
+                s_[i] = processes_[i]->update(s_[i-1], current_time);
             }
         }
         else {
-            return 0.0;
+            return x;
         }
     }
 
     /// get internal states
-    double get_signal(const std::size_t index) const {
-        if (index > 0 & index < n_) {
+    double get_unprocessed() const {
+        return x_;
+    }
+
+    /// get internal states
+    double get_processed(const std::size_t index) const {
+        if (index >= 0 & index < n_) {
             return s_[index];
         }
         else {
-            return 0.0;
+            return s_[0];
         }
     }
 
     /// resets internal memory
     void reset() {
+        x_ = 0.0;
         if (n_ > 0) {
             s_ = std::vector<double>(n_);
-            for (size_t i = 1; i < n_; ++i) {
-                processes_[i-1]->reset();
+            for (size_t i = 0; i < n_; ++i) {
+                processes_[i]->reset();
             }
         }
     };
+
+    /// returns a process pointer
+    template <class T = Process>
+    T& get_process(const std::size_t index) const {
+        if (index >= 0 & index < n_) {
+            return *dynamic_cast<T*>(processes_[index]);
+        }
+        else {
+            return *dynamic_cast<T*>(processes_[0]);
+        }
+    }
 
 private:
 
     
     std::vector<Process*> processes_; ///< chain of signal processing operations to be carried out sequentially
-   
+
     size_t n_; ///< size of internal memory
     
     std::vector<double> s_; ///< internal memory
+
+    double x_; ///< internal memory
 
 };
 

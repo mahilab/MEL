@@ -34,7 +34,7 @@ public:
     Filter(const std::vector<double>& b, const std::vector<double>& a);
 
     /// applies the filter operation for one time step
-    double process(const double x, const Time& current_time = Time::Zero) override;
+    double update(const double x, const Time& current_time = Time::Zero) override;
 
     /// sets the internal states s_ to all be zero
     void reset() override;

@@ -7,7 +7,7 @@ TeagerKaiserEnergyOperator::TeagerKaiserEnergyOperator() :
     s_(std::vector<double>(n_, 0.0))
 {}
 
-double TeagerKaiserEnergyOperator::process( const double x, const Time& current_time) {
+double TeagerKaiserEnergyOperator::update( const double x, const Time& current_time) {
     double y;
     y = s_[0] * s_[0] - x * s_[1];
     s_[0] = x;

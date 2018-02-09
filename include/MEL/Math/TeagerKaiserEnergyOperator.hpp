@@ -35,7 +35,7 @@ public:
     TeagerKaiserEnergyOperator();
 
     /// applies the process operation for one sample
-    double process(const double x, const Time& current_time = Time::Zero) override;
+    double update(const double x, const Time& current_time = Time::Zero) override;
 
     /// resets internal memory
     void reset() override;

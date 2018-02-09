@@ -208,12 +208,12 @@ int main(int argc, char *argv[]) {
 
                 // emg signal processing
                 for (int i = 0; i < meii.N_emg_; ++i) {
-                    mes_standard_processor[i].process(emg_channels[i].get_value());
-                    mes_tkeo_processor[i].process(emg_channels[i].get_value());
-                    raw_emg[i] = mes_standard_processor[i].get_signal(0);
-                    env_emg[i] = mes_standard_processor[i].get_signal(1);
-                    tkeo_emg[i] = mes_tkeo_processor[i].get_signal(0);
-                    tkeo_env_emg[i] = mes_tkeo_processor[i].get_signal(1);
+                    mes_standard_processor[i].update(emg_channels[i].get_value());
+                    mes_tkeo_processor[i].update(emg_channels[i].get_value());
+                    raw_emg[i] = mes_standard_processor[i].get_unprocessed();
+                    env_emg[i] = mes_standard_processor[i].get_processed(2);
+                    tkeo_emg[i] = mes_tkeo_processor[i].get_processed(1);
+                    tkeo_env_emg[i] = mes_tkeo_processor[i].get_processed(3);
                 }
 
                 // store emg signal processing data for sharing
@@ -345,12 +345,12 @@ int main(int argc, char *argv[]) {
 
                 // emg signal processing
                 for (int i = 0; i < meii.N_emg_; ++i) {
-                    mes_standard_processor[i].process(emg_channels[i].get_value());
-                    mes_tkeo_processor[i].process(emg_channels[i].get_value());
-                    raw_emg[i] = mes_standard_processor[i].get_signal(0);
-                    env_emg[i] = mes_standard_processor[i].get_signal(1);
-                    tkeo_emg[i] = mes_tkeo_processor[i].get_signal(0);
-                    tkeo_env_emg[i] = mes_tkeo_processor[i].get_signal(1);
+                    mes_standard_processor[i].update(emg_channels[i].get_value());
+                    mes_tkeo_processor[i].update(emg_channels[i].get_value());
+                    raw_emg[i] = mes_standard_processor[i].get_unprocessed();
+                    env_emg[i] = mes_standard_processor[i].get_processed(2);
+                    tkeo_emg[i] = mes_tkeo_processor[i].get_processed(1);
+                    tkeo_env_emg[i] = mes_tkeo_processor[i].get_processed(3);
                 }
 
                 // store emg signal processing data for sharing

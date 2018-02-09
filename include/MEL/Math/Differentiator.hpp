@@ -18,6 +18,7 @@
 #ifndef MEL_DIFFERENTIATOR_HPP
 #define MEL_DIFFERENTIATOR_HPP
 
+#include <MEL/Math/Process.hpp>
 #include <MEL/Utility/Time.hpp>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // CLASS DECLARATIONS
 //==============================================================================
 
-class Differentiator {
+class Differentiator : public Process {
 public:
     enum Technique { BackwardDifference, CentralDifference };
 
@@ -36,7 +37,10 @@ public:
     Differentiator(Technique technique = BackwardDifference);
 
     /// Differentiates a signal
-    double differentiate(double x, Time t);
+    double update(const double x, const Time& t);
+
+    /// Resets the differentiator
+    void reset();
 
 private:
     Technique technique_;  ///< Differentiation technique to be used
