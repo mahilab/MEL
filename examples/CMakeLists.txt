@@ -35,6 +35,9 @@ target_link_libraries(melscope MEL)
 add_executable(haptic_paddle ex_haptic_paddle.cpp)
 target_link_libraries(haptic_paddle MEL)
 
+add_executable(math ex_math.cpp)
+target_link_libraries(math MEL)
+
 #===============================================================================
 # WINDOWS EXAMPLES
 #===============================================================================
