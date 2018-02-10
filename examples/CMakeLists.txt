@@ -32,9 +32,6 @@ target_link_libraries(logger MEL)
 add_executable(melscope ex_melscope.cpp)
 target_link_libraries(melscope MEL)
 
-add_executable(haptic_paddle ex_haptic_paddle.cpp)
-target_link_libraries(haptic_paddle MEL)
-
 add_executable(math ex_math.cpp)
 target_link_libraries(math MEL)
 
@@ -66,6 +63,9 @@ if(QUANSER)
 
     add_executable(emg_q8usb ex_emg_q8usb.cpp)
     target_link_libraries(emg_q8usb MEL)
+
+    add_executable(haptic_paddle ex_haptic_paddle.cpp)
+    target_link_libraries(haptic_paddle MEL)
 endif()
 
 #===============================================================================

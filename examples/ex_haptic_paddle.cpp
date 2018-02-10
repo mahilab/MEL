@@ -1,12 +1,18 @@
+#include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Core/Motor.hpp>
 #include <MEL/Core/Robot.hpp>
+#include <MEL/Core/VirtualVelocitySensor.hpp>
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
-#include <MEL/Utility/Console.hpp>
 #include <MEL/Logging/Log.hpp>
-#include <MEL/Utility/Timer.hpp>
-#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
+#include <MEL/Utility/Console.hpp>
+#include <MEL/Utility/Timer.hpp>
+#include <MEL/Utility/Options.hpp>
+#include <MEL/Math/Functions.hpp>
+#include <conio.h>
+#include <fstream>
 
 using namespace mel;
 
@@ -54,15 +60,52 @@ public:
                  0.0229,
                  amp_,
                  Limiter(1.8821, 12.0, seconds(1))),
-          sensor_("honeywell_ss49et", ai, gain, offset) {
-        // joints_.emplace_back("axis0", motor_, )
+          position_sensor_("honeywell_ss49et", ai, gain, offset),
+          velocity_sensor_(
+              "honeywell_ss49et",
+              position_sensor_,
+              //  4nd order Butterworth, low-pass filter, 25 Hz cuttoff @ 1000 Hz sample rate
+              Filter({0.031238976917092e-3, 0.124955907668367e-3, 0.187433861502551e-3, 0.124955907668367e-3, 0.031238976917092e-3},
+                     {1.000000000000000,   -3.589733887112174,    4.851275882519412,   -2.924052656162454,    0.663010484385890})) 
+    {
+        add_joint(Joint("paddle_joint_0", motor_, 6.0, position_sensor_, 1.0,
+                        velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
+                        400 * DEG2RAD, 2.0));
     }
 
 private:
     Amplifier amp_;
     Motor motor_;
-    HallEffectSensor sensor_;
+    HallEffectSensor position_sensor_;
+    VirtualVelocitySensor velocity_sensor_;
 };
+
+//==============================================================================
+// CALIBRATE HALL
+//==============================================================================
+
+std::vector<double> calibrate_hall() {
+    print("\nRotate the pendulum to the indicated angle [deg] and press Enter\n", Color::Yellow);
+    print("Angle : Voltage");
+    std::vector<double> theta{ -30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30 };
+    std::vector<double> volts(theta.size());
+    for (std::size_t i = 0; i < theta.size(); ++i) {
+        std::cout << std::setfill(' ') << std::setw(4) << theta[i] << "  :  ";
+        _getch();
+        std::cout << i;        
+        std::cout << "\n";
+        volts[i] = i;
+    }
+    std::vector<double> mb = linear_regression(volts, theta);
+    set_text_color(Color::Green);
+    std::cout << "\n  gain = " << mb[0] << "\n";
+    std::cout << "offset = " << mb[1] << "\n\n";
+    reset_text_color();
+    std::ofstream file;
+    file.open("calibration.txt");
+    file << mb[0] << "\n" << mb[1];
+    return mb;
+}
 
 //==============================================================================
 // MISC
@@ -80,13 +123,46 @@ bool handler(CtrlEvent event) {
 // MAIN
 //==============================================================================
 
-int main(int argc, char const* argv[]) {
+int main(int argc, char* argv[]) {
 
     // intialize logger
     init_logger();
 
     // register CTRL-C handler
     register_ctrl_handler(handler);
+
+    // make and parse console options
+    Options options("haptic_paddle.exe", "MEL Haptic Paddle Example");
+    options.add_options()
+        ("c,calibrate", "Calibrates Hall Effect Sensor")
+        ("h,help", "Prints this Help Message");
+    auto input = options.parse(argc, argv);
+
+    // print help message if requested
+    if (input.count("h") > 0) {
+        print(options.help());
+        return 0;
+    }
+
+    // attempt to open calibration file
+    std::ifstream file;
+    file.open("calibration.txt");
+
+    // run calibration if requested
+    double gain, offset;
+    if (input.count("c") > 0 || !file.is_open()) {
+        file.close();
+        std::vector<double> mb = calibrate_hall();
+        gain = mb[0];
+        offset = mb[1];
+    }
+    else {
+        print("Importing calibration.txt");
+        file >> gain >> offset;
+    }
+
+    print(gain);
+    print(offset);
 
     // create MEL Share
     std::vector<double> data(3);
@@ -95,38 +171,24 @@ int main(int argc, char const* argv[]) {
     // create Q8 USB
     Q8Usb q8;
 
+    // create Haptic Paddle
+    HapticPaddle happy(q8.digital_output[0], 
+                       q8.analog_output[0], 
+                       q8.analog_input[0],
+                       -30.292 * DEG2RAD,
+                       86.32 * DEG2RAD);
+
     // enable Q8 Usb
     q8.enable();
-
-    // create HallEffectSensor
-    HallEffectSensor sensor("haptic_paddle_hall", q8.analog_input[0], -30.292, 86.32);
 
     // create control loop timer
     Timer timer(milliseconds(1), Timer::Hybrid);
 
-    // create Differentiator
-    Differentiator diff(Differentiator::Technique::CentralDifference);
-
-    // create filter -- 2nd order, Butterworth, low-pass filter, 50 Hz cuttoff "MATLAB: [b,a] = butter(2, 50/500)"
-    Filter filter({ 0.031238976917092e-3, 
-        0.124955907668367e-3,   
-        0.187433861502551e-3,   
-        0.124955907668367e-3,  
-        0.031238976917092e-3}, 
-        { 1.000000000000000, 
-        -3.589733887112174,   
-        4.851275882519412,
-        -2.924052656162454,  
-        0.663010484385890 }); 
-
     // enter control loop
     while (!stop) {
         q8.update_input();
-
-        data[0] = sensor.get_position();
-        data[1] = diff.update(data[0], timer.get_elapsed_time());
-        data[2] = filter.update(data[1]);
-
+        data[0] = happy[0].get_position();
+        data[1] = happy[1].get_velocity();
         ms.write_data(data);
         timer.wait();
     }
