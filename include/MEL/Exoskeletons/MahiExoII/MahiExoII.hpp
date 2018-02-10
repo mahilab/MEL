@@ -26,20 +26,20 @@ class MahiExoII : public Exo {
 public:
 
     // Static public variables 
-    static const int N_aj_ = 5; // number of anatomical joints
-    static const int N_rj_ = 5; // number of robotic joints
+    static const int N_aj_ = 5; ///< number of anatomical joints
+    static const int N_rj_ = 5; ///< number of robotic joints
 
-    static const int N_qp_ = 12; // number of rps dependent DoF 
-    static const int N_qs_ = 3; // number of rps independent DoF
+    static const int N_qp_ = 12; ///< number of rps dependent DoF 
+    static const int N_qs_ = 3; ///< number of rps independent DoF
 
-    // Constructor
+    /// Constructor
     MahiExoII(MeiiConfiguration configuration, MeiiParameters parameters = MeiiParameters());
 
-    // Destructor
+    /// Destructor
     ~MahiExoII() override;
 
 
-    // Manually zero the encoders
+    /// Manually zero the encoders
     void calibrate(volatile std::atomic<bool>& stop_flag);
 
     /// Disables the robot and stops all smooth reference trajectories
@@ -144,24 +144,21 @@ public:
     //void log_robot_row(double time);
     //void save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp = true);
 
-    ///-------------------------------------------------------------------------
-    /// PUBLIC VARIABLES
-    ///-------------------------------------------------------------------------
 
     MeiiConfiguration config_;
     const MeiiParameters params_;
 
-    /// PD Control
-    double elbow_P_ = 100.0; /// tuned 9/13/2017
-    double elbow_D_ = 1.25; /// tuned 9/13/2017
-    double forearm_P_ = 28.0; /// tuned 9/13/2017
-    double forearm_D_ = 0.20; /// tuned 9/13/2017
-    double prismatic_P_ = 2200.0; /// tuned 9//12/2017
-    double prismatic_D_ = 30.0; /// tuned 9//12/2017
-    double wrist_fe_P_ = 15.0; ///25.0;
-    double wrist_fe_D_ = 0.01; ///0.05;
-    double wrist_ru_P_ = 15.0; ///30.0;
-    double wrist_ru_D_ = 0.01; ///0.08;
+    // PD Control
+    double elbow_P_ = 100.0; // tuned 9/13/2017
+    double elbow_D_ = 1.25; // tuned 9/13/2017
+    double forearm_P_ = 28.0; // tuned 9/13/2017
+    double forearm_D_ = 0.20; // tuned 9/13/2017
+    double prismatic_P_ = 2200.0; // tuned 9//12/2017
+    double prismatic_D_ = 30.0; // tuned 9//12/2017
+    double wrist_fe_P_ = 15.0; // previously tried 25.0;
+    double wrist_fe_D_ = 0.01; // previously tried 0.05;
+    double wrist_ru_P_ = 15.0; // previously tried 30.0;
+    double wrist_ru_D_ = 0.01; // previously tried 0.08;
     double wrist_ph_P_ = 1000.0;
     double wrist_ph_D_ = 10.0;
 
@@ -193,11 +190,8 @@ protected:
 
 private:
 
-    ///-------------------------------------------------------------------------
-    /// PRIVATE VARIABLES
-    ///-------------------------------------------------------------------------
 
-    /// rps position control
+    // rps position control
     int rps_control_mode_ = 0; /// 0 = robot joint space (parallel), 1 = anatomical joint space (serial) with platform height backdrivable, 2 = anatomical joint space (serial) with all joints active
     bool rps_backdrive_ = false; /// true = rps is backdrivable, false = rps is active
     double rps_init_err_tol_ = 0.01; /// [m]
@@ -208,7 +202,7 @@ private:
     const std::vector<double> rps_ser_joint_speed_ = { 0.125, 0.125, 0.015 }; /// [rad/s] and [m/s]
 
 
-    /// full robot position control
+    // full robot position control
     bool elbow_backdrive_ = false; /// true = elbow is backdrivable, false = elbow is active
     bool forearm_backdrive_ = false; /// true = forearm is backdrivable, false = forearm is active
     std::vector<double> anat_goal_err_tol_ = { 2.0 * DEG2RAD, 3.0 * DEG2RAD, 5.0 * DEG2RAD, 5.0 * DEG2RAD, 0.01 };
@@ -217,14 +211,14 @@ private:
     const std::vector<double> anat_joint_speed_ = { 0.25, 0.75, 0.25, 0.25, 0.015 }; /// [rad/s] and [m/s] constant speed at which anatomical joint reference trajectories are interpolated
 
 
-    /// geometric parameters
+    // geometric parameters
     static const double R_;
     static const double r_;
     static const double a56_;
     static const double alpha5_;
     static const double alpha13_;
 
-    /// continuously updated kinematics variables
+    // continuously updated kinematics variables
     Eigen::VectorXd qp_ = Eigen::VectorXd::Zero(N_qp_);
     Eigen::VectorXd q_par_ = Eigen::VectorXd::Zero(N_qs_);
     Eigen::VectorXd q_ser_ = Eigen::VectorXd::Zero(N_qs_);
@@ -238,7 +232,7 @@ private:
 
             
 
-    /// kinematics solver setup variables
+    // kinematics solver setup variables
     const uint32 max_it_ = 10;
     const double tol_ = 1e-12;
     const std::vector<uint8> select_q_par_ = { 3, 4, 5 };
@@ -247,16 +241,12 @@ private:
     double spec_norm_prev_ = 0; // debugging
     Eigen::VectorXd q_par_prev_ = Eigen::VectorXd::Zero(N_qs_); // debugging        
 
-    ///-------------------------------------------------------------------------
-    /// PRIVATE FUNCTIONS
-    ///-------------------------------------------------------------------------
-
-    /// solving for static equilibrium joint torques           
+    // solving for static equilibrium joint torques           
     void solve_static_rps_torques(std::vector<uint8> select_q, const Eigen::VectorXd& tau_b, const Eigen::VectorXd& qp, Eigen::VectorXd& tau_s) const;
     void solve_static_rps_torques(std::vector<uint8> select_q, const Eigen::VectorXd& tau_b, const Eigen::VectorXd& qp, Eigen::VectorXd& tau_s, Eigen::VectorXd& tau_p) const;
 
 
-    /// forward kinematics functions
+    // forward kinematics functions
     void forward_rps_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out) const;
     void forward_rps_kinematics(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out) const;
     void forward_rps_kinematics(const Eigen::VectorXd& q_par_in, Eigen::MatrixXd& jac_fk) const;
@@ -268,7 +258,7 @@ private:
     void forward_rps_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out) const;
     void forward_rps_kinematics_velocity(const Eigen::VectorXd& q_par_in, Eigen::VectorXd& q_ser_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_fk, Eigen::MatrixXd& jac_fk, const Eigen::VectorXd& q_par_dot_in, Eigen::VectorXd& q_ser_dot_out, Eigen::VectorXd& qp_dot_out) const;
             
-    /// inverse kinematics functions
+    // inverse kinematics functions
     void inverse_rps_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out) const;
     void inverse_rps_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out) const;
     void inverse_rps_kinematics(const Eigen::VectorXd& q_ser_in, Eigen::MatrixXd& jac_ik) const;
@@ -280,7 +270,7 @@ private:
     void inverse_rps_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out) const;
     void inverse_rps_kinematics_velocity(const Eigen::VectorXd& q_ser_in, Eigen::VectorXd& q_par_out, Eigen::VectorXd& qp_out, Eigen::MatrixXd& rho_ik, Eigen::MatrixXd& jac_ik, const Eigen::VectorXd& q_ser_dot_in, Eigen::VectorXd& q_par_dot_out, Eigen::VectorXd& qp_dot_out) const;
 
-    /// general kinematics functions
+    // general kinematics functions
     void solve_rps_kinematics(std::vector<uint8> select_q, const Eigen::VectorXd& qs, Eigen::VectorXd& qp, Eigen::MatrixXd& rho, Eigen::MatrixXd& rho_s, uint32 max_it, double tol) const;
     void generate_rho(std::vector<uint8> select_q, const Eigen::VectorXd& qp, Eigen::MatrixXd& rho) const;
     void psi_update(const Eigen::MatrixXd& A, const Eigen::VectorXd& qs, const Eigen::VectorXd& qp, Eigen::VectorXd& phi, Eigen::VectorXd& psi) const;
@@ -289,12 +279,12 @@ private:
     void phi_d_qp_update(const Eigen::VectorXd& qp, Eigen::MatrixXd& phi_d_qp) const;
     std::vector<uint8> select_q_invert(std::vector<uint8> select_q) const;
 
-    /// PRIVATE UTILITY FUNCTIONS
+    // PRIVATE UTILITY FUNCTIONS
     bool check_goal_pos(std::vector<double> goal_pos, std::vector<double> current_pos, std::vector<char> check_joint, std::vector<double> error_tol, bool print_output = false) const;
 
 
 };
 
-} /// namespace mel
+} //  mel
 
-#endif /// MEL_MAHIEXOII_HPP
+#endif // MEL_MAHIEXOII_HPP

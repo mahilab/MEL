@@ -124,8 +124,8 @@ int main(int argc, char const* argv[]) {
         q8.update_input();
 
         data[0] = sensor.get_position();
-        data[1] = diff.differentiate(data[0], timer.get_elapsed_time());
-        data[2] = filter.process(data[1]);
+        data[1] = diff.update(data[0], timer.get_elapsed_time());
+        data[2] = filter.update(data[1]);
 
         ms.write_data(data);
         timer.wait();

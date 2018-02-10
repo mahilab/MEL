@@ -1,6 +1,5 @@
 #pragma once
 #include "MEL/Exoskeletons/MahiExoII/MahiExoII.hpp"
-//#include "MEL/Core/EmgSignal.hpp"
 #include "MEL/Math/Filter.hpp"
 #include "MEL/Utility/RingBuffer.hpp"
 

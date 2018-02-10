@@ -1,6 +1,5 @@
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
 #include <MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp>
-#include <vector>
 #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Math/TeagerKaiserEnergyOperator.hpp>
 #include <MEL/Utility/Options.hpp>
