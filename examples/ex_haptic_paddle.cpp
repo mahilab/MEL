@@ -13,6 +13,7 @@
 #include <MEL/Math/Functions.hpp>
 #include <conio.h>
 #include <fstream>
+#include <MEL/Core/PdController.hpp>
 
 using namespace mel;
 
@@ -27,7 +28,7 @@ public:
                      AnalogInput::Channel ai,
                      double gain,
                      double offset)
-        : PositionSensor(name), ai_(ai), gain_(gain), offset_(offset) {}
+        : PositionSensor(name), ai_(ai), gain_(gain), offset_(offset) { }
 
     /// Gets the position of the hall effect sensor in [rad]
     double get_position() override {
@@ -57,7 +58,7 @@ public:
           // Robot constructor
           Robot("haptic_paddle"), 
           // init amplifier
-          amp_("amc_12a8", High, d_o, 1.3, ao),
+          amp_("amc_12a8", High, d_o, -1.065, ao),
           // init motor
           motor_("pitman_9434",
                  0.0229,
@@ -74,9 +75,9 @@ public:
                      {1.000000000000000,   -3.589733887112174,    4.851275882519412,   -2.924052656162454,    0.663010484385890})) 
     {
         // create joint
-        add_joint(Joint("paddle_joint_0", motor_, 6.0, position_sensor_, 1.0,
-                        velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
-                        400 * DEG2RAD, 2.0));
+        add_joint(Joint("paddle_joint_0", motor_, 0.713 / 6.250, position_sensor_, 1.0,
+                        velocity_sensor_, 1.0, {-40 * DEG2RAD, 40 * DEG2RAD},
+                        400 * DEG2RAD, 0.5));
     }
 
 private:
@@ -90,7 +91,7 @@ private:
 // CALIBRATE HALL
 //==============================================================================
 
-std::vector<double> calibrate_hall() {
+std::vector<double> calibrate_hall(AnalogInput::Channel ai_ch) {
     print("\nRotate the pendulum to the indicated angle [deg] and press Enter\n", Color::Yellow);
     print("Angle : Voltage");
     std::vector<double> theta{ -30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30 };
@@ -98,9 +99,10 @@ std::vector<double> calibrate_hall() {
     for (std::size_t i = 0; i < theta.size(); ++i) {
         std::cout << std::setfill(' ') << std::setw(4) << theta[i] << "  :  ";
         _getch();
-        std::cout << i;        
+        ai_ch.update();
+        volts[i] = ai_ch.get_value();
+        std::cout << volts[i];
         std::cout << "\n";
-        volts[i] = i;
     }
     std::vector<double> mb = linear_regression(volts, theta);
     set_text_color(Color::Green);
@@ -150,6 +152,29 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    // create MELShare for MELScope
+    std::vector<double> from_ms(1);
+    std::vector<double> to_ms(5);
+    MelShare ms1("ms1");
+    MelShare ms2("ms2");
+    ms1.write_data(from_ms);
+
+    // create Q8 USB
+    Q8Usb q8;
+
+    // create Haptic Paddle
+    HapticPaddle happy(q8.digital_output[7], 
+                       q8.analog_output[0], 
+                       q8.analog_input[2],
+                       -30.292 * DEG2RAD,
+                       86.32 * DEG2RAD);
+
+    // create PD controller
+    PdController pd(5, 0.001);
+
+    // enable Q8 Usb
+    q8.enable();
+
     // attempt to open calibration file
     std::ifstream file;
     file.open("calibration.txt");
@@ -158,7 +183,7 @@ int main(int argc, char* argv[]) {
     double gain, offset;
     if (input.count("c") > 0 || !file.is_open()) {
         file.close();
-        std::vector<double> mb = calibrate_hall();
+        std::vector<double> mb = calibrate_hall(q8.analog_input[2]);
         gain = mb[0];
         offset = mb[1];
     }
@@ -168,32 +193,25 @@ int main(int argc, char* argv[]) {
         LOG(Info) << "Imported hall effect sensor gain and offset from calibration.txt";
     }
 
-    // create MELShare for MELScope
-    std::vector<double> data(3);
-    MelShare ms("haptic_paddle");
-
-    // create Q8 USB
-    Q8Usb q8;
-
-    // create Haptic Paddle
-    HapticPaddle happy(q8.digital_output[0], 
-                       q8.analog_output[0], 
-                       q8.analog_input[0],
-                       -30.292 * DEG2RAD,
-                       86.32 * DEG2RAD);
-
-    // enable Q8 Usb
-    q8.enable();
+    // enable haptic paddle
+    prompt("Press Enter to Enable Haptic Paddle");
+    happy.enable();
 
     // create control loop timer
     Timer timer(milliseconds(1), Timer::Hybrid);
 
     // enter control loop
+    print("Enter Control Loop");
     while (!stop) {
         q8.update_input();
-        data[0] = happy[0].get_position();
-        data[1] = happy[1].get_velocity();
-        ms.write_data(data);
+        happy[0].get_velocity_sensor<VirtualVelocitySensor>().update();
+        from_ms = ms1.read_data();
+        q8.analog_output[0].set_value(from_ms[0]);
+        to_ms[0] = happy[0].get_position() * RAD2DEG;
+        to_ms[1] = happy[0].get_velocity() * RAD2DEG;
+        happy[0].set_torque(pd.calculate(0, happy[0].get_position(), 0, happy[0].get_velocity()));
+        ms2.write_data(to_ms);
+       // q8.update_output();
         timer.wait();
     }
 
