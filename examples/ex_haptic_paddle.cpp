@@ -46,21 +46,26 @@ public:
 //==============================================================================
 
 class HapticPaddle : public Robot {
-public:
+
 public:
     /// Constructor
     HapticPaddle(DigitalOutput::Channel d_o,
                  AnalogOutput::Channel ao,
                  AnalogInput::Channel ai,
                  double gain,
-                 double offset)
-        : Robot("haptic_paddle"),
+                 double offset) :
+          // Robot constructor
+          Robot("haptic_paddle"), 
+          // init amplifier
           amp_("amc_12a8", High, d_o, 1.3, ao),
+          // init motor
           motor_("pitman_9434",
                  0.0229,
                  amp_,
                  Limiter(1.8821, 12.0, seconds(1))),
+          // init position sensor
           position_sensor_("honeywell_ss49et", ai, gain, offset),
+          // init virtual velocity sensor
           velocity_sensor_(
               "honeywell_ss49et",
               position_sensor_,
@@ -68,6 +73,7 @@ public:
               Filter({0.031238976917092e-3, 0.124955907668367e-3, 0.187433861502551e-3, 0.124955907668367e-3, 0.031238976917092e-3},
                      {1.000000000000000,   -3.589733887112174,    4.851275882519412,   -2.924052656162454,    0.663010484385890})) 
     {
+        // create joint
         add_joint(Joint("paddle_joint_0", motor_, 6.0, position_sensor_, 1.0,
                         velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
                         400 * DEG2RAD, 2.0));
@@ -157,14 +163,12 @@ int main(int argc, char* argv[]) {
         offset = mb[1];
     }
     else {
-        print("Importing calibration.txt");
         file >> gain >> offset;
+        file.close();
+        LOG(Info) << "Imported hall effect sensor gain and offset from calibration.txt";
     }
 
-    print(gain);
-    print(offset);
-
-    // create MEL Share
+    // create MELShare for MELScope
     std::vector<double> data(3);
     MelShare ms("haptic_paddle");
 
