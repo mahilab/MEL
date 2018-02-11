@@ -1,4 +1,4 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
+//#include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Functions.hpp>
@@ -19,7 +19,7 @@ int main(int argc, char const* argv[]) {
     register_ctrl_handler(handler);
 
     std::vector<double> data(5);
-    MelShare ms("ms_math");
+    //MelShare ms("ms_math");
 
     Timer timer(milliseconds(1), Timer::Hybrid);
 
@@ -41,7 +41,7 @@ int main(int argc, char const* argv[]) {
         // S(x) ~ integrate(dx/dt)
         data[4] = integrator.update(data[0], timer.get_elapsed_time_ideal());
 
-        ms.write_data(data);
+        //ms.write_data(data);
         timer.wait();
     }
 
