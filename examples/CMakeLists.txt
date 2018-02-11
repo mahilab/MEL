@@ -72,7 +72,7 @@ endif()
 # NI EXAMPLES
 #===============================================================================
 
-if(NI)
+if(NI_X64)
     add_executable(crio ex_crio.cpp)
     target_link_libraries(crio MEL)
 endif()

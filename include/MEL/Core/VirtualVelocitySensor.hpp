@@ -46,6 +46,8 @@ public:
     /// Disables teh VirtualVelocitySensor
     bool disable() override;
 
+    void update();
+
     /// Returns the differentiated velocity
     double get_velocity() override;
 

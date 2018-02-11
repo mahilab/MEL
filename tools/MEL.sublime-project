@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON -DTESTS=ON",
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI_ARM=ON -DEXAMPLES=ON -DTESTS=ON",
 			"working_dir": "$project_path/../build/linux_ninja"
 		},
 		// {

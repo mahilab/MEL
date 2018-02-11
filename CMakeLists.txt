@@ -21,7 +21,8 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(NI        "Turn ON if compiling for NI hardware and NI Realtime Linux" OFF)
+option(NI_X64    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
+option(NI_ARM    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
 option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
 option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
 option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
@@ -30,7 +31,8 @@ option(BUILD_DOC "Turn ON to build MEL documentation"                         OF
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
 option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
 
-set(NI_ROOT      "C:/dev/nirlt-linux"       CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"   CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"   CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
 set(QUANSER_ROOT "C:/Program Files/Quanser" CACHE FILEPATH "Absolute path to Quanser installation."          )
 set(EIGEN_ROOT   "C:/dev/eigen"             CACHE FILEPATH "Absolute path to Eigen installation."            )
 
@@ -39,9 +41,9 @@ set(EIGEN_ROOT   "C:/dev/eigen"             CACHE FILEPATH "Absolute path to Eig
 #===============================================================================
 
 # set NI RT Linux specific options if enabled
-if (NI)
+if (NI_X64)
     # add compiler to path
-    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux)
+    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_X64_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux)
     # set compiler (must be called before project/enable)
     set(CMAKE_C_COMPILER x86_64-nilrt-linux-gcc)
     set(CMAKE_CXX_COMPILER x86_64-nilrt-linux-g++)
@@ -49,9 +51,18 @@ if (NI)
     set(CMAKE_SYSTEM_NAME Generic)
     set(CMAKE_CROSSCOMPILING 1)
     # setup sysroot (for NI RT cross compiler)
-    set(CMAKE_SYSROOT ${NI_ROOT}/sysroots/core2-64-nilrt-linux)
-    # need pthread for multithreading
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    set(CMAKE_SYSROOT ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux)
+elseif (NI_ARM)
+    # add compiler to path
+    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_ARM_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/arm-nilrt-linux-gnueabi)
+    # set compiler (must be called before project/enable)
+    set(CMAKE_C_COMPILER arm-nilrt-linux-gnueabi-gcc)
+    set(CMAKE_CXX_COMPILER arm-nilrt-linux-gnueabi-g++)
+    # set to cross compile
+    set(CMAKE_SYSTEM_NAME Generic)
+    set(CMAKE_CROSSCOMPILING 1)
+    # setup sysroot (for NI RT cross compiler)
+    set(CMAKE_SYSROOT ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi)
 endif()
 
 # enable C/C++
@@ -88,6 +99,15 @@ if (MAHIEXOII)
     add_definitions(-DMEL_INCLUDE_EIGEN)
 endif()
 
+# set compiler flags
+if (NI_X64)
+    # need pthread for multithreading
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+elseif (NI_ARM)
+    # need pthread for multithreading and other stuff for ARM float performance
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -mfpu=vfpv3 -mfloat-abi=softfp")
+endif()
+
 # add configurations
 # set(CMAKE_CONFIGURATION_TYPES release)
 
@@ -107,11 +127,14 @@ endif()
 # PERFORM CHECKS
 #===============================================================================
 
-if(NI AND QUANSER)
+if (NI_X64 AND NI_ARM)
+    message(FATAL_ERROR "FATAL_ERROR: MEL cannot be built for NI x64 and NI ARM based hardware simultaneously. Choose only one")
+endif()
+if((NI_X64 OR NI_ARM) AND QUANSER)
     message(FATAL_ERROR "FATAL ERROR: MEL cannot be built for NI and Quanser hardware simultaneously. Choose only one.")
 endif()
 
-if(NI AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
+if((NI_X64 OR NI_ARM) AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
     message(FATAL_ERROR "FATAL_ERROR: Must use Linux G++ compiler when using NI hardware.")
 endif()
 
@@ -127,10 +150,14 @@ endif()
 set(INCLUDE_DIRS include)
 
 # Hardware Lib(s)
-if (NI)
-    list(APPEND INCLUDE_DIRS
-        ${NI_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
-        ${NI_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
+if (NI_X64)
+    list(APPEND INCLUDE_DIR
+        ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
+        ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
+elseif(NI_ARM)
+    list(APPEND INCLUDE_DIR
+        ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2
+        ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2/arm-nilrt-linux-gnueabi)
 elseif (QUANSER)
     list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
 endif()
@@ -280,7 +307,7 @@ if(WIN32)
     list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS})
 endif()
 
-if(NI)
+if(NI_X64 OR NI_ARM)
     list(APPEND SOURCE_FILES ${SRC_NI})
 elseif (QUANSER)
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
@@ -298,7 +325,7 @@ add_library(MEL STATIC ${SOURCE_FILES})
 
 set(LINK_LIBS "")
 
-if(NI)
+if(NI_X64 OR NI_ARM)
     list(APPEND LINK_LIBS dl)
 elseif(QUANSER)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
