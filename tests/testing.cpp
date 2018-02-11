@@ -15,7 +15,7 @@ int main(int argc, char const* argv[]) {
                           1.397,  3.462,  5.509,  7.576,  9.621,  11.358};
 
     std::vector<double> mb = linear_regression(x, y);
-    print(mb);
+    print(mb);git
 
     return 0;
 }
