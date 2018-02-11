@@ -28,34 +28,6 @@
 namespace mel {
 
 //==============================================================================
-// CONSOLE OUTPUT
-//==============================================================================
-
-/// Prints a string to the console using the fastest method the OS offers
-void print_string(const std::string& str);
-
-/// Prints anything that works with stream operators (appends new line character)
-template<typename T>
-void print(T value) {
-    std::stringstream ss;
-    ss << value << "\n";
-    print_string(ss.str());
-}
-
-/// Prints MEL 2D array
-template <typename T, std::size_t N, std::size_t M>
-void print(const array_2D<T, N, M>& a, bool end_line = true) {
-    for (auto it_row = a.begin(); it_row != a.end(); ++it_row) {
-        for (auto it_col = (*it_row).begin(); it_col != (*it_row).end();
-             ++it_col) {
-            std::cout << *it_col << " ";
-        }
-        if (end_line)
-            std::cout << "\n";
-    }
-}
-
-//==============================================================================
 // CONSOLE INPUT & SIGNAL HANDLING
 //==============================================================================
 
@@ -111,6 +83,42 @@ void set_text_color(Color foreground, Color background = Color::None);
 
 /// Resets the foreground and background text color to the default style
 void reset_text_color();
+
+//==============================================================================
+// CONSOLE OUTPUT
+//==============================================================================
+
+/// Prints a string to the console using the fastest method the OS offers
+void print_string(const std::string& str);
+
+/// Prints anything that works with stream operators (appends new line character)
+template<typename T>
+void print(T value) {
+    std::stringstream ss;
+    ss << value << "\n";
+    print_string(ss.str());
+}
+
+/// Print with color
+template<typename T>
+void print(T value, Color foreground, Color background = Color::None) {
+    set_text_color(foreground, background);
+    print(value);
+    reset_text_color();
+}
+
+/// Prints MEL 2D array
+template <typename T, std::size_t N, std::size_t M>
+void print(const array_2D<T, N, M>& a, bool end_line = true) {
+    for (auto it_row = a.begin(); it_row != a.end(); ++it_row) {
+        for (auto it_col = (*it_row).begin(); it_col != (*it_row).end();
+            ++it_col) {
+            std::cout << *it_col << " ";
+        }
+        if (end_line)
+            std::cout << "\n";
+    }
+}
 
 //==============================================================================
 // MISC

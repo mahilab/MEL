@@ -19,7 +19,7 @@ Depending on how you use MEL, you may need to install a few additional hardware 
 
 #### National Instruments Linux Real-Time (Optional)
 
-If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO), you'll need to install NI's GNU/Linux cross-compiler [[x64](http://www.ni.com/download/labview-real-time-module-2017/6762/en/)] [[ARM](http://www.ni.com/download/labview-real-time-module-2017/6761/en/)]. MEL expects the top level of the compiler directories to be in `C:/dev/nirlt-linux`, which should contain `sysroots/`, `environment-setup-core2-64-nilrt-linux`, `relocate_sdk.py`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
+If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO), you'll need to install NI's GNU/Linux cross-compiler [[x64](http://www.ni.com/download/labview-real-time-module-2017/6762/en/)] [[ARM](http://www.ni.com/download/labview-real-time-module-2017/6761/en/)]. MEL expects the top level of the compiler directories to be in `C:/dev/nirlt-linux-x64` or `C:/dev/nirlt-linux-arm`, which should contain `sysroots/`, `relocate_sdk.py`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt options `NI_X64_ROOT` and/or `NI_ARM_ROOT`.
 
 You will also want a suitable build system. The recommended tool is the [Ninja](https://ninja-build.org/), but you can also `make`, (Linux host) `mingw32-make`, or `nmake` (Windows host).
 
@@ -54,7 +54,8 @@ cd build                                    # change directory to ./build
 
 At this point, you can customize MEL to suit your platform and hardware needs. MEL provides the following options when building with CMake:
 
-* `-DNI=ON` adds MEL implementations for NI hardware (cRIO, myRIO, etc.), and sets the compiler to NI's GNU/Linux cross-compiler
+* `-DNI_X64=ON` adds MEL implementations for NI Intel x64 hardware (e.g. cRIO), and sets the compiler to NI's GNU/Linux cross-compiler
+* `-DNI_ARM=ON` adds MEL implementations for NI hardware (e.g. myRIO), and sets the compiler to NI's GNU/Linux cross-compiler
 * `-DQUANSER=ON` adds MEL implementations for Quanser hardware (Q8 USB, Q2 USB, etc.) and statically links MEL to QUARC
 * `-DOPENWRIST=ON` adds OpenWrist classes to MEL
 * `-DMAHIEXOII=ON` adds MAHI Exo-II classes to MEL and includes Eigen as a dependency
@@ -70,7 +71,7 @@ This will generate a build file for the bare bones MEL library (i.e. no hardware
 
 #### Example 2: MEL + NI Hardware + OpenWrist + Ninja
 ```shell
-cmake .. -G "Ninja" -DNI=ON -DOPENWRIST=ON
+cmake .. -G "Ninja" -DNI_X64=ON -DOPENWRIST=ON
 ninja
 ```
 The first line generates Ninja build files for MEL with NI hardware and OpenWrist classes. The second line then calls Ninja which builds MEL using NI's cross-compiler.

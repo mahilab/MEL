@@ -117,11 +117,12 @@ extern double stddev_p(const std::vector<double>& data);
 /// Returns the sample standard deviation of a vector of data
 extern double stddev_s(const std::vector<double>& data);
 
+/// Computes a linear regression slope and intercept {m, b} for y = m*x + b
+extern std::vector<double> linear_regression(const std::vector<double>& x, const std::vector<double>& y);
+
 //==============================================================================
 // EIGEN RELATED
 //==============================================================================
-
-
 
 #ifdef MEL_INCLUDE_EIGEN
 

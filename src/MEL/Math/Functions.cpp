@@ -115,7 +115,7 @@ std::vector<double> linspace(double a, double b, int n) {
         double delta = (b - a) / (n - 1);
         out[0] = a;
         for (int i = 1; i < n - 1; i++) {
-            out[i] = out[i-1] + delta;
+            out[i] = out[i - 1] + delta;
         }
         out[n - 1] = b;
     }
@@ -132,7 +132,7 @@ double sigmoid(double a) {
     }
 }
 
-double auto_diff(std::complex<double> (*f)(std::complex<double>), double x) {
+double auto_diff(std::complex<double>(*f)(std::complex<double>), double x) {
     return f(std::complex<double>(x, 1.0e-22)).imag() / 1.0e-22;
 }
 
@@ -181,6 +181,36 @@ double stddev_s(const std::vector<double>& data) {
         return 0;
     }
 }
+
+extern std::vector<double> linear_regression(const std::vector<double>& x, const std::vector<double>& y) {
+    if (x.size() != y.size()) {
+        LOG(Error) << "Length of x (" << x.size() << ") not equal to length of y (" << y.size() << ")";
+        return std::vector<double>();
+    }
+
+    double xbar = mean(x);
+    double ybar = mean(y);
+    double xbar2 = xbar * xbar;
+    double xbarybar = xbar * ybar;
+
+    std::size_t n = x.size();
+    std::vector<double> x2_xbar2(n);
+    std::vector<double> xy_xbarybar(n);
+
+    for (std::size_t i = 0; i < n; ++i) {
+        x2_xbar2[i]    = x[i] * x[i] - xbar2;
+        xy_xbarybar[i] = x[i] * y[i] - xbarybar;
+    }
+
+    double sigmax2  = mean(x2_xbar2);
+    double sigmaxy = mean(xy_xbarybar);
+
+    double m = sigmaxy / sigmax2;
+    double b = -xbar * m + ybar;
+
+    return std::vector<double>{m, b};
+}
+
 
 //==============================================================================
 // EIGEN RELATED
