@@ -67,8 +67,7 @@ int main(int argc, char *argv[]) {
             // exception safe and you run the risk of unlock never getting called.
             named_mutex.lock();
             print("B can continue now");
-            named_mutex.unlock();
-        }
+            named_mutex.unlock();        }
         #endif
     }
     return 0;
