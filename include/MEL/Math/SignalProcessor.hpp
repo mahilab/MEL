@@ -20,6 +20,7 @@
 
 #include <MEL/Math/Process.hpp>
 #include <vector>
+#include <MEL/Utility/Console.hpp>
 
 namespace mel {
 
@@ -37,7 +38,7 @@ public:
         n_(processes.size()),
         s_(n_),
         x_(0.0)
-        { };
+    { }
 
     /// Default destructor
     ~SignalProcessor() {};
@@ -62,13 +63,8 @@ public:
     }
 
     /// get internal states
-    double get_processed(const std::size_t index) const {
-        if (index >= 0 & index < n_) {
-            return s_[index];
-        }
-        else {
-            return s_[0];
-        }
+    const std::vector<double>& get_processed() const {
+        return s_;
     }
 
     /// resets internal memory
