@@ -28,6 +28,8 @@
 namespace mel
 {
 
+class Frequency;
+
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
@@ -53,6 +55,11 @@ public:
     /// Return the time value as a number of microseconds.
     int64 as_microseconds() const;
 
+    /// Returns the reciprocal time as a Frequency
+    Frequency to_frequency() const;
+
+public:
+
     static const Time Zero; ///< Predefined "zero" time value
 
 private:
@@ -63,6 +70,8 @@ private:
 
     /// Internal constructor from a number of microseconds.
     explicit Time(int64 microseconds);
+
+private:
 
     int64 microseconds_; ///< Time value stored as microseconds
 

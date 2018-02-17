@@ -27,6 +27,7 @@ namespace mel {
 
 extern const double PI;          ///< pi
 extern const double E;           ///< e
+extern const double SQRT2;       /// sqrt(2)
 extern const double EPS;         ///< smallest double such that 1.0 + EPS != 1.0
 extern const double INF;         ///< positive infinity (negate for negative infinity)
 extern const double NaN;         ///< not-a-number

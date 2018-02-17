@@ -9,6 +9,12 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
+Timer::Timer(Frequency frequency, WaitMode mode) :
+    Timer(frequency.to_time(), mode)
+{
+}
+
+
 Timer::Timer(Time period, WaitMode mode) :
     mode_(mode),
     clock_(Clock()),
@@ -56,6 +62,11 @@ Time Timer::get_elapsed_time_ideal() {
 int64 Timer::get_elapsed_ticks() {
     return ticks_;
 }
+
+Frequency Timer::get_frequency() {
+    return period_.to_frequency();
+}
+
 
 Time Timer::get_period() {
     return period_;

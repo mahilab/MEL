@@ -20,24 +20,22 @@ Communication:
   ☐ BTP? http://ieeexplore.ieee.org/document/5089429/
 
 Core:
-  ☐ make safety check functions more descriptive
   ☐ add Clock to PdController, generalize for all exos
 
 Daq:
- ☐ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation
 
 Q8 USB:
 
-Error:
+NI myRIO:
+  ☐ wrap C functions into a Daq class
+
+Logger:
 
 Utility:
   ☐ add json parser? header only on github seems good
   ☐ add CSV header only lib
-  ✔ Write Linux version of Mutex @done (18-02-07 22:03)
-  ☐ ctrl handler Linux
   ☐ get_last_os_error(), make static functions not print
   ☐ Clean up / rethink StateMachine
-  ☐ Socket.hpp includes winsock, which includes windows.h ... make SocketImpl.hpp
   ☐ async console printing (new thread, tcp/ip server, or something else?)
 
 Logging:
@@ -46,13 +44,26 @@ Logging:
 OpenWrist:
 
 MELScope:
+  ☐ freezes when UDP disconnected
+
+MELNet:
+  ☐ make messages use TCP
 
 Long Term Plans/Ideas:
   ☐ entity-component based core library
 
+Core:
+  ☐ DisturbanceObserver
+
+
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ make safety check functions more descriptive @done (18-02-16 16:04) @project(Core)
+ ✔ ctrl handler Linux @done (18-02-16 16:04) @project(Utility)
+ ✔ a class that derives from VelocitySensor, but takes in a PositionSensor and performs dirty derivation @done (18-02-16 16:04) @project(Daq)
+ ✔ Socket.hpp includes winsock, which includes windows.h ... make SocketImpl.hpp @done (18-02-16 16:04) @project(Utility)
+ ✔ Write Linux version of Mutex @done (18-02-07 22:03) @project(Utility)
  ✔ make an error output stream or something like that @done (18-02-06 21:50) @project(Error)
  ✔ get_module<TModule> @done (18-02-06 21:50) @project(Daq)
  ✔ complete Limiter and incorporate @done (18-01-31 21:19) @project(Core)

@@ -1,4 +1,5 @@
 #include <MEL/Utility/Time.hpp>
+#include <MEL/Utility/Frequency.hpp>
 
 namespace mel {
 
@@ -10,6 +11,11 @@ const Time Time::Zero;
 
 Time::Time() :
     microseconds_(0)
+{
+}
+
+Time::Time(int64 microseconds) :
+    microseconds_(microseconds)
 {
 }
 
@@ -28,10 +34,11 @@ int64 Time::as_microseconds() const
     return microseconds_;
 }
 
-Time::Time(int64 microseconds) :
-    microseconds_(microseconds)
-{
+
+Frequency Time::to_frequency() const {
+    return megahertz(1.0 / static_cast<double>(microseconds_));
 }
+
 
 //==============================================================================
 // INSTANTIATION FUNCTIONS

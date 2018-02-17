@@ -19,6 +19,7 @@
 #define MEL_TIMER_HPP
 
 #include <MEL/Utility/Clock.hpp>
+#include <MEL/Utility/Frequency.hpp>
 
 namespace mel {
 
@@ -49,7 +50,10 @@ public:
 
 public:
 
-    // Default constructor. Starts the Timer on construction.
+    /// Constructs Timer from frequency. Starts the Timer on construction.
+    Timer(Frequency frequency, WaitMode mode = WaitMode::Busy);
+
+    /// Constructs Timer from wait period. Starts the Timer on construction.
     Timer(Time period, WaitMode mode = WaitMode::Busy);
 
     /// Restarts the Timer and returns the elapsed time
@@ -67,6 +71,9 @@ public:
 
     /// Gets the elapsed number of ticks since construction or the last call to restart().
     int64 get_elapsed_ticks();
+
+    /// Gets the Timer frequency
+    Frequency get_frequency();
 
     /// Gets the Timer period
     Time get_period();
