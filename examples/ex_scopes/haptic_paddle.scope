@@ -1,45 +1,45 @@
 DATA_SOURCES:
 - curve_colors:
-  - [177, 89, 40]
-  curve_names: ['ms1[0]']
-  curve_styles: [Solid]
-  curve_widths: [2.0]
-  mode: Write Only
-  name: ms1
+  - [31, 120, 180]
+  - [227, 26, 28]
+  - [51, 160, 44]
+  - [255, 127, 0]
+  curve_names: ['to_ms[0]', 'to_ms[1]', 'to_ms[2]', 'to_ms[3]']
+  curve_styles: [Solid, Solid, Solid, Solid]
+  curve_widths: [4.0, 4.0, 4.0, 4.0]
+  mode: Read Only
+  name: to_ms
   settings: null
-  size: 1
+  size: 4
   type: melshare
 - curve_colors:
-  - [166, 206, 227]
-  - [251, 154, 153]
-  - [178, 223, 138]
-  - [253, 191, 111]
-  - [202, 178, 214]
-  curve_names: ['ms2[0]', 'ms2[1]', 'ms2[2]', 'ms2[3]', 'ms2[4]']
-  curve_styles: [Solid, Solid, Solid, Solid, Solid]
-  curve_widths: [2.0, 2.0, 2.0, 2.0, 2.0]
-  mode: Read Only
-  name: ms2
+  - [106, 61, 154]
+  - [177, 89, 40]
+  curve_names: ['from_ms[0]', 'from_ms[1]']
+  curve_styles: [Solid, Solid]
+  curve_widths: [4.0, 4.0]
+  mode: Write Only
+  name: from_ms
   settings: null
-  size: 5
+  size: 2
   type: melshare
 GRID_COLS: 2
 GRID_ROWS: 1
 SCOPES:
 - filter:
-    ms1: [true]
-    ms2: [false, false, false, false, false]
+    from_ms: [false, false]
+    to_ms: [false, true, false, true]
   index: 0
   legend: false
-  mode: Numeric
-  title: Scope0
-  yrange: [-1.0, 1.0]
-- filter:
-    ms1: [false]
-    ms2: [true, true, true, true, true]
-  index: 1
-  legend: true
   mode: Plot
+  title: Scope0
+  yrange: [-100.0, 100.0]
+- filter:
+    from_ms: [true, true]
+    to_ms: [false, false, false, false]
+  index: 1
+  legend: false
+  mode: Numeric
   title: Scope1
-  yrange: [-30.0, 30.0]
+  yrange: [-1.0, 1.0]
 THEME: Dark

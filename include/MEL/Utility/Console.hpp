@@ -127,6 +127,9 @@ void print(const array_2D<T, N, M>& a, bool end_line = true) {
 /// True if stdout is a character device (a terminal, console, printer, or serial port)
 extern const bool STDOUT_IS_A_TTY;
 
+/// Causes the console to emit a beep sound
+void beep();
+
 //==============================================================================
 // FORMATTING
 //==============================================================================

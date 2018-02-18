@@ -28,74 +28,42 @@ namespace mel {
 //==============================================================================
 
 class Filter : public Process {
-
 public:
-
+    /// Construct Filter from transfer function coefficients
     Filter(const std::vector<double>& b, const std::vector<double>& a);
 
-    /// applies the filter operation for one time step
-    double update(const double x, const Time& current_time = Time::Zero) override;
+    /// Applies the filter operation for one time step
+    double update(const double x,
+                  const Time& current_time = Time::Zero) override;
 
-    /// sets the internal states s_ to all be zero
+    /// Sets the internal states s_ to all be zero
     void reset() override;
 
-private:
+    /// Returns the Filter numerator coefficients
+    const std::vector<double>& get_b() const;
 
-    
-    std::size_t n_; ///< filter order
-                    
-    const std::vector<double> b_; ///< numerator coefficients
-    const std::vector<double> a_; ///< denominator coefficients
-                    
-    std::vector<double> s_; ///< internal memory
+    /// Returns the Filter denominator coefficients
+    const std::vector<double>& get_a() const;
 
+    /// Sets the Filter coefficients
+    void set_coefficients(const std::vector<double>& b,
+                          const std::vector<double>& a);
+
+protected:
+    /// Construct empty Filter of order n
+    Filter(std::size_t n);
+
+protected:
+    std::size_t n_;          ///< filter order
+    std::vector<double> b_;  ///< numerator coefficients
+    std::vector<double> a_;  ///< denominator coefficients
+    std::vector<double> s_;  ///< internal memory
 };
 
+}  // namespace mel
 
+#endif  // MEL_FILTER_HPP
 
-//class FilterImplementation {
-//
-//public:
-//
-//    FilterImplementation(const std::vector<double>& b, const std::vector<double>& a);
-//
-//    void filter(const double& x, double& y);
-//
-//    void reset(); /// sets the internal states s_ to all be zero
-//
-//private:
-//
-//    std::size_t n_; /// order
-//
-//    const std::vector<double> b_; /// numerator coefficients
-//    const std::vector<double> a_; /// denominator coefficients
-//
-//    std::vector<double> s_;
-//};
-//
-//class Filter {
-//
-//public:
-//
-//    Filter();
-//    Filter(const std::vector<double>& b, const std::vector<double>& a, int length = 1);
-//    //Filter(int length, const std::vector<double>& b, const std::vector<double>& a);
-//
-//    void filter(const double& x, double& y);
-//    void filter(const std::vector<double>& x, std::vector<double>& y);
-//
-//    void reset(); /// sets the internal states s_ to all be zero
-//
-//private:
-//
-//    const std::size_t length_;
-//
-//    const std::vector<double> b_; /// numerator coefficients
-//    const std::vector<double> a_; /// denominator coefficients
-//
-//    std::vector<FilterImplementation> filter_implementations_;
-//};
-
-} // namespace mel
-
-#endif // MEL_FILTER_HPP
+//==============================================================================
+// CLASS DOCUMENTATION
+//==============================================================================

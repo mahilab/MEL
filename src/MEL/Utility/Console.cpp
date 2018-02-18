@@ -247,7 +247,7 @@ void reset_text_color() {
 #endif
 
 //==============================================================================
-// MISIC
+// MISC
 //==============================================================================
 
 #ifdef _WIN32
@@ -255,5 +255,11 @@ const bool STDOUT_IS_A_TTY = !!_isatty(_fileno(stdout));
 #else
 const bool STDOUT_IS_A_TTY = !!isatty(fileno(stdout));
 #endif
+
+void beep() {
+#ifdef _WIN32
+    Beep(750, 250);
+#endif
+}
 
 }  // namespace mel
