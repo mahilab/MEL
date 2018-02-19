@@ -28,7 +28,7 @@ GRID_ROWS: 1
 SCOPES:
 - filter:
     from_ms: [false, false]
-    to_ms: [false, true, false, true]
+    to_ms: [false, true, false, false]
   index: 0
   legend: false
   mode: Plot

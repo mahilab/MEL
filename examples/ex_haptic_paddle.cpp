@@ -11,11 +11,11 @@
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <conio.h>
-#include <fstream>
 #include <MEL/Core/PdController.hpp>
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Waveform.hpp>
+#include <MEL/Math/Integrator.hpp>
+#include <fstream>
 
 using namespace mel;
 
@@ -69,8 +69,8 @@ public:
     {
         // create joint
         add_joint(Joint("paddle_joint_0", motor_, 0.713 / 6.250, position_sensor_, 1.0,
-                        velocity_sensor_, 1.0, {-40 * DEG2RAD, 40 * DEG2RAD},
-                        400 * DEG2RAD, 0.5));
+                        velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
+                        500 * DEG2RAD, 1.0));
     }
 
     /// Overrides the default Robot::enable function with some custom logic
@@ -139,13 +139,133 @@ bool handler(CtrlEvent event) {
 }
 
 //==============================================================================
+// TUNNEL DEMO
+//==============================================================================
+
+Waveform tunnel_trajectory = Waveform(Waveform::Sin, seconds(2), 30.0 * DEG2RAD);
+PdController tunnel_pd     = PdController(1.0, 0.01);
+
+double tunnel(double position, double velocity, Time current_time) {
+    double x_ref = tunnel_trajectory.evaluate(current_time);
+    return tunnel_pd.calculate(x_ref, position, 0, velocity);
+}
+
+//==============================================================================
+// WALL DEMO
+//==============================================================================
+
+double wall_position = 0;
+PdController wall_into_pd   = PdController(5.0, 0.1);
+PdController wall_outof_pd  = PdController(5.0, 0.0);
+
+double wall(double position, double velocity) {
+    if (position > wall_position) {
+        if (velocity > 0)
+            return wall_into_pd.calculate(wall_position * DEG2RAD, position, 0, velocity);
+        else
+            return wall_outof_pd.calculate(wall_position * DEG2RAD, position, 0, velocity);
+    }
+    else
+        return 0;
+}
+
+//==============================================================================
+// NOTCHES DEMO
+//==============================================================================
+
+std::vector<double> notch_positions = { -30, -15, 0, 15, 30 };
+PdController notch_pd = PdController(3.0, 0.05);
+
+double notches(double position, double velocity) {
+    for (std::size_t i = 0; i < notch_positions.size(); ++i) {
+        if (position < ((notch_positions[i] + 7.5) * DEG2RAD) &&
+            position > ((notch_positions[i] - 7.5) * DEG2RAD)) {
+            return notch_pd.calculate(notch_positions[i] * DEG2RAD, position, 0, velocity);
+        }
+    }
+    return 0.0;
+}
+
+//==============================================================================
+// PENDULUM DEMO
+//==============================================================================
+
+class Pendulum {
+public:
+
+    Pendulum() : ms("pendulum") {}
+
+    /// Steps the pendulum simulation
+    void step_simulation(Time time, double position_ref, double velocity_ref) {
+
+        // compute torque of first joint given reference position and velocity
+        Tau[0] = K_player * (position_ref - PI / 2 - Q[0]) + B_player * (velocity_ref - Qd[0]);
+
+        // evaluate the equations of motion
+        Qdd[0] = -((L[0] * L[1] * M[1] * mel::sin(Q[1])*pow(Qd[0], 2) - Tau[1] + Fk[1] * mel::tanh(10 * Qd[1]) + B[1] * Qd[1] + g*L[1] * M[1] * mel::cos(Q[0] + Q[1])) / (pow(L[1], 2) * M[1]) - (-L[0] * L[1] * M[1] * mel::sin(Q[1])*pow(Qd[1], 2) - 2 * L[0] * L[1] * M[1] * Qd[0] * mel::sin(Q[1])*Qd[1] - Tau[0] + Fk[0] * mel::tanh(10 * Qd[0]) + B[0] * Qd[0] + g*L[1] * M[1] * mel::cos(Q[0] + Q[1]) + g*L[0] * M[0] * mel::cos(Q[0]) + g*L[0] * M[1] * mel::cos(Q[0])) / (L[1] * M[1] * (L[1] + L[0] * mel::cos(Q[1])))) / ((M[1] * pow(L[1], 2) + L[0] * M[1] * mel::cos(Q[1])*L[1]) / (pow(L[1], 2) * M[1]) - (pow(L[0], 2) * M[0] + pow(L[0], 2) * M[1] + pow(L[1], 2) * M[1] + 2 * L[0] * L[1] * M[1] * mel::cos(Q[1])) / (L[1] * M[1] * (L[1] + L[0] * mel::cos(Q[1]))));
+        Qdd[1] = ((-L[0] * L[1] * M[1] * mel::sin(Q[1])*pow(Qd[1], 2) - 2 * L[0] * L[1] * M[1] * Qd[0] * mel::sin(Q[1])*Qd[1] - Tau[0] + Fk[0] * mel::tanh(10 * Qd[0]) + B[0] * Qd[0] + g*L[1] * M[1] * mel::cos(Q[0] + Q[1]) + g*L[0] * M[0] * mel::cos(Q[0]) + g*L[0] * M[1] * mel::cos(Q[0])) / (pow(L[0], 2) * M[0] + pow(L[0], 2) * M[1] + pow(L[1], 2) * M[1] + 2 * L[0] * L[1] * M[1] * mel::cos(Q[1])) - (L[0] * L[1] * M[1] * mel::sin(Q[1])*pow(Qd[0], 2) - Tau[1] + Fk[1] * mel::tanh(10 * Qd[1]) + B[1] * Qd[1] + g*L[1] * M[1] * mel::cos(Q[0] + Q[1])) / (L[1] * M[1] * (L[1] + L[0] * mel::cos(Q[1])))) / (L[1] / (L[1] + L[0] * mel::cos(Q[1])) - (M[1] * pow(L[1], 2) + L[0] * M[1] * mel::cos(Q[1])*L[1]) / (pow(L[0], 2) * M[0] + pow(L[0], 2) * M[1] + mel::pow(L[1], 2) * M[1] + 2 * L[0] * L[1] * M[1] * mel::cos(Q[1])));
+
+        // integrate acclerations to find velocities
+        Qd[0] = Qdd2Qd[0].update(Qdd[0], time);
+        Qd[1] = Qdd2Qd[1].update(Qdd[1], time);
+
+        // integrate velocities to find positions
+        Q[0] = Qd2Q[0].update(Qd[0], time);
+        Q[1] = Qd2Q[1].update(Qd[1], time);
+
+        // write out positions
+        ms.write_data(Q);
+    }
+
+    /// Resets the pendulum integrators
+    void reset() {
+        Qdd = { 0,0 };
+        Qd = { 0,0 };
+        Q = { -mel::PI / 2  ,0 };
+        Tau = { 0, 0 };
+        Qdd2Qd = { mel::Integrator(Qd[0]), mel::Integrator(Qd[1]) };
+        Qd2Q = { mel::Integrator(Q[0]), mel::Integrator(Q[1]) };
+    }
+
+public:
+
+    double K_player = 1.0;                     ///< [N/m]
+    double B_player = 0.2;                    ///< [N-s/m]
+    double g = 9.81;                           ///< [m/s^2]
+    std::vector<double> M = { 0.01, 0.2 };   ///< [kg]
+    std::vector<double> L = { 0.25, 0.25 };    ///< [m]
+    std::vector<double> B = { 0.001,0.001 };   ///< [N-s/m]
+    std::vector<double> Fk = { 0.001,0.001 };  ///< [Nm]
+
+    std::vector<double> Qdd = { 0,0 };
+    std::vector<double> Qd = { 0,0 };
+    std::vector<double> Q = { -mel::PI / 2  ,0 };
+    std::vector<double> Tau = { 0, 0 };
+
+private:
+    MelShare ms;
+
+    std::array<mel::Integrator, 2> Qdd2Qd = { mel::Integrator(Qd[0]), mel::Integrator(Qd[1]) };
+    std::array<mel::Integrator, 2> Qd2Q = { mel::Integrator(Q[0]),  mel::Integrator(Q[1]) };
+};
+
+Pendulum pend;
+int counter = 9;
+
+double pendulum(double position, double velocity, Time current_time) {
+    pend.step_simulation(current_time, -position, -velocity);
+    return pend.Tau[0];
+}
+
+
+//==============================================================================
 // MAIN
 //==============================================================================
 
 int main(int argc, char* argv[]) {
 
-    // intialize logger
-    init_logger();
+    // intialize logger so only Error level messages display
+    init_logger(Info, Error);
 
     // register CTRL-C handler
     register_ctrl_handler(handler);
@@ -154,6 +274,10 @@ int main(int argc, char* argv[]) {
     Options options("haptic_paddle.exe", "MEL Haptic Paddle Example");
     options.add_options()
         ("c,calibrate", "Calibrates Hall Effect Sensor")
+        ("t,tunnel", "Tunnel demo")
+        ("w,wall", "Wall demo")
+        ("n,notches", "Notches demo")
+        ("p,pendulum", "Pendulum demo")
         ("h,help", "Prints this Help Message");
     auto input = options.parse(argc, argv);
 
@@ -174,53 +298,86 @@ int main(int argc, char* argv[]) {
     Q8Usb q8;
 
     // create Haptic Paddle
-    HapticPaddle happy(q8.digital_output[7],
+    HapticPaddle hp(q8.digital_output[7],
                        q8.analog_output[0],
                        q8.analog_input[2]);
-
-    // create PD controller
-    PdController pd(1.0, 0.01);
 
     // enable Q8 Usb
     q8.enable();
 
     // enable haptic paddle
     prompt("Press ENTER to enable Haptic Paddle");
-    happy.enable();
+    hp.enable();
 
     // perform calibration if requested
-    if (input.count("c") > 0)
-        happy.calibrate();
-
-    Waveform sinwave(Waveform::Sin, seconds(2), 30.0);
+    if (input.count("c") > 0) {
+        hp.calibrate();
+        return 0.0;
+    }
 
     // create control loop timer
-    Timer timer(hertz(1000), Timer::Hybrid);
-    
+    Timer timer(hertz(2000));    
 
-    Butterworth buttpos(2, hertz(10), timer.get_frequency());
-    Butterworth buttvel(4, hertz(5), timer.get_frequency());
+    // Butterworth filters for position and velocity
+    Butterworth buttpos(4, hertz(25), timer.get_frequency());
+    Butterworth buttvel(4, hertz(25), timer.get_frequency());
+    Butterworth buttorq(2, hertz(10), timer.get_frequency());
+    double filtered_pos, filtered_vel, filtered_torque;
+
+    // torque 
+    double torque;
 
     // enter control loop
     prompt("Press ENTER to start control loop");
+    timer.restart();
     while (!stop) {
+
+        // update hardware
         q8.update_input();
-        happy[0].get_velocity_sensor<VirtualVelocitySensor>().update();
+        hp[0].get_velocity_sensor<VirtualVelocitySensor>().update();
+        
+        // read from MELScope
         from_ms_data = from_ms.read_data();
-        to_ms_data[0] = happy[0].get_position() * RAD2DEG;
-        to_ms_data[1] = buttpos.update(happy[0].get_position()) * RAD2DEG;
-        to_ms_data[2] = happy[0].get_velocity() * RAD2DEG;
-        to_ms_data[3] = buttvel.update(happy[0].get_velocity()) * RAD2DEG;
 
-        double x_ref = sinwave.evaluate(timer.get_elapsed_time()) * DEG2RAD;
-        double torque = pd.calculate(x_ref, happy[0].get_position(), 0, happy[0].get_velocity());
+        // filter position and velocity
+        filtered_pos = buttpos.update(hp[0].get_position());
+        filtered_vel = buttvel.update(hp[0].get_velocity());
 
-        //double torque = from_ms_data[0] * mel::tanh(10.0 * buttvel.update(happy[0].get_velocity()));
+        // compute torque
+        if (input.count("t") > 0)
+            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time());
+        else if (input.count("w") > 0)
+            torque = wall(hp[0].get_position(), filtered_vel);
+        else if (input.count("n") > 0)
+            torque = notches(hp[0].get_position(), filtered_vel);
+        else if (input.count("p") > 0) 
+            torque = buttorq.update(pendulum(filtered_pos, filtered_vel, timer.get_elapsed_time_ideal()));
+        else
+            torque = 0;
 
-        happy[0].set_torque(torque);
+        // set torque
+        hp[0].set_torque(torque);
 
+        // write to MELScope
+        to_ms_data[0] = hp[0].get_position() * RAD2DEG;
+        to_ms_data[1] = filtered_pos * RAD2DEG;
+        to_ms_data[2] = torque;
+        to_ms_data[3] = filtered_vel * RAD2DEG;
         to_ms.write_data(to_ms_data);
+
+        // check limits
+        if (hp.any_position_limit_exceeded() ||
+            hp.any_torque_limit_exceeded() ||
+            mel::abs(filtered_vel) > 500 * DEG2RAD)
+        {
+            LOG(Fatal) << "Haptic Paddle safety limit exceeded";
+            stop = true;
+        }
+
+        // update hardware output
         q8.update_output();
+
+        // wait timer
         timer.wait();
     }
 
