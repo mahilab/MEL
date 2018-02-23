@@ -1,4 +1,5 @@
-#include "MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp"
+#include <MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp>
+#include <MEL/Utility/Console.hpp>
 
 namespace mel {
 
@@ -17,7 +18,7 @@ MahiExoIIEmg::MahiExoIIEmg(MeiiConfiguration configuration, MeiiParameters param
 }
 
 void MahiExoIIEmg::update_emg() {
-    for (size_t i = 0; i < emg_channel_count_; ++i) {
+    for (std::size_t i = 0; i < emg_channel_count_; ++i) {
         emg_electrodes_[i].update();
         mes_raw_[i] = emg_electrodes_[i].get_mes_raw();
         mes_demean_[i] = emg_electrodes_[i].get_mes_demean();
@@ -38,38 +39,48 @@ void MahiExoIIEmg::update_emg() {
     //}
 }
 
-const std::vector<double>& MahiExoIIEmg::get_mes_raw() const {
+std::vector<double> MahiExoIIEmg::get_mes_raw() const {
     return mes_raw_;
 }
 
-const std::vector<double>& MahiExoIIEmg::get_mes_demean() const {
+std::vector<double> MahiExoIIEmg::get_mes_demean() const {
     return mes_demean_;
 }
 
-const std::vector<double>& MahiExoIIEmg::get_mes_env() const {
+std::vector<double> MahiExoIIEmg::get_mes_env() const {
     return mes_envelope_;
 }
 
-const std::vector<double>& MahiExoIIEmg::get_mes_tkeo_env() const {
+std::vector<double> MahiExoIIEmg::get_mes_tkeo_env() const {
     return mes_tkeo_envelope_;
 }
 
-size_t MahiExoIIEmg::get_emg_channel_count() const {
+std::size_t MahiExoIIEmg::get_emg_channel_count() const {
     return emg_channel_count_;
 }
 
-const std::vector<uint32>& MahiExoIIEmg::get_emg_channel_numbers() const {
+std::vector<uint32> MahiExoIIEmg::get_emg_channel_numbers() const {
     return emg_channel_numbers_;
 }
 
+void MahiExoIIEmg::resize_mes_buffer(std::size_t capacity) {
+    for (std::size_t i = 0; i < emg_channel_count_; ++i) {
+        emg_electrodes_[i].resize_mes_buffer(capacity);
+    }
+}
+
+void MahiExoIIEmg::reset_emg_signal_processing() {
+    for (std::size_t i = 0; i < emg_channel_count_; ++i) {
+        emg_electrodes_[i].reset_signal_processing();
+    }
+}
 
 
-
-MahiExoIIEmg::EmgDataBuffer::EmgDataBuffer(size_t num_channels, size_t length) :
+MahiExoIIEmg::EmgDataBuffer::EmgDataBuffer(std::size_t num_channels, std::size_t length) :
     num_channels_(num_channels),
     length_(length)
 {
-    for (size_t i = 0; i < num_channels_; ++i) {
+    for (std::size_t i = 0; i < num_channels_; ++i) {
         data_buffer_.push_back(RingBuffer<double>(length_));
     }
 }

@@ -9,12 +9,16 @@ EmgElectrode::EmgElectrode( AnalogInput::Channel ai_channel) :
     mes_demean_(0.0),
     mes_envelope_(0.0),
     mes_tkeo_envelope_(0.0),
+    mes_buffer_capacity_(200),
     mes_demean_buffer_(mes_buffer_capacity_),
     mes_demean_window_(mes_buffer_capacity_),
-    all_feautures_count_(rms_feautures_count_ + hudgins_td_feautures_count_ + ar_feautures_count_),
-    rms_features_(rms_feautures_count_, 0.0),
-    hudgins_td_features_(hudgins_td_feautures_count_, 0.0),
-    ar_features_(ar_feautures_count_, 0.0),
+    rms_features_count_(1),
+    hudgins_td_features_count_(4),
+    ar_features_count_(4),
+    all_features_count_(rms_features_count_ + hudgins_td_features_count_ + ar_features_count_),
+    rms_features_(rms_features_count_, 0.0),
+    hudgins_td_features_(hudgins_td_features_count_, 0.0),
+    ar_features_(ar_features_count_, 0.0),
     hp_filter_({ 0.814254556886246, -3.257018227544984, 4.885527341317476, -3.257018227544984, 0.814254556886246 }, { 1.000000000000000, -3.589733887112175, 4.851275882519415, -2.924052656162457, 0.663010484385890 }), // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
     lp_filter_({ 0.058451424277128e-6, 0.233805697108513e-6, 0.350708545662770e-6, 0.233805697108513e-6, 0.058451424277128e-6 }, { 1.000000000000000, -3.917907865391990, 5.757076379118074, -3.760349507694534, 0.921181929191239 }), // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
     tkeo_lp_filter_({ 0.058451424277128e-6, 0.233805697108513e-6, 0.350708545662770e-6, 0.233805697108513e-6, 0.058451424277128e-6 }, { 1.000000000000000, -3.917907865391990, 5.757076379118074, -3.760349507694534, 0.921181929191239 }) // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
@@ -30,6 +34,27 @@ void EmgElectrode::update() {
 void EmgElectrode::update_and_buffer() {
     update();
     push_mes_buffer();
+}
+
+void EmgElectrode::clear_mes_buffer() {
+    mes_demean_buffer_.clear();
+}
+
+void EmgElectrode::resize_mes_buffer(std::size_t capacity) {
+    mes_demean_buffer_.resize(capacity);
+}
+
+bool EmgElectrode::is_buffer_full() {
+    return mes_demean_buffer_.full();
+}
+
+void EmgElectrode::reset_signal_processing() {
+    hp_filter_.reset();
+    rect_.reset();
+    lp_filter_.reset();
+    tkeo_.reset();
+    tkeo_rect_.reset();
+    tkeo_lp_filter_.reset();
 }
 
 double EmgElectrode::get_mes_raw() const {
@@ -61,14 +86,6 @@ size_t EmgElectrode::get_mes_buffer_capacity() const {
 
 void EmgElectrode::push_mes_buffer() {
     mes_demean_buffer_.push_back(mes_demean_);
-}
-
-void EmgElectrode::clear_mes_buffer() {
-    mes_demean_buffer_.clear();
-}
-
-bool EmgElectrode::is_buffer_full() {
-    return mes_demean_buffer_.full();
 }
 
 void EmgElectrode::compute_all_features() {
@@ -125,7 +142,7 @@ void EmgElectrode::compute_ar_features() {
 }
 
 std::vector<double> EmgElectrode::get_all_features() const {
-    std::vector<double> all_features(all_feautures_count_);
+    std::vector<double> all_features(all_features_count_);
     auto it = std::copy(rms_features_.begin(), rms_features_.end(), all_features.begin());
     it = std::copy(hudgins_td_features_.begin(), hudgins_td_features_.end(), it);
     it = std::copy(ar_features_.begin(), ar_features_.end(), it);
@@ -144,20 +161,20 @@ std::vector<double> EmgElectrode::get_ar_features() const {
     return ar_features_;
 }
 
-size_t EmgElectrode::get_all_feautures_count() const {
-    return all_feautures_count_;
+size_t EmgElectrode::get_all_features_count() const {
+    return all_features_count_;
 }
 
-size_t EmgElectrode::get_rms_feautures_count() const {
-    return rms_feautures_count_;
+size_t EmgElectrode::get_rms_features_count() const {
+    return rms_features_count_;
 }
 
-size_t EmgElectrode::get_hudgins_td_feautures_count() const {
-    return hudgins_td_feautures_count_;
+size_t EmgElectrode::get_hudgins_td_features_count() const {
+    return hudgins_td_features_count_;
 }
 
-size_t EmgElectrode::get_ar_feautures_count() const {
-    return ar_feautures_count_;
+size_t EmgElectrode::get_ar_features_count() const {
+    return ar_features_count_;
 }
 
 double EmgElectrode::mean_rms(const std::vector<double>& mes_window) const {

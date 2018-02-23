@@ -5,6 +5,7 @@
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
 #include <iomanip>
+#include <MEL/Utility/Console.hpp>
 
 
 

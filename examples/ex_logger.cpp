@@ -57,9 +57,9 @@ int main(int argc, char const* argv[]) {
     LOG(Fatal) << "This is a Fatal log";      // goes to MEL.log and console
 
     // You can create your own loggers too. First you need to choose a
-    // Formatter. A Formatter is repsonsible for taking a log record and turning
-    // it into a string. There are several built in Formatters, and you can even
-    // create your own. Here, we will use the built in CsvFormatter. Once you've
+    // Formatter. A Formatter is responsible for taking a log record and turning
+    // it into a string. There are several built-in Formatters, and you can even
+    // create your own. Here, we will use the built-in CsvFormatter. Once you've
     // chosen a Formatter, you create a Writer. A Writer is responsible for
     // taking a formatted string from a Formatter and writing it in some
     // prescribed manner, either to the console, a file, memory, etc. Here we

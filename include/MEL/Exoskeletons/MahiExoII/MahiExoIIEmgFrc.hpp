@@ -1,6 +1,9 @@
-#pragma once
-#include "MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp"
-#include "MEL/Exoskeletons/MahiExoII/MahiExoIIFrc.hpp"
+
+#ifndef MEL_MAHIEXOIIEMGFRC_HPP
+#define MEL_MAHIEXOIIEMGFRC_HPP
+
+#include <MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp>
+#include <MEL/Exoskeletons/MahiExoII/MahiExoIIFrc.hpp>
 
 namespace mel {
 
@@ -18,4 +21,6 @@ namespace mel {
     };
 
 
-}
+} // namespace mel
+
+#endif // MEL_MAHIEXOIIEMGFRC_HPP

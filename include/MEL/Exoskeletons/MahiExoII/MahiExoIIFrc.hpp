@@ -1,4 +1,7 @@
-#pragma once
+
+#ifndef MEL_MAHIEXOIIFRC_HPP
+#define MEL_MAHIEXOIIFRC_HPP
+
 #include <MEL/Exoskeletons/MahiExoII/MahiExoII.hpp>
 #include <MEL/Devices/AtiMini45.hpp>
 
@@ -21,3 +24,5 @@ private:
 };
 
 } // namespace mel
+
+#endif // MEL_MAHIEXOIIFRC_HPP

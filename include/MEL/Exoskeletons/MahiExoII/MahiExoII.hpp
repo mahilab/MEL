@@ -10,6 +10,7 @@
 #include "MEL/Utility/Time.hpp"
 #include <array>
 #include <vector>
+#include <atomic>
 #include <Eigen/Dense>
 #include <Eigen/LU>
 #include <Eigen/StdVector>
@@ -208,8 +209,8 @@ private:
     std::vector<double> anat_goal_err_tol_ = { 2.0 * DEG2RAD, 3.0 * DEG2RAD, 5.0 * DEG2RAD, 5.0 * DEG2RAD, 0.01 };
     std::vector<double> anat_neutral_err_tol_ = { 1.0 * DEG2RAD, 2.0 * DEG2RAD, 3.0 * DEG2RAD, 3.0 * DEG2RAD, 0.01 };
     const std::vector<double> robot_joint_speed_ = { 0.25, 0.25, 0.015, 0.015, 0.015 };
-    const std::vector<double> anat_joint_speed_ = { 0.25, 0.75, 0.25, 0.25, 0.015 }; /// [rad/s] and [m/s] constant speed at which anatomical joint reference trajectories are interpolated
-
+    //const std::vector<double> anat_joint_speed_ = { 0.25, 0.75, 0.25, 0.25, 0.015 }; // speeds used for teleop
+    const std::vector<double> anat_joint_speed_ = { 0.25, 0.35, 0.15, 0.15, 0.015 }; /// [rad/s] and [m/s] constant speed at which anatomical joint reference trajectories are interpolated
 
     // geometric parameters
     static const double R_;
