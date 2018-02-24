@@ -39,7 +39,7 @@ If you are developing for the MAHI Exo-II, you will need to install [Eigen](http
 
 #### Python / C# (Optional)
 
-MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt. For Python installation requirements, go [here](https://github.com/epezent/MEL/tree/master/python). For C# (e.g. if using [Unity Engine](https://unity3d.com/) for visualizations), you should be able to use [Visual Studio](https://www.visualstudio.com/) or [MonoDevelop](http://www.monodevelop.com/) as is.
+MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt to build from source. For Python/MELScope installation requirements, go [here](https://github.com/epezent/MEL/tree/master/melscope). For C# (e.g. if using [Unity Engine](https://unity3d.com/) for visualizations), you should be able to use [Visual Studio](https://www.visualstudio.com/) or [MonoDevelop](http://www.monodevelop.com/) as is.
 
 ## Building MEL
 
@@ -52,16 +52,7 @@ mkdir build                                 # make a build directory for CMake
 cd build                                    # change directory to ./build
 ```
 
-At this point, you can customize MEL to suit your platform and hardware needs. MEL provides the following options when building with CMake:
-
-* `-DNI_X64=ON` adds MEL implementations for NI Intel x64 hardware (e.g. cRIO), and sets the compiler to NI's GNU/Linux cross-compiler
-* `-DNI_ARM=ON` adds MEL implementations for NI hardware (e.g. myRIO), and sets the compiler to NI's GNU/Linux cross-compiler
-* `-DQUANSER=ON` adds MEL implementations for Quanser hardware (Q8 USB, Q2 USB, etc.) and statically links MEL to QUARC
-* `-DOPENWRIST=ON` adds OpenWrist classes to MEL
-* `-DMAHIEXOII=ON` adds MAHI Exo-II classes to MEL and includes Eigen as a dependency
-* `-DEXAMPLES=ON` builds all MEL example executables which are compatible with the platform, compiler, and any of the options above which are specified
-
-Here are a few examples:
+At this point, you can customize your MEL build to suit your platform and hardware needs. Here are a few examples using CMake:
 
 #### Example 1: Basic MEL Library
 ```shell
@@ -81,6 +72,17 @@ The first line generates Ninja build files for MEL with NI hardware and OpenWris
 cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON -DMAHIEXOII=ON
 ```
 This generates a `.sln` file for MEL with Quanser hardware and MAHI Exo-II classes. The `.sln` can then be opened and compiled with Visual Studio, or built from an MSVC Developer Command Prompt using the command `msbuild MEL.sln`.
+
+#### CMake Options
+
+MEL provides the following options when building with CMake:
+
+* `-DNI_X64=ON` adds MEL implementations for NI Intel x64 hardware (e.g. cRIO), and sets the compiler to NI's GNU/Linux cross-compiler
+* `-DNI_ARM=ON` adds MEL implementations for NI hardware (e.g. myRIO), and sets the compiler to NI's GNU/Linux cross-compiler
+* `-DQUANSER=ON` adds MEL implementations for Quanser hardware (Q8 USB, Q2 USB, etc.) and statically links MEL to QUARC
+* `-DOPENWRIST=ON` adds OpenWrist classes to MEL
+* `-DMAHIEXOII=ON` adds MAHI Exo-II classes to MEL and includes Eigen as a dependency
+* `-DEXAMPLES=ON` builds all MEL example executables which are compatible with the platform, compiler, and any of the options above which are specified
 
 ## Creating Projects for MEL
 
