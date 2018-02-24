@@ -76,7 +76,7 @@ DEFAULT_CURVE_WIDTH = 2
 myappid = 'MELScope'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 application = QtGui.QApplication([])
-application.setWindowIcon(QtGui.QIcon("melscope_icon.png"))
+application.setWindowIcon(QtGui.QIcon("melscope_icon.ico"))
 
 main_window = QtGui.QMainWindow()
 main_window.setWindowTitle('MEL Scope (untitled)')
