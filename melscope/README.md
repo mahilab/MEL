@@ -6,14 +6,6 @@
 
 - [Evan Pezent](http://evanpezent.com) (epezent@rice.edu)
 
-## Table of Contents
-
-1. [About](#about)
-2. [Installation (Windows 64-bit)](#installation-windows-64-bit)
-    - [Python 2.7 (Optional)](#python-27--numpy--pyqt4--pyqtgraph)
-    - [Sublime Text 3 (Optional)](#sublime-text-3-optional)
-3. [Building MELScope](#building-melscope)
-
 ## About
 
 MELScope is a real-time signal plotting GUI for MEL. It communicates with MEL driven applications through the **MELShare** shared memory communication framework. Using MELScope is simple: First, you create MELShare map(s) storing a vector of doubles in your C++ MEL application to which you write updated values at some specific rate (typically this happens in your control loop). Next, in MELScope you add these MELShare maps by their string name. MELScope will then begin to plot whatever values are stored on the MELShare maps.
