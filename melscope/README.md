@@ -62,16 +62,16 @@ If you'd rather have the flexibility of running MELScope from the Python interpr
 
 9. Create a new Python script called **test.py** and paste the following code. Run the script to test PyQt4 + PyQtGraph. Play around with each test example, particularly the benchmarks, to ensure everything is working properly.
 
-    ```python
-    import pyqtgraph.examples
-    pyqtgraph.examples.run()
-    ```
+  ```python
+  import pyqtgraph.examples
+  pyqtgraph.examples.run()
+  ```
 
   10. If you want to build MELScope as a executable yourself, use the following command in the command prompt (assuming you installed **pyinstaller**):
 
-    ```
-    pyinstaller --noconsole --icon=melscope_icon.ico --clean MELScope.pyw
-    ```
+  ```
+  pyinstaller --noconsole --icon=melscope_icon.ico --clean MELScope.pyw
+  ```
 
 **NOTE:** The newer Python 3.6 and PyQt5 have been tested and were found to be less stable and slower than the more mature Python 2.7 + PyQt4 pairing when used with PyQtGraph. You may choose to install Python 3.6 and PyQt5 (or any combination of the two, really) but note that the installation procedure will differ slightly (specifically when downloading wheels/binaries and building PyOpenGl_accelerate).
 
