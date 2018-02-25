@@ -110,7 +110,7 @@
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "MELScope",
 			"shell_cmd": "python MelScope.pyw",
-			"working_dir": "$project_path/../melscope"
+			"working_dir": "$project_path/../src/MELScope"
 		},
 		{
 			"name": "PuTTY",
