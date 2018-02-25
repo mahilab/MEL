@@ -12,10 +12,6 @@ MELScope is a real-time signal plotting GUI for MEL. It communicates with MEL dr
 
 You can add as many MELShare maps to MELScope as you like. You also have the option of expanding the number of scope widgets, and adding I/O widgets which allow you to receive and send values back to your C++ application (for example, you may use this as an online **controller tunning** mechanism). Using a data matrix selector, you can even name and customize which data is displayed on each widget. You can also change **colors, line styles, ranges, legends and more**. Finally, once you have your MELScope configured the way you like it, you can **save your configuration** for opening later.
 
-A example demonstrating MELShare/MELScope usage can be found in the [Examples](https://github.com/epezent/MEL/tree/master/Examples) project, and corresponds with the saved MELScope configuration **examples.scope** in this directory (see above).
-
-**Note:** MELScope will **NOT** run without the accompanying **MELShare.dll** file. Either download the precompiled version in this directory, or [build it yourself](https://github.com/epezent/MEL/tree/master/MELShareDLL).
-
 ## Installation (Standalone)
 
 The easiest way to use MELScope is to simply download and extract the latest  prebuilt binaries from the provided `.zip` archive on the Releases page. Just run `MELScope.exe` and you're good to go!
