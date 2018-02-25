@@ -1,6 +1,6 @@
 # MELScope
 
-![MELScope](https://github.com/epezent/MEL/blob/master/melscope/melscope_screen.png)
+![MELScope](https://github.com/epezent/MEL/blob/master/src/MELScope/melscope_screen.png)
 
 ## Developers
 
