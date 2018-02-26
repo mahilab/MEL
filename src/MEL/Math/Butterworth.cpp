@@ -21,7 +21,7 @@ std::vector<std::complex<double>> butt_poles(std::size_t n) {
     return poles;
 }
 
-// returns the coefficients of the polynomial whose roots are the elements of r
+/// returns the coefficients of the polynomial whose roots are the elements of r
 template <class T>
 std::vector<T> poly(std::vector<T> poles) {
     std::size_t n = poles.size();
@@ -84,18 +84,16 @@ std::vector<double> compute_b(std::size_t n,
     return b;
 }
 
-Butterworth::Butterworth(std::size_t n, double Wn, Type type) : Filter(n) {
+Butterworth::Butterworth(std::size_t n, double Wn, Type type, uint32 seeding) : Filter(n, seeding) {
     a_ = compute_a(n_, Wn);
     b_ = compute_b(n_, a_, type);
 }
 
-Butterworth::Butterworth(std::size_t n,
-                         Frequency cutoff,
-                         Frequency sample,
-                         Type type)
+Butterworth::Butterworth(std::size_t n, Frequency cutoff, Frequency sample, Type type, uint32 seeding)
     : Butterworth(n,
                   2.0 * static_cast<double>(cutoff.as_hertz()) /
-                      static_cast<double>(sample.as_hertz()),
-                  type) {}
+                        static_cast<double>(sample.as_hertz()),
+                  type,
+                  seeding) {}
 
 }  // namespace mel
