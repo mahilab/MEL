@@ -76,10 +76,10 @@ DEFAULT_CURVE_WIDTH = 2
 myappid = 'MELScope'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 application = QtGui.QApplication([])
-application.setWindowIcon(QtGui.QIcon("melscope_icon.png"))
+application.setWindowIcon(QtGui.QIcon("melscope_icon.ico"))
 
 main_window = QtGui.QMainWindow()
-main_window.setWindowTitle('MEL Scope (untitled)')
+main_window.setWindowTitle('MELScope (untitled)')
 
 main_widget = QtGui.QWidget()
 main_window.setCentralWidget(main_widget)
@@ -142,7 +142,7 @@ GRID_SIZE_OPTIONS = [(r + 1, c + 1) for r in range(MAX_GRID_ROWS) for c in range
 GRID_SIZE_OPTIONS_DISPLAY = [str(x[0]) + ' x ' + str(x[1]) for x in GRID_SIZE_OPTIONS]
 GRID_SIZE_OPTIONS_DICT = dict(zip(GRID_SIZE_OPTIONS_DISPLAY, GRID_SIZE_OPTIONS))
 
-DATA_TYPE_OPTIONS = ['MEL Share', 'MEL Net']
+DATA_TYPE_OPTIONS = ['MELShare', 'MELNet']
 DATA_MODE_OPTIONS = ['Read Only', 'Write Only']
 
 SCOPE_MODE_OPTIONS = ['Plot', 'Numeric']
@@ -341,7 +341,7 @@ class ScopeModule(QtGui.QTabWidget):  # or QtGui.QGroupBox or QTabWidget
         self.time_ticks = [[(-t, t) for t in range(SAMPLE_DURATION + 1)]]
         self.time_ticks[0][0] = (0, '0  ')
         # various object handles
-        self.plot_widget = pyqtgraph.PlotWidget(name='MEL Scope')
+        self.plot_widget = pyqtgraph.PlotWidget(name='MELScope')
         self.axis_left = self.plot_widget.getAxis('left')
         self.axis_bottom = self.plot_widget.getAxis('bottom')
         self.plot_item = self.plot_widget.getPlotItem()
@@ -653,7 +653,7 @@ def open_new_instance():
 def open():
     global filepath
     filepath = QtGui.QFileDialog.getOpenFileName(
-        main_widget, 'Open MEL Scope', "", 'Scope Files (*.scope *.yaml)')
+        main_widget, 'Open MELScope', "", 'Scope Files (*.scope *.yaml)')
     if filepath:
         stream = file(filepath, 'r')
         config = yaml.load(stream)
@@ -667,7 +667,7 @@ def open():
         filename = str(filepath[str(filepath).rfind('/') + 1:])
         filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Opened <' + filename + '>')
-        main_window.setWindowTitle('MEL Scope (' + filename + ')')
+        main_window.setWindowTitle('MELScope (' + filename + ')')
 
 
 def save():
@@ -679,14 +679,14 @@ def save():
         filename = str(filepath[str(filepath).rfind('/') + 1:])
         filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Saved <' + filename + '>')
-        main_window.setWindowTitle('MEL Scope (' + filename + ')')
+        main_window.setWindowTitle('MELScope (' + filename + ')')
     else:
         save_as()
 
 
 def save_as():
     global filepath
-    new_filepath = QtGui.QFileDialog.getSaveFileName(main_widget, 'Save MEL Scope', "", 'Scope Files (*.scope *.yaml)')
+    new_filepath = QtGui.QFileDialog.getSaveFileName(main_widget, 'Save MELScope', "", 'Scope Files (*.scope *.yaml)')
     if new_filepath:
         filepath = new_filepath
         save()
@@ -754,11 +754,11 @@ def generate_config():
 class AddMelShareDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(AddMelShareDialog, self).__init__(parent)
-        self.setWindowTitle('Add MEL Share')
+        self.setWindowTitle('Add MELShare')
         self.layout = QtGui.QGridLayout(self)
 
         self.name_label = QtGui.QLabel(self)
-        self.name_label.setText("MEL Share Name")
+        self.name_label.setText("MELShare Name")
         self.name_label.setFont(BOLD_FONT)
         self.layout.addWidget(self.name_label, 0, 0)
 
@@ -796,7 +796,7 @@ class AddMelShareDialog(QtGui.QDialog):
 class AddMelNetDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(AddMelNetDialog, self).__init__(parent)
-        self.setWindowTitle('Add MEL Net')
+        self.setWindowTitle('Add MELNet')
         self.layout = QtGui.QGridLayout(self)
 
         self.local_port_label = QtGui.QLabel(self)
@@ -1164,7 +1164,7 @@ class AboutDialog(QtGui.QDialog):
         layout = QtGui.QGridLayout(self)
 
         title = QtGui.QLabel(self)
-        title.setText("MEL Scope v" + VER)
+        title.setText("MELScope v" + VER)
         title_font = QtGui.QFont()
         title_font.setBold(True)
         title_font.setPointSize(12)
@@ -1320,35 +1320,35 @@ pref_menu = menu_bar.addMenu('&Preferences')
 help_menu = menu_bar.addMenu('&Help')
 
 new_action = QtGui.QAction('&New', main_window,
-                           shortcut='Ctrl+N', statusTip='Create a MEL Scope', triggered=open_new_instance)
+                           shortcut='Ctrl+N', statusTip='Create a MELScope', triggered=open_new_instance)
 file_menu.addAction(new_action)
 
 open_action = QtGui.QAction('&Open...', main_window,
-                            shortcut='Ctrl+O', statusTip='Open an existing MEL Scope', triggered=open)
+                            shortcut='Ctrl+O', statusTip='Open an existing MELScope', triggered=open)
 file_menu.addAction(open_action)
 
 save_action = QtGui.QAction('&Save', main_window,
-                            shortcut='Ctrl+S', statusTip='Save this MEL Scope', triggered=save)
+                            shortcut='Ctrl+S', statusTip='Save this MELScope', triggered=save)
 file_menu.addAction(save_action)
 
 save_as_action = QtGui.QAction('Save &As...', main_window,
-                               shortcut='Ctrl+Shift+S', statusTip='Save this MEL Scope under a new name', triggered=save_as)
+                               shortcut='Ctrl+Shift+S', statusTip='Save this MELScope under a new name', triggered=save_as)
 file_menu.addAction(save_as_action)
 
 reload_action = QtGui.QAction('&Reload', main_window,
-                              shortcut='R', statusTip='Reload the MEL Scope', triggered=reload_data_sources)
+                              shortcut='R', statusTip='Reload the MELScope', triggered=reload_data_sources)
 action_menu.addAction(reload_action)
 
 pause_action = QtGui.QAction('&Pause', main_window,
-    shortcut='P',statusTip='Pause the MEL Scope', triggered=switch_pause)
+    shortcut='P',statusTip='Pause the MELScope', triggered=switch_pause)
 action_menu.addAction(pause_action)
 
-add_melshare_action = QtGui.QAction('&Add MEL Share...', main_window,
-                               shortcut='Ctrl+A', statusTip='Add a MEL Share data source', triggered=prompt_add_melshare)
+add_melshare_action = QtGui.QAction('&Add MELShare...', main_window,
+                               shortcut='Ctrl+A', statusTip='Add a MELShare data source', triggered=prompt_add_melshare)
 edit_menu.addAction(add_melshare_action)
 
-add_melnet_action = QtGui.QAction('Add &MEL Net...', main_window,
-                               shortcut='Ctrl+Shift+A', statusTip='Add a MEL Net data source', triggered=prompt_add_melnet)
+add_melnet_action = QtGui.QAction('Add &MELNet...', main_window,
+                               shortcut='Ctrl+Shift+A', statusTip='Add a MELNet data source', triggered=prompt_add_melnet)
 edit_menu.addAction(add_melnet_action)
 
 remove_action = QtGui.QAction('&Remove Data Source...', main_window,
@@ -1372,7 +1372,7 @@ theme_action = QtGui.QAction('&Theme...', main_window,
 pref_menu.addAction(theme_action)
 
 about_action = QtGui.QAction('&About', main_window,
-                             shortcut='F11', statusTip='About MEL Scope', triggered=about)
+                             shortcut='F11', statusTip='About MELScope', triggered=about)
 help_menu.addAction(about_action)
 
 github_action = QtGui.QAction('&GitHub...', main_window,
@@ -1426,7 +1426,7 @@ for i in range (QtGui.QColorDialog.customCount()):
 
 set_theme()
 reload_grid()
-status_bar.showMessage('Welcome to MEL Scope!')
+status_bar.showMessage('Welcome to MELScope!')
 
 def sample_loop():
     global write_flag

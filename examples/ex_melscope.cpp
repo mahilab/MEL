@@ -1,11 +1,11 @@
 #include <MEL/Communications/MelNet.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Clock.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Timer.hpp>
-#include <MEL/Logging/Log.hpp>
 #ifdef _WIN32
 #include <MEL/Communications/Windows/MelShare.hpp>
 #endif
@@ -22,12 +22,12 @@ bool handler(CtrlEvent event) {
 }
 
 int main(int argc, char* argv[]) {
-    Options options("melscope.exe", "MEL Scope Demo");
+    Options options("melscope.exe", "MELScope Demo");
     options.add_options()("r", "Remote Address", value<std::string>());
-    auto result = options.parse(argc, argv);
-    std::string remote_address;
+    auto result              = options.parse(argc, argv);
+    IpAddress remote_address = IpAddress::get_local_address();
     if (result.count("r") > 0)
-        remote_address = result["r"].as<std::string>();
+        remote_address = IpAddress(result["r"].as<std::string>());
 
     // register CTRL-C handler
     register_ctrl_handler(handler);
@@ -35,11 +35,14 @@ int main(int argc, char* argv[]) {
     init_logger();
 
     // make MelNet
-    MelNet mn(55001, 55002, IpAddress(remote_address), false);
+    MelNet mn(55001, 55002, remote_address, false);
+    print("MELNet: (lp:55002, rp:55001, ra:" + remote_address.to_string() +
+          ")");
 
 #ifdef _WIN32
     // make MelShare (Windows only, and prefered over MelNet)
-    MelShare ms("melscope1");
+    MelShare ms("melscope");
+    print("MELShare: \"melscope\"");
 #endif
 
     // create data buffers so we don't have to make them in each loop iteration
@@ -63,14 +66,14 @@ int main(int argc, char* argv[]) {
         data_mn[0] = tri_wave.evaluate(timer.get_elapsed_time());
         data_mn[1] = saw_wave.evaluate(timer.get_elapsed_time());
 
-#ifdef _WIN32
-        // write waveform data
-        ms.write_data(data_ms);
-#endif
-
         // update MelNet
         if (mn.check_request())
             mn.send_data(data_mn);
+
+#ifdef _WIN32
+        // update MelShare
+        ms.write_data(data_ms);
+#endif
 
         timer.wait();
     }
