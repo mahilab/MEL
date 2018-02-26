@@ -1,13 +1,12 @@
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
 #include <MEL/Exoskeletons/MahiExoII/MahiExoIIEmg.hpp>
-#include <MEL/Core/EmgElectrode.hpp>
 #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
+#include <MEL/Utility/Clock.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Logging/DataLogger.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/RingBuffer.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Logging/Log.hpp>
@@ -148,8 +147,12 @@ int main(int argc, char *argv[]) {
         // initialize controller
         meii.set_rps_control_mode(0);
 
-        // construct timer in hybrid mode to avoid using %100 CPU
+        // construct timer in hybrid mode to avoid using 100% CPU
         Timer timer(milliseconds(1), Timer::Hybrid);
+
+        // construct clock to regulate feature computation
+        Clock feature_refract_clock;
+        Time feature_refract_time = seconds(1);
 
         // start while loop
         q8.watchdog.start();

@@ -69,6 +69,15 @@ void MahiExoIIEmg::resize_mes_buffer(std::size_t capacity) {
     }
 }
 
+bool MahiExoIIEmg::is_mes_buffer_full() {
+    bool buffer_full = true;
+    for (std::size_t i = 0; i < emg_channel_count_; ++i) {
+        if (!emg_electrodes_[i].is_buffer_full())
+            buffer_full = false;
+    }
+    return buffer_full;
+}
+
 void MahiExoIIEmg::reset_emg_signal_processing() {
     for (std::size_t i = 0; i < emg_channel_count_; ++i) {
         emg_electrodes_[i].reset_signal_processing();

@@ -8,6 +8,7 @@
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Core/EmgElectrode.hpp>
 #include <MEL/Logging/DataLogger.hpp>
+#include <MEL/Math/Functions.hpp>
 #include <vector>
 #include <sstream>
 
@@ -56,44 +57,45 @@ int main(int argc, char *argv[]) {
     // make Q8 USB and configure
     Q8Usb q8(QOptions(), true, true, emg_channel_numbers);
     emg_channel_numbers = q8.analog_input.get_channel_numbers();
-    std::size_t N_emg = q8.analog_input.get_channel_count(); // number of EMG channels
+    std::size_t emg_channel_count = q8.analog_input.get_channel_count(); // number of EMG channels
     q8.digital_output.set_enable_values(std::vector<Logic>(8, High)); // set this way for MEII
     q8.digital_output.set_disable_values(std::vector<Logic>(8, High)); // set this way for MEII
     q8.digital_output.set_expire_values(std::vector<Logic>(8, High)); // set this way for MEII
 
     // make EMG Electrodes
+    size_t mes_buffer_size = 500;
+    size_t mes_feature_window_size = 200;
     std::vector<EmgElectrode> emg_electrodes;
-    for (size_t i = 0; i < N_emg; ++i) {
+    for (size_t i = 0; i < emg_channel_count; ++i) {
         emg_electrodes.emplace_back(q8.analog_input[emg_channel_numbers[i]]);
+        emg_electrodes[i].resize_mes_buffer(mes_buffer_size);
     }
 
     // create data logger for MES data
     DataLogger emg_data_logger(WriterType::Buffered, false);
     std::vector<std::string> emg_data_header;
-    for (int i = 0; i < N_emg; ++i) {
-        emg_data_header.push_back("MES " + stringify(emg_channel_numbers[i]));
+    for (int i = 0; i < emg_channel_count; ++i) {
+        emg_data_header.push_back("MES RAW " + stringify(emg_channel_numbers[i]));
+    }
+    for (int i = 0; i < emg_channel_count; ++i) {
+        emg_data_header.push_back("MES DM " + stringify(emg_channel_numbers[i]));
+    }
+    for (int i = 0; i < emg_channel_count; ++i) {
+        emg_data_header.push_back("MES ENV " + stringify(emg_channel_numbers[i]));
+    }
+    for (int i = 0; i < emg_channel_count; ++i) {
+        emg_data_header.push_back("MES TKEO ENV " + stringify(emg_channel_numbers[i]));
     }
     emg_data_logger.set_header(emg_data_header);
 
-    //// create data logger for MES feature window
-    //DataLogger emg_feature_logger(WriterType::Buffered, false);
-    //std::vector<std::string> emg_feature_header;
-    //for (int i = 0; i < N_emg; ++i) {
-    //    emg_feature_header.push_back("MES " + stringify(emg_channel_numbers[i]));
-    //}
-    //emg_feature_logger.set_header(emg_feature_header);
     
     // create local variables
-    std::vector<double> mes_raw(N_emg);
-    std::vector<double> mes_demean(N_emg);
-    std::vector<double> mes_env(N_emg);
-    std::vector<double> mes_tkeo_env(N_emg);
-    //size_t N_features = emg_electrodes[0].get_all_feautures_count();
-    //std::vector<double> mes_all_features_row(N_features);
-    //std::vector<std::vector<double>> mes_all_features(N_emg);
-    //std::vector<double> mes_window_col(emg_electrodes[0].get_mes_buffer_capacity());
-    //std::vector<std::vector<double>> mes_window(N_emg);
-    std::vector<double> mes_log_row(N_emg, 0.0);
+    std::vector<double> mes_raw(emg_channel_count);
+    std::vector<double> mes_demean(emg_channel_count);
+    std::vector<double> mes_env(emg_channel_count);
+    std::vector<double> mes_tkeo_env(emg_channel_count);
+    std::vector<double> mes_tkeo_env_mean(emg_channel_count);
+    std::vector<double> mes_log_row(4 * emg_channel_count);
     bool mes_buffers_full = false;
 
     // write to MelShares
@@ -125,7 +127,7 @@ int main(int argc, char *argv[]) {
         q8.update_input();
 
         // run signal processing on MES
-        for (size_t i = 0; i < N_emg; ++i) {
+        for (size_t i = 0; i < emg_channel_count; ++i) {
             emg_electrodes[i].update_and_buffer();
             mes_raw[i] = emg_electrodes[i].get_mes_raw();
             mes_demean[i] = emg_electrodes[i].get_mes_demean();
@@ -140,30 +142,28 @@ int main(int argc, char *argv[]) {
         ms_mes_tkeo_env.write_data(mes_tkeo_env);
 
         // store data to data logger
-        emg_data_logger.buffer(mes_env);
+        auto it = std::copy(mes_raw.begin(), mes_raw.end(), mes_log_row.begin());
+        it = std::copy(mes_demean.begin(), mes_demean.end(), it);
+        it = std::copy(mes_env.begin(), mes_env.end(), it);
+        std::copy(mes_tkeo_env.begin(), mes_tkeo_env.end(), it);
+        emg_data_logger.buffer(mes_log_row);
         
         if (Keyboard::is_key_pressed(Key::Enter)) {
             mes_buffers_full = true;
-            for (size_t i = 0; i < N_emg; ++i) {
+            for (size_t i = 0; i < emg_channel_count; ++i) {
                 if (!emg_electrodes[i].is_buffer_full())
                     mes_buffers_full = false;
             }
             if (mes_buffers_full) {
                 if (feature_refract_clock.get_elapsed_time() > feature_refract_time) {
-                    for (size_t i = 0; i < N_emg; ++i) {
-                        emg_electrodes[i].compute_all_features();
+                    for (size_t i = 0; i < emg_channel_count; ++i) {
+                        print(timer.get_elapsed_time_ideal().as_milliseconds());
+                        emg_electrodes[i].compute_all_features(mes_feature_window_size);
                         print(emg_electrodes[i].get_all_features());
-                        //mes_window_col = emg_electrodes[i].get_mes_buffer_data();
-                        //mes_window[i] = mes_window_col;      
+                        mes_tkeo_env_mean[i] = mean(emg_electrodes[i].get_mes_tkeo_env_buffer_data(mes_buffer_size));
+                        print(mes_tkeo_env_mean[i]);
                     }
                     feature_refract_clock.restart();
-                    //for (size_t j = 0; j < emg_electrodes[0].get_mes_buffer_capacity(); ++j) {
-                    //    for (size_t i = 0; i < N_emg; ++i) {
-                    //        mes_log_row[i] = mes_window[i][j];
-                    //    }
-                    //    //emg_data_logger.buffer(mes_log_row);
-                    //    //emg_log.add_row({ mes_log_row[0], mes_log_row[1], mes_log_row[2], mes_log_row[3], mes_log_row[4], mes_log_row[5], mes_log_row[6], mes_log_row[7] });
-                    //}
                 }
             }
         }
@@ -187,16 +187,10 @@ int main(int argc, char *argv[]) {
         emg_data_logger.wait_for_save();
         sleep(seconds(0.5));
     }
-
-    //print("Do you want to save the EMG FEATURE LOG? (Y/N)");
-    //key = Keyboard::wait_for_any_keys({ Key::Y, Key::N });
-    //if (key == Key::Y) {
-    //    emg_feature_logger.save_data("example_emg_feature_log", ".", false);
-    //    emg_feature_logger.wait_for_save();
-    //    sleep(seconds(1));
-    //}
+    
 
     disable_realtime();
+
     return 0;
 }
 

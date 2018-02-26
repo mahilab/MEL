@@ -18,8 +18,9 @@
 #ifndef MEL_EMGELECTRODE_HPP
 #define MEL_EMGELECTRODE_HPP
 
+#include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Input.hpp>
-#include <MEL/Math/Filter.hpp>
+#include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Rectifier.hpp>
 #include <MEL/Math/TeagerKaiserEnergyOperator.hpp>
 #include <MEL/Utility/RingBuffer.hpp>
@@ -31,12 +32,12 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class EmgElectrode {
+class EmgElectrode : public Device {
 
 public:
 
     /// Constructor
-    EmgElectrode( AnalogInput::Channel ai_channel);
+    EmgElectrode( AnalogInput::Channel ai_channel, std::size_t mes_buffer_capacity = 200);
 
     /// Default destructor
     ~EmgElectrode() {};
@@ -71,23 +72,29 @@ public:
     /// Get processed MES using TKEO
     double get_mes_tkeo_envelope() const;
 
-    /// Get the current contents of the MES buffer
-    std::vector<double> get_mes_buffer_data();
+    /// Get the last window_size elements pushed to the MES demean buffer
+    const std::vector<double>& get_mes_dm_buffer_data(std::size_t window_size);
+
+    /// Get the last window_size elements pushed to the MES envelope buffer
+    const std::vector<double>& get_mes_env_buffer_data(std::size_t window_size);
+
+    /// Get the last window_size elements pushed to the MES TKEO envelope buffer
+    const std::vector<double>& get_mes_tkeo_env_buffer_data(std::size_t window_size);
 
     /// Get the size of the current MES buffer
     std::size_t get_mes_buffer_capacity() const;
 
     /// Get the most recently computed features from the MES buffer
-    std::vector<double> get_all_features() const;
+    const std::vector<double>& get_all_features() const;
 
     /// Get the most recently computed root-mean-square (RMS) features from the MES buffer
-    std::vector<double> get_rms_features() const;
+    const std::vector<double>& get_rms_features() const;
 
     /// Get the most recently computed Hudgins time-domain features from the MES buffer
-    std::vector<double> get_hudgins_td_features() const;
+    const std::vector<double>& get_hudgins_td_features() const;
 
     /// Get the most recently computed autoregressive features from the MES buffer
-    std::vector<double> get_ar_features() const;
+    const std::vector<double>& get_ar_features() const;
 
     /// Get the number of features returned by get_all_features()
     std::size_t get_all_features_count() const;
@@ -102,18 +109,16 @@ public:
     std::size_t get_ar_features_count() const;
 
     /// Compute all possible features from data currently in the MES buffer
-    void compute_all_features(); 
+    void compute_all_features(std::size_t window_size); 
 
     /// Compute root-mean-square (RMS) features from data currently in the MES buffer
-    void compute_rms_features();
+    void compute_rms_features(std::size_t window_size);
 
     /// Compute Hudgins time-domain features from data currently in the MES buffer
-    void compute_hudgins_td_features();
+    void compute_hudgins_td_features(std::size_t window_size);
 
     /// Compute autoregressive features from data currently in the MES buffer
-    void compute_ar_features();
-
-
+    void compute_ar_features(std::size_t window_size);
 
 
 private:
@@ -129,8 +134,12 @@ private:
     double mes_tkeo_envelope_; ///< MES envelope from TKEO, rectification, and low-pass filtering
 
     std::size_t mes_buffer_capacity_; ///< capacity of MES buffer
-    RingBuffer<double> mes_demean_buffer_; ///< signal buffer to hold time history of demeaned MES for computing features
-    std::vector<double> mes_demean_window_; ///< time window of MES same length as buffer
+    RingBuffer<double> mes_dm_buffer_; ///< signal buffer to hold time history of demeaned MES
+    std::vector<double> mes_dm_window_; ///< time window of demeaned MES pulled from buffer and used to compute features
+    RingBuffer<double> mes_env_buffer_; ///< signal buffer to hold time history of MES envelope
+    std::vector<double> mes_env_window_; ///< time window of MES envelope pulled from buffer
+    RingBuffer<double> mes_tkeo_env_buffer_; ///< signal buffer to hold time history of MES TKEO envelope
+    std::vector<double> mes_tkeo_env_window_; ///< time window of MES TKEO envelope pulled from buffer and used to calculate features
 
     std::size_t rms_features_count_; ///< number of features returned by get_rms_features()
     std::size_t hudgins_td_features_count_; ///< number of features returned by get_hudgins_td_features()
@@ -168,6 +177,6 @@ private:
 };
 
 
-} // mel
+} // namespace mel
 
 #endif // MEL_EMGELECTRODE_HPP

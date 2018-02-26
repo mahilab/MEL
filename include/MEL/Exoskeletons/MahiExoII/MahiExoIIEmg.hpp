@@ -53,9 +53,15 @@ public:
     /// Resize the MES ring buffer on all EMG electrodes attached to the robot to a new capacity
     void resize_mes_buffer(std::size_t capacity);
 
+    /// Check to see if the buffer is full
+    bool is_mes_buffer_full();
+
+    /// Reset the signal processing internal memory to be zero
+    void reset_emg_signal_processing();
+
     std::size_t get_emg_channel_count() const;
 
-    void reset_emg_signal_processing();
+    
 
 
     bool emg_signal_monitor_ = false;
