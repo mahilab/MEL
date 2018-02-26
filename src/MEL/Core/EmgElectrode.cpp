@@ -24,9 +24,9 @@ EmgElectrode::EmgElectrode( AnalogInput::Channel ai_channel, std::size_t mes_buf
     rms_features_(rms_features_count_, 0.0),
     hudgins_td_features_(hudgins_td_features_count_, 0.0),
     ar_features_(ar_features_count_, 0.0),
-    hp_filter_(Butterworth(4, 0.05, Butterworth::Highpass)), // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
-    lp_filter_(Butterworth(4, 0.01, Butterworth::Lowpass)), // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
-    tkeo_lp_filter_(Butterworth(4, 0.01, Butterworth::Lowpass)) // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
+    hp_filter_(Butterworth(4, 0.05, Butterworth::Highpass, 100)), // 4th-order Butterworth High-Pass at 0.05 normalized cutoff frequency
+    lp_filter_(Butterworth(4, 0.01, Butterworth::Lowpass, 100)), // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
+    tkeo_lp_filter_(Butterworth(4, 0.01, Butterworth::Lowpass, 100)) // 4th-order Butterworth Low-Pass at 0.01 normalized cutoff frequency
     { }
 
 void EmgElectrode::update() {

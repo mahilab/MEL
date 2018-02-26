@@ -1,14 +1,15 @@
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
 #include <MEL/Exoskeletons/MahiExoII/MahiExoII.hpp>
 #include <MEL/Utility/System.hpp>
-#include <vector>
 #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Timer.hpp>
 #include <MEL/Math/Functions.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <MEL/Logging/DataLog.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/RingBuffer.hpp>
+#include <MEL/Utility/Windows/Keyboard.hpp>
+#include <vector>
 
 using namespace mel;
 
@@ -18,6 +19,7 @@ bool handler(CtrlEvent event) {
     stop = true;
     return true;
 }
+
 
 int main(int argc, char *argv[]) {
 
@@ -37,6 +39,9 @@ int main(int argc, char *argv[]) {
 
     // register ctrl-c handler
     register_ctrl_handler(handler);
+
+    // initialize default MEL logger
+    init_logger();
 
     // make MelShares
     MelShare ms_pos("melscope_pos");
@@ -81,6 +86,17 @@ int main(int argc, char *argv[]) {
     MeiiConfiguration config(q8, q8.watchdog, q8.encoder[{1, 2, 3, 4, 5}], q8.velocity[{1, 2, 3, 4, 5}], amplifiers);
     MahiExoII meii(config);
 
+    //// create robot data log
+    DataLogger robot_log(WriterType::Buffered, false);
+    std::vector<double> robot_log_row(16); 
+    std::vector<std::string> log_header = { "Time [s]", "MEII EFE Position [rad]", "MEII EFE Velocity [rad/s]", "MEII EFE Commanded Torque [Nm]",
+        "MEII FPS Position [rad]", "MEII FPS Velocity [rad/s]", "MEII FPS Commanded Torque [Nm]",
+        "MEII RPS L1 Position [m]", "MEII RPS L1 Velocity [m/s]", "MEII RPS L1 Commanded Force [N]",
+        "MEII RPS L2 Position [m]", "MEII RPS L2 Velocity [m/s]", "MEII RPS L2 Commanded Force [N]",
+        "MEII RPS L3 Position [m]", "MEII RPS L3 Velocity [m/s]", "MEII RPS L3 Commanded Force [N]" };
+    robot_log.set_header(log_header);
+    robot_log.set_record_format(DataFormat::Default, 12);
+
     // calibrate - manually zero the encoders (right arm supinated)
     if (result.count("calibrate") > 0) {
         meii.calibrate(stop);
@@ -90,14 +106,20 @@ int main(int argc, char *argv[]) {
     // setpoint control with MelScope
     if (result.count("setpoint") > 0) {
 
+        LOG(Info) << "Initializing MAHI Exo-II.";
+
         // create initial setpoint and ranges
-        std::vector<double> setpoint = { -35 * DEG2RAD, 0 * DEG2RAD, 0 * DEG2RAD, 0 * DEG2RAD,  0.10 };
-        std::vector<std::vector<double>> setpoint_ranges = { { -90 * DEG2RAD, 0 * DEG2RAD},
+        std::vector<double> setpoint_deg = { -35, 0, 0, 0, 0.10 };
+        std::vector<double> setpoint_rad(meii.N_aj_);
+        for (size_t i = 0; i < meii.N_aj_ - 1; ++i) {
+            setpoint_rad[i] = setpoint_deg[i] * DEG2RAD;
+        }
+        std::vector<std::vector<double>> setpoint_rad_ranges = { { -90 * DEG2RAD, 0 * DEG2RAD},
         { -90 * DEG2RAD, 90 * DEG2RAD },
         { -15 * DEG2RAD, 15 * DEG2RAD },
         { -15 * DEG2RAD, 15 * DEG2RAD },
         {0.08, 0.115} };
-        ms_sp.write_data(setpoint);
+        ms_sp.write_data(setpoint_deg);
 
         // set up state machine
         uint16 state = 0;
@@ -141,9 +163,6 @@ int main(int argc, char *argv[]) {
                 aj_velocities[i] = meii.get_anatomical_joint_velocity(i);
             }
 
-
-
-
             switch (state) {
             case 0: // backdrive
 
@@ -165,9 +184,9 @@ int main(int argc, char *argv[]) {
 
                 // check for RPS Initialization target reached
                 if (meii.check_rps_init()) {
-                    print("RPS Mechanism Initialized");
+                    LOG(Info) << "Initialization complete.";
                     meii.set_rps_control_mode(2); // platform height non-backdrivable
-                    meii.anat_ref_.start(setpoint, meii.get_anatomical_joint_positions(), timer.get_elapsed_time());
+                    meii.anat_ref_.start(setpoint_rad, meii.get_anatomical_joint_positions(), timer.get_elapsed_time());
                     state = 2;
                 }
                 break;
@@ -175,16 +194,18 @@ int main(int argc, char *argv[]) {
             case 2: // setpoint control
 
                 // read in setpoint from MelShare
-                setpoint = ms_sp.read_data();
+                setpoint_deg = ms_sp.read_data();
+                for (size_t i = 0; i < 4; ++i) {
+                    setpoint_rad[i] = setpoint_deg[i] * DEG2RAD;
+                }
+                setpoint_rad[4] = setpoint_deg[4];
+
 
                 // update and saturate setpoint
                 for (int i = 0; i < meii.N_aj_; ++i) {
-                    if (i < meii.N_aj_ - 1) {
-                        setpoint[i] *= DEG2RAD;
-                    }
-                    setpoint[i] = saturate(setpoint[i], setpoint_ranges[i][0], setpoint_ranges[i][1]);
+                    setpoint_rad[i] = saturate(setpoint_rad[i], setpoint_rad_ranges[i][0], setpoint_rad_ranges[i][1]);
                 }
-                meii.anat_ref_.set_ref(setpoint, timer.get_elapsed_time());
+                meii.anat_ref_.set_ref(setpoint_rad, timer.get_elapsed_time());
 
 
                 // calculate commanded torques
@@ -202,6 +223,15 @@ int main(int argc, char *argv[]) {
             // update all DAQ output channels
             q8.update_output();
 
+            // write to robot data log
+            robot_log_row[0] = timer.get_elapsed_time().as_seconds();
+            for (std::size_t i = 0; i < meii.N_rj_; ++i) {
+                robot_log_row[3*i + 1] = meii[i].get_position();
+                robot_log_row[3*i + 2] = meii[i].get_velocity();
+                robot_log_row[3*i + 3] = meii[i].get_torque();
+            }
+            robot_log.buffer(robot_log_row);
+
             // kick watchdog
             if (!q8.watchdog.kick() || meii.any_limit_exceeded())
                 stop = true;
@@ -213,7 +243,15 @@ int main(int argc, char *argv[]) {
 
     }
 
+    print("Do you want to save the robot data log? (Y/N)");
+    Key key = Keyboard::wait_for_any_keys({ Key::Y, Key::N });
+    if (key == Key::Y) {
+        robot_log.save_data("example_meii_robot_data_log.csv", ".", false);
+        robot_log.wait_for_save();
+    }
+
     disable_realtime();
     return 0;
 }
+
 

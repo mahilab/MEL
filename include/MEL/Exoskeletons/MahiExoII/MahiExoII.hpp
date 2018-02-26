@@ -1,3 +1,20 @@
+// MIT License
+//
+// MEL - MAHI Exoskeleton Library
+// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
+
 #ifndef MEL_MAHIEXOII_HPP
 #define MEL_MAHIEXOII_HPP
 
@@ -6,7 +23,6 @@
 #include "MEL/Core/Exo.hpp"
 #include "MEL/Core/Motor.hpp"
 #include "MEL/Core/PdController.hpp"
-#include "MEL/Logging/DataLog.hpp"
 #include "MEL/Utility/Time.hpp"
 #include <array>
 #include <vector>
@@ -38,7 +54,6 @@ public:
 
     /// Destructor
     ~MahiExoII() override;
-
 
     /// Manually zero the encoders
     void calibrate(volatile std::atomic<bool>& stop_flag);
@@ -90,57 +105,57 @@ public:
     };
 
 
-    /// rps position control functions
+    // rps position control functions
     void set_rps_control_mode(int mode);
     void set_rps_backdrive(bool backdrive = false);         
     std::vector<double> set_rps_pos_ctrl_torques(SmoothReferenceTrajectory& rps_ref, Time current_time);
 
-    /// rps position controllers
+    // rps position controllers
     SmoothReferenceTrajectory rps_init_par_ref_;
     SmoothReferenceTrajectory rps_par_ref_;
     SmoothReferenceTrajectory rps_ser_ref_;
 
-    /// full robot position control functions
+    // full robot position control functions
     void set_elbow_backdrive(bool backdrive = false);
     void set_forearm_backdrive(bool backdrive = false);
     std::vector<double> set_anat_pos_ctrl_torques(SmoothReferenceTrajectory& anat_ref, Time current_time);
 
-    /// full robot position controllers
+    // full robot position controllers
     SmoothReferenceTrajectory robot_ref_;
     SmoothReferenceTrajectory anat_ref_;
 
-    /// update robot kinematics from encoder readings
+    // update robot kinematics from encoder readings
     void update_kinematics();
 
-    /// read wrist kinematics after using update_kinematics
+    // read wrist kinematics after using update_kinematics
     std::vector<double> get_wrist_parallel_positions() const;
     std::vector<double> get_wrist_serial_positions() const;
 
-    /// send torque commands to the exo
+    // send torque commands to the exo
     void set_anatomical_joint_torques(std::vector<double> new_torques) override;
     void set_rps_par_torques(std::vector<double>& tau_par);
     void set_rps_ser_torques(std::vector<double>& tau_ser);
 
-    /// forward kinematics utility functions
+    // forward kinematics utility functions
     void forward_rps_kinematics(std::vector<double>& q_par_in, std::vector<double>& q_ser_out) const;
     void forward_rps_kinematics(std::vector<double>& q_par_in, std::vector<double>& q_ser_out, std::vector<double>& qp_out) const;
     void forward_rps_kinematics_velocity(std::vector<double>& q_par_in, std::vector<double>& q_ser_out, std::vector<double>& q_par_dot_in, std::vector<double>& q_ser_dot_out) const;
     void forward_rps_kinematics_velocity(std::vector<double>& q_par_in, std::vector<double>& q_ser_out, std::vector<double>& qp_out, std::vector<double>& q_par_dot_in, std::vector<double>& q_ser_dot_out, std::vector<double>& qp_dot_out) const;
             
-    /// inverse kinematics utility functions
+    // inverse kinematics utility functions
     void inverse_rps_kinematics(std::vector<double>& q_ser_in, std::vector<double>& q_par_out) const;
     void inverse_rps_kinematics(std::vector<double>& q_ser_in, std::vector<double>& q_par_out, std::vector<double>& qp_out) const;
     void inverse_rps_kinematics_velocity(std::vector<double>& q_ser_in, std::vector<double>& q_par_out, std::vector<double>& q_ser_dot_in, std::vector<double>& q_par_dot_out) const;
     void inverse_rps_kinematics_velocity(std::vector<double>& q_ser_in, std::vector<double>& q_par_out, std::vector<double>& qp_out, std::vector<double>& q_ser_dot_in, std::vector<double>& q_par_dot_out, std::vector<double>& qp_dot_out) const;
          
-    /// PUBLIC UTILITY FUNCTIONS
+    // PUBLIC UTILITY FUNCTIONS
     bool check_rps_init(bool print_output = false) const;
     bool check_goal_rps_par_pos(std::vector<double> goal_rps_par_pos, std::vector<char> check_dof, bool print_output = false) const;
     bool check_goal_rps_ser_pos(std::vector<double> goal_rps_ser_pos, std::vector<char> check_dof, bool print_output = false) const;
     bool check_goal_anat_pos(std::vector<double> goal_anat_pos, std::vector<char> check_dof, bool print_output = false) const;
     bool check_neutral_anat_pos(std::vector<double> goal_anat_pos, std::vector<char> check_dof, bool print_output = false) const;
 
-    /// PUBLIC DATA LOGGING FUNCTIONS
+    // PUBLIC DATA LOGGING FUNCTIONS
     //void init_robot_log();
     //void log_robot_row(double time);
     //void save_and_clear_robot_log(std::string filename, std::string directory, bool timestamp = true);
@@ -179,15 +194,6 @@ public:
         PdController(wrist_ph_P_, wrist_ph_D_)
     };     
 
-protected:
-
-    ///-------------------------------------------------------------------------
-    /// PROTECTED VARIABLES
-    ///-------------------------------------------------------------------------
-
-    /// DATA LOGGING
-    //DataLog<double, double, double, double, double, double> robot_log_({ "Time [s]", "MEII Joint 0 Encoder Count [counts]" ,"MEII Joint 1 Encoder Count [counts]" ,"MEII Joint 2 Encoder Count [counts]" ,"MEII Joint 3 Encoder Count [counts]" ,"MEII Joint 4 Encoder Count [counts]" });
-    //DataLog<int, double> my_log_;
 
 private:
 
@@ -286,6 +292,6 @@ private:
 
 };
 
-} //  mel
+} // namespace mel
 
 #endif // MEL_MAHIEXOII_HPP

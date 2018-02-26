@@ -15,6 +15,7 @@ DataLogger::DataLogger(WriterType writer_type, bool autosave, size_t max_rows) :
     log_saved_(true),
     saving_(false),
     row_count_(0),
+    col_count_(0),
     max_rows_(max_rows),
     format_(DataFormat::Default),
     precision_(6) {    
@@ -202,11 +203,20 @@ void DataLogger::set_writer_type(WriterType writer_type) {
 
 void DataLogger::set_header(const std::vector<std::string>& header) {
     header_ = header;
+    col_count_ = header.size();
 }
 
 void DataLogger::set_record_format(DataFormat data_format, std::size_t precision) {
     format_ = data_format;
     precision_ = precision;
+}
+
+std::size_t DataLogger::get_row_count() const {
+    return row_count_;
+}
+
+std::size_t DataLogger::get_col_count() const {
+    return col_count_;
 }
 
 std::string DataLogger::format(const std::vector<double>& data_record) {
@@ -257,4 +267,4 @@ void DataLogger::save_thread_func(const std::string& full_filename, const std::s
     saving_ = false;
 }
 
-}
+} // namespace mel
