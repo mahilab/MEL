@@ -26,7 +26,8 @@ int main(int argc, char *argv[]) {
         ("c,calibrate",    "Calibrates the OpenWrist")
         ("t,transparency", "Puts the OpenWrist in transparency mode")
         ("s,setpoint",     "Runs OpenWrist MelScope set-point demo")
-        ("h,help",         "Prints this help message");
+        ("h,help",         "Prints this help message")
+        ("x,testing",      "OpenWrist Testing");
 
     auto result = options.parse(argc, argv);
 
@@ -97,6 +98,29 @@ int main(int argc, char *argv[]) {
             ow.set_joint_torques(torques);
             if (!q8.watchdog.kick() || ow.any_limit_exceeded())
                 stop = true;
+            q8.update_output();
+            timer.wait();
+        }
+    }
+
+    if (result.count("testing") > 0) {
+        MelShare ms("ow_testing");
+        std::vector<double> data(2);
+        q8.enable();
+        ow.enable();
+        ow[0].disable();
+        ow[1].disable();
+        q8.watchdog.start();
+        Timer timer(milliseconds(1), Timer::Hybrid);
+        while (!stop) {
+            q8.update_input();
+            double torque = ow.pd_controllers_[2].calculate(0, ow[2].get_position(), 0, ow[2].get_velocity());
+            ow[2].set_torque(torque);
+            if (!q8.watchdog.kick() || ow.any_velocity_limit_exceeded())
+                stop = true;
+            data[0] = ow[2].get_actuator<Motor>().get_amplifier().get_current_command();
+            data[1] = ow[2].get_actuator<Motor>().get_amplifier().get_current_sense();
+            ms.write_data(data);
             q8.update_output();
             timer.wait();
         }

@@ -54,6 +54,9 @@ public:
     /// Returns the torque sense of the motor if it is available
     double get_torque_sense() const override;
 
+    /// Returns the amplifier on the Motor
+    Amplifier& get_amplifier();
+
 protected:
 
     double kt_;                ///< torque constant of the Motor

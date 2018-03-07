@@ -25,9 +25,10 @@ OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
         motors_.push_back(Motor("ow_motor_" + num,
             params_.kt_[i],
             config_.amplifiers_[i],
-            Limiter(params_.motor_cont_limits_[i],
-                params_.motor_peak_limits_[i],
-                params_.motor_i2t_times_[i])));
+            Limiter(10)));
+            //Limiter(params_.motor_cont_limits_[i],
+           //     params_.motor_peak_limits_[i],
+            //    params_.motor_i2t_times_[i])));
 
         // set encoder counts
         config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);

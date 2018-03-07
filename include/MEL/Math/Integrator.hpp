@@ -38,7 +38,7 @@ public:
     };
 
     /// Constructor
-    Integrator(double initial_value, Technique technique = Trapezoidal);
+    Integrator(double initial_value = 0.0, Technique technique = Trapezoidal);
 
     /// Integrats x with respect to time
     double update(const double x, const Time& t) override;

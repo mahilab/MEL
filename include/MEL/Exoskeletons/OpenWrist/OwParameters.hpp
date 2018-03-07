@@ -40,7 +40,7 @@ struct OwParameters {
         pos_limits_neg_    { -86.1123 * DEG2RAD, -63.2490 * DEG2RAD, -42.0321 * DEG2RAD }, // [rad]
         pos_limits_pos_    { +86.1123 * DEG2RAD, +68.2490 * DEG2RAD, +30.9087 * DEG2RAD }, // [rad]
         vel_limits_        {  400     * DEG2RAD,  400     * DEG2RAD,  400     * DEG2RAD }, // [rad/s]
-        joint_torque_limits{  10.0,               10.0,               10.0,             }, // [Nm]
+        joint_torque_limits{  40.0,               40.0,               40.0,             }, // [Nm]
         kin_friction_      {  0.1891,             0.0541,             0.1339            }  // [Nm]
     {}
 

@@ -46,4 +46,8 @@ double Motor::get_torque_sense() const {
     return kt_ * amplifier_.get_current_sense();
 }
 
+Amplifier& Motor::get_amplifier() {
+    return amplifier_;
+}
+
 } // namespace mel
