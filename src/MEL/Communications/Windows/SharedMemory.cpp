@@ -18,11 +18,11 @@ namespace mel {
 // COMMON IMPLEMENTATION
 //==============================================================================
 
-SharedMemory::SharedMemory(const std::string& name, std::size_t max_size) :
+SharedMemory::SharedMemory(const std::string& name, std::size_t max_bytes) :
     name_(name),
-    max_size_(max_size),
-    map_(create_or_open(name_, max_size_)),
-    buffer_(map_buffer(map_, max_size_))
+    max_bytes_(max_bytes),
+    map_(create_or_open(name_, max_bytes_)),
+    buffer_(map_buffer(map_, max_bytes_))
 {
 }
 
@@ -32,7 +32,7 @@ SharedMemory::~SharedMemory() {
 }
 
 bool SharedMemory::write(const void* data, std::size_t size, std::size_t offset) {
-    if (size + offset > max_size_) {
+    if (size + offset > max_bytes_) {
         return false;
     }
     std::memcpy(((char*)buffer_) + offset, data, size);
@@ -40,7 +40,7 @@ bool SharedMemory::write(const void* data, std::size_t size, std::size_t offset)
 }
 
 bool SharedMemory::read(void* data, std::size_t size, std::size_t offset) {
-    if (size + offset > max_size_) {
+    if (size + offset > max_bytes_) {
         return false;
     }
     std::memcpy(data, ((char*)buffer_) + offset, size);

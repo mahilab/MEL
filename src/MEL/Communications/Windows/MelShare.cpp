@@ -8,8 +8,8 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-MelShare::MelShare(const std::string& name, std::size_t max_size) :
-    shm_(name, max_size),
+MelShare::MelShare(const std::string& name, std::size_t max_bytes) :
+    shm_(name, max_bytes),
     mutex_(name + "_mutex")
 {
 }

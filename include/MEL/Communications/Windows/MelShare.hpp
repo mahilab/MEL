@@ -37,7 +37,7 @@ class MelShare : NonCopyable {
 public:
 
     /// Default constructor.
-    MelShare(const std::string& name, std::size_t max_size = 256);
+    MelShare(const std::string& name, std::size_t max_bytes = 256);
 
     /// Writes a vector of doubles to the MelShare
     void write_data(const std::vector<double>& data);
