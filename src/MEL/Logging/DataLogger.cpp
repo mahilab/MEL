@@ -5,6 +5,10 @@
 #include <fstream>
 #include <thread>
 
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 namespace mel {
 
 DataLogger::DataLogger(WriterType writer_type, bool autosave, size_t max_rows) :
@@ -18,7 +22,7 @@ DataLogger::DataLogger(WriterType writer_type, bool autosave, size_t max_rows) :
     col_count_(0),
     max_rows_(max_rows),
     format_(DataFormat::Default),
-    precision_(6) {    
+    precision_(6) {
     if (writer_type == WriterType::Buffered) {
         data_buffer_.reserve(max_rows);
     }
@@ -186,7 +190,7 @@ void DataLogger::set_writer_type(WriterType writer_type) {
                 file_.close();
             }
             writer_type_ = WriterType::Buffered;
-            
+
             data_buffer_.clear();
             data_buffer_.reserve(max_rows_);
             log_saved_ = true;
@@ -198,7 +202,7 @@ void DataLogger::set_writer_type(WriterType writer_type) {
             writer_type_ = WriterType::Immediate;
         }
         break;
-    } 
+    }
 }
 
 void DataLogger::set_header(const std::vector<std::string>& header) {
@@ -241,7 +245,7 @@ void DataLogger::write_header() {
         }
         ss << header_[header_.size() - 1] << "\n";
         file_.write(ss.str());
-    }  
+    }
 }
 
 

@@ -88,6 +88,7 @@ MEL provides the following options when building with CMake:
 * `-DQUANSER=ON` adds MEL implementations for Quanser hardware (Q8 USB, Q2 USB, etc.) and statically links MEL to QUARC
 * `-DOPENWRIST=ON` adds OpenWrist classes to MEL
 * `-DMAHIEXOII=ON` adds MAHI Exo-II classes to MEL and includes Eigen as a dependency
+* `-DXINPUT=ON` adds support for Xbox controllers
 * `-DEXAMPLES=ON` builds all MEL example executables which are compatible with the platform, compiler, and any of the options above which are specified
 
 ## Creating Projects for MEL

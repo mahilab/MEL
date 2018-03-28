@@ -12,7 +12,7 @@ bool Keyboard::is_key_pressed(Key key, bool require_focus)
     int vkey = 0;
     switch (key)
     {
-    default:                   vkey = 0;             break;
+    default:              vkey = 0;             break;
     case Key::A:          vkey = 'A';           break;
     case Key::B:          vkey = 'B';           break;
     case Key::C:          vkey = 'C';           break;

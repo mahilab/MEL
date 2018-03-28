@@ -20,7 +20,6 @@ target_link_libraries(datalog MEL)
 add_executable(filter ex_filter.cpp)
 target_link_libraries(filter MEL)
 
-
 add_executable(options ex_options.cpp)
 target_link_libraries(options MEL)
 
@@ -82,17 +81,6 @@ if(NI_X64)
 endif()
 
 #===============================================================================
-# OPENWRIST EXAMPLES
-#===============================================================================
-
-if (OPENWRIST AND QUANSER)
-    add_executable(openwrist_q8usb ex_openwrist_q8usb.cpp)
-    target_link_libraries(openwrist_q8usb MEL)
-elseif(OPENWRIST AND NI)
-    # ...
-endif()
-
-#===============================================================================
 # MAHI EXO-II EXAMPLES
 #===============================================================================
 
@@ -103,14 +91,4 @@ if (MAHIEXOII AND QUANSER)
     add_executable(mahiexoiiemg_q8usb ex_mahiexoiiemg_q8usb.cpp)
     target_link_libraries(mahiexoiiemg_q8usb MEL)
 
-endif()
-
-
-#===============================================================================
-# OPENWRIST & MAHI EXO-II EXAMPLES
-#===============================================================================
-
-if (OPENWRIST AND MAHIEXOII AND QUANSER)
-    add_executable(udp_exo_teleop ex_udp_exo_teleop.cpp)
-    target_link_libraries(udp_exo_teleop MEL)
 endif()

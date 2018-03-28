@@ -26,6 +26,7 @@ option(NI_ARM    "Turn ON if compiling for NI Intel x64 basedhardware"        OF
 option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
 option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
 option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
+option(XINPUT    "Turn ON if you have XInput installed for Xbox controllers." OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
 option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
@@ -344,6 +345,10 @@ endif()
 
 if(WIN32)
     list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi)
+endif()
+
+if(XINPUT)
+    list(APPEND LINK_LIBS XInput)
 endif()
 
 target_link_libraries(MEL ${LINK_LIBS})
