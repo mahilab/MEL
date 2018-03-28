@@ -9,6 +9,7 @@
 #include <MEL/Devices/VoltPaqX4.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <MEL/Math/Waveform.hpp>
 
 using namespace mel;
 
@@ -72,8 +73,8 @@ int main(int argc, char *argv[]) {
 
     // enter transparency mode
     if (result.count("transparency") > 0) {
-        ow.transparency_mode(stop);
-        return 0;
+        ow.transparency_mode(stop, false);
+        //return 0;
     }
 
     // setpoint control with MelScope
@@ -91,7 +92,7 @@ int main(int argc, char *argv[]) {
             positions = ms.read_data();
             positions[0] = saturate(positions[0], 80);
             positions[1] = saturate(positions[1], 60);
-            positions[2] = saturate(positions[2], 30);
+            positions[2] = saturate(positions[2], -30);
             torques[0] = ow.pd_controllers_[0].move_to_hold(positions[0] * DEG2RAD, ow[0].get_position(), 30 * DEG2RAD, ow[0].get_velocity(), 0.001, DEG2RAD, 10 * DEG2RAD);
             torques[1] = ow.pd_controllers_[1].move_to_hold(positions[1] * DEG2RAD, ow[1].get_position(), 30 * DEG2RAD, ow[1].get_velocity(), 0.001, DEG2RAD, 10 * DEG2RAD);
             torques[2] = ow.pd_controllers_[2].move_to_hold(positions[2] * DEG2RAD, ow[2].get_position(), 30 * DEG2RAD, ow[2].get_velocity(), 0.001, DEG2RAD, 10 * DEG2RAD);
@@ -103,24 +104,30 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    stop = false;
+
     if (result.count("testing") > 0) {
-        MelShare ms("ow_testing");
-        std::vector<double> data(2);
+
         q8.enable();
         ow.enable();
-        ow[0].disable();
-        ow[1].disable();
+
         q8.watchdog.start();
+
+        Waveform sin1(Waveform::Sin, seconds(10), 60 * DEG2RAD);
+        Waveform sin2(Waveform::Sin, seconds(5), 45 * DEG2RAD);
+        Waveform sin3(Waveform::Sin, seconds(2.5), 30 * DEG2RAD);
+
         Timer timer(milliseconds(1), Timer::Hybrid);
         while (!stop) {
             q8.update_input();
-            double torque = ow.pd_controllers_[2].calculate(0, ow[2].get_position(), 0, ow[2].get_velocity());
-            ow[2].set_torque(torque);
+
+            ow[0].set_torque(ow.pd_controllers_[0].calculate(sin1.evaluate(timer.get_elapsed_time()), ow[0].get_position(), 0.0, ow[0].get_velocity()));
+            ow[1].set_torque(ow.pd_controllers_[1].calculate(sin2.evaluate(timer.get_elapsed_time()), ow[1].get_position(), 0.0, ow[1].get_velocity()));
+            ow[2].set_torque(ow.pd_controllers_[2].calculate(sin3.evaluate(timer.get_elapsed_time()), ow[2].get_position(), 0.0, ow[2].get_velocity()));
+
             if (!q8.watchdog.kick() || ow.any_velocity_limit_exceeded())
                 stop = true;
-            data[0] = ow[2].get_actuator<Motor>().get_amplifier().get_current_command();
-            data[1] = ow[2].get_actuator<Motor>().get_amplifier().get_current_sense();
-            ms.write_data(data);
+
             q8.update_output();
             timer.wait();
         }

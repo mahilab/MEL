@@ -59,7 +59,7 @@ public:
 
 protected:
 
-    double kt_;                ///< torque constant of the Motor
+    double kt_;                ///< torque constant of the Motor [torque/current]
     Amplifier amplifier_;      ///< the current amplifier controlling the motor
     Limiter current_limiter_;  ///< the Motor current limiter
 

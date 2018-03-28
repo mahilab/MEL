@@ -60,7 +60,7 @@ public:
     void calibrate(volatile std::atomic<bool>& stop_flag);
 
     /// Puts the OpenWrist in an endless graivity and friction compensated state
-    void transparency_mode(volatile std::atomic<bool>& stop_flag);
+    void transparency_mode(volatile std::atomic<bool>& stop_flag, bool friction_compensation = true);
 
 public:
 

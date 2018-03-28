@@ -25,10 +25,9 @@ OpenWrist::OpenWrist(OwConfiguration configuration, OwParameters parameters) :
         motors_.push_back(Motor("ow_motor_" + num,
             params_.kt_[i],
             config_.amplifiers_[i],
-            Limiter(10)));
-            //Limiter(params_.motor_cont_limits_[i],
-           //     params_.motor_peak_limits_[i],
-            //    params_.motor_i2t_times_[i])));
+                Limiter(params_.motor_cont_limits_[i],
+                params_.motor_peak_limits_[i],
+                params_.motor_i2t_times_[i])));
 
         // set encoder counts
         config_.encoder_channels_[i].set_units_per_count(2 * PI / params_.encoder_res_[i]);
@@ -215,7 +214,7 @@ void OpenWrist::calibrate(volatile std::atomic<bool>& stop) {
 }
 
 
-void OpenWrist::transparency_mode(volatile std::atomic<bool>& stop) {
+void OpenWrist::transparency_mode(volatile std::atomic<bool>& stop, bool friction_compensation) {
 
     // enable DAQs, zero encoders, and start watchdog
     config_.daq_.enable();
@@ -234,9 +233,15 @@ void OpenWrist::transparency_mode(volatile std::atomic<bool>& stop) {
         config_.watchdog_.kick();
 
         // calculate and set compensation torques
-        joints_[0].set_torque(compute_gravity_compensation(0) + compute_friction_compensation(0));
-        joints_[1].set_torque(compute_gravity_compensation(1) + compute_friction_compensation(1));
-        joints_[2].set_torque(compute_friction_compensation(2) * 0.5);
+        joints_[0].set_torque(compute_gravity_compensation(0)); 
+        joints_[1].set_torque(compute_gravity_compensation(1));
+        joints_[2].set_torque(compute_gravity_compensation(2));
+
+        if (friction_compensation) {
+            joints_[0].add_torque(compute_friction_compensation(0));
+            joints_[1].add_torque(compute_friction_compensation(1));
+            joints_[2].add_torque(compute_friction_compensation(2));
+        }
 
 
         // write all DAQs
