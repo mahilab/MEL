@@ -18,6 +18,7 @@ Communication:
   ☐ Add methods for vector to Packet (just use underlying in loop?)
   ☐ Make MelNet not use packets (for string at least)
   ☐ BTP? http://ieeexplore.ieee.org/document/5089429/
+  ☐ make MelShare use [] operators and templetize to one type
 
 Core:
   ☐ add Clock to PdController, generalize for all exos

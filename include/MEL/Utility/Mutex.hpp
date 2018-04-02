@@ -46,7 +46,7 @@ public:
 
 private:
 
-    class Impl;                   /// Pimpl idiom
+    class Impl;                   ///< Pimpl idiom
     std::unique_ptr<Impl> impl_;  ///< OS-specific implementation
 
 };

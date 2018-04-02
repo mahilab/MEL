@@ -1,0 +1,51 @@
+DATA_SOURCES:
+- curve_colors:
+  - [31, 120, 180]
+  - [227, 26, 28]
+  curve_names: [My Sin Wave, My Sawtooth Wave]
+  curve_styles: [Dash Dot, Dot]
+  curve_widths: [2, 3]
+  mode: Read Only
+  name: melscope
+  settings: null
+  size: 2
+  type: melshare
+- curve_colors:
+  - [51, 160, 44]
+  - [255, 127, 0]
+  curve_names: [My Triangle Wave, My Square Wave]
+  curve_styles: [Solid, Solid]
+  curve_widths: [2, 2]
+  mode: Read Only
+  name: 55001@10.0.0.247
+  settings: [55002, 55001, 10.0.0.247]
+  size: 2
+  type: melnet
+GRID_COLS: 3
+GRID_ROWS: 1
+SCOPES:
+- filter:
+    55001@10.0.0.247: [false, true]
+    melscope: [true, false]
+  index: 0
+  legend: false
+  mode: Plot
+  title: My Scope 0
+  yrange: [-2.0, 2.0]
+- filter:
+    55001@10.0.0.247: [true, false]
+    melscope: [false, true]
+  index: 1
+  legend: true
+  mode: Plot
+  title: My Scope 1
+  yrange: [-3.0, 3.0]
+- filter:
+    55001@10.0.0.247: [true, true]
+    melscope: [true, true]
+  index: 2
+  legend: false
+  mode: Numeric
+  title: My Monitor
+  yrange: [-1.0, 1.0]
+THEME: Dark
