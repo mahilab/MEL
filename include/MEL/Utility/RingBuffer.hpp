@@ -147,6 +147,15 @@ public:
         back_ = 0;
     }
 
+    /// Returns a copy of the contents of the RingBuffer as a vector
+    std::vector<T> get_vector() const {
+        std::vector<T> contents(size_);
+        for (std::size_t i = 0; i < size_; ++i) {
+            contents[i] = buffer_[(front_ + i) % capacity_];
+        }
+        return contents;
+    }
+
 private:
 
     std::size_t capacity_;   ///< the maximum capacity of the RingBuffer

@@ -178,6 +178,10 @@ public:
     /// \param keys Keys to check
     static void wait_for_all_keys(std::vector<Key> keys, bool require_focus = true);
 
+    /// \brief  Check if any number key is pressed and console window has focus
+    /// \return integer corresponding to the number pressed, -1 if none pressed
+    static int is_any_num_key_pressed(bool require_focus = true);
+
 };
 
 } // namespace mel

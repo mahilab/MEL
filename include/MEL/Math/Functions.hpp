@@ -19,6 +19,7 @@
 #ifndef MEL_FUNCTIONS_HPP
 #define MEL_FUNCTIONS_HPP
 
+#include <MEL/Utility/Types.hpp>
 #include <complex>
 #include <vector>
 #ifdef MEL_INCLUDE_EIGEN
@@ -59,13 +60,13 @@ extern double abs(double value);
 /// Returns minimum of two values
 extern double min(double a, double b);
 
-/// Returns minimum value in a a vector
+/// Returns minimum value in a vector
 extern double min(const std::vector<double>& values);
 
 /// Returns maximum of two values
 extern double max(double a, double b);
 
-/// Returns maximum value in a a vector
+/// Returns maximum value in a vector
 extern double max(const std::vector<double>& values);
 
 /// Computes the square root a number
@@ -120,6 +121,18 @@ extern double stddev_s(const std::vector<double>& data);
 /// Computes a linear regression slope and intercept {m, b} for y = m*x + b
 extern std::vector<double> linear_regression(const std::vector<double>& x, const std::vector<double>& y);
 
+/// Computes the sample mean and covariance for a multivariate gaussian distribution, where the second dimension of sample_data (cols) correspond to 
+/// random variables and the first dimension of sample data (rows) corresponds to observations
+extern void gauss_mlt_params(const std::vector<std::vector<double>>& sample_data, std::vector<double>& sample_mean, std::vector<std::vector<double>>& sample_cov);
+
+//==============================================================================
+// SIGNAL PROCESSING
+//==============================================================================
+
+//extern std::vector<double> downsample(const std::vector<double>& signal, uint32 ds_factor);
+
+//extern std::vector<std::vector<double>> bin_signal(const std::vector<double>& signal, std::size_t bin_size);
+
 //==============================================================================
 // EIGEN RELATED
 //==============================================================================
@@ -140,8 +153,8 @@ Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>&
 
 double mat_spectral_norm(const Eigen::MatrixXd& mat);
 
-/// returns the value of the softmax function for element k of input vector a
- double softmax(const Eigen::VectorXd& a, int k);
+/// Returns the value of the softmax function for element k of input vector a
+//double softmax(const Eigen::VectorXd& a, int k);
 
 #endif
 

@@ -81,11 +81,11 @@ public:
     /// Get the last window_size elements pushed to the MES TKEO envelope buffer
     const std::vector<double>& get_mes_tkeo_env_buffer_data(std::size_t window_size);
 
-    /// Get the size of the current MES buffer
+    /// Get the capacity of the current MES buffer
     std::size_t get_mes_buffer_capacity() const;
 
     /// Get the most recently computed features from the MES buffer
-    const std::vector<double>& get_all_features() const;
+    const std::vector<double>& get_all_features();
 
     /// Get the most recently computed root-mean-square (RMS) features from the MES buffer
     const std::vector<double>& get_rms_features() const;
@@ -126,6 +126,26 @@ private:
     /// Put most recently updated signal in the buffer
     void push_mes_buffer();
 
+    /// returns mean root-mean-square (RMS) for a window of MES
+    double mean_rms(const std::vector<double>& mes_window) const;
+
+    /// returns mean absolute value for a window of MES
+    double mean_absolute_value(const std::vector<double>& mes_buffer) const;
+
+    /// returns wavelength for a window of MES
+    double wavelength(const std::vector<double>& mes_buffer) const;
+
+    /// returns number of zero crossings for a window of MES
+    double zero_crossings(const std::vector<double>& mes_buffer) const;
+
+    /// returns number of slope sign changes for a window of MES
+    double slope_sign_changes(const std::vector<double>& mes_buffer) const;
+
+    /// returns autoregressive coefficients for a window of MES
+    void auto_regressive_coefficients(std::vector<double>& coeffs, const std::vector<double>& mes_buffer);
+
+private: 
+
     AnalogInput::Channel ai_channel_; ///< analog input of the associated DAQ
 
     double mes_raw_; ///< raw MES [V]
@@ -145,6 +165,7 @@ private:
     std::size_t hudgins_td_features_count_; ///< number of features returned by get_hudgins_td_features()
     std::size_t ar_features_count_; ///< number of features returned by get_ar_features()
     std::size_t all_features_count_; ///< number of features returned by get_all_features()
+    std::vector<double> all_features_; ///< all of the most recently computed features from the MES buffer 
     std::vector<double> rms_features_; ///< most recently computed root-mean-square (RMS) features from the MES buffer 
     std::vector<double> hudgins_td_features_; ///< most recently computed Hudgins time-domain features from the MES buffer
     std::vector<double> ar_features_; ///< most recently computed autoregressive features from the MES buffer
@@ -155,27 +176,8 @@ private:
     TeagerKaiserEnergyOperator tkeo_; ///< teager-kaiser energy operator for second phase of TKEO MES processing
     Rectifier tkeo_rect_; ///< full-wave rectifier for third phase of standard MES processing
     Filter tkeo_lp_filter_; ///< low-pass filter for fourth and final phase of TKEO MES processing
-        
-    /// returns mean root-mean-square (RMS) for a window of MES
-    double mean_rms(const std::vector<double>& mes_window) const;
-
-    /// returns mean absolute value for a window of MES
-    double mean_absolute_value(const std::vector<double>& mes_buffer) const;
-
-    /// returns wavelength for a window of MES
-    double wavelength(const std::vector<double>& mes_buffer) const;
-
-    /// returns number of zero crossings for a window of MES
-    double zero_crossings(const std::vector<double>& mes_buffer) const;
-
-    /// returns number of slope sign changes for a window of MES
-    double slope_sign_changes(const std::vector<double>& mes_buffer) const;
-
-    /// returns autoregressive coefficients for a window of MES
-    void auto_regressive_coefficients(std::vector<double>& coeffs, const std::vector<double>& mes_buffer);
 
 };
-
 
 } // namespace mel
 

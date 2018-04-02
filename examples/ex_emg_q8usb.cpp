@@ -71,6 +71,9 @@ int main(int argc, char *argv[]) {
         emg_electrodes[i].resize_mes_buffer(mes_buffer_size);
     }
 
+    // list of feature names
+    std::vector<std::string> feat_names = { "RMS", "MAV", "WL", "ZC", "SSC", "AR1", "AR2", "AR3", "AR4" };
+
     // create data logger for MES data
     DataLogger emg_data_logger(WriterType::Buffered, false);
     std::vector<std::string> emg_data_header;
@@ -156,18 +159,22 @@ int main(int argc, char *argv[]) {
             }
             if (mes_buffers_full) {
                 if (feature_refract_clock.get_elapsed_time() > feature_refract_time) {
-                    for (size_t i = 0; i < emg_channel_count; ++i) {
-                        print(timer.get_elapsed_time_ideal().as_milliseconds());
-                        emg_electrodes[i].compute_all_features(mes_feature_window_size);
+                    for (size_t i = 0; i < emg_channel_count; ++i) {                     
+                        emg_electrodes[i].compute_all_features(mes_feature_window_size); // classification features computed here
+                        mes_tkeo_env_mean[i] = mean(emg_electrodes[i].get_mes_tkeo_env_buffer_data(mes_buffer_size)); // mean TKEO computed here
+                        print("Features computed at time " + stringify(timer.get_elapsed_time_ideal().as_seconds()) + " s are ");
+                        print(feat_names);
                         print(emg_electrodes[i].get_all_features());
-                        mes_tkeo_env_mean[i] = mean(emg_electrodes[i].get_mes_tkeo_env_buffer_data(mes_buffer_size));
+                        print("MEAN TKEO");
                         print(mes_tkeo_env_mean[i]);
+                        print("");
                     }
                     feature_refract_clock.restart();
                 }
             }
         }
         
+        // check for exit key
         if (Keyboard::is_key_pressed(Key::Escape)) {
             stop = true;
         }

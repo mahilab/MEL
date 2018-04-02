@@ -21,6 +21,7 @@ EmgElectrode::EmgElectrode( AnalogInput::Channel ai_channel, std::size_t mes_buf
     hudgins_td_features_count_(4),
     ar_features_count_(4),
     all_features_count_(rms_features_count_ + hudgins_td_features_count_ + ar_features_count_),
+    all_features_(all_features_count_, 0.0),
     rms_features_(rms_features_count_, 0.0),
     hudgins_td_features_(hudgins_td_features_count_, 0.0),
     ar_features_(ar_features_count_, 0.0),
@@ -30,10 +31,11 @@ EmgElectrode::EmgElectrode( AnalogInput::Channel ai_channel, std::size_t mes_buf
     { }
 
 void EmgElectrode::update() {
-    mes_raw_ = ai_channel_.get_value();
-    mes_demean_ = hp_filter_.update(mes_raw_);   
+    mes_raw_ = ai_channel_.get_value();  
+    mes_demean_ = hp_filter_.update(mes_raw_);
     mes_envelope_ = lp_filter_.update(rect_.update(mes_demean_));
     mes_tkeo_envelope_ = tkeo_lp_filter_.update(tkeo_rect_.update(tkeo_.update(mes_demean_)));
+    
 }
 
 void EmgElectrode::update_and_buffer() {
@@ -187,12 +189,11 @@ void EmgElectrode::compute_ar_features(std::size_t window_size) {
     auto_regressive_coefficients(ar_features_, mes_dm_window_);
 }
 
-const std::vector<double>& EmgElectrode::get_all_features() const {
-    std::vector<double> all_features(all_features_count_);
-    auto it = std::copy(rms_features_.begin(), rms_features_.end(), all_features.begin());
+const std::vector<double>& EmgElectrode::get_all_features() {
+    auto it = std::copy(rms_features_.begin(), rms_features_.end(), all_features_.begin());
     it = std::copy(hudgins_td_features_.begin(), hudgins_td_features_.end(), it);
     it = std::copy(ar_features_.begin(), ar_features_.end(), it);
-    return all_features;
+    return all_features_;
 }
 
 const std::vector<double>& EmgElectrode::get_rms_features() const {

@@ -8,6 +8,7 @@ TeagerKaiserEnergyOperator::TeagerKaiserEnergyOperator() :
 {}
 
 double TeagerKaiserEnergyOperator::update( const double x, const Time& current_time) {
+    Time unused = current_time; // unused
     double y = s_[0] * s_[0] - x * s_[1];
     s_[1] = s_[0];
     s_[0] = x;  

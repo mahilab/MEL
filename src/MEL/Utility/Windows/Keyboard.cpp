@@ -183,16 +183,6 @@ void Keyboard::wait_for_key(Key key, bool require_focus) {
         if (is_key_pressed(key, require_focus)) {
             return;
         }
-        /*if (is_key_pressed(key)) {
-            if (require_focus) {
-                if (is_console_window_focused()) {
-                    return;
-                }
-            }
-            else {
-                return;
-            }
-        }*/
         sleep(milliseconds(10));
     }
 }
@@ -202,18 +192,6 @@ Key Keyboard::wait_for_any_keys(std::vector<Key> keys, bool require_focus) {
         if (are_any_keys_pressed(keys, require_focus) != Key::None) {
             return are_any_keys_pressed(keys, require_focus);
         }
-        /*for (int i = 0; i < keys.size(); ++i) {
-            if (is_key_pressed(keys[i])) {
-                if (require_focus) {
-                    if (is_console_window_focused()) {
-                        return keys[i];
-                    }
-                }
-                else {
-                    return keys[i];
-                }
-            }
-        }*/
         sleep(milliseconds(10));
     }
 }
@@ -224,6 +202,34 @@ void Keyboard::wait_for_all_keys(std::vector<Key> keys, bool require_focus) {
             return;
         }
         sleep(milliseconds(10));
+    }
+}
+
+int Keyboard::is_any_num_key_pressed(bool require_focus) {
+    std::vector<Key> num_keys = { Key::Num0, Key::Num1, Key::Num2, Key::Num3, Key::Num4, Key::Num5, Key::Num6, Key::Num7, Key::Num8, Key::Num9 };
+    Key key = Keyboard::are_any_keys_pressed(num_keys, require_focus);
+    switch (key) {
+    case Key::Num0:
+        return 0;
+    case Key::Num1:
+        return 1;
+    case Key::Num2:
+        return 2;
+    case Key::Num3:
+        return 3;
+    case Key::Num4:
+        return 4;
+    case Key::Num5:
+        return 5;
+    case Key::Num6:
+        return 6;
+    case Key::Num7:
+        return 7;
+    case Key::Num8:
+        return 8;
+    case Key::Num9:
+        return 9;
+    default: return -1;
     }
 }
 

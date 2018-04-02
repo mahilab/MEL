@@ -21,12 +21,13 @@ Filter::Filter(std::size_t n, uint32 seeding) : Process(),
 {}
 
 double Filter::update(const double x, const Time& current_time) {
+    Time unused = current_time; // unused
     if (first_update_) {
         if (has_seeding_) {
             seed(x, seed_count_);
         }
         first_update_ = false;
-    }
+    }  
     return dir_form_ii_t(x);
 }
 

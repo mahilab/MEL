@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     MeiiConfiguration config(q8, q8.watchdog, q8.encoder[{1, 2, 3, 4, 5}], q8.velocity[{1, 2, 3, 4, 5}], amplifiers);
     MahiExoII meii(config);
 
-    //// create robot data log
+    // create robot data log
     DataLogger robot_log(WriterType::Buffered, false);
     std::vector<double> robot_log_row(16); 
     std::vector<std::string> log_header = { "Time [s]", "MEII EFE Position [rad]", "MEII EFE Velocity [rad/s]", "MEII EFE Commanded Torque [Nm]",
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
         // initialize controller
         meii.set_rps_control_mode(0);
 
-        // construct timer in hybrid mode to avoid using %100 CPU
+        // construct timer in hybrid mode to avoid using 100% CPU
         Timer timer(milliseconds(1), Timer::Hybrid);
 
         // start loop

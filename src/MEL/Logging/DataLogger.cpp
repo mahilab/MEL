@@ -137,7 +137,7 @@ void DataLogger::open(const std::string& filename, const std::string& directory,
         else
             full_filename = directory + get_path_slash() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Opening data file " << full_filename;
-        unlink(full_filename.c_str());
+        _unlink(full_filename.c_str());
         file_size_ = file_.open(full_filename.c_str());
         file_opened_ = true;
     }
@@ -254,7 +254,7 @@ void DataLogger::double_rows() {
 void DataLogger::save_thread_func(const std::string& full_filename, const std::string& directory) {
     Lock lock(mutex_);
     create_directory(directory);
-    unlink(full_filename.c_str());
+    _unlink(full_filename.c_str());
     file_.open(full_filename.c_str());
     file_opened_ = true;
     write_header();

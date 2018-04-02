@@ -88,7 +88,7 @@ MahiExoII::~MahiExoII() {
 
 void MahiExoII::calibrate(volatile std::atomic<bool>& stop) {
 
-    ///enable DAQ
+    //enable DAQ
     config_.daq_.enable();
     std::vector<int32> encoder_offsets = { 0, -33259, 29125, 29125, 29125 };
     for (int i = 0; i < N_rj_; i++) {
@@ -100,7 +100,7 @@ void MahiExoII::calibrate(volatile std::atomic<bool>& stop) {
 
 bool MahiExoII::disable() {
 
-    /// disable reference trajectories
+    // disable reference trajectories
     rps_init_par_ref_.stop();
     rps_par_ref_.stop();
     rps_ser_ref_.stop();
@@ -110,9 +110,9 @@ bool MahiExoII::disable() {
     return Robot::disable();
 }
 
-///-----------------------------------------------------------------------------
-/// PUBLIC POSITION CONTROL FUNCTIONS
-///-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// PUBLIC POSITION CONTROL FUNCTIONS
+//-----------------------------------------------------------------------------
 
 void MahiExoII::set_rps_control_mode(int mode) {
     switch (mode) {
@@ -192,7 +192,7 @@ std::vector<double> MahiExoII::set_rps_pos_ctrl_torques(SmoothReferenceTrajector
     std::vector<double> command_torques(N_qs_, 0.0);
 
     switch (rps_control_mode_) {
-    case 0: /// control impedance of parallel joints
+    case 0: // control impedance of parallel joints
         for (int i = 0; i < N_qs_; ++i) {
             if (rps_backdrive_) {
                 command_torques[i] = 0.0;
@@ -210,7 +210,7 @@ std::vector<double> MahiExoII::set_rps_pos_ctrl_torques(SmoothReferenceTrajector
         }
         set_rps_par_torques(command_torques);
         break;
-    case 1: /// control impedance of serial joints with platform height backdrivable
+    case 1: // control impedance of serial joints with platform height backdrivable
                 
         for (int i = 0; i < N_qs_; ++i) {
             if (rps_backdrive_) {
@@ -223,14 +223,14 @@ std::vector<double> MahiExoII::set_rps_pos_ctrl_torques(SmoothReferenceTrajector
                 }
                 else { 
                     command_torques[i] = anatomical_joint_pd_controllers_[i + 2].calculate(smooth_ref, get_anatomical_joint_position(i+2), 0, get_anatomical_joint_velocity(i+2));
-                    command_torques[2] = 0.0; /// set platform height commanded force to zero
+                    command_torques[2] = 0.0; // set platform height commanded force to zero
                 }
             }
         }
         set_rps_ser_torques(command_torques);
         break;
 
-    case 2: /// control impedance of serial joints with all joints active
+    case 2: // control impedance of serial joints with all joints active
 
         for (int i = 0; i < N_qs_; ++i) {
             if (rps_backdrive_) {
@@ -263,7 +263,7 @@ std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajecto
 
     std::vector<double> command_torques(N_aj_, 0.0);
 
-    /// elbow joint
+    // elbow joint
     if (elbow_backdrive_) {
         command_torques[0] = 0.0;
     }
@@ -277,7 +277,7 @@ std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajecto
         }
     }
 
-    /// forearm joint
+    // forearm joint
     if (forearm_backdrive_) {
         command_torques[1] = 0.0;
     }
@@ -292,10 +292,10 @@ std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajecto
     }
             
 
-    /// rps mechanism
+    // rps mechanism
     std::vector<double> rps_command_torques(N_qs_, 0.0);
     switch (rps_control_mode_) {
-    case 1: /// control impedance of serial joints with platform height backdrivable
+    case 1: // control impedance of serial joints with platform height backdrivable
 
         for (int i = 0; i < N_qs_; ++i) {
             if (rps_backdrive_) {
@@ -308,13 +308,13 @@ std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajecto
                 }
                 else {
                     rps_command_torques[i] = anatomical_joint_pd_controllers_[i+2].calculate(smooth_ref, get_anatomical_joint_position(i + 2), 0, get_anatomical_joint_velocity(i + 2));
-                    rps_command_torques[2] = 0.0; /// set platform height commanded force to zero
+                    rps_command_torques[2] = 0.0; // set platform height commanded force to zero
                 }
             }
         }
         break;
 
-    case 2: /// control impedance of serial joints with all joints active
+    case 2: // control impedance of serial joints with all joints active
 
         for (int i = 0; i < N_qs_; ++i) {
             if (rps_backdrive_) {
@@ -345,36 +345,36 @@ std::vector<double> MahiExoII::set_anat_pos_ctrl_torques(SmoothReferenceTrajecto
 
         
 
-///-----------------------------------------------------------------------------
-/// PUBLIC KINEMATICS FUNCTIONS
-///-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// PUBLIC KINEMATICS FUNCTIONS
+//-----------------------------------------------------------------------------
 
 void MahiExoII::update_kinematics() {
 
-    /// update q_par_ (q parallel) with the three prismatic link positions
+    // update q_par_ (q parallel) with the three prismatic link positions
     q_par_ << joints_[2].get_position(), joints_[3].get_position(), joints_[4].get_position();
     q_par_dot_ << joints_[2].get_velocity(), joints_[3].get_velocity(), joints_[4].get_velocity();
 
-    /// run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
+    // run forward kinematics solver to update q_ser (q serial) and qp_ (q prime), which contains all 12 RPS positions
     forward_rps_kinematics_velocity(q_par_, q_ser_, qp_, rho_fk_, jac_fk_, q_par_dot_, q_ser_dot_, qp_dot_);
 
-    /// get positions from first two anatomical joints, which have encoders
-    anatomical_joint_positions_[0] = joints_[0].get_position(); /// elbow flexion/extension
-    anatomical_joint_positions_[1] = joints_[1].get_position(); /// forearm pronation/supination
+    // get positions from first two anatomical joints, which have encoders
+    anatomical_joint_positions_[0] = joints_[0].get_position(); // elbow flexion/extension
+    anatomical_joint_positions_[1] = joints_[1].get_position(); // forearm pronation/supination
 
-    /// get positions from forward kinematics solver for three wrist anatomical joints 
-    anatomical_joint_positions_[2] = q_ser_[0]; /// wrist flexion/extension
-    anatomical_joint_positions_[3] = q_ser_[1]; /// wrist radial/ulnar deviation
-    anatomical_joint_positions_[4] = q_ser_[2]; /// arm translation
+    // get positions from forward kinematics solver for three wrist anatomical joints 
+    anatomical_joint_positions_[2] = q_ser_[0]; // wrist flexion/extension
+    anatomical_joint_positions_[3] = q_ser_[1]; // wrist radial/ulnar deviation
+    anatomical_joint_positions_[4] = q_ser_[2]; // arm translation
 
-    /// get velocities from first two anatomical joints, which have encoders
-    anatomical_joint_velocities_[0] = joints_[0].get_velocity(); /// elbow flexion/extension
-    anatomical_joint_velocities_[1] = joints_[1].get_velocity(); /// forearm pronation/supination
+    // get velocities from first two anatomical joints, which have encoders
+    anatomical_joint_velocities_[0] = joints_[0].get_velocity(); // elbow flexion/extension
+    anatomical_joint_velocities_[1] = joints_[1].get_velocity(); // forearm pronation/supination
 
-    /// get velocities from forward kinematics solver for three wrist anatomical joints 
-    anatomical_joint_velocities_[2] = q_ser_dot_[0]; /// wrist flexion/extension
-    anatomical_joint_velocities_[3] = q_ser_dot_[1]; /// wrist radial/ulnar deviation
-    anatomical_joint_velocities_[4] = q_ser_dot_[2]; /// arm translation
+    // get velocities from forward kinematics solver for three wrist anatomical joints 
+    anatomical_joint_velocities_[2] = q_ser_dot_[0]; // wrist flexion/extension
+    anatomical_joint_velocities_[3] = q_ser_dot_[1]; // wrist radial/ulnar deviation
+    anatomical_joint_velocities_[4] = q_ser_dot_[2]; // arm translation
 }
 
 std::vector<double> MahiExoII::get_wrist_parallel_positions() const {
@@ -387,12 +387,12 @@ std::vector<double> MahiExoII::get_wrist_serial_positions() const {
 
 void MahiExoII::set_anatomical_joint_torques(std::vector<double> new_torques) {
 
-    /// set torques for first two anatomical joints, which have actuators
+    // set torques for first two anatomical joints, which have actuators
     joints_[0].set_torque(new_torques[0]);
     joints_[1].set_torque(new_torques[1]);
 
 
-    /// calculate the spectral norm of the transformation matrix
+    // calculate the spectral norm of the transformation matrix
     Eigen::EigenSolver<Eigen::Matrix3d> eigensolver(jac_fk_.transpose() * jac_fk_, false);
     if (eigensolver.info() != Eigen::Success) {
         joints_[2].set_torque(0.0);
@@ -410,7 +410,7 @@ void MahiExoII::set_anatomical_joint_torques(std::vector<double> new_torques) {
     double spec_norm = std::sqrt(*lambda_max);
     //print(spec_norm);
 
-    /// kill robot if norm too large
+    // kill robot if norm too large
     if (spec_norm > 100) {
         //error_code_ = -3;
     }
@@ -431,7 +431,7 @@ void MahiExoII::set_anatomical_joint_torques(std::vector<double> new_torques) {
     spec_norm_prev_ = spec_norm;
     q_par_prev_ = q_par_;
 
-    /// set torques for two wrist anatomical joints and arm translation
+    // set torques for two wrist anatomical joints and arm translation
     Eigen::VectorXd par_torques = Eigen::VectorXd::Zero(N_qs_);
     Eigen::VectorXd ser_torques = Eigen::VectorXd::Zero(N_qs_);
     ser_torques(0) = new_torques[2];
@@ -442,7 +442,7 @@ void MahiExoII::set_anatomical_joint_torques(std::vector<double> new_torques) {
     joints_[3].set_torque(par_torques(1));
     joints_[4].set_torque(par_torques(2));
 
-    /// store parallel and serial joint torques for data logging
+    // store parallel and serial joint torques for data logging
     tau_par_rob_ = par_torques;
     tau_ser_rob_ = -ser_torques;
 }
@@ -661,9 +661,9 @@ bool MahiExoII::check_neutral_anat_pos(std::vector<double> goal_anat_pos, std::v
 }*/
 
 
-///-----------------------------------------------------------------------------
-/// PRIVATE KINEMATICS FUNCTIONS
-///-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// PRIVATE KINEMATICS FUNCTIONS
+//-----------------------------------------------------------------------------
 
 
 void MahiExoII::solve_static_rps_torques(std::vector<uint8> select_q, const Eigen::VectorXd& tau_b, const Eigen::VectorXd& qp, Eigen::VectorXd& tau_s) const {

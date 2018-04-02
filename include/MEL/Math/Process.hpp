@@ -38,6 +38,7 @@ public:
 
     /// applies the process operation for one sample
     virtual double update(const double x, const Time& current_time = Time::Zero) {
+        Time unused = current_time; // unused
         return x;
     }
 

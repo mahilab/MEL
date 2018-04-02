@@ -19,7 +19,6 @@ int main(int argc, char const* argv[]) {
     register_ctrl_handler(handler);
 
     std::vector<double> data(5);
-    //MelShare ms("ms_math");
 
     Timer timer(milliseconds(1), Timer::Hybrid);
 
