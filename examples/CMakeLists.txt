@@ -64,9 +64,6 @@ if(QUANSER)
     add_executable(q8usb ex_q8usb.cpp)
     target_link_libraries(q8usb MEL)
 
-    add_executable(emg_q8usb ex_emg_q8usb.cpp)
-    target_link_libraries(emg_q8usb MEL)
-
     add_executable(haptic_paddle ex_haptic_paddle.cpp)
     target_link_libraries(haptic_paddle MEL)
 endif()
@@ -80,15 +77,3 @@ if(NI_X64)
     target_link_libraries(crio MEL)
 endif()
 
-#===============================================================================
-# MAHI EXO-II EXAMPLES
-#===============================================================================
-
-if (MAHIEXOII AND QUANSER)
-    add_executable(mahiexoii_q8usb ex_mahiexoii_q8usb.cpp)
-    target_link_libraries(mahiexoii_q8usb MEL)
-
-    add_executable(mahiexoiiemg_q8usb ex_mahiexoiiemg_q8usb.cpp)
-    target_link_libraries(mahiexoiiemg_q8usb MEL)
-
-endif()

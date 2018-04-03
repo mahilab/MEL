@@ -22,10 +22,6 @@
 #include <MEL/Utility/Types.hpp>
 #include <complex>
 #include <vector>
-#ifdef MEL_INCLUDE_EIGEN
-    #include <Eigen\Dense>
-    #include <Eigen\StdVector>
-#endif
 
 namespace mel {
 
@@ -125,38 +121,6 @@ extern std::vector<double> linear_regression(const std::vector<double>& x, const
 /// random variables and the first dimension of sample data (rows) corresponds to observations
 extern void gauss_mlt_params(const std::vector<std::vector<double>>& sample_data, std::vector<double>& sample_mean, std::vector<std::vector<double>>& sample_cov);
 
-//==============================================================================
-// SIGNAL PROCESSING
-//==============================================================================
-
-//extern std::vector<double> downsample(const std::vector<double>& signal, uint32 ds_factor);
-
-//extern std::vector<std::vector<double>> bin_signal(const std::vector<double>& signal, std::size_t bin_size);
-
-//==============================================================================
-// EIGEN RELATED
-//==============================================================================
-
-#ifdef MEL_INCLUDE_EIGEN
-
-void eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec, std::vector<double>& std_vec);
-
-void stdvec_to_eigvec(std::vector<double>& std_vec, Eigen::VectorXd& eigen_vec);
-
-std::vector<double> copy_eigvec_to_stdvec(const Eigen::VectorXd& eigen_vec);
-
-Eigen::VectorXd copy_stdvec_to_eigvec(const std::vector<double>& std_vec);
-
-std::vector<std::vector<double>> copy_eigmat_to_stdvecvec(const Eigen::MatrixXd& eigen_mat);
-
-Eigen::MatrixXd copy_stdvecvec_to_eigmat(const std::vector<std::vector<double>>& std_vecvec);
-
-double mat_spectral_norm(const Eigen::MatrixXd& mat);
-
-/// Returns the value of the softmax function for element k of input vector a
-//double softmax(const Eigen::VectorXd& a, int k);
-
-#endif
 
 } // namespace mel
 

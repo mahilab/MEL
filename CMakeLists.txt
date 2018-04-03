@@ -24,8 +24,6 @@ cmake_minimum_required(VERSION 3.7)
 option(NI_X64    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
 option(NI_ARM    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
 option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
-option(OPENWRIST "Turn ON to include OpenWrist source code"                   OFF)
-option(MAHIEXOII "Turn ON to include MAHI Exo-II source code"                 OFF)
 option(XINPUT    "Turn ON if you have XInput installed for Xbox controllers." OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
 option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
@@ -35,7 +33,6 @@ option(LEGACY    "Turn ON if you need depreciated MEL classes."               OF
 set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"   CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
 set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"   CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
 set(QUANSER_ROOT "C:/Program Files/Quanser" CACHE FILEPATH "Absolute path to Quanser installation."          )
-set(EIGEN_ROOT   "C:/dev/eigen"             CACHE FILEPATH "Absolute path to Eigen installation."            )
 
 #===============================================================================
 # SETUP BUILD
@@ -94,10 +91,6 @@ endif()
 
 if (QUANSER)
     add_definitions(-DMEL_INCLUDE_QUANSER)
-endif()
-
-if (MAHIEXOII)
-    add_definitions(-DMEL_INCLUDE_EIGEN)
 endif()
 
 # set compiler flags
@@ -163,10 +156,6 @@ elseif (QUANSER)
     list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
 endif()
 
-if (MAHIEXOII)
-    list(APPEND INCLUDE_DIRS ${EIGEN_ROOT})
-endif()
-
 # include directories
 include_directories(${INCLUDE_DIRS})
 
@@ -209,16 +198,6 @@ file(GLOB SRC_QUANSER
 file(GLOB SRC_DEVICES
     "${CMAKE_SOURCE_DIR}/include/MEL/Devices/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/*.cpp"
-)
-
-file(GLOB SRC_OPENWRIST
-    "${CMAKE_SOURCE_DIR}/include/MEL/Exoskeletons/OpenWrist/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Exoskeletons/OpenWrist/*.cpp"
-)
-
-file(GLOB SRC_MAHIEXOII
-    "${CMAKE_SOURCE_DIR}/include/MEL/Exoskeletons/MahiExoII/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Exoskeletons/MahiExoII/*.cpp"
 )
 
 file(GLOB SRC_LEGACY
@@ -264,13 +243,10 @@ source_group("Daq" FILES ${SRC_DAQ})
 source_group("Daq\\NI" FILES ${SRC_NI})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Devices" FILES ${SRC_DEVICES})
-source_group("Exoskeletons\\OpenWrist" FILES ${SRC_OPENWRIST})
-source_group("Exoskeletons\\MahiExoII" FILES ${SRC_MAHIEXOII})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
 source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
 source_group("Logging\\Writers" FILES ${SRC_LOGGING_WRITERS})
-
 source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
 source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
@@ -290,14 +266,6 @@ set(SOURCE_FILES
     ${SRC_MATH}
     ${SRC_UTILITY}
 )
-
-if(OPENWRIST)
-    list(APPEND SOURCE_FILES ${SRC_OPENWRIST})
-endif()
-
-if(MAHIEXOII)
-    list(APPEND SOURCE_FILES ${SRC_MAHIEXOII})
-endif()
 
 if(LEGACY)
     list(APPEND SOURCE_FILES ${SRC_LEGACY})
