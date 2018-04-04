@@ -107,18 +107,6 @@ void print(T value, Color foreground, Color background = Color::None) {
     reset_text_color();
 }
 
-/// Prints MEL 2D array
-template <typename T, std::size_t N, std::size_t M>
-void print(const array_2D<T, N, M>& a, bool end_line = true) {
-    for (auto it_row = a.begin(); it_row != a.end(); ++it_row) {
-        for (auto it_col = (*it_row).begin(); it_col != (*it_row).end();
-            ++it_col) {
-            std::cout << *it_col << " ";
-        }
-        if (end_line)
-            std::cout << "\n";
-    }
-}
 
 //==============================================================================
 // MISC

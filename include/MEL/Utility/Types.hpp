@@ -57,43 +57,10 @@ enum Logic {
 
 /// Represents encoder quadrature factors
 enum QuadFactor {
-    X0 = 0,  ///< no quadrature
+    X0   = 0,  ///< no quadrature
     X1   = 1,  ///< 1X counts per revolution
-    X2   = 2,  ///< 2X counts per revolution,
+    X2   = 2,  ///< 2X counts per revolution
     X4   = 4,  ///< 4X counts per revolution
-};
-
-//==============================================================================
-// STRUCTS
-//==============================================================================
-
-/// TODO: THIS NEEDS TO GO SOMEWHERE ELSE
-/// Template 2D array for storing 2D data arrays and doing simple arithmetic
-template <typename T, std::size_t N, std::size_t M>
-struct array_2D {
-public:
-    array_2D() {};
-    array_2D(T val) {
-        for (auto it_row = array_.begin(); it_row != array_.end(); ++it_row) {
-            for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
-                *it_col = val;
-            }
-        }
-    };
-    std::array<T, M> operator [](int i) const { return array_[i]; }
-    std::array<T, M>& operator [](int i) { return array_[i]; }
-    std::array<T, N> multiply(std::array<T, M> b) {
-        std::array<T, N> c;
-        c.fill(0);
-        for (auto it_row = array_.begin(); it_row != array_.end(); ++it_row) {
-            for (auto it_col = (*it_row).begin(); it_col != (*it_row).end(); ++it_col) {
-                c[it_row - array_.begin()] += *it_col * b[it_col - (*it_row).begin()];
-            }
-        }
-        return c;
-    };
-private:
-    std::array<std::array<T, M>, N> array_;
 };
 
 } // namespace mel
