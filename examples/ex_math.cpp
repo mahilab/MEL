@@ -10,12 +10,13 @@ using namespace mel;
 
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
-    print("Ctrl+C Pressed");
-    stop = true;
+    if (event == CtrlEvent::CtrlC)
+        stop = true;
     return true;
 }
 
-int main(int argc, char const* argv[]) {
+int main() {
+
     register_ctrl_handler(handler);
 
     std::vector<double> data(5);

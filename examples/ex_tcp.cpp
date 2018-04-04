@@ -58,17 +58,17 @@ void client(int iterations, int bytes, const IpAddress& remote_address) {
         clock.restart();
         socket.send(packet);
         socket.receive(packet);
-        pings.push_back(clock.get_elapsed_time().as_microseconds());
+        pings.push_back((double)clock.get_elapsed_time().as_microseconds());
     }
     packet.clear();
     msg = "done";
     packet << msg;
     socket.send(packet);
     print("Done");
-    int mean_ping = mean(pings);
-    int std_ping = stddev_p(pings);
-    int min_ping = min(pings);
-    int max_ping = max(pings);
+    int mean_ping = (int)mean(pings);
+    int std_ping = (int)stddev_p(pings);
+    int min_ping = (int)min(pings);
+    int max_ping = (int)max(pings);
     print("Avg Ping: " + stringify(mean_ping) + " +/- " + stringify(std_ping) + " usec");
     print("Min Ping: " + stringify(min_ping) + " usec");
     print("Max Ping: " + stringify(max_ping) + " usec");

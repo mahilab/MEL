@@ -39,10 +39,6 @@ C:/Program Files/Quanser/QUARC/lib/win64
 ```
 These directories and files are created automatically when you install QUARC. If you installed QUARC in another location, make sure you update CMakeLists.txt. Note that **QUARC can only be compiled with MSVC** so make sure you install [Visual Studio](https://www.visualstudio.com/).
 
-#### Eigen (Optional)
-
-If you are developing for the MAHI Exo-II, you will need to install [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) for forward and inverse kinematics. MEL expects to find Eigen in `C:/dev/eigen`, which should contain `bench/`, `blas/`, `cmake/`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt.
-
 #### Python / C# (Optional)
 
 MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt to build from source. For Python/MELScope installation requirements, go [here](https://github.com/epezent/MEL/tree/master/melscope). For C# (e.g. if using [Unity Engine](https://unity3d.com/) for visualizations), you should be able to use [Visual Studio](https://www.visualstudio.com/) or [MonoDevelop](http://www.monodevelop.com/) as is.
@@ -66,18 +62,18 @@ cmake ..
 ```
 This will generate a build file for the bare bones MEL library (i.e. no hardware implementations) using whatever CMake thinks the default generator/compiler is. If you're on Linux using GCC, this will probably be a `makefile` in which case you simple run `make` to compile MEL. If you're on Windows using MSVC, this will be a `.sln` file which you can open, edit, compile, and debug using Visual Studio.
 
-#### Example 2: MEL + NI Hardware + OpenWrist + Ninja
+#### Example 2: MEL + NI Hardware + Ninja
 ```shell
-cmake .. -G "Ninja" -DNI_X64=ON -DOPENWRIST=ON
+cmake .. -G "Ninja" -DNI_X64=ON
 ninja
 ```
-The first line generates Ninja build files for MEL with NI hardware and OpenWrist classes. The second line then calls Ninja which builds MEL using NI's cross-compiler.
+The first line generates Ninja build files for MEL with NI hardware. The second line then calls Ninja which builds MEL using NI's cross-compiler.
 
-#### Example 3: MEL + Quanser Hardware + MAHI Exo-II + Visual Studio
+#### Example 3: MEL + Quanser Hardware + Visual Studio
 ```shell
-cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON -DMAHIEXOII=ON
+cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
 ```
-This generates a `.sln` file for MEL with Quanser hardware and MAHI Exo-II classes. The `.sln` can then be opened and compiled with Visual Studio, or built from an MSVC Developer Command Prompt using the command `msbuild MEL.sln`.
+This generates a `.sln` file for MEL with Quanser hardware. The `.sln` can then be opened and compiled with Visual Studio, or built from an MSVC Developer Command Prompt using the command `msbuild MEL.sln`.
 
 #### CMake Options
 
@@ -86,8 +82,6 @@ MEL provides the following options when building with CMake:
 * `-DNI_X64=ON` adds MEL implementations for NI Intel x64 hardware (e.g. cRIO), and sets the compiler to NI's GNU/Linux cross-compiler
 * `-DNI_ARM=ON` adds MEL implementations for NI hardware (e.g. myRIO), and sets the compiler to NI's GNU/Linux cross-compiler
 * `-DQUANSER=ON` adds MEL implementations for Quanser hardware (Q8 USB, Q2 USB, etc.) and statically links MEL to QUARC
-* `-DOPENWRIST=ON` adds OpenWrist classes to MEL
-* `-DMAHIEXOII=ON` adds MAHI Exo-II classes to MEL and includes Eigen as a dependency
 * `-DXINPUT=ON` adds support for Xbox controllers
 * `-DEXAMPLES=ON` builds all MEL example executables which are compatible with the platform, compiler, and any of the options above which are specified
 
@@ -146,8 +140,11 @@ Right-click your project in the Solution Explorer and select **Properties**. Mak
 
 - C/C++ > General > Additional Include Directories
     - **append:** `C:\path\to\...\MEL\include;`
-    - **note:** you made need to add `C:\dev\eigen;` if `-DMAHIEXOII` was used
-- Linker > General > Additional Library Directories
+- Linker > General > Additional Library Directoriesif
     - **append:** `C:\path\to\...\MEL\lib\windows;`
 - Linker > Input > Additional Dependencies
     - **append:** `MEL.lib;`
+
+## Examples
+
+Several examples can be found in [examples](https://github.com/epezent/MEL/tree/master/examples). The Haptic Paddle example demonstrates a very good use case for new users. To see how MEL is being used for actual research hardware, consider checking out the [OpenWrist](https://github.com/epezent/OpenWrist) and [MAHI Exo-II](https://github.com/craigmc707/MEII) repositories.

@@ -133,8 +133,10 @@ private:
 // create global stop variable CTRL-C handler function
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
-    print("Ctrl+C Pressed");
-    stop = true;
+    if (event == CtrlEvent::CtrlC) {
+        print("Ctrl+C Pressed!");
+        stop = true;
+    }
     return true;
 }
 
@@ -312,7 +314,7 @@ int main(int argc, char* argv[]) {
     // perform calibration if requested
     if (input.count("c") > 0) {
         hp.calibrate();
-        return 0.0;
+        return 0;
     }
 
     // create control loop timer
@@ -322,7 +324,7 @@ int main(int argc, char* argv[]) {
     Butterworth buttpos(4, hertz(25), timer.get_frequency());
     Butterworth buttvel(4, hertz(25), timer.get_frequency());
     Butterworth buttorq(2, hertz(10), timer.get_frequency());
-    double filtered_pos, filtered_vel, filtered_torque;
+    double filtered_pos, filtered_vel;
 
     // torque 
     double torque;

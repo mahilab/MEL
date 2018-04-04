@@ -8,7 +8,7 @@
 
 using namespace mel;
 
-int main(int argc, char const *argv[]) {
+int main() {
 
     enable_realtime();
 
@@ -20,7 +20,6 @@ int main(int argc, char const *argv[]) {
 
     // number of samples to generate
     int samples = 250;
-    bool finished = false;
 
     // chaotic logistic map with offset as input signal
     double r = 3.78;

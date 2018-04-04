@@ -99,7 +99,7 @@
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "CMake (Clean)",
 			"shell_cmd": "python clean.py",
-			"working_dir": "$project_path/../tools"
+			"working_dir": "$project_path/../util"
 		},
 		{
 			"name": "Visual Studio",
