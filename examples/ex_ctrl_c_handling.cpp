@@ -14,7 +14,7 @@ bool my_handler(CtrlEvent event) {
     return 1;
 }
 
-int main(int argc, char *argv[]) {
+int main() {
     print("Press Ctrl+C to continue, or Ctrl+Break to exit");
     register_ctrl_handler(my_handler);
     while (!flag) {}

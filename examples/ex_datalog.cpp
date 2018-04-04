@@ -9,11 +9,12 @@ using namespace mel;
 
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
-    stop = true;
+    if (event == CtrlEvent::CtrlC)
+        stop = true;
     return true;
 }
 
-int main(int argc, char const *argv[]) {  
+int main() {  
 
     // register ctrl-c handler
     register_ctrl_handler(handler);
@@ -89,7 +90,7 @@ int main(int argc, char const *argv[]) {
         tick = timer.get_elapsed_time();
         data_logger.write(data_record);
         tock = timer.get_elapsed_time();
-        delta_times.push_back(tock.as_microseconds() - tick.as_microseconds());
+        delta_times.push_back((double)(tock.as_microseconds() - tick.as_microseconds()));
 
         // wait for duration of sample period
         timer.wait();

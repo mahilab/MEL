@@ -43,7 +43,7 @@ public:
     }
 };
 
-int main(int argc, char const* argv[]) {
+int main() {
     // This intializes the default MEL Logger. Severity levels Verbose and above
     // will be written to a rolling log file MEL.log, and severity levels
     // Info and above will be written to the console with color formatting.

@@ -17,7 +17,8 @@ using namespace mel;
 
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
-    stop = true;
+    if (event == CtrlEvent::CtrlC)
+        stop = true;
     return true;
 }
 

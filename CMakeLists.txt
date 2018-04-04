@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.7)
 
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
-# Updated: 1/2018
+# Craig McDonalod (craig.g.mcdonald@gmail.com)
+# Updated: 4/2018
 
 #===============================================================================
 # HOW TO USE THIS FILE
@@ -13,9 +13,10 @@ cmake_minimum_required(VERSION 3.7)
 #        $: cmake .. -G "Ninja" -DNI=ON
 #    To generate Visual Studio MEL.sln file for Quanser hardware, run:
 #        $: cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
-# 3) To build OpenWrist or MAHI Exo-II classes, append -DOPENWRIST=ON or -DMAHIEXOII=ON
 # 3) To build example programs in ./examples, append -DEXAMPLES=ON
 # 4) Proceed to build generated makefile or MEL.sln file with the necessary software
+
+cmake_minimum_required(VERSION 3.7)
 
 #===============================================================================
 # USER OPTIONS
@@ -114,7 +115,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # WARNING LEVEL 4
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP") # MULTICORE BUILDS
-
 endif()
 
 #===============================================================================

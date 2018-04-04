@@ -12,7 +12,8 @@ using namespace mel;
 // create global stop variable CTRL-C handler function
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
-    stop = true;
+    if (event == CtrlEvent::CtrlC)
+        stop = true;
     return true;
 }
 
