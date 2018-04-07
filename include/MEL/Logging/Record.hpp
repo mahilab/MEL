@@ -107,6 +107,7 @@ public:
     /// Destructor
     virtual ~Record();
 
+    // Stream operator overloads
     Record& operator<<(char data);
 
     Record& operator<<(std::ostream& (*data)(std::ostream&));
@@ -118,30 +119,37 @@ public:
         return *this;
     }
 
+    /// Returns timestamp at which Record was constructed
     virtual const Timestamp& get_timestamp() const;
 
+    /// Gets the severity of a record
     virtual Severity get_severity() const;
 
+    /// Gets ID of thread a Record was made on
     virtual unsigned int get_tid_() const;
 
+    /// Gets the line number where the Record was made
     virtual size_t get_line() const;
 
+    /// Gets the message contained by a Record
     virtual const char* get_message() const;
 
+    /// Gets the name of the function in which the Record was made
     virtual const char* get_func() const;
 
+    /// Gets the name of the file in which the Record was made
     virtual const char* get_file() const;
 
 private:
-    Timestamp timestamp_;
-    const Severity severity_;
-    const unsigned int tid_;
-    const size_t line_;
-    std::ostringstream message_;
-    const char* const func_;
-    const char* const file_;
-    mutable std::string func_str_;
-    mutable std::string message_str_;
+    Timestamp timestamp_;              ///< timestamp
+    const Severity severity_;          /// Record severity
+    const unsigned int tid_;           ///< thread ID
+    const size_t line_;                ///< line number
+    std::ostringstream message_;       ///< string stream for message
+    const char* const func_;           ///< function name string
+    const char* const file_;           ///< file name string
+    mutable std::string func_str_;     ///< function name string
+    mutable std::string message_str_;  ///< message string
 };
 
 inline std::string process_function_name(const char* func);
