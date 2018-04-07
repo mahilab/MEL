@@ -5,8 +5,10 @@
 
 // To run this example, open two terminals and run the following:
 //
-// Terminal 1: shared_memory.exe A
-// Terminal 2: shared_memory.exe B
+// Terminal 1: shared_memory.exe #A
+// Terminal 2: shared_memory.exe #B
+//
+// where # is replaced with either 1, 2, or 3
 
 using namespace mel;
 
