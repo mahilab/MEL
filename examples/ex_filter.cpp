@@ -13,7 +13,6 @@ using namespace mel;
 // filters and saved to a csv file.
 
 int main() {
-    enable_realtime();
 
     // construct filters
     Butterworth lp_filter(2, 0.05, Butterworth::Lowpass);
@@ -57,5 +56,4 @@ int main() {
 
     data_logger.save_data("example_filter_data", ".", false);
 
-    disable_realtime();
 }

@@ -18,7 +18,7 @@ DATA_SOURCES:
   curve_widths: [2, 2]
   mode: Read Only
   name: 55001@10.0.0.247
-  settings: [55002, 55001, 10.0.0.247]
+  settings: [55002, 55001, 127.0.0.1]
   size: 2
   type: melnet
 GRID_COLS: 3

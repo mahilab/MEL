@@ -9,15 +9,19 @@
 // Usage:
 // To run this example, open two terminals are run the following:
 //
-// Terminal 1: melnet.exe blocking A <IP B> (e.g. melnet.exe blocking A
-// 169.254.67.6) Terminal 2: melnet.exe blocking B <IP A> (e.g. melnet.exe
-// blocking B 169.254.105.30)
+// Terminal 1: melnet.exe blocking A <IP B>
+// (e.g. melnet.exe blocking A 169.254.67.6)
+//
+// Terminal 2: melnet.exe blocking B <IP A>
+// (e.g. melnet.exe blocking B 169.254.105.30)
 //
 // or
 //
-// Terminal 1: melnet.exe nonblocking A <IP B> (e.g. melnet.exe nonblocking A
-// 169.254.67.6) Terminal 2: melnet.exe nonblocking B <IP A> (e.g. melnet.exe
-// nonblocking B 169.254.105.30)
+// Terminal 1: melnet.exe nonblocking A <IP B>
+// (e.g. melnet.exe nonblocking A 169.254.67.6)
+//
+// Terminal 2: melnet.exe nonblocking B <IP A>
+// (e.g. melnet.exe nonblocking B 169.254.105.30)
 //
 // The two terminals can be on the same computer (IP A = IP B) or separate
 // computers on the same network (IP A =/= IP B).

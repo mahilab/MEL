@@ -6,8 +6,6 @@
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Logging/DataLogger.hpp>
 
-// Note: Run this example with 'math.scope' open in MELScope
-
 using namespace mel;
 
 int main() {
