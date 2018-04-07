@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     Options options("melscope.exe", "MELScope Demo");
     options.add_options()("r", "Remote Address", value<std::string>());
     auto result              = options.parse(argc, argv);
-    IpAddress remote_address = IpAddress::get_local_address();
+    IpAddress remote_address = "127.0.0.1";
     if (result.count("r") > 0)
         remote_address = IpAddress(result["r"].as<std::string>());
 
