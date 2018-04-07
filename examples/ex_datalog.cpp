@@ -1,11 +1,18 @@
-#include <MEL/Logging/Log.hpp>
-#include <MEL/Logging/DataLogger.hpp>
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Logging/DataLogger.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Functions.hpp>
+#include <MEL/Utility/Console.hpp>
+#include <MEL/Utility/System.hpp>
 
 using namespace mel;
+
+// Usage:
+// Run the example to generate two data logs that are written in real time. One
+// writes to a file immediately, while the next writes to a buffer and then
+// writes all data to a file at the end. Change the duration of writing to each
+// of these buffers by changing the variables immediate_write_duration and
+// buffered_write_duration in this script.
 
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
@@ -14,8 +21,7 @@ bool handler(CtrlEvent event) {
     return true;
 }
 
-int main() {  
-
+int main() {
     // register ctrl-c handler
     register_ctrl_handler(handler);
 
@@ -23,12 +29,12 @@ int main() {
 
     // duration of testing
     Time immediate_write_duration = seconds(1);
-    Time buffered_write_duration = seconds(120);
+    Time buffered_write_duration  = seconds(10);
 
     // chaotic gauss map
     double alpha = 4.90;
-    double beta = -0.58;
-    double x = 0.1123565612351;
+    double beta  = -0.58;
+    double x     = 0.1123565612351;
 
     // chaotic dyadic map
     double y = 0.1146125234634;
@@ -48,7 +54,8 @@ int main() {
 
     // initialize data logger to write immediately to file
     DataLogger data_logger(WriterType::Immediate, false);
-    data_logger.set_header({ "Gauss","Dyadic","Logistic","Duffing 0","Duffing 1" });
+    data_logger.set_header(
+        {"Gauss", "Dyadic", "Logistic", "Duffing 0", "Duffing 1"});
 
     // data storage container
     std::vector<double> data_record(5);
@@ -58,23 +65,21 @@ int main() {
     std::vector<double> delta_times;
     Time tick;
     Time tock;
-    bool finished = false;
+    bool finished   = false;
     Time large_time = milliseconds(1);
 
     // open the data file for logging
     data_logger.open("my_immediate_datalog", ".", false);
 
     // begin logging data
-    while (!stop && !finished) {      
-
+    while (!stop && !finished) {
         // iterate chaotic mappings
         v = w;
         w = -b * v + a * w - std::pow(w, 3);
         x = std::exp(-alpha * x * x) + beta;
         if (y >= 0 && y < 0.5) {
             y = 2 * y;
-        }
-        else {
+        } else {
             y = 2 * y - 1.0;
         }
         z = r * z * (1 - z);
@@ -90,7 +95,8 @@ int main() {
         tick = timer.get_elapsed_time();
         data_logger.write(data_record);
         tock = timer.get_elapsed_time();
-        delta_times.push_back((double)(tock.as_microseconds() - tick.as_microseconds()));
+        delta_times.push_back(
+            (double)(tock.as_microseconds() - tick.as_microseconds()));
 
         // wait for duration of sample period
         timer.wait();
@@ -105,19 +111,16 @@ int main() {
     for (size_t i = 0; i < delta_times.size(); ++i) {
         if (delta_times[i] > large_time.as_microseconds())
             count_large_times++;
-    }    
+    }
 
-    LOG(Info) << "Average write time for writing data immediately to file was " << mean(delta_times) << " us.";
-    LOG(Info) << "Number of times immediate file writing took longer than " << large_time.as_microseconds() << " us was " << count_large_times << ".";
-
-
+    LOG(Info) << "Average write time for writing data immediately to file was "
+              << mean(delta_times) << " us.";
+    LOG(Info) << "Number of times immediate file writing took longer than "
+              << large_time.as_microseconds() << " us was " << count_large_times
+              << ".";
 
     // set data logger to write to buffer
     data_logger.set_writer_type(WriterType::Buffered);
-
-    // create other data loggers
-    DataLogger other_data_logger(WriterType::Buffered, false);
-    other_data_logger.set_header({ "Gauss","Dyadic","Logistic","Duffing 0","Duffing 1" });
 
     // reinitialize chaoitc map variables
     x = 0.1123565612351;
@@ -132,15 +135,13 @@ int main() {
 
     // begin logging data
     while (!stop && !finished) {
-
         // iterate chaotic mappings
         v = w;
         w = -b * v + a * w - std::pow(w, 3);
         x = std::exp(-alpha * x * x) + beta;
         if (y >= 0 && y < 0.5) {
             y = 2 * y;
-        }
-        else {
+        } else {
             y = 2 * y - 1.0;
         }
         z = r * z * (1 - z);
@@ -154,9 +155,6 @@ int main() {
 
         // write to buffer
         data_logger.buffer(data_record);
-
-        // write to other buffer
-        other_data_logger.buffer(data_record);
 
         // wait for duration of sample period
         timer.wait();
@@ -172,14 +170,8 @@ int main() {
     data_logger.wait_for_save();
     data_logger.clear_data();
     tock = timer.get_elapsed_time();
-    LOG(Info) << "Time taken to save buffered data to file was " << tock.as_milliseconds() - tick.as_milliseconds() << " ms.";
-
-    other_data_logger.save_data("my_other_buffered_datalog", ".", false);
-    other_data_logger.wait_for_save();
-    other_data_logger.clear_data();
+    LOG(Info) << "Time taken to save buffered data to file was "
+              << tock.as_milliseconds() - tick.as_milliseconds() << " ms.";
 
     disable_realtime();
-
 }
-
-

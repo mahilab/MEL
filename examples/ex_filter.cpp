@@ -1,15 +1,18 @@
-#include <MEL/Math/Filter.hpp>
-#include <MEL/Math/Butterworth.hpp>
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Console.hpp>
-#include <MEL/Math/Functions.hpp>
 #include <MEL/Logging/DataLogger.hpp>
+#include <MEL/Math/Butterworth.hpp>
+#include <MEL/Math/Filter.hpp>
+#include <MEL/Math/Functions.hpp>
+#include <MEL/Utility/Console.hpp>
+#include <MEL/Utility/System.hpp>
 
 using namespace mel;
 
-int main() {
+// Usage:
+// Run the example to generate a random signal that is passed through various
+// filters and saved to a csv file.
 
+int main() {
     enable_realtime();
 
     // construct filters
@@ -24,16 +27,17 @@ int main() {
     // chaotic logistic map with offset as input signal
     double r = 3.78;
     double o = 5.0;
-    double x = 0.5 + o;   
+    double x = 0.5 + o;
 
     // initialize data logger to write immediately to file
     DataLogger data_logger(WriterType::Buffered, false);
-    std::vector<std::string> header = { "Input", "LPF Output", "HPF Output", "LPF Seeded Output", "HPF Seeded Output" };
+    std::vector<std::string> header = {"Input", "LPF Output", "HPF Output",
+                                       "LPF Seeded Output",
+                                       "HPF Seeded Output"};
     data_logger.set_header(header);
 
     // data storage container
     std::vector<double> data_record(header.size());
-
 
     // begin filtering and logging data
     for (int i = 0; i < samples; ++i) {
@@ -54,7 +58,4 @@ int main() {
     data_logger.save_data("example_filter_data", ".", false);
 
     disable_realtime();
-
 }
-
-

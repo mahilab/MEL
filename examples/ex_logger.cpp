@@ -2,6 +2,10 @@
 
 using namespace mel;
 
+// Usage:
+// Run the example to see messages logged to the command line with various
+// levels of severity / formatting.
+
 // custom loggers must start at 1 (the default logger is 0)
 enum { MyLogger = 1 };
 

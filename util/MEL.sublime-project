@@ -8,7 +8,7 @@
 		// 	[
 		// 		"source.cmake"
 		// 	],
-		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DNI=ON -DEXAMPLES=ON",
+		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DNI=ON -DEXAMPLES=ON",
 		// 	"working_dir": "$project_path/../build/linux_make"
 		// },
 		{
@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DOPENWRIST=ON -DNI_X64=ON -DEXAMPLES=ON -DTESTS=ON",
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DNI_X64=ON -DEXAMPLES=ON -DTESTS=ON",
 			"working_dir": "$project_path/../build/linux_ninja"
 		},
 		// {
@@ -28,7 +28,7 @@
 		// 	[
 		// 		"source.cmake"
 		// 	],
-		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DOPENWRIST=ON -DEXAMPLES=ON",
+		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DEXAMPLES=ON",
 		// 	"working_dir": "$project_path/../build/windows_make"
 		// },
 		{

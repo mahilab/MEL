@@ -1,23 +1,22 @@
-#include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Utility/Options.hpp>
 
 using namespace mel;
 
 // The Options class in MEL is taken directly from the open-source cxxopts.
 // Consult its documentation/wiki for more info: (github.com/jarro2783/cxxopts)
 
-int main(int argc, char *argv[]) {
-
+int main(int argc, char* argv[]) {
     // create Options object
     Options options("options.exe", "Simple Program Demonstrating Options");
 
     // add options
     // options can be short, long, or both (short must come first)
     // for example:   options.exe -e   OR   options.exe --evan
-    options.add_options()
-        ("e,evan", "Print's a message from Evan.")  
-        ("h,help", "Prints helpful information.")
-        ("i,integer", "Gets an integer from user.", value<int>());
+    options.add_options()("e,evan", "Prints a message from Evan.")(
+        "c,craig", "Prints a message from Craig.")(
+        "h,help", "Prints helpful information.")(
+        "i,integer", "Gets an integer from user.", value<int>());
 
     // parse options
     auto result = options.parse(argc, argv);
@@ -26,6 +25,9 @@ int main(int argc, char *argv[]) {
 
     if (result.count("evan") > 0)
         print("Hello, my name is Evan!");
+
+    if (result.count("craig") > 0)
+        print("Hello, my name is Craig!");
 
     if (result.count("help") > 0)
         print(options.help());

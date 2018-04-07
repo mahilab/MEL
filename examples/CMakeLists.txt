@@ -68,12 +68,4 @@ if(QUANSER)
     target_link_libraries(haptic_paddle MEL)
 endif()
 
-#===============================================================================
-# NI EXAMPLES
-#===============================================================================
-
-if(NI_X64)
-    add_executable(crio ex_crio.cpp)
-    target_link_libraries(crio MEL)
-endif()
 

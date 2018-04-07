@@ -5,10 +5,6 @@
 
 namespace mel {
 
-//==============================================================================
-// CLASS DEFINITIONS
-//==============================================================================
-
 Timer::Timer(Frequency frequency, WaitMode mode) :
     Timer(frequency.to_time(), mode)
 {
@@ -85,7 +81,5 @@ void Timer::wait_busy(const Time& duration) {
 void Timer::wait_sleep(const Time& duration) {
     sleep(duration);
 }
-
-
 
 } // namespace mel

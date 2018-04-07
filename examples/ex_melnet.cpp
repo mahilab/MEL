@@ -1,20 +1,23 @@
 #include <MEL/Communications/MelNet.hpp>
-#include <MEL/Utility/Console.hpp>
 #include <MEL/Core/Clock.hpp>
-#include <MEL/Utility/System.hpp>
 #include <MEL/Core/Timer.hpp>
-#include <vector>
+#include <MEL/Utility/Console.hpp>
+#include <MEL/Utility/System.hpp>
 #include <string>
+#include <vector>
 
+// Usage:
 // To run this example, open two terminals are run the following:
 //
-// Terminal 1: melnet.exe blocking A <IP B> (e.g. melnet.exe blocking A 169.254.67.6)
-// Terminal 2: melnet.exe blocking B <IP A> (e.g. melnet.exe blocking B 169.254.105.30)
+// Terminal 1: melnet.exe blocking A <IP B> (e.g. melnet.exe blocking A
+// 169.254.67.6) Terminal 2: melnet.exe blocking B <IP A> (e.g. melnet.exe
+// blocking B 169.254.105.30)
 //
 // or
 //
-// Terminal 1: melnet.exe nonblocking A <IP B> (e.g. melnet.exe nonblocking A 169.254.67.6)
-// Terminal 2: melnet.exe nonblocking B <IP A> (e.g. melnet.exe nonblocking B 169.254.105.30)
+// Terminal 1: melnet.exe nonblocking A <IP B> (e.g. melnet.exe nonblocking A
+// 169.254.67.6) Terminal 2: melnet.exe nonblocking B <IP A> (e.g. melnet.exe
+// nonblocking B 169.254.105.30)
 //
 // The two terminals can be on the same computer (IP A = IP B) or separate
 // computers on the same network (IP A =/= IP B).
@@ -28,7 +31,7 @@ void blocking_A(std::string remote_host) {
     std::vector<double> data = melnetA.receive_data();
     print(data);
     // send new data
-    data = {5,6,7,8,9};
+    data = {5, 6, 7, 8, 9};
     melnetA.send_data(data);
     // wait to receive message
     std::string message = melnetA.receive_message();
@@ -42,7 +45,7 @@ void blocking_B(std::string remote_host) {
     // make MelNet B
     MelNet melnetB(55002, 55001, IpAddress(remote_host));
     // send data
-    std::vector<double> data = {0,1,2,3,4};
+    std::vector<double> data = {0, 1, 2, 3, 4};
     melnetB.send_data(data);
     // wait to receive new data
     data = melnetB.receive_data();
@@ -63,11 +66,11 @@ void nonblocking_A(std::string remote_host) {
     while (!melnetA.check_request())
         print("Waiting to Feed B");
     print("Feeding B");
-    melnetA.send_data({0,1,2,3,4});
+    melnetA.send_data({0, 1, 2, 3, 4});
     while (!melnetA.check_request())
         print("Waiting to Feed B");
     print("Feeding B again, he's really hungy!");
-    melnetA.send_data({5,6,7,8,9});
+    melnetA.send_data({5, 6, 7, 8, 9});
 }
 
 void nonblocking_B(std::string remote_host) {
@@ -82,11 +85,10 @@ void nonblocking_B(std::string remote_host) {
     print(data);
 }
 
-int main(int argc, char *argv[]) {
-
+int main(int argc, char* argv[]) {
     if (argc > 3) {
-        std::string mode = argv[1];
-        std::string id = argv[2];
+        std::string mode        = argv[1];
+        std::string id          = argv[2];
         std::string remote_host = argv[3];
         print("Mode:        " + mode);
         print("ID:          " + id);
