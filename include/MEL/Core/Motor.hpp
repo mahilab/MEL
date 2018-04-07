@@ -30,22 +30,26 @@ namespace mel {
 
 /// Encapsulates a DC Motor
 class Motor : public Actuator {
-
 public:
-
     /// constructor
-    Motor(const std::string& name, double kt, Amplifier amplifier, Limiter current_limiter = Limiter());
+    Motor(const std::string& name,
+          double kt,
+          Amplifier amplifier,
+          Limiter current_limiter = Limiter());
 
     /// Enables the Motor using the associated digital output channel
     bool enable() override;
 
-    /// Disables the Motor using using the associated digital output channel and writes zero to the associated analog output channel
+    /// Disables the Motor using using the associated digital output channel and
+    /// writes zero to the associated analog output channel
     bool disable() override;
 
-    /// Sets the desired torque to be generated at the Motor, converts from torque to current, and calls set_current()
+    /// Sets the desired torque to be generated at the Motor, converts from
+    /// torque to current, and calls set_current()
     void set_torque(double torque) override;
 
-    /// Returns the attempted command current since the last call to set_current()
+    /// Returns the attempted command current since the last call to
+    /// set_current()
     double get_torque_command() const override;
 
     /// Returns the limited command current since the last call to set_current()
@@ -58,17 +62,11 @@ public:
     Amplifier& get_amplifier();
 
 protected:
-
-    double kt_;                ///< torque constant of the Motor [torque/current]
-    Amplifier amplifier_;      ///< the current amplifier controlling the motor
+    double kt_;            ///< torque constant of the Motor [torque/current]
+    Amplifier amplifier_;  ///< the current amplifier controlling the motor
     Limiter current_limiter_;  ///< the Motor current limiter
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_MOTOR_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_MOTOR_HPP

@@ -26,21 +26,20 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-
 class Limiter {
-
 public:
-
     /// Default constructor. No limits imposed.
     Limiter();
 
     /// Limiter in Saturate mode that saturates value based on a absolute limit
     Limiter(double abs_limit);
 
-    /// Limiter in Saturate mode that saturates values based on separate min and max limits
+    /// Limiter in Saturate mode that saturates values based on separate min and
+    /// max limits
     Limiter(double min_limit, double max_limit);
 
-    /// Limiter in Accumulate mode that uses an accumulation algorithm (aka i^2*t)
+    /// Limiter in Accumulate mode that uses an accumulation algorithm (aka
+    /// i^2*t)
     Limiter(double continuous_limit, double peak_limit, Time time_limit);
 
     /// Limits the unlimited value using the Limiter mode
@@ -62,7 +61,6 @@ public:
     void reset();
 
 private:
-
     /// Represents limitation modes
     enum Mode {
         None,       ///< no limits
@@ -70,18 +68,23 @@ private:
         Accumulate  ///< limit using i^2*t algorithm
     };
 
-    Mode mode_;
-    double min_limit_;
-    double max_limit_;
-    double continouous_limit_;
-    double setpoint_;
-    double accumulator_;
-    double limited_value_;
-    Clock clock_;
-    bool exceeded_;
-
+    Mode mode_;  ///< limitation mode
+    double
+        min_limit_;  ///< minimum value allowed in Saturate and Accumulate modes
+    double
+        max_limit_;  ///< maximum value allowed in Saturate and Accumulate modes
+    double continuous_limit_;  ///< maximum continuous value allowed in
+                               ///< Accumulate mode
+    double setpoint_;  ///< value to be compared against accumulator to regulate
+                       ///< switching between continuous and extreme limits in
+                       ///< Accumulate mode
+    double accumulator_;  ///< value storing the internal memory of the limit in
+                          ///< Accumulate mode
+    double limited_value_;  ///< modified value after applying limits
+    Clock clock_;           ///< internal clock for regulating Accumulate mode
+    bool exceeded_;         ///< is true when any limit is exceeded
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_LIMITER_HPP
+#endif  // MEL_LIMITER_HPP

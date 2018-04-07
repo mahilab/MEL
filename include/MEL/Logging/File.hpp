@@ -29,16 +29,22 @@ namespace mel {
 
 class File : mel::NonCopyable {
 public:
+    /// Default constructor
     File();
 
+    /// Cosntructor with file name provided
     File(const char* fileName);
 
+    /// Default destructor
     ~File();
 
+    /// Opens the file for input-output operations
     off_t open(const char* fileName);
 
+    /// Writes to the file if the file is open
     int write(const void* buf, size_t count);
 
+    /// Writes to the file if the file is open
     template <class CharType>
     int write(const std::basic_string<CharType>& str) {
         return write(str.data(), str.size() * sizeof(CharType));
@@ -46,20 +52,19 @@ public:
 
     off_t seek(off_t offset, int whence);
 
+    /// Closes the file if the file is open
     void close();
 
+    /// Removes the file if it exists
     static int unlink(const char* fileName);
 
+    /// Renames the file if it exists
     static int rename(const char* oldFilename, const char* newFilename);
 
 private:
-    int m_file;
+    int m_file;  ///< Windows file type
 };
 
 }  // namespace mel
 
 #endif  // MEL_FILE_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

@@ -28,9 +28,7 @@ namespace mel {
 //==============================================================================
 
 class PositionSensor : public Device {
-
 public:
-
     /// Prefered constructor
     PositionSensor(const std::string& name);
 
@@ -38,15 +36,10 @@ public:
     virtual double get_position() = 0;
 
 protected:
-
-    double position_; ///< stores the PositionSensor position since the last call to get_position()
-
+    double position_;  ///< stores the PositionSensor position since the last
+                       ///< call to get_position()
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_POSITIONSENSOR_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_POSITIONSENSOR_HPP

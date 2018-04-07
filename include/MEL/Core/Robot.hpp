@@ -19,9 +19,9 @@
 #ifndef MEL_ROBOT_HPP
 #define MEL_ROBOT_HPP
 
+#include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/Joint.hpp>
-#include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <vector>
@@ -33,14 +33,12 @@ namespace mel {
 //==============================================================================
 
 class Robot : public Device {
-
 public:
-
     /// Constructor.
     Robot(const std::string& name);
 
     /// Destructor
-    virtual ~Robot() { }
+    virtual ~Robot() {}
 
     /// Virtual function to enable all robot members.
     virtual bool enable() override;
@@ -49,7 +47,6 @@ public:
     virtual bool disable() override;
 
 public:
-
     /// Adds a new joint to the robot
     void add_joint(const Joint& joint);
 
@@ -65,37 +62,36 @@ public:
     /// Get the most recently read robot joint velocities.
     std::vector<double> get_joint_velocities();
 
-    /// Set the desired actuator torques.
+    /// Set the desired robot joint torques.
     void set_joint_torques(std::vector<double> new_torques);
 
-    /// Checks position limits of all joints and returns true if any exceeded, false otherwise
+    /// Checks position limits of all joints and returns true if any exceeded,
+    /// false otherwise
     bool any_position_limit_exceeded();
 
-    /// Checks velocity limits of all joints and returns true if any exceeded, false otherwise
+    /// Checks velocity limits of all joints and returns true if any exceeded,
+    /// false otherwise
     bool any_velocity_limit_exceeded();
 
-    /// Checks torque limits of all joints and returns true if any exceeded, false otherwise
+    /// Checks torque limits of all joints and returns true if any exceeded,
+    /// false otherwise
     bool any_torque_limit_exceeded();
 
-    /// Checks position, velocity, and torque limits of all joints and returns true if any exceeded, false otherwise
+    /// Checks position, velocity, and torque limits of all joints and returns
+    /// true if any exceeded, false otherwise
     bool any_limit_exceeded();
 
-
 protected:
+    std::vector<Joint> joints_;  ///< Vector of Joints.
 
-    std::vector<Joint> joints_; ///< Vector of RobotJoints.
-
-    std::vector<double> joint_positions_; ///< Stores the robot joint positions since the last call of get_robot_joint_positions().
-    std::vector<double> joint_velocities_; ///< Stores the robot joint velocities since the last call of get_robot_joint_velocities().
-    std::vector<double> joint_torques_; ///< Does this need to exist?
-
+    std::vector<double>
+        joint_positions_;  ///< Stores the robot joint positions since the last
+                           ///< call of get_joint_positions().
+    std::vector<double>
+        joint_velocities_;  ///< Stores the robot joint velocities since the
+                            ///< last call of get_joint_velocities().
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_ROBOT_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
-
+#endif  // MEL_ROBOT_HPP

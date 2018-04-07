@@ -48,11 +48,11 @@ double Limiter::limit(double unlimited_value) {
             limited_value_ = saturate(unlimited_value, min_limit_, max_limit_);
             break;
         case Accumulate:
-            accumulator_ += (sq(limited_value_) - sq(continouous_limit_)) * clock_.get_elapsed_time().as_seconds();
+            accumulator_ += (sq(limited_value_) - sq(continuous_limit_)) * clock_.get_elapsed_time().as_seconds();
             accumulator_ = saturate(accumulator_, 0.0, INF);
             clock_.restart();
             if (accumulator_ > setpoint_)
-                limited_value_ = saturate(unlimited_value, continouous_limit_);
+                limited_value_ = saturate(unlimited_value, continuous_limit_);
             else
                 limited_value_ = saturate(unlimited_value, min_limit_, max_limit_);
     }

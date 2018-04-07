@@ -18,8 +18,8 @@
 #ifndef MEL_VIRTUALVELOCITYSENSOR_HPP
 #define MEL_VIRTUALVELOCITYSENSOR_HPP
 
-#include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Core/PositionSensor.hpp>
+#include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
 #include <MEL/Utility/Clock.hpp>
@@ -31,36 +31,33 @@ namespace mel {
 //==============================================================================
 
 class VirtualVelocitySensor : public VelocitySensor {
-
 public:
-
     /// Constructor
-    VirtualVelocitySensor(const std::string& name, 
-        PositionSensor& position_sensor, 
-        const Differentiator& diff = Differentiator(Differentiator::CentralDifference));
+    VirtualVelocitySensor(const std::string& name,
+                          PositionSensor& position_sensor,
+                          const Differentiator& diff = Differentiator(
+                              Differentiator::CentralDifference));
 
     /// Enables the VirtualVelocitySensor
     bool enable() override;
 
-    /// Disables teh VirtualVelocitySensor
+    /// Disables the VirtualVelocitySensor
     bool disable() override;
 
+    /// Updates the velocity value of the VirtualVelocitySensor by updating the
+    /// differentiator
     void update();
 
     /// Returns the differentiated velocity
     double get_velocity() override;
 
 private:
-
-    PositionSensor& position_sensor_;  ///< the position sensor from which velocity will be derived
+    PositionSensor& position_sensor_;  ///< the position sensor from which
+                                       ///< velocity will be derived
     Differentiator diff_;              ///< the differentiator
-    Clock clock_;                      ///< clock that tracks time between calls to get_velocity
+    Clock clock_;  ///< clock that tracks time between calls to get_velocity
 };
 
-} // mel
+}  // namespace mel
 
-#endif // MEL_VIRTUALVELOCITYSENSOR_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_VIRTUALVELOCITYSENSOR_HPP

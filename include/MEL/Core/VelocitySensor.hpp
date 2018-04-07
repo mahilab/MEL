@@ -28,9 +28,7 @@ namespace mel {
 //==============================================================================
 
 class VelocitySensor : public Device {
-
 public:
-
     /// Prefered constructor
     VelocitySensor(const std::string& name);
 
@@ -38,15 +36,10 @@ public:
     virtual double get_velocity() = 0;
 
 protected:
-
-    double velocity_; ///< stores the VelocitySensor velocity since the last call to get_velocity()
-
+    double velocity_;  ///< stores the VelocitySensor velocity since the last
+                       ///< call to get_velocity()
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_VELOCITYSENSOR_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_VELOCITYSENSOR_HPP

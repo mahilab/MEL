@@ -30,7 +30,9 @@ namespace mel {
 class Filter : public Process {
 public:
     /// Construct Filter from transfer function coefficients
-    Filter(const std::vector<double>& b, const std::vector<double>& a, uint32 seeding = 0);
+    Filter(const std::vector<double>& b,
+           const std::vector<double>& a,
+           uint32 seeding = 0);
 
     /// Applies the filter operation for one time step
     double update(const double x,
@@ -54,11 +56,11 @@ protected:
     Filter(std::size_t n, uint32 seeding);
 
 private:
-
     /// Direct form II transposed filter implementation
     double dir_form_ii_t(const double x);
 
-    /// Calls the Filter multiple times on the initial value to avoid startup transients
+    /// Calls the Filter multiple times on the initial value to avoid startup
+    /// transients
     void seed(const double x, const uint32 iterations);
 
 protected:
@@ -66,15 +68,13 @@ protected:
     std::vector<double> b_;  ///< numerator coefficients
     std::vector<double> a_;  ///< denominator coefficients
     std::vector<double> s_;  ///< internal memory
-    bool has_seeding_; ///< indicates whether or not to call seed on first update
-    bool first_update_; ///< indicates first update upon reset
-    uint32 seed_count_; ///< number of iterations to call on update upon seeding
+    bool has_seeding_;       ///< indicates whether or not to call seed on first
+                             ///< update
+    bool first_update_;      ///< indicates first update upon reset
+    uint32
+        seed_count_;  ///< number of iterations to call on update upon seeding
 };
 
 }  // namespace mel
 
 #endif  // MEL_FILTER_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

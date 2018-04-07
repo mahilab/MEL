@@ -44,7 +44,8 @@ extern double tanh(double radians);
 // GENERIC FUNCTIONS
 //==============================================================================
 
-/// Returns -1 for negative numbers, 1 for positive numbers, and 0 for numbers equal to 0.
+/// Returns -1 for negative numbers, 1 for positive numbers, and 0 for numbers
+/// equal to 0.
 template <typename T>
 int sign(T val) {
     return (T(0) < val) - (val < T(0));
@@ -80,20 +81,28 @@ extern double saturate(double value, double min, double max);
 /// Clamps value between -abs_max and +abs_max
 extern double saturate(double value, double abs_max);
 
-/// Returns true if a and b are approximately equal to each other within a tolerance (machine precision by default)
+/// Returns true if a and b are approximately equal to each other within a
+/// tolerance (machine precision by default)
 extern bool approx_equal(double a, double b, double tolerance);
 
 /// Returns a linearly spaced vector with #n elements between #a and #b.
 extern std::vector<double> linspace(double a, double b, std::size_t n);
 
-/// Computes a proportional-derivative control effort given gains, reference state, and current state
-extern double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
+/// Computes a proportional-derivative control effort given gains, reference
+/// state, and current state
+extern double pd_controller(double kp,
+                            double kd,
+                            double x_ref,
+                            double x,
+                            double xd_ref,
+                            double xd);
 
 /// Logistic sigmoid
 extern double sigmoid(double a);
 
 /// Computes the automatic derivative of a function.
-extern double auto_diff(std::complex<double> (*f)(std::complex<double>), double x);
+extern double auto_diff(std::complex<double> (*f)(std::complex<double>),
+                        double x);
 
 //==============================================================================
 // STATISTICS
@@ -115,13 +124,18 @@ extern double stddev_p(const std::vector<double>& data);
 extern double stddev_s(const std::vector<double>& data);
 
 /// Computes a linear regression slope and intercept {m, b} for y = m*x + b
-extern std::vector<double> linear_regression(const std::vector<double>& x, const std::vector<double>& y);
+extern std::vector<double> linear_regression(const std::vector<double>& x,
+                                             const std::vector<double>& y);
 
-/// Computes the sample mean and covariance for a multivariate gaussian distribution, where the second dimension of sample_data (cols) correspond to 
-/// random variables and the first dimension of sample data (rows) corresponds to observations
-extern void gauss_mlt_params(const std::vector<std::vector<double>>& sample_data, std::vector<double>& sample_mean, std::vector<std::vector<double>>& sample_cov);
+/// Computes the sample mean and covariance for a multivariate gaussian
+/// distribution, where the second dimension of sample_data (cols) correspond to
+/// random variables and the first dimension of sample data (rows) corresponds
+/// to observations
+extern void gauss_mlt_params(
+    const std::vector<std::vector<double>>& sample_data,
+    std::vector<double>& sample_mean,
+    std::vector<std::vector<double>>& sample_cov);
 
+}  // namespace mel
 
-} // namespace mel
-
-#endif // MEL_FUNCTIONS_HPP
+#endif  // MEL_FUNCTIONS_HPP

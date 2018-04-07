@@ -29,9 +29,7 @@ namespace mel {
 
 /// Abstract base class from which all physical devices should derive.
 class Device {
-
 public:
-
     /// Default constructor
     Device();
 
@@ -52,7 +50,6 @@ public:
     virtual bool disable();
 
 public:
-
     /// Returns true if the device is enabled, false if disabled.
     bool is_enabled() const;
 
@@ -66,17 +63,11 @@ public:
     void set_name(const std::string& name);
 
 private:
-
-    bool enabled_;          ///< The Device enabled status
-    std::string long_name_; ///< the Device long name
-    std::string name_;      ///< The Device short name
-
+    bool enabled_;           ///< The Device enabled status
+    std::string long_name_;  ///< the Device long name
+    std::string name_;       ///< The Device short name
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_DEVICE_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_DEVICE_HPP

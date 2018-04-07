@@ -32,7 +32,6 @@ public:
     enum Technique { BackwardDifference, CentralDifference };
 
 public:
-
     /// Constructor
     Differentiator(Technique technique = BackwardDifference);
 
@@ -55,7 +54,3 @@ private:
 }  // namespace mel
 
 #endif  // MEL_DIFFERENTIATOR_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

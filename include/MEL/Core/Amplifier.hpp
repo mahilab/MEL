@@ -32,7 +32,6 @@ namespace mel {
 /// Encapsulates a current controlled servo amplifier
 class Amplifier : public Device {
 public:
-
 public:
     /// Constructor
     ///
@@ -52,7 +51,7 @@ public:
               double command_gain,
               AnalogOutput::Channel command_channel,
               Limiter current_limiter             = Limiter(),
-              Logic fault_level                = High,
+              Logic fault_level                   = High,
               DigitalInput::Channel fault_channel = DigitalInput::Channel(),
               double sense_gain                   = 1.0,
               AnalogInput::Channel sense_channel  = AnalogInput::Channel());
@@ -112,7 +111,3 @@ private:
 }  // namespace mel
 
 #endif  // MEL_AMPLIFIER_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

@@ -27,33 +27,26 @@ namespace mel {
 //==============================================================================
 
 class Process {
-
 public:
-
     /// Default constructor
-    Process() {};
+    Process(){};
 
     /// Default destructor
-    virtual ~Process() {};
+    virtual ~Process(){};
 
     /// applies the process operation for one sample
-    virtual double update(const double x, const Time& current_time = Time::Zero) {
-        Time unused = current_time; // unused
+    virtual double update(const double x,
+                          const Time& current_time = Time::Zero) {
+        Time unused = current_time;  // unused
         return x;
     }
 
     /// resets internal memory
-    virtual void reset() {};
+    virtual void reset(){};
 
 private:
-
 };
 
+}  // namespace mel
 
-} // mel
-
-#endif // MEL_PROCESS_HPP
-
-  //==============================================================================
-  // CLASS DOCUMENTATION
-  //==============================================================================
+#endif  // MEL_PROCESS_HPP

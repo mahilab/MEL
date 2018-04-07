@@ -19,10 +19,9 @@
 #define MEL_BUTTERWORTH_HPP
 
 #include <MEL/Math/Filter.hpp>
+#include <MEL/Utility/Frequency.hpp>
 
 namespace mel {
-
-class Frequency;
 
 //==============================================================================
 // CLASS DECLARATION
@@ -39,17 +38,20 @@ public:
 public:
     /// Designs an n-th order lowpass or highpass digital Butterworth filter
     /// with normalized cutoff frequency Wn
-    Butterworth(std::size_t n, double Wn, Type type = Lowpass, uint32 seeding = 0);
+    Butterworth(std::size_t n,
+                double Wn,
+                Type type      = Lowpass,
+                uint32 seeding = 0);
 
     /// Designs an n-th order lowpass or highpass digital Butterworth filter
     /// with specified cutoff and sample frequencies
-    Butterworth(std::size_t n, Frequency cutoff, Frequency sample, Type type = Lowpass, uint32 seeding = 0);
+    Butterworth(std::size_t n,
+                Frequency cutoff,
+                Frequency sample,
+                Type type      = Lowpass,
+                uint32 seeding = 0);
 };
 
 };  // namespace mel
 
 #endif  // MEL_BUTTERWORTH_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

@@ -31,9 +31,7 @@ namespace mel {
 
 /// Encapsulates a Quanser VoltPAQ-X4 Linear Voltage Amplifier
 class VoltPaqX4 : public Device {
-
 public:
-
     /// Constructor
     VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,
               const std::vector<AnalogOutput::Channel>& command_channels,
@@ -46,14 +44,9 @@ public:
     /// Disables all VoltPAQ-X4 amplifiers
     bool disable() override;
 
-    std::vector<Amplifier> amplifiers; ///< the individual amplifiers
-
+    std::vector<Amplifier> amplifiers;  ///< the individual amplifiers
 };
 
-} // mel
+}  // namespace mel
 
-#endif // MEL_VOLTPAQX4_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_VOLTPAQX4_HPP

@@ -28,31 +28,33 @@ namespace mel {
 //==============================================================================
 
 class ForceSensor : public Device {
-
 public:
-
+    /// Default constructor
     ForceSensor();
-    ForceSensor(std::string name, std::vector<Input<Voltage>::Channel> ai_channels);
 
+    /// Prefferred constructor, giving it a unique name and assigning the
+    /// associated DAQ channel
+    ForceSensor(std::string name,
+                std::vector<Input<Voltage>::Channel> ai_channels);
+
+    /// This function should return the forces of the FroceSensor
     virtual std::vector<double> get_forces() = 0;
 
 protected:
-
+    /// Reads the voltages from the associated DAQ channels and returns them
     std::vector<double> get_voltages();
 
 protected:
-
-    std::vector<Input<Voltage>::Channel> ai_channels_; // the DAQ analog input channels bound to this sensor
-    int num_channels_;
-    std::vector<double> forces_;
-    std::vector<double> voltages_;
-
+    std::vector<Input<Voltage>::Channel>
+        ai_channels_;   ///< the DAQ analog input channels bound to this sensor
+    int num_channels_;  ///< number of DAQ analog input channels bound to this
+                        ///< sensor
+    std::vector<double> forces_;  ///< stores all the forces read by the sensor
+                                  ///< at one sample time
+    std::vector<double> voltages_;  ///< stores all the voltages read by the
+                                    ///< sensor at one sample time
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_FORCESENSOR_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_FORCESENSOR_HPP
