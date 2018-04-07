@@ -30,22 +30,29 @@ namespace mel {
 template <int instance>
 class Logger : public Singleton<Logger<instance> >, public Writer {
 public:
+    /// Constructs a new Logger instance with a max severity
     Logger(Severity maxSeverity = None) : max_severity_(maxSeverity) {}
 
+    /// Adds a write to the Logger
     Logger& add_writer(Writer* writer) {
         assert(writer != this);
         writers_.push_back(writer);
         return *this;
     }
 
+    /// Returns the max severity of the Logger
     Severity get_max_severity() const { return max_severity_; }
 
+    /// Sets the max severity of the Logger
     void set_max_severity(Severity severity) { max_severity_ = severity; }
 
+    /// Checks a severity against the max severity and returns true if is less
+    /// or equally severe
     bool check_severity(Severity severity) const {
         return severity <= max_severity_;
     }
 
+    /// Writes a Record to the Logger
     virtual void write(const Record& record) {
         if (check_severity(record.get_severity())) {
             *this += record;
@@ -54,15 +61,15 @@ public:
 
     void operator+=(const Record& record) {
         for (std::vector<Writer*>::iterator it = writers_.begin();
-            it != writers_.end(); ++it) {
+             it != writers_.end(); ++it) {
             if ((*it)->check_severity(record.get_severity()))
                 (*it)->write(record);
         }
     }
 
 private:
-    Severity max_severity_;
-    std::vector<Writer*> writers_;
+    Severity max_severity_;         ///< max severity
+    std::vector<Writer*> writers_;  ///< writers for this Logger
 };
 
 template <int instance>
