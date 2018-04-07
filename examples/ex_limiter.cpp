@@ -7,7 +7,7 @@ using namespace mel;
 
 // Usage:
 // Run the example with limiter.scope open in MELScope. Use the up and down
-// arrow keys to simulate a commanded value.
+// arrow keys (with the terminal focused) to simulate a commanded value.
 
 int main() {
     // create limiter with continous value of 6, peak value of 18, and
