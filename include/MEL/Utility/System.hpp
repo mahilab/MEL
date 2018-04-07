@@ -39,7 +39,9 @@ std::vector<std::string> parse_path(std::string path);
 void create_directory(std::string path);
 
 /// Splits "filename.ext" into "filename" and "ext"
-void split_file_name(const char* file_name, std::string& file_name_no_ext, std::string& file_ext);
+void split_file_name(const char* file_name,
+                     std::string& file_name_no_ext,
+                     std::string& file_ext);
 
 //==============================================================================
 // SYSTEM FUNCTIONS
@@ -88,6 +90,6 @@ uint64 ram_used_total();
 /// Gets the RAM used by this process in bytes
 uint64 ram_used_process();
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_SYSTEM_HPP
+#endif  // MEL_SYSTEM_HPP

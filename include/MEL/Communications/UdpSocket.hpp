@@ -22,8 +22,8 @@
 #ifndef MEL_UDPSOCKET_HPP
 #define MEL_UDPSOCKET_HPP
 
-#include <MEL/Communications/Socket.hpp>
 #include <MEL/Communications/IpAddress.hpp>
+#include <MEL/Communications/Socket.hpp>
 #include <vector>
 
 namespace mel {
@@ -40,11 +40,10 @@ class Packet;
 
 /// Specialized socket using the UDP protocol
 class UdpSocket : public Socket {
-
 public:
-
     enum {
-        MaxDatagramSize = 65507 ///< The maximum number of bytes that can be sent in a single UDP datagram
+        MaxDatagramSize = 65507  ///< The maximum number of bytes that can be
+                                 ///< sent in a single UDP datagram
     };
 
     /// Default constructor
@@ -82,7 +81,10 @@ public:
     /// \param size           Number of bytes to send
     /// \param remote_address Address of the receiver
     /// \param remote_port    Port of the receiver to send the data to
-    Status send(const void* data, std::size_t size, const IpAddress& remote_address, unsigned short remote_port);
+    Status send(const void* data,
+                std::size_t size,
+                const IpAddress& remote_address,
+                unsigned short remote_port);
 
     /// Receive raw data from a remote peer
     ///
@@ -93,12 +95,16 @@ public:
     /// then an error will be returned and *all* the data will
     /// be lost.
     ///
-    /// \param data           Pointer to the array to fill with the received bytes
-    /// \param size           Maximum number of bytes that can be received
-    /// \param received       This variable is filled with the actual number of bytes received
-    /// \param remote_address Address of the peer that sent the data
-    /// \param remote_port    Port of the peer that sent the data
-    Status receive(void* data, std::size_t size, std::size_t& received, IpAddress& remote_address, unsigned short& remote_port);
+    /// \param data           Pointer to the array to fill with the received
+    /// bytes \param size           Maximum number of bytes that can be received
+    /// \param received       This variable is filled with the actual number of
+    /// bytes received \param remote_address Address of the peer that sent the
+    /// data \param remote_port    Port of the peer that sent the data
+    Status receive(void* data,
+                   std::size_t size,
+                   std::size_t& received,
+                   IpAddress& remote_address,
+                   unsigned short& remote_port);
 
     /// Send a formatted packet of data to a remote peer
     ///
@@ -109,7 +115,9 @@ public:
     /// \param packet         Packet to send
     /// \param remote_address Address of the receiver
     /// \param remote_port    Port of the receiver to send the data to
-    Status send(Packet& packet, const IpAddress& remote_address, unsigned short remote_port);
+    Status send(Packet& packet,
+                const IpAddress& remote_address,
+                unsigned short remote_port);
 
     /// Receive a formatted packet of data from a remote peer
     ///
@@ -119,17 +127,18 @@ public:
     /// \param packet         Packet to fill with the received data
     /// \param remote_address Address of the peer that sent the data
     /// \param remote_port    Port of the peer that sent the data
-    Status receive(Packet& packet, IpAddress& remote_address, unsigned short& remote_port);
+    Status receive(Packet& packet,
+                   IpAddress& remote_address,
+                   unsigned short& remote_port);
 
 private:
-
-    std::vector<char> buffer_; ///< Temporary buffer holding the received data in Receive(Packet)
-
+    std::vector<char> buffer_;  ///< Temporary buffer holding the received data
+                                ///< in Receive(Packet)
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_UDPSOCKET_HPP
+#endif  // MEL_UDPSOCKET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -188,13 +197,12 @@ private:
 /// socket.bind(55001);
 ///
 /// // Send a message to 192.168.1.50 on port 55002
-/// std::string message = "Hi, I am " + mel::IpAddress::getLocalAddress().toString();
-/// socket.send(message.c_str(), message.size() + 1, "192.168.1.50", 55002);
+/// std::string message = "Hi, I am " +
+/// mel::IpAddress::getLocalAddress().toString(); socket.send(message.c_str(),
+/// message.size() + 1, "192.168.1.50", 55002);
 ///
-/// // Receive an answer (most likely from 192.168.1.50, but could be anyone else)
-/// char buffer[1024];
-/// std::size_t received = 0;
-/// mel::IpAddress sender;
+/// // Receive an answer (most likely from 192.168.1.50, but could be anyone
+/// else) char buffer[1024]; std::size_t received = 0; mel::IpAddress sender;
 /// unsigned short port;
 /// socket.receive(buffer, sizeof(buffer), received, sender, port);
 /// std::cout << sender.ToString() << " said: " << buffer << std::endl;
@@ -228,11 +236,12 @@ private:
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.

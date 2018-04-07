@@ -1,4 +1,4 @@
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 #ifdef __linux__
     #include <time.h>
 #elif _WIN32

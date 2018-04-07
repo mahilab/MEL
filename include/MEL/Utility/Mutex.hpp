@@ -29,9 +29,7 @@ namespace mel {
 
 /// Blocks concurrent access to shared resources from multiple threads
 class Mutex : public Lockable, NonCopyable {
-
 public:
-
     /// Default constructor
     Mutex();
 
@@ -45,15 +43,13 @@ public:
     void unlock() override;
 
 private:
-
     class Impl;                   ///< Pimpl idiom
     std::unique_ptr<Impl> impl_;  ///< OS-specific implementation
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_MUTEX_HPP
+#endif  // MEL_MUTEX_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -79,16 +75,16 @@ private:
 ///
 /// void thread1()
 /// {
-///     mutex.lock(); // this call will block the thread if the mutex is already locked by thread2
-///     database.write(...);
-///     mutex.unlock(); // if thread2 was waiting, it will now be unblocked
+///     mutex.lock(); // this call will block the thread if the mutex is already
+///     locked by thread2 database.write(...); mutex.unlock(); // if thread2 was
+///     waiting, it will now be unblocked
 /// }
 ///
 /// void thread2()
 /// {
-///     mutex.lock(); // this call will block the thread if the mutex is already locked by thread1
-///     database.write(...);
-///     mutex.unlock(); // if thread1 was waiting, it will now be unblocked
+///     mutex.lock(); // this call will block the thread if the mutex is already
+///     locked by thread1 database.write(...); mutex.unlock(); // if thread1 was
+///     waiting, it will now be unblocked
 /// }
 /// \endcode
 ///

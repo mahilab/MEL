@@ -28,17 +28,14 @@ namespace mel {
 
 template <typename T>
 class RingBuffer {
-
 public:
-
     /// Constructor
-    RingBuffer(std::size_t capacity) :
-        capacity_(capacity),
-        size_(0),
-        front_(0),
-        back_(0),
-        buffer_(capacity_)
-    { }
+    RingBuffer(std::size_t capacity)
+        : capacity_(capacity),
+          size_(0),
+          front_(0),
+          back_(0),
+          buffer_(capacity_) {}
 
     /// Read access
     const T& operator[](std::size_t index) const {
@@ -58,8 +55,7 @@ public:
                 if (++front_ == capacity_)
                     front_ = 0;
             }
-        }
-        else
+        } else
             ++size_;
         if (++back_ == capacity_)
             back_ = 0;
@@ -73,8 +69,7 @@ public:
                     back_ = capacity_;
                 --back_;
             }
-        }
-        else
+        } else
             ++size_;
         if (front_ == 0)
             front_ = capacity_;
@@ -105,46 +100,37 @@ public:
     }
 
     /// Returns true if the RingBuffer is empty
-    bool empty() const {
-        return size_ == 0;
-    }
+    bool empty() const { return size_ == 0; }
 
     /// Returns true if the RingBuffer is full
-    bool full() const {
-        return size_ == capacity_;
-    }
+    bool full() const { return size_ == capacity_; }
 
     /// Returns occupied size of the RingBuffer
-    std::size_t size() const {
-        return size_;
-    }
+    std::size_t size() const { return size_; }
 
     /// Returns the capacity of the RingBuffer
-    std::size_t capacity() const {
-        return capacity_;
-    }
+    std::size_t capacity() const { return capacity_; }
 
     /// Resizes the RingBuffer to a new capacity
     void resize(std::size_t capacity) {
         if (capacity <= size_) {
             size_ = capacity;
             back_ = 0;
-        }
-        else
+        } else
             back_ = size_;
         std::vector<T> new_buffer(capacity);
         for (std::size_t i = 0; i < size_; ++i)
             new_buffer[i] = buffer_[(front_ + i) % capacity_];
         capacity_ = capacity;
-        front_ = 0;
-        buffer_ = new_buffer;
+        front_    = 0;
+        buffer_   = new_buffer;
     }
 
     /// Removes all stored elements from the RingBuffer
     void clear() {
-        size_ = 0;
+        size_  = 0;
         front_ = 0;
-        back_ = 0;
+        back_  = 0;
     }
 
     /// Returns a copy of the contents of the RingBuffer as a vector
@@ -157,7 +143,6 @@ public:
     }
 
 private:
-
     std::size_t capacity_;   ///< the maximum capacity of the RingBuffer
     std::size_t size_;       ///< current occupied size of the RingBuffer
     std::size_t front_;      ///< front index of the RingBuffer
@@ -165,9 +150,9 @@ private:
     std::vector<T> buffer_;  ///< underlying buffer array
 };
 
-} // mel
+}  // namespace mel
 
-#endif // MEL_RINGBUFFER_HPP
+#endif  // MEL_RINGBUFFER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -196,4 +181,3 @@ private:
 // x.push_front(0)         =>    [0][1][2][3][4]        [1][2][3][4][0]
 //                                                       f           b
 // x.pop_front()           =>    [1][2][3][4][ ]        [1][2][3][4][0]
-

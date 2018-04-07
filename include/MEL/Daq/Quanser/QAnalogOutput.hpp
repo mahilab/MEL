@@ -34,9 +34,7 @@ class QDaq;
 //==============================================================================
 
 class QAnalogOutput : public AnalogOutput, NonCopyable {
-
 public:
-
     QAnalogOutput(QDaq& daq, const std::vector<uint32>& channel_numbers);
 
     ~QAnalogOutput();
@@ -49,24 +47,21 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
-    bool set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) override;
+    bool set_ranges(const std::vector<Voltage>& min_values,
+                    const std::vector<Voltage>& max_values) override;
 
-    bool set_range(uint32 channel_number, Voltage min_value, Voltage max_value) override;
+    bool set_range(uint32 channel_number,
+                   Voltage min_value,
+                   Voltage max_value) override;
 
     bool set_expire_values(const std::vector<Voltage>& expire_values) override;
 
     bool set_expire_value(uint32 channel_number, Voltage expire_value) override;
 
 private:
-
     QDaq& daq_;  ///< Reference to parent QDaq
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_QANALOGOUTPUT_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_QANALOGOUTPUT_HPP

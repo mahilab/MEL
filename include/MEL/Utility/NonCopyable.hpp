@@ -18,8 +18,7 @@
 #ifndef MEL_NONCOPYABLE_HPP
 #define MEL_NONCOPYABLE_HPP
 
-namespace mel
-{
+namespace mel {
 
 //==============================================================================
 // CLASS DECLARATIOIN
@@ -27,9 +26,7 @@ namespace mel
 
 /// Utility class that makes any derived class non-copyable
 class NonCopyable {
-
 protected:
-
     /// Default constructor
     ///
     /// Because this class has a copy constructor, the compiler
@@ -45,8 +42,6 @@ protected:
     ~NonCopyable() {}
 
 private:
-
-
     /// Disabled copy constructor
     ///
     /// By making the copy constructor private, the compiler will
@@ -63,12 +58,12 @@ private:
     /// To prevent NonCopyable or friend classes from using it,
     /// we also give no definition, so that the linker will
     /// produce an error if the first protection was inefficient.
-    NonCopyable& operator =(const NonCopyable&);
+    NonCopyable& operator=(const NonCopyable&);
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_NONCOPYABLE_HPP
+#endif  // MEL_NONCOPYABLE_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

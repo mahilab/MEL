@@ -46,13 +46,9 @@ private:
     static T* instance_;
 };
 
-template<class T>
+template <class T>
 T* Singleton<T>::instance_ = NULL;
 
 }  // namespace mel
 
 #endif  // MEL_SINGLETON_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

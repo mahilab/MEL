@@ -29,9 +29,7 @@ namespace mel {
 
 /// Encapsulates a hardware watchdog timer
 class Watchdog : NonCopyable {
-
 public:
-
     /// Default constructor
     Watchdog(Time timeout);
 
@@ -61,21 +59,14 @@ public:
     virtual bool clear() = 0;
 
 public:
-
     /// Sets the timeout period this Watchdog should operate on
     void set_timeout(Time timeout);
 
 protected:
-
     Time timeout_;   ///< The timeout period for this Watchdog
     bool watching_;  ///< True if watchdog has been started, false if stopped
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_WATCHDOG_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_WATCHDOG_HPP

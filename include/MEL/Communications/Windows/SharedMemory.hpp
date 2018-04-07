@@ -29,9 +29,9 @@ namespace mel {
 //==============================================================================
 
 #if defined(_WIN32)
-    typedef void* MapHandle;
+typedef void* MapHandle;
 #elif __linux__
-    typedef int MapHandle;
+typedef int MapHandle;
 #endif
 
 //==============================================================================
@@ -40,9 +40,7 @@ namespace mel {
 
 /// Encapsulates a unmanaged named memory map
 class SharedMemory : NonCopyable {
-
 public:
-
     /// Default constructor. Creates or opens a memory map containing size bytes
     SharedMemory(const std::string& name, std::size_t max_bytes = 256);
 
@@ -62,7 +60,6 @@ public:
     std::string get_name() const;
 
 private:
-
     /// Creates or opens a memory map
     static MapHandle create_or_open(std::string name, std::size_t size);
 
@@ -76,15 +73,15 @@ private:
     static void unmap_buffer(void* buffer);
 
 private:
-
     const std::string name_;       ///< The name of the memory map file
     const std::size_t max_bytes_;  ///< The size of the mapped region in bytes
     MapHandle map_;                ///< OS specfic handle to the memory map
     void* buffer_;                 ///< The memory buffer of the map
-
 };
 
-} // namespace mel
+}  // namespace mel
+
+#endif  // MEL_SHAREDMEMORY_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -106,5 +103,3 @@ private:
 /// SharedMemory map("my_map");
 /// ((char*)map.get_address())[0] = 'e';
 /// \endcode
-
-#endif // MEL_SHAREDMEMORY_HPP

@@ -1,5 +1,5 @@
-#include <MEL/Utility/Frequency.hpp>
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Frequency.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

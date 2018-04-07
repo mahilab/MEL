@@ -19,11 +19,11 @@
 #define MEL_MELSHARE_HPP
 
 #include <MEL/Communications/Windows/SharedMemory.hpp>
-#include <MEL/Utility/Windows/NamedMutex.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <MEL/Utility/Types.hpp>
-#include <vector>
+#include <MEL/Utility/Windows/NamedMutex.hpp>
 #include <string>
+#include <vector>
 
 namespace mel {
 
@@ -33,9 +33,7 @@ namespace mel {
 
 /// High-level communication class that simplifies shared memory communication
 class MelShare : NonCopyable {
-
 public:
-
     /// Default constructor.
     MelShare(const std::string& name, std::size_t max_bytes = 256);
 
@@ -52,22 +50,14 @@ public:
     std::string read_message();
 
 private:
-
     /// Gets the number of bytes currently stored in the MelShare
     uint32 get_size();
 
 private:
-
     SharedMemory shm_;  ///< The memory mapped file for the data
     NamedMutex mutex_;  ///< The mutex guarding the memory map
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_MELSHARE_HPP
-
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_MELSHARE_HPP

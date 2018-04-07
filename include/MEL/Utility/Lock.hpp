@@ -28,9 +28,7 @@ namespace mel {
 
 /// Represents a lockable object (e.g. Mutex, NamedMutex, etc.)
 class Lockable {
-
 public:
-
     /// Virtual destructor
     virtual ~Lockable() {}
 
@@ -43,9 +41,7 @@ public:
 
 /// RAII wrapper for automatically locking and unlocking Lockables
 class Lock : NonCopyable {
-
 public:
-
     /// Default contructor. The Lockable is automatically locked.
     Lock(Lockable& lockable);
 
@@ -53,13 +49,12 @@ public:
     ~Lock();
 
 private:
-
     Lockable& lockable_;  ///< the lockable object
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_LOCK_HPP
+#endif  // MEL_LOCK_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -88,7 +83,8 @@ private:
 /// {
 ///     mel::Lock lock(mutex); // mutex is now locked
 ///
-///     functionThatMayThrowAnException(); // mutex is unlocked if this function throws
+///     functionThatMayThrowAnException(); // mutex is unlocked if this function
+///     throws
 ///
 ///     if (someCondition)
 ///         return; // mutex is unlocked
@@ -124,4 +120,3 @@ private:
 /// until it is released.
 ///
 /// \see mel::Mutex, mel::NamedMutex, mel::Spinlock
-

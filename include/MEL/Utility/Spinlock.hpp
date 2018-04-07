@@ -29,9 +29,7 @@ namespace mel {
 
 /// Blocks concurrent access to shared resources from multiple threads
 class Spinlock : public Lockable, NonCopyable {
-
 public:
-
     /// Lock the Spinlock
     void lock() override;
 
@@ -39,15 +37,9 @@ public:
     void unlock() override;
 
 private:
-
     std::atomic_flag lock_ = ATOMIC_FLAG_INIT;  //< atomic flag lock
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_SPINLOCK_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_SPINLOCK_HPP

@@ -25,8 +25,7 @@
 #include <MEL/Utility/Types.hpp>
 #include <iostream>
 
-namespace mel
-{
+namespace mel {
 
 class Frequency;
 
@@ -36,15 +35,13 @@ class Frequency;
 
 /// Represents a time value.
 class Time {
-
 public:
-
     /// Default constructor. Sets time value to zero. To construct valued time
     /// objects, use mel::seconds, mel::milliseconds or mel::microseconds.
     Time();
 
     /// Overloads stream operator
-    friend std::ostream& operator << (std::ostream& os, const Time& t);
+    friend std::ostream& operator<<(std::ostream& os, const Time& t);
 
     /// Return the time value as a number of seconds.
     double as_seconds() const;
@@ -59,11 +56,9 @@ public:
     Frequency to_frequency() const;
 
 public:
-
-    static const Time Zero; ///< Predefined "zero" time value
+    static const Time Zero;  ///< Predefined "zero" time value
 
 private:
-
     friend Time seconds(double);
     friend Time milliseconds(int32);
     friend Time microseconds(int64);
@@ -72,9 +67,7 @@ private:
     explicit Time(int64 microseconds);
 
 private:
-
-    int64 microseconds_; ///< Time value stored as microseconds
-
+    int64 microseconds_;  ///< Time value stored as microseconds
 };
 
 //==============================================================================
@@ -95,83 +88,84 @@ Time microseconds(int64 amount);
 //==============================================================================
 
 /// Overload of << stream operator
-std::ostream& operator << (std::ostream& os, const Time& t);
+std::ostream& operator<<(std::ostream& os, const Time& t);
 
 /// Overload of == operator to compare if two time values are equal
-bool operator ==(Time left, Time right);
+bool operator==(Time left, Time right);
 
 /// Overload of != operator to compare if two time values are not equal
-bool operator !=(Time left, Time right);
+bool operator!=(Time left, Time right);
 
 /// Overload of < operator to compare if left time is less than right
-bool operator <(Time left, Time right);
+bool operator<(Time left, Time right);
 
 /// Overload of > operator to compare if right time is greater than right
-bool operator >(Time left, Time right);
+bool operator>(Time left, Time right);
 
 /// Overload of <= operator to compare if left time is less or equal than right
-bool operator <=(Time left, Time right);
+bool operator<=(Time left, Time right);
 
-/// Overload of >= operator to compare if left time is greater or equal than right
-bool operator >=(Time left, Time right);
+/// Overload of >= operator to compare if left time is greater or equal than
+/// right
+bool operator>=(Time left, Time right);
 
 /// Overload of unary - operator to negate a time value
-Time operator -(Time right);
+Time operator-(Time right);
 
 /// Overload of binary + operator to add two time values
-Time operator +(Time left, Time right);
+Time operator+(Time left, Time right);
 
 /// Overload of binary += operator to add/assign two time values
-Time& operator +=(Time& left, Time right);
+Time& operator+=(Time& left, Time right);
 
 /// Overload of binary - operator to subtract two time values
-Time operator -(Time left, Time right);
+Time operator-(Time left, Time right);
 
 /// Overload of binary -= operator to subtract/assign two time values
-Time& operator -=(Time& left, Time right);
+Time& operator-=(Time& left, Time right);
 
 /// Overload of binary * operator to scale a time value
-Time operator *(Time left, double right);
+Time operator*(Time left, double right);
 
 /// Overload of binary * operator to scale a time value
-Time operator *(Time left, int64 right);
+Time operator*(Time left, int64 right);
 
 /// Overload of binary * operator to scale a time value
-Time operator *(double left, Time right);
+Time operator*(double left, Time right);
 
 /// Overload of binary * operator to scale a time value
-Time operator *(int64 left, Time right);
+Time operator*(int64 left, Time right);
 
 /// Overload of binary *= operator to scale/assign a time value
-Time& operator *=(Time& left, double right);
+Time& operator*=(Time& left, double right);
 
 /// Overload of binary *= operator to scale/assign a time value
-Time& operator *=(Time& left, int64 right);
+Time& operator*=(Time& left, int64 right);
 
 /// Overload of binary / operator to scale a time value
-Time operator /(Time left, double right);
+Time operator/(Time left, double right);
 
 /// Overload of binary / operator to scale a time value
-Time operator /(Time left, int64 right);
+Time operator/(Time left, int64 right);
 
 /// Overload of binary /= operator to scale/assign a time value
-Time& operator /=(Time& left, double right);
+Time& operator/=(Time& left, double right);
 
 /// Overload of binary /= operator to scale/assign a time value
-Time& operator /=(Time& left, int64 right);
+Time& operator/=(Time& left, int64 right);
 
 /// Overload of binary / operator to compute the ratio of two time values
-double operator /(Time left, Time right);
+double operator/(Time left, Time right);
 
 /// Overload of binary % operator to compute remainder of a time value
-Time operator %(Time left, Time right);
+Time operator%(Time left, Time right);
 
 /// Overload of binary %= operator to compute/assign remainder of a time value
-Time& operator %=(Time& left, Time right);
+Time& operator%=(Time& left, Time right);
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_TIME_HPP
+#endif  // MEL_TIME_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -218,7 +212,8 @@ Time& operator %=(Time& left, Time right);
 /// update(mel::milliseconds(100));
 /// \endcode
 ///
-/// \see mel::Clock, mel::Timer, mel::seconds, mel::milliseconds, mel::microseconds
+/// \see mel::Clock, mel::Timer, mel::seconds, mel::milliseconds,
+/// mel::microseconds
 
 //==============================================================================
 // LICENSES
@@ -228,11 +223,12 @@ Time& operator %=(Time& left, Time right);
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.

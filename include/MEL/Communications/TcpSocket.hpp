@@ -42,7 +42,6 @@ class Packet;
 /// Specialized socket using the TCP protocol
 class TcpSocket : public Socket {
 public:
-
     /// Default constructor
     TcpSocket();
 
@@ -68,7 +67,9 @@ public:
     /// if the remote peer is not reachable. The last parameter allows
     /// you to stop trying to connect after a given timeout.
     /// If the socket was previously connected, it is first disconnected.
-    Status connect(const IpAddress& remote_address, unsigned short remote_port, Time timeout = Time::Zero);
+    Status connect(const IpAddress& remote_address,
+                   unsigned short remote_port,
+                   Time timeout = Time::Zero);
 
     /// Disconnect the socket from its remote peer
     ///
@@ -113,25 +114,24 @@ public:
     Status receive(Packet& packet);
 
 private:
-
     friend class TcpListener;
 
     /// Structure holding the data of a pending packet
-    struct PendingPacket
-    {
+    struct PendingPacket {
         PendingPacket();
 
-        uint32            Size;         ///< Data of packet size
-        std::size_t       SizeReceived; ///< Number of size bytes received so far
-        std::vector<char> Data;         ///< Data of the packet
+        uint32 Size;               ///< Data of packet size
+        std::size_t SizeReceived;  ///< Number of size bytes received so far
+        std::vector<char> Data;    ///< Data of the packet
     };
 
-    PendingPacket pending_packet_; ///< Temporary data of the packet currently being received
+    PendingPacket pending_packet_;  ///< Temporary data of the packet currently
+                                    ///< being received
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_TCPSOCKET_HPP
+#endif  // MEL_TCPSOCKET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -197,7 +197,8 @@ private:
 /// // Wait for a connection
 /// mel::TcpSocket socket;
 /// listener.accept(socket);
-/// std::cout << "New client connected: " << socket.get_remote_address() << std::endl;
+/// std::cout << "New client connected: " << socket.get_remote_address() <<
+/// std::endl;
 ///
 /// // Receive a message from the client
 /// char buffer[1024];
@@ -220,11 +221,12 @@ private:
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.

@@ -62,7 +62,6 @@ public:
     /// It should return true if successful, false otherwise.
     virtual bool update_output() = 0;
 
-public:
     /// Returns true if communication with the device is open, false if closed.
     bool is_open() const;
 
@@ -73,7 +72,6 @@ public:
     }
 
 protected:
-
     /// Adds a a Module to the Daq
     template <class T>
     void add_module(T* module) {
@@ -81,16 +79,11 @@ protected:
     }
 
 protected:
-
     bool open_;  ///< The Daq open status
-    std::unordered_map<std::type_index, ModuleBase*> modules_;
-
+    std::unordered_map<std::type_index, ModuleBase*>
+        modules_;  ///< The modules on the Daq
 };
 
 }  // namespace mel
 
 #endif  // MEL_DAQ_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================

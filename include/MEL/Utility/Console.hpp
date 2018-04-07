@@ -19,11 +19,11 @@
 #ifndef MEL_CONSOLE_HPP
 #define MEL_CONSOLE_HPP
 
-#include <MEL/Utility/Time.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Time.hpp>
 #include <MEL/Utility/StlStreams.hpp>
-#include <sstream>
+#include <MEL/Utility/Types.hpp>
 #include <atomic>
+#include <sstream>
 
 namespace mel {
 
@@ -36,11 +36,11 @@ void prompt(const std::string& message);
 
 /// Types of events that can be caught in in a console
 enum class CtrlEvent {
-    CtrlC     = 0, ///< user pressed Ctrl+C
-    CtrlQuit = 1, ///< user pressed Ctrl+Break (Windows) or Ctrl+\ (Unix)
-    Close     = 2, ///< user has closed the console (Windows only)
-    Logoff    = 3, ///< user is logging off (Windows only)
-    Shutdown  = 4  ///< system is shutting down (Windows only)
+    CtrlC    = 0,  ///< user pressed Ctrl+C
+    CtrlQuit = 1,  ///< user pressed Ctrl+Break (Windows) or Ctrl+\ (Unix)
+    Close    = 2,  ///< user has closed the console (Windows only)
+    Logoff   = 3,  ///< user is logging off (Windows only)
+    Shutdown = 4   ///< system is shutting down (Windows only)
 };
 
 /// Registers a function so that it is called when Ctrl+C is pressed.
@@ -91,8 +91,9 @@ void reset_text_color();
 /// Prints a string to the console using the fastest method the OS offers
 void print_string(const std::string& str);
 
-/// Prints anything that works with stream operators (appends new line character)
-template<typename T>
+/// Prints anything that works with stream operators (appends new line
+/// character)
+template <typename T>
 void print(T value) {
     std::stringstream ss;
     ss << value << "\n";
@@ -100,19 +101,19 @@ void print(T value) {
 }
 
 /// Print with color
-template<typename T>
+template <typename T>
 void print(T value, Color foreground, Color background = Color::None) {
     set_text_color(foreground, background);
     print(value);
     reset_text_color();
 }
 
-
 //==============================================================================
 // MISC
 //==============================================================================
 
-/// True if stdout is a character device (a terminal, console, printer, or serial port)
+/// True if stdout is a character device (a terminal, console, printer, or
+/// serial port)
 extern const bool STDOUT_IS_A_TTY;
 
 /// Causes the console to emit a beep sound

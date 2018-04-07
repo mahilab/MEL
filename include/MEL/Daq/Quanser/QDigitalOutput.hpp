@@ -23,48 +23,41 @@
 
 namespace mel {
 
-    //==============================================================================
-    // FORWARD DECLARATIONS
-    //==============================================================================
+//==============================================================================
+// FORWARD DECLARATIONS
+//==============================================================================
 
-    class QDaq;
+class QDaq;
 
-    //==============================================================================
-    // CLASS DECLARATION
-    //==============================================================================
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
 
-    class QDigitalOutput : public DigitalOutput, NonCopyable {
+class QDigitalOutput : public DigitalOutput, NonCopyable {
+public:
+    QDigitalOutput(QDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    public:
+    ~QDigitalOutput();
 
-        QDigitalOutput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    bool enable() override;
 
-        ~QDigitalOutput();
+    bool disable() override;
 
-        bool enable() override;
+    bool update() override;
 
-        bool disable() override;
+    bool update_channel(uint32 channel_number) override;
 
-        bool update() override;
+    std::vector<char>& get_quanser_values();
 
-        bool update_channel(uint32 channel_number) override;
+    bool set_expire_values(const std::vector<Logic>& expire_values) override;
 
-        std::vector<char>& get_quanser_values();
+    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
 
-        bool set_expire_values(const std::vector<Logic>& expire_values) override;
+private:
+    QDaq& daq_;  ///< Reference to parent QDaq
+    std::vector<char> quanser_values_;
+};
 
-        bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+}  // namespace mel
 
-    private:
-
-        QDaq& daq_;  ///< Reference to parent QDaq
-        std::vector<char> quanser_values_;
-    };
-
-} // namespace mel
-
-#endif // MEL_QDIGITALOUTPUT_HPP
-
-  //==============================================================================
-  // CLASS DOCUMENTATION
-  //==============================================================================
+#endif  // MEL_QDIGITALOUTPUT_HPP

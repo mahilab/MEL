@@ -113,7 +113,7 @@ public:
 
 private:
     /// Quarc can sometimes fail to properly intialize a Q8 USB even if it says
-    /// otherwise. In these cases, velocity readings are widely incorrect and
+    /// otherwise. In these cases, velocity readings are wildly incorrect and
     /// can result in catstrophic behavior. This function performs a sanity
     /// check by checking that all velocities are zero on startup if
     /// #perform_sanity_check_ is true (default).
@@ -128,10 +128,6 @@ private:
 
 }  // namespace mel
 
-#endif // MEL_Q8USB_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_Q8USB_HPP
 
 /// http://quanser-update.azurewebsites.net/quarc/documentation/q8_usb.html

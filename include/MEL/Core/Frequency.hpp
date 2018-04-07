@@ -30,15 +30,13 @@ class Time;
 
 /// Represents a frequency value
 class Frequency {
-
 public:
-
     /// Default constructor. Sets frequency value to zero. To construct valued
     /// frequency objects, use hertz(), kilohertz() or megahertz()
     Frequency();
 
     /// Overloads stream operator
-    friend std::ostream& operator << (std::ostream& os, const Frequency& f);
+    friend std::ostream& operator<<(std::ostream& os, const Frequency& f);
 
     /// Return the frequency value as a number of hertz
     int64 as_hertz() const;
@@ -53,11 +51,9 @@ public:
     Time to_time() const;
 
 public:
-
-    static const Frequency Zero; ///< Predefined "zero" frequency value
+    static const Frequency Zero;  ///< Predefined "zero" frequency value
 
 private:
-
     friend Frequency hertz(int64);
     friend Frequency kilohertz(int32);
     friend Frequency megahertz(double);
@@ -66,9 +62,7 @@ private:
     explicit Frequency(int64 hertz);
 
 private:
-
-    int64 hertz_; ///< Time value stored as microseconds
-
+    int64 hertz_;  ///< Time value stored as microseconds
 };
 
 //==============================================================================
@@ -84,6 +78,6 @@ Frequency kilohertz(int32 amount);
 /// Construct a time value from a number of microseconds
 Frequency megahertz(double amount);
 
-} // mel
+}  // namespace mel
 
-#endif // MEL_FREQUENCY_HPP
+#endif  // MEL_FREQUENCY_HPP

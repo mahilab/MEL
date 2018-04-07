@@ -18,8 +18,8 @@
 #ifndef MEL_TIMER_HPP
 #define MEL_TIMER_HPP
 
-#include <MEL/Utility/Clock.hpp>
-#include <MEL/Utility/Frequency.hpp>
+#include <MEL/Core/Clock.hpp>
+#include <MEL/Core/Frequency.hpp>
 
 namespace mel {
 
@@ -29,18 +29,17 @@ namespace mel {
 
 /// Utility class that creates a fixed rate waitable timer.
 class Timer {
-
 public:
-
     /// The waiting mode to be used when wait() is called.
     ///
     /// The WaitMode should be chosen wisely depending on the Timer period and
     /// the target platform. On Windows, the smallest amount of time a thread
-    /// can be put to sleep is around 1 ms. Therefore, Sleep and Hybrid shouldn't
-    /// be used on Windows for Timers running at 1000 Hz or higher; use Busy.
-    /// On real-time Linux, threads can sleep for much smaller periods, so Sleep
-    /// and Hybrid can be used reliably. Generally, using Hybrid over Sleep will
-    /// be more accurate since Sleep can go over the requested sleep period.
+    /// can be put to sleep is around 1 ms. Therefore, Sleep and Hybrid
+    /// shouldn't be used on Windows for Timers running at 1000 Hz or higher;
+    /// use Busy. On real-time Linux, threads can sleep for much smaller
+    /// periods, so Sleep and Hybrid can be used reliably. Generally, using
+    /// Hybrid over Sleep will be more accurate since Sleep can go over the
+    /// requested sleep period.
     enum WaitMode {
         Busy,     ///< Waits 100% remaining time using a busy while loop
         Sleep,    ///< Waits 100% remaining time by sleeping the thread
@@ -49,7 +48,6 @@ public:
     };
 
 public:
-
     /// Constructs Timer from frequency. Starts the Timer on construction.
     Timer(Frequency frequency, WaitMode mode = WaitMode::Busy);
 
@@ -65,11 +63,12 @@ public:
     /// Gets the elapsed time since construction or last call to restart().
     Time get_elapsed_time();
 
-    /// Gets the ideal elapsed time since construction or last call to restart().
-    /// Equal to the tick count times the Timer period
+    /// Gets the ideal elapsed time since construction or last call to
+    /// restart(). Equal to the tick count times the Timer period
     Time get_elapsed_time_ideal();
 
-    /// Gets the elapsed number of ticks since construction or the last call to restart().
+    /// Gets the elapsed number of ticks since construction or the last call to
+    /// restart().
     int64 get_elapsed_ticks();
 
     /// Gets the Timer frequency
@@ -79,11 +78,9 @@ public:
     Time get_period();
 
 protected:
-
     virtual void wait_hardware(const Time& duration);
 
 private:
-
     /// Implements Busy wait mode
     void wait_busy(const Time& duration);
 
@@ -91,18 +88,16 @@ private:
     void wait_sleep(const Time& duration);
 
 private:
-
-    WaitMode mode_;  ///< The Timer's waiting mode
-    Clock clock_;    ///< The Timer's internal clock
-    Time period_;    ///< The Timer's waiting period
-    int64 ticks_;    ///< The running tick count
-    Time prev_time_; ///< Time saved at previous call to wait or restart
-
+    WaitMode mode_;   ///< The Timer's waiting mode
+    Clock clock_;     ///< The Timer's internal clock
+    Time period_;     ///< The Timer's waiting period
+    int64 ticks_;     ///< The running tick count
+    Time prev_time_;  ///< Time saved at previous call to wait or restart
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_TIMER_HPP
+#endif  // MEL_TIMER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -119,10 +114,10 @@ private:
 /// be used: Busy, Sleep, and Hybrid. Busy is the most accurate, but uses 100%
 /// of CPU time on the current thread. For high rate loops on Windows platforms
 /// (>1000 Hz) this is the only accurate option. Sleep is the least accurate
-/// option, but frees the CPU to the operating system for the entire wait period.
-/// Use Sleep when accuracy is not critical. Hybrid combines the best of both,
-/// Sleeping for the first 90% of the remaining wait time and Busy waiting for
-/// the last 10%. Prefer Hybrid wait on real-time Linux operating systems.
+/// option, but frees the CPU to the operating system for the entire wait
+/// period. Use Sleep when accuracy is not critical. Hybrid combines the best of
+/// both, Sleeping for the first 90% of the remaining wait time and Busy waiting
+/// for the last 10%. Prefer Hybrid wait on real-time Linux operating systems.
 ///
 /// Usage example:
 /// \code
@@ -147,4 +142,3 @@ private:
 /// function. For more information, see mel::cRIO.
 
 /// \see mel::Clock, mel::Time
-

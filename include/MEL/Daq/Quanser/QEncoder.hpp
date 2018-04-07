@@ -34,10 +34,8 @@ class QDaq;
 
 /// Quanser implementation of Encoder
 class QEncoder : public Encoder {
-
 public:
-
-    QEncoder(QDaq& daq,  const std::vector<uint32>& channel_numbers);
+    QEncoder(QDaq& daq, const std::vector<uint32>& channel_numbers);
 
     ~QEncoder();
 
@@ -53,20 +51,16 @@ public:
 
     bool reset_count(uint32 channel_number, int32 count) override;
 
-    bool set_quadrature_factors(const std::vector<QuadFactor>& factors) override;
+    bool set_quadrature_factors(
+        const std::vector<QuadFactor>& factors) override;
 
-    bool set_quadrature_factor(uint32 channel_number, QuadFactor factor) override;
+    bool set_quadrature_factor(uint32 channel_number,
+                               QuadFactor factor) override;
 
 private:
-
     QDaq& daq_;  ///< Reference to parent QDaq
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_QENCODER_HPP
-
-  //==============================================================================
-  // CLASS DOCUMENTATION
-  //==============================================================================
+#endif  // MEL_QENCODER_HPP
