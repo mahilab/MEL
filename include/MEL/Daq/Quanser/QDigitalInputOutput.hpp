@@ -34,10 +34,10 @@ class QDaq;
 //==============================================================================
 
 class QDigitalInputOutput : public DigitalInputOutput, NonCopyable {
-
 public:
-
-    QDigitalInputOutput(QDaq& daq, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions);
+    QDigitalInputOutput(QDaq& daq,
+                        const std::vector<uint32>& channel_numbers,
+                        const std::vector<Direction>& directions);
 
     ~QDigitalInputOutput();
 
@@ -58,15 +58,9 @@ public:
     bool set_expire_value(uint32 channel_number, Logic expire_value) override;
 
 private:
-
     QDaq& daq_;  ///< Reference to parent QDaq
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_QDIGITALINPUTOUTPUT_HPP
-
-  //==============================================================================
-  // CLASS DOCUMENTATION
-  //==============================================================================
+#endif  // MEL_QDIGITALINPUTOUTPUT_HPP

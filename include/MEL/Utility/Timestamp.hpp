@@ -8,20 +8,22 @@ namespace mel {
 /// Encapsulates a timestamp
 class Timestamp {
 public:
-
     /// Default constructor
     Timestamp();
 
+    /// Returns timestamp string as "yyyy-mm-dd"
     std::string yyyy_mm_dd() const;
 
+    /// Returns timestamp as "hh:mm:ss.mmm"
     std::string hh_mm_ss_mmm() const;
 
+    /// Returns timestamp as "yyyy-mm-dd_hh:mm:ss"
     std::string yyyy_mm_dd_hh_mm_ss() const;
 
+    /// Returns timestamp as "yyyy-mm-dd_hh:mm:ss.mmm"
     std::string yyyy_mm_dd_hh_mm_ss_mmm() const;
 
 public:
-
     int year;      ///< year
     int month;     ///< month                    [1-12]
     int yday;      ///< day of year              [1-366]

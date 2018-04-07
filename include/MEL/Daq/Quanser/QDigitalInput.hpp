@@ -21,7 +21,6 @@
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
-
 namespace mel {
 
 //==============================================================================
@@ -35,9 +34,7 @@ class QDaq;
 //==============================================================================
 
 class QDigitalInput : public DigitalInput, NonCopyable {
-
 public:
-
     QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers);
 
     ~QDigitalInput();
@@ -53,16 +50,10 @@ public:
     std::vector<char>& get_quanser_values();
 
 private:
-
     QDaq& daq_;  ///< Reference to parent QDaq
     std::vector<char> quanser_values_;
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_QDIGITALINPUT_HPP
-
-  //==============================================================================
-  // CLASS DOCUMENTATION
-  //==============================================================================
+#endif  // MEL_QDIGITALINPUT_HPP

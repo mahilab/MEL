@@ -22,8 +22,8 @@
 #ifndef MEL_IPADDRESS_HPP
 #define MEL_IPADDRESS_HPP
 
-#include <MEL/Utility/Types.hpp>
 #include <MEL/Utility/Time.hpp>
+#include <MEL/Utility/Types.hpp>
 #include <istream>
 #include <ostream>
 #include <string>
@@ -36,9 +36,7 @@ namespace mel {
 
 /// Encapsulates an IPv4 network address
 class IpAddress {
-
 public:
-
     /// Default constructor. Creates an empty (invalid) address/
     IpAddress();
 
@@ -112,20 +110,24 @@ public:
     /// limit is deactivated by default.
     // static IpAddress get_public_address(Time timeout = Time::Zero);
 
-    static const IpAddress None;      ///< Value representing an empty/invalid address
-    static const IpAddress Any;       ///< Value representing any address (0.0.0.0)
-    static const IpAddress LocalHost; ///< The "localhost" address (for connecting a computer to itself locally)
-    static const IpAddress Broadcast; ///< The "broadcast" address (for sending UDP messages to everyone on a local network)
+    static const IpAddress
+        None;  ///< Value representing an empty/invalid address
+    static const IpAddress Any;  ///< Value representing any address (0.0.0.0)
+    static const IpAddress LocalHost;  ///< The "localhost" address (for
+                                       ///< connecting a computer to itself
+                                       ///< locally)
+    static const IpAddress Broadcast;  ///< The "broadcast" address (for sending
+                                       ///< UDP messages to everyone on a local
+                                       ///< network)
 
 private:
-
-    friend bool operator <(const IpAddress& left, const IpAddress& right);
+    friend bool operator<(const IpAddress& left, const IpAddress& right);
 
     /// Resolves the given address string
     void resolve(const std::string& address);
 
-    uint32 address_;   ///< Address stored as an unsigned 32 bits integer
-    bool   is_valid_;  ///< Is the address valid?
+    uint32 address_;  ///< Address stored as an unsigned 32 bits integer
+    bool is_valid_;   ///< Is the address valid?
 };
 
 //==============================================================================
@@ -133,33 +135,32 @@ private:
 //==============================================================================
 
 /// Overload of == operator to compare two IP addresses are equal
-bool operator ==(const IpAddress& left, const IpAddress& right);
+bool operator==(const IpAddress& left, const IpAddress& right);
 
 /// Overload of != operator to compare two IP addresses are not equal
-bool operator !=(const IpAddress& left, const IpAddress& right);
+bool operator!=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of < operator to compare two IP addresses
-bool operator <(const IpAddress& left, const IpAddress& right);
+bool operator<(const IpAddress& left, const IpAddress& right);
 
 /// Overload of > operator to compare two IP addresses
-bool operator >(const IpAddress& left, const IpAddress& right);
+bool operator>(const IpAddress& left, const IpAddress& right);
 
 /// Overload of <= operator to compare two IP addresses
-bool operator <=(const IpAddress& left, const IpAddress& right);
+bool operator<=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of >= operator to compare two IP addresses
-bool operator >=(const IpAddress& left, const IpAddress& right);
+bool operator>=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of >> operator to extract an IP address from an input stream
-std::istream& operator >>(std::istream& stream, IpAddress& address);
+std::istream& operator>>(std::istream& stream, IpAddress& address);
 
 /// Overload of << operator to print an IP address to an output stream
-std::ostream& operator <<(std::ostream& stream, const IpAddress& address);
+std::ostream& operator<<(std::ostream& stream, const IpAddress& address);
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_IPADDRESS_HPP
-
+#endif  // MEL_IPADDRESS_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -175,17 +176,19 @@ std::ostream& operator <<(std::ostream& stream, const IpAddress& address);
 ///
 /// Usage example:
 /// \code
-/// mel::IpAddress a0;                                       // an invalid address
-/// mel::IpAddress a1 = mel::IpAddress::None;                 // an invalid address (same as a0)
-/// mel::IpAddress a2("127.0.0.1");                          // the local host address
-/// mel::IpAddress a3 = mel::IpAddress::Broadcast;            // the broadcast address
-/// mel::IpAddress a4(192, 168, 1, 56);                      // a local address
-/// mel::IpAddress a5("my_computer");                        // a local address created from a network name
-/// mel::IpAddress a6("89.54.1.169");                        // a distant address
-/// mel::IpAddress a7("www.google.com");                     // a distant address created from a network name
-/// mel::IpAddress a8 = mel::IpAddress::get_local_address();  // my address on the local network
-/// mel::IpAddress a9 = mel::IpAddress::get_public_address(); // my address on the internet
-/// \endcode
+/// mel::IpAddress a0;                                       // an invalid
+/// address mel::IpAddress a1 = mel::IpAddress::None;                 // an
+/// invalid address (same as a0) mel::IpAddress a2("127.0.0.1");
+/// // the local host address mel::IpAddress a3 = mel::IpAddress::Broadcast;
+/// // the broadcast address mel::IpAddress a4(192, 168, 1, 56);
+/// // a local address mel::IpAddress a5("my_computer");
+/// // a local address created from a network name mel::IpAddress
+/// a6("89.54.1.169");                        // a distant address
+/// mel::IpAddress a7("www.google.com");                     // a distant
+/// address created from a network name mel::IpAddress a8 =
+/// mel::IpAddress::get_local_address();  // my address on the local network
+/// mel::IpAddress a9 = mel::IpAddress::get_public_address(); // my address on
+/// the internet \endcode
 ///
 /// Note that mel::IpAddress currently doesn't support IPv6
 /// nor other types of network addresses.
@@ -198,11 +201,12 @@ std::ostream& operator <<(std::ostream& stream, const IpAddress& address);
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.

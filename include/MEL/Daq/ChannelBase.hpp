@@ -28,52 +28,34 @@ namespace mel {
 
 template <typename T, typename M>
 class ChannelBase {
-
 public:
-
     /// Default constructor. Creates invalid channel
-    ChannelBase() :
-        module_(nullptr),
-        channel_number_(0)
-    {}
+    ChannelBase() : module_(nullptr), channel_number_(0) {}
 
     /// Creates a valid channel.
-    ChannelBase(M* module, uint32 channel_number) :
-        module_(module),
-        channel_number_(channel_number) { }
+    ChannelBase(M* module, uint32 channel_number)
+        : module_(module), channel_number_(channel_number) {}
 
     /// Destructor
     virtual ~ChannelBase() {}
 
     /// Synchronizes the channel with the real-world
-    bool update() {
-        return module_->update_channel(channel_number_);
-    }
+    bool update() { return module_->update_channel(channel_number_); }
 
     /// Returns the current value of the channel
-    T get_value() const {
-        return module_->get_value(channel_number_);
-    }
+    T get_value() const { return module_->get_value(channel_number_); }
 
     /// Returns the current value of the channel
-    T operator()() const {
-        return get_value();
-    }
+    T operator()() const { return get_value(); }
 
     /// Sets the current value of the channel
-    void set_value(T value) {
-        module_->set_value(channel_number_, value);
-    }
+    void set_value(T value) { module_->set_value(channel_number_, value); }
 
     /// Sets the current value of the channel
-    void operator()(T value) {
-        set_value(value);
-    }
+    void operator()(T value) { set_value(value); }
 
     /// Gets the channel number
-    uint32 get_channel_number() const {
-        return channel_number_;
-    }
+    uint32 get_channel_number() const { return channel_number_; }
 
     /// Returns true if the Channel is valid
     bool is_valid() const {
@@ -85,16 +67,10 @@ public:
     }
 
 protected:
-
     M* module_;              ///< Pointer to the module this channel is on
     uint32 channel_number_;  ///< The channel number of this channel
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_CHANNELBASE_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_CHANNELBASE_HPP

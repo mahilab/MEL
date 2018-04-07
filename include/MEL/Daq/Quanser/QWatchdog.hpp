@@ -34,9 +34,7 @@ class QDaq;
 
 /// Encapsulates a hardware watchdog timer
 class QWatchdog : public Watchdog {
-
 public:
-
     /// Default constructor
     QWatchdog(QDaq& daq, Time timeout);
 
@@ -54,15 +52,9 @@ public:
     bool clear() override;
 
 private:
-
     QDaq& daq_;  ///< Reference to parent QDaq
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_QWATCHDOG_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_QWATCHDOG_HPP

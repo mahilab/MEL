@@ -37,16 +37,15 @@ class StateMachine;
 
 class StateBase {
 public:
-    virtual void invoke_state_action(StateMachine* sm, const EventData* data) const = 0;
+    virtual void invoke_state_action(StateMachine* sm,
+                                     const EventData* data) const = 0;
 };
 
 template <class SM, class Data, void (SM::*Func)(const Data*)>
-class StateAction : public StateBase
-{
+class StateAction : public StateBase {
 public:
-
-    virtual void invoke_state_action(StateMachine* sm, const EventData* data) const
-    {
+    virtual void invoke_state_action(StateMachine* sm,
+                                     const EventData* data) const {
         // Downcast the state machine and event data to the correct derived type
         SM* derivedSM = static_cast<SM*>(sm);
 
@@ -57,8 +56,7 @@ public:
     }
 };
 
-struct StateMapRow
-{
+struct StateMapRow {
     const StateBase* const state;
 };
 
@@ -67,10 +65,7 @@ struct StateMapRow
 //==============================================================================
 
 class StateMachine {
-
 public:
-
-
     StateMachine(int num_states, int initial_state = 0);
 
     int get_current_state() { return current_state_; }
@@ -80,17 +75,14 @@ public:
     void execute();
 
 protected:
-
     void event(int new_state, const EventData* data = nullptr);
 
 private:
-
     virtual const StateMapRow* get_state_map() = 0;
 
     void set_current_state(int new_state) { current_state_ = new_state; }
 
 private:
-
     const int NUM_STATES;
 
     int current_state_;
@@ -100,12 +92,11 @@ private:
     bool event_generated_;
 
     const EventData* event_data_;
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_STATEMACHINE_HPP
+#endif  // MEL_STATEMACHINE_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

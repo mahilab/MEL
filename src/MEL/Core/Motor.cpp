@@ -1,7 +1,7 @@
 #include <MEL/Core/Motor.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 
 namespace mel {
 

@@ -18,8 +18,8 @@
 #ifndef MEL_INPUT_HPP
 #define MEL_INPUT_HPP
 
-#include <MEL/Daq/Module.hpp>
 #include <MEL/Daq/ChannelBase.hpp>
+#include <MEL/Daq/Module.hpp>
 
 namespace mel {
 
@@ -30,20 +30,17 @@ namespace mel {
 /// Encapsulates an Input only Module
 template <typename T>
 class Input : public Module<T> {
-
 public:
-
     class Channel;
 
-    /// Default constructor
-    Input(const std::string& name, const std::vector<uint32>& channel_numbers) :
-        Module<T>(name, IoType::InputOnly, channel_numbers)
-    {
-    }
+    /// Constructor
+    Input(const std::string& name, const std::vector<uint32>& channel_numbers)
+        : Module<T>(name, IoType::InputOnly, channel_numbers) {}
 
     /// Default destructor
-    virtual ~Input() { }
+    virtual ~Input() {}
 
+    /// Gets a handle to a channel on this module
     Channel get_channel(uint32 channel_number) {
         if (Module<T>::validate_channel_number(channel_number))
             return Channel(this, channel_number);
@@ -51,35 +48,36 @@ public:
             return Channel();
     }
 
-    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers) {
+    /// Gets a vector of handles to channels on this module
+    std::vector<Channel> get_channels(
+        const std::vector<uint32>& channel_numbers) {
         std::vector<Channel> channels;
         for (std::size_t i = 0; i < channel_numbers.size(); ++i)
             channels.push_back(get_channel(channel_numbers[i]));
         return channels;
     }
 
+    /// Gets a handle to a channel on this module
     Channel operator[](uint32 channel_number) {
         return get_channel(channel_number);
     }
 
-    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers) {
+    /// Gets a vector of handles to channels on this module
+    std::vector<Channel> operator[](
+        const std::vector<uint32>& channel_numbers) {
         return get_channels(channel_numbers);
     }
 
     /// Encapsulates a Module channel
     class Channel : public ChannelBase<T, Input<T>> {
-
     public:
-
         /// Default constructor. Creates invalid channel
         Channel() : ChannelBase<T, Input<T>>() {}
 
         /// Creates a valid channel.
-        Channel(Input* module, uint32 channel_number) :
-            ChannelBase<T, Input<T>>(module, channel_number) { }
-
+        Channel(Input* module, uint32 channel_number)
+            : ChannelBase<T, Input<T>>(module, channel_number) {}
     };
-
 };
 
 //==============================================================================
@@ -87,12 +85,8 @@ public:
 //==============================================================================
 
 typedef Input<Voltage> AnalogInput;
-typedef Input<Logic>   DigitalInput;
+typedef Input<Logic> DigitalInput;
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_INPUT_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_INPUT_HPP

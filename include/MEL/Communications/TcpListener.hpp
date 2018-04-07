@@ -22,11 +22,10 @@
 #ifndef MEL_TCPLISTENER_HPP
 #define MEL_TCPLISTENER_HPP
 
-#include <MEL/Communications/Socket.hpp>
 #include <MEL/Communications/IpAddress.hpp>
+#include <MEL/Communications/Socket.hpp>
 
-namespace mel
-{
+namespace mel {
 
 //==============================================================================
 // FORWARD DECLARATIONS
@@ -39,10 +38,8 @@ class TcpSocket;
 //==============================================================================
 
 /// Socket that listens to new TCP connections
-class TcpListener : public Socket
-{
+class TcpListener : public Socket {
 public:
-
     /// Default constructor
     TcpListener();
 
@@ -58,7 +55,8 @@ public:
     /// port, waiting for new connections.
     /// If the socket was previously listening to another port,
     /// it will be stopped first and bound to the new port.
-    Status listen(unsigned short port, const IpAddress& address = IpAddress::Any);
+    Status listen(unsigned short port,
+                  const IpAddress& address = IpAddress::Any);
 
     /// Stop listening and close the socket
     ///
@@ -73,9 +71,9 @@ public:
     Status accept(TcpSocket& socket);
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_TCPLISTENER_HPP
+#endif  // MEL_TCPLISTENER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATIOIN
@@ -117,8 +115,8 @@ public:
 ///     if (listener.accept(client) == mel::Socket::Done)
 ///     {
 ///         // A new client just connected!
-///         std::cout << "New connection received from " << client.getRemoteAddress() << std::endl;
-///         doSomethingWith(client);
+///         std::cout << "New connection received from " <<
+///         client.getRemoteAddress() << std::endl; doSomethingWith(client);
 ///     }
 /// }
 /// \endcode
@@ -133,11 +131,12 @@ public:
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.

@@ -27,9 +27,9 @@
 #include <vector>
 
 #ifdef __linux__
-    #include <sys/socket.h>
+#include <sys/socket.h>
 #elif _WIN32
-    #include <basetsd.h>
+#include <basetsd.h>
 #endif
 
 struct sockaddr_in;
@@ -42,9 +42,9 @@ namespace mel {
 
 // Low-level socket handle type, specific to each platform
 #if defined(_WIN32)
-    typedef UINT_PTR SocketHandle;
+typedef UINT_PTR SocketHandle;
 #elif __linux__
-    typedef int SocketHandle;
+typedef int SocketHandle;
 #endif
 
 //==============================================================================
@@ -63,37 +63,35 @@ class Packet;
 
 /// Base class for all the socket types
 class Socket : NonCopyable {
-
 public:
-
     /// Types of protocols that the socket can use
     enum Type {
-        Tcp, ///< TCP protocol
-        Udp  ///< UDP protocol
+        Tcp,  ///< TCP protocol
+        Udp   ///< UDP protocol
     };
 
     /// Status codes that may be returned by socket functions
     enum Status {
-        Done,         ///< The socket has sent / received the data
-        NotReady,     ///< The socket is not ready to send / receive data yet
-        Partial,      ///< The socket sent a part of the data
-        Disconnected, ///< The TCP socket has been disconnected
-        Error         ///< An unexpected error happened
+        Done,          ///< The socket has sent / received the data
+        NotReady,      ///< The socket is not ready to send / receive data yet
+        Partial,       ///< The socket sent a part of the data
+        Disconnected,  ///< The TCP socket has been disconnected
+        Error          ///< An unexpected error happened
     };
 
     /// Some special values used by sockets
     enum {
-        AnyPort = 0 ///< Special value that tells the system to pick any available port
+        AnyPort = 0  ///< Special value that tells the system to pick any
+                     ///< available port
     };
 
-    #ifdef _WIN32
-        typedef int AddrLength;
-    #else
-        typedef socklen_t AddrLength;
-    #endif
+#ifdef _WIN32
+    typedef int AddrLength;
+#else
+    typedef socklen_t AddrLength;
+#endif
 
 public:
-
     /// Destructor
     virtual ~Socket();
 
@@ -113,7 +111,6 @@ public:
     bool is_blocking() const;
 
 protected:
-
     /// Default constructor.
     /// This constructor can only be accessed by derived classes.
     Socket(Type type);
@@ -138,7 +135,6 @@ protected:
     void close();
 
 private:
-
     friend class TcpSocket;
     friend class TcpListener;
     friend class UdpSocket;
@@ -161,14 +157,14 @@ private:
     static Status get_error_status();
 
     // Member data
-    Type         type_;        ///< Type of the socket (TCP or UDP)
-    SocketHandle socket_;      ///< Socket descriptor
-    bool         is_blocking_; ///< Current blocking mode of the socket
+    Type type_;            ///< Type of the socket (TCP or UDP)
+    SocketHandle socket_;  ///< Socket descriptor
+    bool is_blocking_;     ///< Current blocking mode of the socket
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_SOCKET_HPP
+#endif  // MEL_SOCKET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -213,11 +209,12 @@ private:
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.

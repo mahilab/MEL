@@ -18,14 +18,14 @@
 #ifndef MEL_Q2USB_HPP
 #define MEL_Q2USB_HPP
 
-#include <MEL/Daq//Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QOptions.hpp>
 #include <MEL/Daq/Quanser/QAnalogInput.hpp>
 #include <MEL/Daq/Quanser/QAnalogOutput.hpp>
+#include <MEL/Daq/Quanser/QDaq.hpp>
 #include <MEL/Daq/Quanser/QDigitalInput.hpp>
-#include <MEL/Daq/Quanser/QDigitalOutput.hpp>
 #include <MEL/Daq/Quanser/QDigitalInputOutput.hpp>
+#include <MEL/Daq/Quanser/QDigitalOutput.hpp>
 #include <MEL/Daq/Quanser/QEncoder.hpp>
+#include <MEL/Daq/Quanser/QOptions.hpp>
 #include <MEL/Daq/Quanser/QWatchdog.hpp>
 
 namespace mel {
@@ -36,17 +36,19 @@ namespace mel {
 
 /// Quanser Q2 USB class
 class Q2Usb : public QDaq {
-
 public:
-
-    /// Default constructor. Creates Q2 USB with all channels enabled and default QOptions
-    Q2Usb(QOptions options = QOptions(), bool open = true, uint32 id = next_id_);
+    /// Default constructor. Creates Q2 USB with all channels enabled and
+    /// default QOptions
+    Q2Usb(QOptions options = QOptions(),
+          bool open        = true,
+          uint32 id        = next_id_);
 
     /// Default destructor. First calls disable() if the Q2Usb is enabled
     /// then close() if the Q2Usb is open.
     ~Q2Usb();
 
-    /// Opens the Q2Usb and sets options and default expiration states (0.0 V, 0 V TTL)
+    /// Opens the Q2Usb and sets options and default expiration states (0.0 V, 0
+    /// V TTL)
     bool open() override;
 
     /// Closes the Q2Usb and clears the watchdog
@@ -79,36 +81,30 @@ public:
     /// LED and will be updated on update_output()
     void set_led(Logic value);
 
-
+    /// Checks for digital loopback between the input and output channels and
+    /// returns true if a connection is found. Usefuly for identifying multiple
+    /// Q2USBs
     bool identify(uint32 input_channel_number, uint32 output_channel_number);
 
 public:
-
     /// Determines how many Q2 USBs are currently connected to host.
     /// Only call this function before enabling any Q2 USBs
     static std::size_t get_q2_usb_count();
 
 public:
-
-    QAnalogInput      analog_input;  ///< The analog input Module
-    QAnalogOutput    analog_output;  ///< The analog output Module
+    QAnalogInput analog_input;       ///< The analog input Module
+    QAnalogOutput analog_output;     ///< The analog output Module
     QDigitalInputOutput digital_io;  ///< The digital input/output module
-    QEncoder               encoder;  ///< The encoder Module
-    QWatchdog             watchdog;  ///< The watchdog timer of this Q2 USB
+    QEncoder encoder;                ///< The encoder Module
+    QWatchdog watchdog;              ///< The watchdog timer of this Q2 USB
 
 private:
-
-    static uint32 next_id_;      ///< Static counter that determines the next ID# to use
-
+    static uint32
+        next_id_;  ///< Static counter that determines the next ID# to use
 };
 
+}  // namespace mel
 
-} // namespace mel
-
-#endif // MEL_Q2USB_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_Q2USB_HPP
 
 /// http://quanser-update.azurewebsites.net/quarc/documentation/Q2_usb.html

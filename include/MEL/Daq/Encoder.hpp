@@ -18,9 +18,9 @@
 #ifndef MEL_ENCODER_HPP
 #define MEL_ENCODER_HPP
 
-#include <MEL/Daq/Module.hpp>
-#include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Core/PositionSensor.hpp>
+#include <MEL/Daq/ChannelBase.hpp>
+#include <MEL/Daq/Module.hpp>
 
 namespace mel {
 
@@ -30,13 +30,12 @@ namespace mel {
 
 /// Encapsulates an incremental optical encoder module
 class Encoder : public Module<int32> {
-
 public:
-
     class Channel;
 
     /// Default constructor
-    Encoder(const std::string& name, const std::vector<uint32>& channel_numbers);
+    Encoder(const std::string& name,
+            const std::vector<uint32>& channel_numbers);
 
     /// Default destructor
     virtual ~Encoder();
@@ -49,13 +48,13 @@ public:
 
     /// This function should call the DAQ's API to set the quadrature factor on
     /// all encoder channels
-    virtual bool set_quadrature_factors(const std::vector<QuadFactor>& factors) = 0;
+    virtual bool set_quadrature_factors(
+        const std::vector<QuadFactor>& factors) = 0;
 
     /// This function should call the DAQ's API to set the quadrature factor on
     /// a single channel
-    virtual bool set_quadrature_factor(uint32 channel_number, QuadFactor factor) = 0;
-
-public:
+    virtual bool set_quadrature_factor(uint32 channel_number,
+                                       QuadFactor factor) = 0;
 
     /// Zeros all encoder channels
     bool zero();
@@ -79,7 +78,8 @@ public:
     Channel get_channel(uint32 channel_number);
 
     /// Returns multiple Encoder::Channels
-    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(
+        const std::vector<uint32>& channel_numbers);
 
     /// Returns a Encoder::Channel
     Channel operator[](uint32 channel_number);
@@ -88,24 +88,23 @@ public:
     std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
 
 private:
-
-    /// Precomputes position conversion sclars (i.e. #units_per_count_ / #factors_)
+    /// Precomputes position conversion sclars (i.e. #units_per_count_ /
+    /// #factors_)
     void compute_conversions();
 
 protected:
-
-    std::vector<QuadFactor> factors_;     ///< The encoder quadrature factors
-    std::vector<double> units_per_count_; ///< The number of counts per unit of travel of the Encoder
-    std::vector<double> positions_;       ///< The calculated positions of the Encoder channels
-    std::vector<double> conversions_;     ///< Conversion scalars used to conver to positions
+    std::vector<QuadFactor> factors_;      ///< The encoder quadrature factors
+    std::vector<double> units_per_count_;  ///< The number of counts per unit of
+                                           ///< travel of the Encoder
+    std::vector<double>
+        positions_;  ///< The calculated positions of the Encoder channels
+    std::vector<double>
+        conversions_;  ///< Conversion scalars used to conver to positions
 
 public:
-
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
     class Channel : public ChannelBase<int32, Encoder>, public PositionSensor {
-
     public:
-
         /// Default constructor. Creates invalid channel
         Channel();
 
@@ -132,15 +131,9 @@ public:
 
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);
-
     };
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_ENCODER_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_ENCODER_HPP

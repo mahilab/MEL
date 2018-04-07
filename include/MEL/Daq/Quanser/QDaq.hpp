@@ -27,7 +27,7 @@
 //==============================================================================
 
 /// Handle for Quanser devices. Must be in global namespace.
-typedef struct tag_card * t_card;
+typedef struct tag_card* t_card;
 
 namespace mel {
 
@@ -53,18 +53,17 @@ typedef t_card QHandle;
 
 /// Encapsulates a generic Quanser DAQ
 class QDaq : public Daq, NonCopyable {
-
 public:
-
     /// Default constructor
-    QDaq(const std::string& card_type, uint32 id, QOptions options = QOptions());
+    QDaq(const std::string& card_type,
+         uint32 id,
+         QOptions options = QOptions());
 
     /// Default destructor
     virtual ~QDaq();
 
 public:
-
-    /// Opens the QDap and sets Options
+    /// Opens the QDaq and sets Options
     virtual bool open() override;
 
     /// Closes the QDaq
@@ -77,15 +76,14 @@ public:
     QOptions get_options();
 
 public:
-
-    /// Determines how many of a specifc QDaq are currently connected to the host
+    /// Determines how many of a specifc QDaq are currently connected to the
+    /// host
     static std::size_t get_qdaq_count(const std::string& card_type);
 
     /// Gets the string message corresponding to a Quanser error number
     static std::string get_quanser_error_message(int error, bool format = true);
 
 protected:
-
     friend class QWatchdog;
     friend class QAnalogInput;
     friend class QAnalogOutput;
@@ -99,13 +97,8 @@ protected:
     uint32 id_;              ///< The ID# of this Q8 USB
     QHandle handle_;         ///< Internal handle to the Quanser device
     QOptions options_;       ///< The board specific options of this Q8 USB
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_QDAQ_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_QDAQ_HPP

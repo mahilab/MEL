@@ -18,11 +18,11 @@
 #ifndef MEL_MELNET_HPP
 #define MEL_MELNET_HPP
 
-#include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Communications/Packet.hpp>
+#include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace mel {
 
@@ -32,12 +32,12 @@ namespace mel {
 
 /// High-level communication class that simplifies UDP communication
 class MelNet : NonCopyable {
-
 public:
-
     /// Default constructor. Use ports in the range of 49152 to 65535.
-    MelNet(unsigned short local_port, unsigned short remote_port,
-           IpAddress remote_address, bool blocking = true);
+    MelNet(unsigned short local_port,
+           unsigned short remote_port,
+           IpAddress remote_address,
+           bool blocking = true);
 
     /// Sends a vector of doubles to the remote host
     void send_data(const std::vector<double>& data);
@@ -64,21 +64,21 @@ public:
     bool is_blocking() const;
 
 private:
-
-    unsigned short local_port_;   ///< The port to receive data on on the local host
-    unsigned short remote_port_;  ///< The port to send data to on the remote host
+    unsigned short
+        local_port_;  ///< The port to receive data on on the local host
+    unsigned short
+        remote_port_;  ///< The port to send data to on the remote host
 
     IpAddress remote_address_;  ///< The remote IP address to send data too
 
-    UdpSocket socket_;          ///< The underlying UDP socket
-    Packet packet_send_;        ///< The packet used to send data
-    Packet packet_receive_;     ///< The packet used to receive data
-
+    UdpSocket socket_;       ///< The underlying UDP socket
+    Packet packet_send_;     ///< The packet used to send data
+    Packet packet_receive_;  ///< The packet used to receive data
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_MELNET_HPP
+#endif  // MEL_MELNET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

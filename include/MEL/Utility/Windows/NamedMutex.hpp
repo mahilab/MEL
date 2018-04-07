@@ -19,8 +19,8 @@
 #define MEL_NAMEDMUTEX_HPP
 
 #include <MEL/Utility/Lock.hpp>
-#include <string>
 #include <memory>
+#include <string>
 
 namespace mel {
 
@@ -30,13 +30,11 @@ namespace mel {
 
 /// Blocks concurrent access to shared resources from multiple processes
 class NamedMutex : public Lockable, NonCopyable {
-
 public:
-
     /// The mode by which a mutex is constructed
     enum Mode {
-        OpenOrCreate, ///< create the named mutex if it does not exit
-        OpenOnly      ///< only attempt to open an existing named mutex
+        OpenOrCreate,  ///< create the named mutex if it does not exit
+        OpenOnly       ///< only attempt to open an existing named mutex
     };
 
     /// Defaut constructor
@@ -52,17 +50,11 @@ public:
     void unlock() override;
 
 private:
-
-    class Impl;                   /// Pimpl idiom
+    class Impl;                   ///< Pimpl idiom
     std::unique_ptr<Impl> impl_;  ///< OS-specific implementation
-    std::string name_;            /// Name of the mutex
-
+    std::string name_;            ///< Name of the mutex
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_NAMEDMUTEX_HPP
-
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif  // MEL_NAMEDMUTEX_HPP

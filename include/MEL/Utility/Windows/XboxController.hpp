@@ -24,9 +24,7 @@ namespace mel {
 
 /// Encapsulates an Xbox 360 or Xbox One Controller
 class XboxController {
-
 public:
-
     /// Represents an Xbox Controller Button
     enum Button {
         A,      ///< A button
@@ -54,9 +52,8 @@ public:
         RY = 4,  ///< Right stick y-axis
         RT = 5   ///< Righter trigger
     };
-    
-public:
 
+public:
     /// Constructor
     XboxController(int controller_number);
 
@@ -79,12 +76,10 @@ public:
     void vibrate(double left_motor = 0.0, double right_motor = 0.0);
 
 private:
-
     class Impl;                   ///< Pimpl idiom
     std::unique_ptr<Impl> impl_;  ///< OS-specific implementation
-
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_XBOXCONTROLLER_HPP
+#endif  // MEL_XBOXCONTROLLER_HPP

@@ -26,8 +26,7 @@
 #include <string>
 #include <vector>
 
-namespace mel
-{
+namespace mel {
 
 //==============================================================================
 // FORARD DECLARATIONS
@@ -42,13 +41,11 @@ class SharedMemory;
 //==============================================================================
 
 /// Utility class to build blocks of data to transfer over the network
-class Packet
-{
+class Packet {
     // A bool-like type that cannot be converted to integer or pointer types
     typedef bool (Packet::*BoolType)(std::size_t);
 
 public:
-
     /// Default constructor. Creates an empty packet.
     Packet();
 
@@ -81,7 +78,6 @@ public:
     bool end_of_packet() const;
 
 public:
-
     ////////////////////////////////////////////////////////////
     /// Test the validity of the packet, for reading
     ///
@@ -123,41 +119,40 @@ public:
     operator BoolType() const;
 
     /// Overloads of operator >> to read data from the packet
-    Packet& operator >>(bool&         data);
-    Packet& operator >>(int8&         data);
-    Packet& operator >>(uint8&        data);
-    Packet& operator >>(int16&        data);
-    Packet& operator >>(uint16&       data);
-    Packet& operator >>(int32&        data);
-    Packet& operator >>(uint32&       data);
-    Packet& operator >>(int64&        data);
-    Packet& operator >>(uint64&       data);
-    Packet& operator >>(float&        data);
-    Packet& operator >>(double&       data);
-    Packet& operator >>(char*         data);
-    Packet& operator >>(std::string&  data);
-    Packet& operator >>(wchar_t*      data);
-    Packet& operator >>(std::wstring& data);
+    Packet& operator>>(bool& data);
+    Packet& operator>>(int8& data);
+    Packet& operator>>(uint8& data);
+    Packet& operator>>(int16& data);
+    Packet& operator>>(uint16& data);
+    Packet& operator>>(int32& data);
+    Packet& operator>>(uint32& data);
+    Packet& operator>>(int64& data);
+    Packet& operator>>(uint64& data);
+    Packet& operator>>(float& data);
+    Packet& operator>>(double& data);
+    Packet& operator>>(char* data);
+    Packet& operator>>(std::string& data);
+    Packet& operator>>(wchar_t* data);
+    Packet& operator>>(std::wstring& data);
 
     /// Overloads of operator << to write data into the packet
-    Packet& operator <<(bool                data);
-    Packet& operator <<(int8                data);
-    Packet& operator <<(uint8               data);
-    Packet& operator <<(int16               data);
-    Packet& operator <<(uint16              data);
-    Packet& operator <<(int32               data);
-    Packet& operator <<(uint32              data);
-    Packet& operator <<(int64               data);
-    Packet& operator <<(uint64              data);
-    Packet& operator <<(float               data);
-    Packet& operator <<(double              data);
-    Packet& operator <<(const char*         data);
-    Packet& operator <<(const std::string&  data);
-    Packet& operator <<(const wchar_t*      data);
-    Packet& operator <<(const std::wstring& data);
+    Packet& operator<<(bool data);
+    Packet& operator<<(int8 data);
+    Packet& operator<<(uint8 data);
+    Packet& operator<<(int16 data);
+    Packet& operator<<(uint16 data);
+    Packet& operator<<(int32 data);
+    Packet& operator<<(uint32 data);
+    Packet& operator<<(int64 data);
+    Packet& operator<<(uint64 data);
+    Packet& operator<<(float data);
+    Packet& operator<<(double data);
+    Packet& operator<<(const char* data);
+    Packet& operator<<(const std::string& data);
+    Packet& operator<<(const wchar_t* data);
+    Packet& operator<<(const std::wstring& data);
 
 protected:
-
     friend class TcpSocket;
     friend class UdpSocket;
     friend class SharedMemory;
@@ -192,24 +187,24 @@ protected:
     virtual void on_receive(const void* data, std::size_t size);
 
 private:
-
     /// Disallow comparisons between packets
-    bool operator ==(const Packet& right) const;
-    bool operator !=(const Packet& right) const;
+    bool operator==(const Packet& right) const;
+    bool operator!=(const Packet& right) const;
 
     /// Check if the packet can extract a given number of bytes This function
     /// updates accordingly the state of the packet.
     bool check_size(std::size_t size);
 
-    std::vector<char> data_;     ///< Data stored in the packet
-    std::size_t       read_pos_; ///< Current reading position in the packet
-    std::size_t       send_pos_; ///< Current send position in the packet (for handling partial sends)
-    bool              is_valid_; ///< Reading state of the packet
+    std::vector<char> data_;  ///< Data stored in the packet
+    std::size_t read_pos_;    ///< Current reading position in the packet
+    std::size_t send_pos_;    ///< Current send position in the packet (for
+                              ///< handling partial sends)
+    bool is_valid_;           ///< Reading state of the packet
 };
 
-} // namespace mel
+}  // namespace mel
 
-#endif // MEL_PACKET_HPP
+#endif  // MEL_PACKET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
@@ -339,11 +334,12 @@ private:
 // Copyright (C) 2007-2017 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from the use of this software.
+// In no event will the authors be held liable for any damages arising from the
+// use of this software.
 //
 // Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it freely,
-// subject to the following restrictions:
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 // 1. The origin of this software must not be misrepresented;
 //    you must not claim that you wrote the original software.
