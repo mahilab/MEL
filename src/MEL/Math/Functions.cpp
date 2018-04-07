@@ -108,13 +108,13 @@ bool approx_equal(double a, double b, double tolerance) {
     return std::abs(a - b) < tolerance;
 }
 
-std::vector<double> linspace(double a, double b, int n) {
+std::vector<double> linspace(double a, double b, std::size_t n) {
     std::vector<double> out;
     if (n > 1) {
         out.resize(n);
         double delta = (b - a) / (n - 1);
         out[0] = a;
-        for (int i = 1; i < n - 1; i++) {
+        for (std::size_t i = 1; i < n - 1; i++) {
             out[i] = out[i - 1] + delta;
         }
         out[n - 1] = b;

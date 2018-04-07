@@ -84,7 +84,7 @@ extern double saturate(double value, double abs_max);
 extern bool approx_equal(double a, double b, double tolerance);
 
 /// Returns a linearly spaced vector with #n elements between #a and #b.
-extern std::vector<double> linspace(double a, double b, int n);
+extern std::vector<double> linspace(double a, double b, std::size_t n);
 
 /// Computes a proportional-derivative control effort given gains, reference state, and current state
 extern double pd_controller(double kp, double kd, double x_ref, double x, double xd_ref, double xd);
