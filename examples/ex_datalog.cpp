@@ -1,6 +1,6 @@
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Logging/DataLogger.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Math/Functions.hpp>

@@ -22,7 +22,7 @@
 #include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 
 namespace mel {
 

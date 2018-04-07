@@ -1,7 +1,7 @@
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Logging/Log.hpp>

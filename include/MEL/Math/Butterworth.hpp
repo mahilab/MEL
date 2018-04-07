@@ -19,7 +19,7 @@
 #define MEL_BUTTERWORTH_HPP
 
 #include <MEL/Math/Filter.hpp>
-#include <MEL/Utility/Frequency.hpp>
+#include <MEL/Core/Frequency.hpp>
 
 namespace mel {
 

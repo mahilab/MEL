@@ -1,6 +1,6 @@
 #include <MEL/Daq/Daq.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

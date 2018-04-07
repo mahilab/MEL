@@ -1,4 +1,3 @@
-
 #include <MEL/Utility/RingBuffer.hpp>
 #include <MEL/Utility/Console.hpp>
 

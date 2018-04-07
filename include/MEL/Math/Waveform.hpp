@@ -18,7 +18,7 @@
 #ifndef MEL_WAVEFORM_HPP
 #define MEL_WAVEFORM_HPP
 
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

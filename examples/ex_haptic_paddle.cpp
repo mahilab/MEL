@@ -8,7 +8,7 @@
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Core/PdController.hpp>

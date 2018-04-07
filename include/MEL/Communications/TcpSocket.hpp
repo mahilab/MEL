@@ -23,7 +23,7 @@
 #define MEL_TCPSOCKET_HPP
 
 #include <MEL/Communications/Socket.hpp>
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

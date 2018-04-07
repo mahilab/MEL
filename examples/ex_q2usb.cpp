@@ -1,5 +1,5 @@
 #include <MEL/Daq/Quanser/Q2Usb.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Utility/Console.hpp>

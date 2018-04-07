@@ -18,7 +18,7 @@
 #ifndef MEL_LIMITER_HPP
 #define MEL_LIMITER_HPP
 
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 
 namespace mel {
 

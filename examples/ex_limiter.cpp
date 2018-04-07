@@ -1,6 +1,6 @@
 #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <MEL/Core/Limiter.hpp>
 
 using namespace mel;

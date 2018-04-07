@@ -1,7 +1,7 @@
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/Frequency.hpp>
+#include <MEL/Core/Frequency.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <complex>
 

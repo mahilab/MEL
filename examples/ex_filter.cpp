@@ -1,10 +1,10 @@
 #include <MEL/Math/Filter.hpp>
 #include <MEL/Math/Butterworth.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Logging/DataLog.hpp>
+#include <MEL/Logging/DataLogger.hpp>
 
 using namespace mel;
 

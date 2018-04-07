@@ -2,7 +2,7 @@
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Math/Functions.hpp>

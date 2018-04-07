@@ -19,7 +19,7 @@
 #define MEL_DIFFERENTIATOR_HPP
 
 #include <MEL/Math/Process.hpp>
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

@@ -22,7 +22,7 @@
 #ifndef MEL_IPADDRESS_HPP
 #define MEL_IPADDRESS_HPP
 
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <istream>
 #include <ostream>

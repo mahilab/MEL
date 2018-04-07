@@ -1,10 +1,9 @@
-//#include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Math/Integrator.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 
 using namespace mel;
 

@@ -30,7 +30,7 @@ Limiter::Limiter(double continuous_limit, double abs_limit, Time time_limit) :
     mode_(Accumulate),
     min_limit_(-abs(abs_limit)),
     max_limit_(abs(abs_limit)),
-    continouous_limit_(continuous_limit),
+    continuous_limit_(continuous_limit),
     setpoint_( (sq(abs_limit) - sq(continuous_limit)) * time_limit.as_seconds() ),
     accumulator_(0.0),
     limited_value_(0.0),

@@ -1,11 +1,11 @@
 #include <MEL/Communications/MelNet.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Waveform.hpp>
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #ifdef _WIN32
 #include <MEL/Communications/Windows/MelShare.hpp>
 #endif

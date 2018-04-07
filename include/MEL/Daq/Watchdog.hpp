@@ -19,7 +19,7 @@
 #define MEL_WATCHDOG_HPP
 
 #include <MEL/Utility/NonCopyable.hpp>
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

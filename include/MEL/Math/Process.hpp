@@ -18,7 +18,7 @@
 #ifndef MEL_PROCESS_HPP
 #define MEL_PROCESS_HPP
 
-#include <MEL/Utility/Time.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 

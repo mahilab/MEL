@@ -1,8 +1,8 @@
 #include <MEL/Communications/MelNet.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/Clock.hpp>
+#include <MEL/Core/Clock.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Timer.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <vector>
 #include <string>
 
