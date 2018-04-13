@@ -1,6 +1,0 @@
-Coding conventions and syntax for MEL:
-
-namespace mel {
-	
-} // namespace mel
-
