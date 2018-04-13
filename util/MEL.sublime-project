@@ -96,6 +96,17 @@
 			"working_dir": "$project_path/../build/windows_ninja"
 		},
 		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "MSVC",
+			"selector":
+			[
+				//"source.c++",
+				"source.c++.11"
+			],
+			"shell_cmd": "cmake --build . --config Release",
+			"working_dir": "$project_path/../build/windows_msvc"
+		},
+		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "CMake (Clean)",
 			"shell_cmd": "python clean.py",
