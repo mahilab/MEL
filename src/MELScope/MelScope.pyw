@@ -96,7 +96,7 @@ time_mode = DEFAULT_TIME_MODE
 # GLOBAL CONSTANTS
 #==============================================================================
 
-VER = '0.3.0'
+VER = '0.2.2'
 
 SCREEN_RESOLUTION = application.desktop().screenGeometry()
 RESOLUTION_SCALE = SCREEN_RESOLUTION.width() / 1920.0
