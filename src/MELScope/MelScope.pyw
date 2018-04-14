@@ -96,7 +96,7 @@ time_mode = DEFAULT_TIME_MODE
 # GLOBAL CONSTANTS
 #==============================================================================
 
-VER = '0.2.1'
+VER = '0.3.0'
 
 SCREEN_RESOLUTION = application.desktop().screenGeometry()
 RESOLUTION_SCALE = SCREEN_RESOLUTION.width() / 1920.0
@@ -230,8 +230,8 @@ class DataSource(object):
         if self.type == 'melshare':
             self.ms = MelShare(name)
         elif self.type == 'melnet':
-            self.ms = MelNet(self.settings[0], self.settings[1], self.settings[2])
-            #self.ms.socket.settimeout(0.005)
+            self.ms = MelNet(self.settings[0], self.settings[1], self.settings[2]) # not blocking
+            self.ms.socket.settimeout(0.01)
         self.get_data()
         self.text = ['%0.4f' % value for value in self.data]
         self.samples = None
