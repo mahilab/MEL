@@ -1,6 +1,7 @@
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <MEL/Math/Constants.hpp>
 #include <numeric>
 #include <algorithm>
 #include <cmath>
@@ -136,6 +137,19 @@ double auto_diff(std::complex<double>(*f)(std::complex<double>), double x) {
     return f(std::complex<double>(x, 1.0e-22)).imag() / 1.0e-22;
 }
 
+double wrap_to_2pi(double radians) {
+    bool was_neg = radians < 0;
+    radians = fmod(radians, 2.0 * PI);
+    if (was_neg)
+        radians += 2.0 * PI;
+    return radians;
+}
+
+double wrap_to_pi(double radians) {
+    return wrap_to_2pi(radians + PI) - PI;
+}
+
+
 //==============================================================================
 // STATISTICS
 //==============================================================================
@@ -226,7 +240,7 @@ extern void gauss_mlt_params(const std::vector<std::vector<double>>& sample_data
     else {
         LOG(Warning) << "Data given to gauss_mlt_params() was empty. Parameters were not computed.";
         return;
-    }   
+    }
 
     sample_mean = std::vector<double>(sample_dim, 0.0);
     sample_cov = std::vector<std::vector<double>>(sample_dim, std::vector<double>(sample_dim, 0.0));

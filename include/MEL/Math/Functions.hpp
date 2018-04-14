@@ -104,6 +104,12 @@ extern double sigmoid(double a);
 extern double auto_diff(std::complex<double> (*f)(std::complex<double>),
                         double x);
 
+/// Wraps an angle in radians to the interval [0 2*PI]
+extern double wrap_to_2pi(double radians);
+
+/// Wraps an angle in radians to the interval [-pi pi]
+extern double wrap_to_pi(double radians);
+
 //==============================================================================
 // STATISTICS
 //==============================================================================
