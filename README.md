@@ -1,7 +1,7 @@
 
 ![MEL Logo](https://raw.githubusercontent.com/epezent/MEL/master/logo.png)
 
-# MEL - MAHI Exoskeleton Library
+# MEL - Mechatronics Library
 
 ## Developers
 
