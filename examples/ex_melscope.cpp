@@ -61,11 +61,11 @@ int main(int argc, char* argv[]) {
     Timer timer(milliseconds(1), Timer::Hybrid);
     while (!stop) {
         // evaluate waveforms
-        data_ms[0] = sin_wave.evaluate(timer.get_elapsed_time());
-        data_ms[1] = sqr_wave.evaluate(timer.get_elapsed_time());
+        data_ms[0] = sin_wave.evaluate(timer.get_elapsed_time_actual());
+        data_ms[1] = sqr_wave.evaluate(timer.get_elapsed_time_actual());
 
-        data_mn[0] = tri_wave.evaluate(timer.get_elapsed_time());
-        data_mn[1] = saw_wave.evaluate(timer.get_elapsed_time());
+        data_mn[0] = tri_wave.evaluate(timer.get_elapsed_time_actual());
+        data_mn[1] = saw_wave.evaluate(timer.get_elapsed_time_actual());
 
         // update MelNet
         if (mn.check_request())

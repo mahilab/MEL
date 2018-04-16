@@ -1,5 +1,6 @@
 #include <MEL/Core/Time.hpp>
 #include <MEL/Core/Frequency.hpp>
+#include <limits>
 
 namespace mel {
 
@@ -8,6 +9,7 @@ namespace mel {
 //==============================================================================
 
 const Time Time::Zero;
+const Time Time::Inf = microseconds(std::numeric_limits<int64>::max()); // 29k years, effectively infinite :)
 
 Time::Time() :
     microseconds_(0)

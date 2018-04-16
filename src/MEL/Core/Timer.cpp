@@ -47,11 +47,11 @@ Time Timer::wait() {
     return clock_.get_elapsed_time();
 }
 
-Time Timer::get_elapsed_time() {
+Time Timer::get_elapsed_time_actual() {
     return clock_.get_elapsed_time();
 }
 
-Time Timer::get_elapsed_time_ideal() {
+Time Timer::get_elapsed_time() {
     return period_ * ticks_;
 }
 

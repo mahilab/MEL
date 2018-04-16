@@ -92,9 +92,9 @@ int main() {
         data_record[4] = z;
 
         // write to file and measure the time it takes
-        tick = timer.get_elapsed_time();
+        tick = timer.get_elapsed_time_actual();
         data_logger.write(data_record);
-        tock = timer.get_elapsed_time();
+        tock = timer.get_elapsed_time_actual();
         delta_times.push_back(
             (double)(tock.as_microseconds() - tick.as_microseconds()));
 
@@ -102,7 +102,7 @@ int main() {
         timer.wait();
 
         // check for timeout
-        if (timer.get_elapsed_time() > immediate_write_duration) {
+        if (timer.get_elapsed_time_actual() > immediate_write_duration) {
             finished = true;
         }
     }
@@ -160,16 +160,16 @@ int main() {
         timer.wait();
 
         // check for timeout
-        if (timer.get_elapsed_time() > buffered_write_duration) {
+        if (timer.get_elapsed_time_actual() > buffered_write_duration) {
             finished = true;
         }
     }
 
-    tick = timer.get_elapsed_time();
+    tick = timer.get_elapsed_time_actual();
     data_logger.save_data("my_buffered_datalog", ".", false);
     data_logger.wait_for_save();
     data_logger.clear_data();
-    tock = timer.get_elapsed_time();
+    tock = timer.get_elapsed_time_actual();
     LOG(Info) << "Time taken to save buffered data to file was "
               << tock.as_milliseconds() - tick.as_milliseconds() << " ms.";
 

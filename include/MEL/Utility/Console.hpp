@@ -94,7 +94,7 @@ void print_string(const std::string& str);
 /// Prints anything that works with stream operators (appends new line
 /// character)
 template <typename T>
-void print(T value) {
+void print(const T& value) {
     std::stringstream ss;
     ss << value << "\n";
     print_string(ss.str());
@@ -102,7 +102,7 @@ void print(T value) {
 
 /// Print with color
 template <typename T>
-void print(T value, Color foreground, Color background = Color::None) {
+void print(const T& value, Color foreground, Color background = Color::None) {
     set_text_color(foreground, background);
     print(value);
     reset_text_color();

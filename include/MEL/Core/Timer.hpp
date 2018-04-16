@@ -60,12 +60,12 @@ public:
     /// Waits the Timer and returns the elapsed time after the wait complete
     Time wait();
 
-    /// Gets the elapsed time since construction or last call to restart().
-    Time get_elapsed_time();
+    /// Gets the actual elapsed time since construction or last call to restart().
+    Time get_elapsed_time_actual();
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period
-    Time get_elapsed_time_ideal();
+    Time get_elapsed_time();
 
     /// Gets the elapsed number of ticks since construction or the last call to
     /// restart().

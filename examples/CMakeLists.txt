@@ -17,6 +17,9 @@ target_link_libraries(ctrl_c_handling MEL)
 add_executable(datalog ex_datalog.cpp)
 target_link_libraries(datalog MEL)
 
+add_executable(engine ex_engine.cpp)
+target_link_libraries(engine MEL)
+
 add_executable(filter ex_filter.cpp)
 target_link_libraries(filter MEL)
 

@@ -61,7 +61,7 @@ int main() {
     // create 10 Hz Timer
     Timer timer(milliseconds(100));
     // start encoder loop
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.encoder.get_value(0));
         timer.wait();
@@ -79,10 +79,10 @@ int main() {
     Waveform wave(Waveform::Sin, seconds(0.25), 5.0);
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.analog_input.get_value(0));
-        double voltage = wave.evaluate(timer.get_elapsed_time());
+        double voltage = wave.evaluate(timer.get_elapsed_time_actual());
         q8.analog_output.set_value(0, voltage);
         q8.update_output();
         timer.wait();
@@ -98,7 +98,7 @@ int main() {
     Logic signal = High;
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.digital_input.get_value(0));
         signal = (Logic)(High - signal);
@@ -124,7 +124,7 @@ int main() {
     // start watchdog
     q8.watchdog.start();
     timer.restart();
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         // simulate a missed deadline if W pressed
         if (Keyboard::is_key_pressed(Key::W)) {
             print("The program missed it's deadline!");

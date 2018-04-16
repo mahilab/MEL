@@ -48,7 +48,7 @@ int main() {
     // create 10 Hz Timer
     Timer timer(milliseconds(100));
     // start encoder loop
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q2.update_input();
         print(q2.encoder.get_value(0));
         timer.wait();
@@ -64,10 +64,10 @@ int main() {
     Waveform wave(Waveform::Sin, seconds(0.25), 5.0);
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q2.update_input();
         print(q2.analog_input.get_value(0));
-        double voltage = wave.evaluate(timer.get_elapsed_time());
+        double voltage = wave.evaluate(timer.get_elapsed_time_actual());
         q2.analog_output.set_value(0, voltage);
         q2.update_output();
         timer.wait();
@@ -84,7 +84,7 @@ int main() {
     Logic signal = High;
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q2.digital_io.update();
         print((int)q2.digital_io[0].get_value());
         signal = (Logic)(High - signal);
@@ -104,7 +104,7 @@ int main() {
     options.set_led_mode(QOptions::LedMode::User);
     q2.set_options(options);
     timer.restart();
-    while (timer.get_elapsed_time() < seconds(10) && !stop) {
+    while (timer.get_elapsed_time_actual() < seconds(10) && !stop) {
         if (Keyboard::is_key_pressed(Key::L))
             q2.set_led(High);
         else

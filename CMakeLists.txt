@@ -183,6 +183,11 @@ file(GLOB SRC_DAQ
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/*.cpp"
 )
 
+file(GLOB SRC_ENGINE
+    "${CMAKE_SOURCE_DIR}/include/MEL/Engine/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Engine/*.cpp"
+)
+
 file(GLOB SRC_NI
     "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/*.cpp"
@@ -243,6 +248,7 @@ source_group("Daq" FILES ${SRC_DAQ})
 source_group("Daq\\NI" FILES ${SRC_NI})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Devices" FILES ${SRC_DEVICES})
+source_group("Engine" FILES ${SRC_ENGINE})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
 source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
@@ -260,6 +266,7 @@ set(SOURCE_FILES
     ${SRC_CORE}
     ${SRC_DAQ}
     ${SRC_DEVICES}
+    ${SRC_ENGINE}
     ${SRC_LOGGING}
     ${SRC_LOGGING_FORMATTERS}
     ${SRC_LOGGING_WRITERS}

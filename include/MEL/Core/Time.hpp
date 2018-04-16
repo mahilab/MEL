@@ -57,6 +57,7 @@ public:
 
 public:
     static const Time Zero;  ///< Predefined "zero" time value
+    static const Time Inf;   ///< Predefined "infinite time value
 
 private:
     friend Time seconds(double);

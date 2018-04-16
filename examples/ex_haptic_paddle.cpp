@@ -347,13 +347,13 @@ int main(int argc, char* argv[]) {
 
         // compute torque
         if (input.count("t") > 0)
-            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time());
+            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time_actual());
         else if (input.count("w") > 0)
             torque = wall(hp[0].get_position(), filtered_vel);
         else if (input.count("n") > 0)
             torque = notches(hp[0].get_position(), filtered_vel);
         else if (input.count("p") > 0) 
-            torque = buttorq.update(pendulum(filtered_pos, filtered_vel, timer.get_elapsed_time_ideal()));
+            torque = buttorq.update(pendulum(filtered_pos, filtered_vel, timer.get_elapsed_time()));
         else
             torque = 0;
 

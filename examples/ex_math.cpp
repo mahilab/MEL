@@ -24,10 +24,10 @@ int main() {
     std::vector<double> data(6);
 
     // loop
-    while (timer.get_elapsed_time() < seconds(5)) {
+    while (timer.get_elapsed_time_actual() < seconds(5)) {
 
         // get current time in seconds
-        double t = timer.get_elapsed_time_ideal().as_seconds();
+        double t = timer.get_elapsed_time().as_seconds();
         data[0] = t;
 
         // x = 1/2 * [ cos(t) + 7 * cos(7t) ]
@@ -35,11 +35,11 @@ int main() {
         // dx/dt = 1/2 * [-sin(t) - 49 * sin(7t)]
         data[2] = 0.5 * (-mel::sin(t) - 49.0 * mel::sin(7.0 * t));
         // dx/dt ~ differentiate(x);
-        data[3] = differentiator.update(data[0], timer.get_elapsed_time_ideal());
+        data[3] = differentiator.update(data[0], timer.get_elapsed_time());
         // integral(x) = sin(4t) * cos(3t) + 5
         data[4] = mel::sin(4 * t) * mel::cos(3 * t) + 5;
         // integral(x) ~ integrate(dx/dt)
-        data[5] = integrator.update(data[0], timer.get_elapsed_time_ideal());
+        data[5] = integrator.update(data[0], timer.get_elapsed_time());
 
         // write to data log buffer
         data_logger.buffer(data);

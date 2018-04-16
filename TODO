@@ -41,6 +41,8 @@ Utility:
 
 Logging:
   ☐ LogSever / RemoteWriter for remote logging
+  ☐ Make Logger and DataLogger more distinct
+    ☐ BufferLog -> DataLogger / FileLog -> DebugLogger
 
 OpenWrist:
 
@@ -58,6 +60,28 @@ Core:
 
  DistOvsv:
    ☐ make this
+
+Update Engine:
+  ☐ class Updatable
+  ☐ class Updater, Hub, World, etc
+  ☐ add derived Updatables to Hub
+  ☐ Updatable calls update on all Updateables
+  ☐ each updatable has a pointer/referencec to its Engine
+  ☐ each update may have child components?
+  ☐ DAQ Egine is a separate thing
+  ☐ how does an OpenWrist get constructed? how does it know which channels?
+  ☐ Require type-of
+  ☐ Engine
+    ☐ Object1 (Q8)
+    ☐ Object2 (OpenWrist)
+      ☐ Object2,1 (Joint)
+        ☐ Component1,1 (Acuator)
+        ☐ Component1,2 (Encoder)
+      ☐ Object2,2
+        ☐ ...
+
+  ☐ Objects own components, but Objects don't own child objects
+
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
