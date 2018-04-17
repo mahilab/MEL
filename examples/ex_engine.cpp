@@ -84,6 +84,19 @@ public:
     void on_stop() override { print(object->name + "::ComponentD::stop()\n"); }
 };
 
+class OpenWrist : Object {
+
+    OpenWrist() {
+        add_child<Joint>("joint1");
+        get_child<Joint>("joint1")
+
+    }
+
+    get_joint_position() {
+
+    }
+};
+
 int main(int argc, char* argv[]) {
     init_logger(Verbose, Verbose);
 
@@ -91,7 +104,6 @@ int main(int argc, char* argv[]) {
     parent.add_component<ComponentA>();
 
     Object child("child", &parent);
-    child.add_component<ComponentB>();
     child.add_component<ComponentC>();
 
     Object gchild("gchild");
