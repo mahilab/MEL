@@ -47,7 +47,7 @@ public:
     /// Gets a Component attached to the Object
     template <typename T>
     T* get_component() {
-        return static_cast<T*>(get_component(std::type_index(typeid(T))));
+        return dynamic_cast<T*>(get_component(std::type_index(typeid(T))));
     }
 
     /// Adds a child Object to this Object
@@ -62,25 +62,28 @@ public:
     /// Removes all child Objects from tis Object
     void remove_all_children();
 
-    /// Returns a child Object from this Object by name
-    Object* get_child(const std::string& child_name);
-
     /// Returns a child T Object from this Object by name
-    template <typename T>
+    template <typename T = Object>
     T* get_child(const std::string& name) {
         return dynamic_cast<T*>(get_child(name));
     }
 
-    /// Returns the first T Object from this Object
-    template <typename T>
-    T* get_child() {
-        for (std::size_t i = 0; i < children_.size(); ++i) {
-            T* object = dynamic_cast<T*>(children_[i]);
-            if (object)
-                return object;
-        }
-        return nullptr;
+    /// Sets the parent of this Object
+    void set_parent(Object* parent_object);
+
+    /// Gets the parent Object of this Object
+    template <typename T = Object>
+    T* get_parent() { 
+        return dynamic_cast<T*>(parent_);
     }
+
+    /// Gets any existing Object by name
+    template <typename T = Object>
+    static T* get_global_object(const std::string& object_name) {
+        return dynamic_cast<T*>(get_global_object_(object_name));
+    }
+    
+    void print_family_tree(int level = 0);
 
 public:
 
@@ -89,12 +92,19 @@ public:
 private:
 
     friend class Engine;
+    friend class Component;
 
     /// Adds a Component to the Object (internal)
     void add_component(Component* component, std::type_index type);
 
     /// Gets a Component attached to the Object (internal)
     Component* get_component(std::type_index type);
+
+    /// Returns a child Object from this Object by name (internal)
+    Object* get_child(const std::string& child_name);
+
+    /// Gets any existing Object by name (internal)
+    static Object* get_global_object_(const std::string& object_name);
 
     /// Recursively sets the Engine of this Object and all child Objects
     void set_engine(Engine* engine);
@@ -111,6 +121,13 @@ private:
     /// Recursively stops all Components and child Objects
     void stop_all();
 
+    /// Recursively resets all Components and child Objects
+    void reset_all();
+
+    /// Recursively enforces all Component requirements
+    bool enforce_requirements();
+
+
 private:
 
     Engine* engine_;  ///< pointer to Engine this Object runs on
@@ -125,6 +142,19 @@ private:
     std::vector<Component*> components_;
     /// Map of Component types to components_ indices
     std::unordered_map<std::type_index, std::size_t> components_map_;
+
+private:
+
+    /// Adds an Object to the Object registry
+    static bool register_object(Object* object);
+
+    /// Removes an Object from the Object registry
+    static bool unregister_object(Object* object);
+
+private:
+
+    /// Registry of all Objects
+    static std::unordered_map<std::string, Object*> object_registry_;
 
 };
 

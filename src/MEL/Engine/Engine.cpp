@@ -7,26 +7,42 @@
 namespace mel {
 
 Engine::Engine(Object* root_object) : 
-    root_object_(root_object), 
     timer_(Frequency::Zero) 
 {
-    root_object_->set_engine(this);
+    set_root_object(root_object);
 }
 
 Engine::~Engine() {
     
 }
 
-void Engine::run(Frequency loop_rate, Time duration) {
+void Engine::set_root_object(Object* root_object) {
+    root_object_ = root_object;
+    if (root_object_) {
+        root_object_->set_engine(this);
+    }
+}
 
-    // update Timer
-    timer_ = Timer(loop_rate);
+void Engine::run(Frequency loop_rate, Time duration) {
+    run(Timer(loop_rate), duration);
+}
+
+void Engine::run(Timer timer, Time duration) {
     
     // check if the engine contains Objects
     if (!root_object_) {
-        LOG(Error) << "Cannot run the Engine because it contains no root Object";
+        LOG(Fatal) << "Cannot run the Engine because it contains no root Object";
         return;
     }
+
+    // enforce Component requirements
+    if (!root_object_->enforce_requirements()) {
+        LOG(Fatal) << "Cannot run the Engine because one or more Component requirements were not satisfied";
+        return;
+    }
+
+    // update Timer
+    timer_ = timer;
 
     LOG(Verbose) << "Starting Engine";
 
@@ -52,12 +68,17 @@ void Engine::run(Frequency loop_rate, Time duration) {
     LOG(Verbose) << "Stopping Engine";
 
     // stop root Object
-    root_object_->stop_all();
-    
+    root_object_->stop_all();    
 }
 
 void Engine::stop() {
     stop_ = true;
+}
+
+void Engine::reset() {
+    if (root_object_) {
+        root_object_->reset_all();
+    }
 }
 
 }  // namespace mel

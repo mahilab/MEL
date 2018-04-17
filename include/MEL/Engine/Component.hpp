@@ -19,9 +19,11 @@
 #define MEL_COMPONENT_HPP
 
 #include <MEL/Engine/Object.hpp>
+#include <typeindex>
 
 namespace mel {
 
+// Component interface
 class Component {
 
 protected:
@@ -31,27 +33,49 @@ protected:
     /// Virtual Destructor
     virtual ~Component();
 
-    /// Called once when the Engine starts running
+    /// Called when this Component's Object starts running
     virtual void on_start();
 
-    /// Called once on every iteration of the Engine loop
+    /// Called every time this Component's Object updates
     virtual void on_update();
 
-    /// Called once on every iteration of the Engine loop after update()
+    /// Called every time this Component's Object late updates
     virtual void on_late_update();
 
-    /// Called once when the Engine stops
+    /// Called this Component's Object stops running
     virtual void on_stop();
+
+    /// Called when this Component's Object resets
+    virtual void on_reset();
+
+public:
+
+    /// Gets the Object this Component is attached to
+    template <typename T = Object>
+    T* get_object() { return dynamic_cast<T*>(object_); }
 
     /// Gets a Component attached to the same Object as this Component
     template <typename T>
-    T* get_component() {
-        return object->get_component<T>();
-    }
+    T* get_component() { return object_->get_component<T>(); }
 
-protected:
+    /// Adds a Component to a list of required sibling Components
+    template <typename T>
+    void add_requirement() { add_requirement(std::type_index(typeid(T))); }
 
-    Object* object;  ///< Object this Component is attached to
+private:
+
+    friend class Object;
+
+    /// Adds a Component to a list of required sibling Components
+    void add_requirement(std::type_index type);
+
+    /// Returns True if Component requirements are met
+    bool enforce_requirements();
+
+private:
+
+    Object* object_;  ///< Object this Component is attached to
+    std::vector<std::type_index> requirements_;  ///< Required Components
     
 };
 

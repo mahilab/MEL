@@ -29,16 +29,25 @@ class Object;
 class Engine {
 public:
     /// Constructor
-    Engine(Object* root_object);
+    Engine(Object* root_object = nullptr);
 
     /// Deconstructor
     ~Engine();
 
-    /// Runs the Engine for the specified duration (indefintely by defalult)
+    /// Sets the root Object of the Engine
+    void set_root_object(Object* root_object);
+
+    /// Runs the Engine for the specified duration
     void run(Frequency loop_rate, Time duration = Time::Inf);
+
+    /// Runs the Engine on a custom Timer for the specified duration
+    void run(Timer timer, Time duration = Time::Inf);
 
     /// Stops the Engine if it is running
     void stop();
+
+    /// Resets the Engine
+    void reset();
 
 private:
 
