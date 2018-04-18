@@ -11,80 +11,18 @@
 
 using namespace mel;
 
-class Encoder : public Component {
-public:
-
-    Encoder(int32 counts_per_revolution) :
-        counts(0),
-        counts_per_revolution(counts_per_revolution) {}
-
-    void on_update() {
-        if (Keyboard::is_key_pressed(Key::Up))
-            counts += 1;
-        else if (Keyboard::is_key_pressed(Key::Down))
-            counts -= 1;
-        position = ((double)counts) / ((double)counts_per_revolution);
-    }
-
-    int32 counts;
-    int32 counts_per_revolution;
-    double position;
-};
-
-class Transmission : public Component {
-public:
-
-    Transmission(double ratio) : ratio(ratio) {}
-    double ratio;
-};
-
-class Joint : public Object {
-public:
-
-    Joint(const std::string& name, Object* parent = nullptr) :
-        Object(name, parent)
-    {
-        add_component<Encoder>(4000);
-        add_component<Transmission>(20);
-    }
-
-    double get_position() {
-        return get_component<Encoder>()->position / get_component<Transmission>()->ratio;
-    }
-
-};
-
-class Observer : public Component {
-public:
-
-    Observer() {
-        add_requirement<Encoder>();
-        add_requirement<Transmission>();
-    }
-
-    void on_update() override {
-        print(get_component<Encoder>()->position / get_component<Transmission>()->ratio);
-    }
-
-};
-
 class ComponentA : public Component {
 
 };
 
 class ComponentB : public Component {
 public:
-    ComponentB() {
-        add_requirement<ComponentA>();
-    }
+
 };
 
-class ComponentC : public Component {
+class ComponentC : public ComponentB {
 public:
-    ComponentC() {
-        add_requirement<ComponentA>();
-        add_requirement<ComponentB>();
-    }
+
 };
 
 int main(int argc, char* argv[]) {
@@ -93,19 +31,48 @@ int main(int argc, char* argv[]) {
 
     Object object1("object1");
     object1.add_component<ComponentA>();
-    Object object2("object2", &object1);
-    object2.add_component<ComponentA>();
-    object2.add_component<ComponentB>();
-    Object object3("object3", &object2);
-    // object3.add_component<ComponentA>();
-    object3.add_component<ComponentB>();
-    object3.add_component<ComponentC>();
+    object1.add_component<ComponentB>();
+    object1.add_component<ComponentC>();
+    if (object1.get_derived_component<ComponentB>())
+        print(object1.get_derived_component<ComponentB>()->get_type_name());
 
-    object1.print_family_tree();
+    Clock clock;
+    for (size_t i = 0; i < 1000; i++)
+    {
+        object1.get_component<ComponentC>();
+    }
+    print(clock.get_elapsed_time());
 
-    Engine engine;
-    engine.set_root_object(&object2);
-    engine.run(hertz(1000), seconds(10));
+    //Engine engine;
+    //engine.set_root_object(&object2);
+    //engine.run(hertz(1000), seconds(10));
 
     return 0;
 }
+
+// COMPONENTS
+// Actuator -> Motor
+// Force Sensor
+// Joint (if this then that)
+// Limiter (different types)
+// PDController
+// PositionSensor -> Encoder
+// VelocitySensor -> VirtualVelocitySensor
+// Amplifier
+// Module -> Input, Output, InputOutput, Encoder (rename), Velocity
+
+// PREFAB OBJECTS
+// Device (can be merged with Components)
+// Robot (container of Joints)
+// DAQ -> Q8USB
+
+// CORE
+// Clock
+// Frequency
+// Time
+// Timer
+
+// IDEAS
+// - should DAQ derive from Engine?
+// - order components and objects linearly in memory (this is impossible without a custom pool allocator)
+// - multipe-root objects (make engine "root object")

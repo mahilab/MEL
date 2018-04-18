@@ -62,10 +62,13 @@ public:
     template <typename T>
     void add_requirement() { add_requirement(std::type_index(typeid(T))); }
 
+    /// Gets the Component type name
+    std::string get_type_name();
+
 private:
 
     friend class Object;
-
+    
     /// Adds a Component to a list of required sibling Components
     void add_requirement(std::type_index type);
 
@@ -77,6 +80,7 @@ private:
     Object* object_;  ///< Object this Component is attached to
     std::vector<std::type_index> requirements_;  ///< Required Components
     
+
 };
 
 } // namespace mel

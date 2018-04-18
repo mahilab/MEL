@@ -39,11 +39,16 @@ namespace mel {
         bool requirements_met = true;
         for (std::size_t i = 0; i < requirements_.size(); ++i) {
             if (object_->components_map_.count(requirements_[i]) == 0) {
-                LOG(Error) << "Component of type " << typeid(*this).name() << " on Object " << object_->name << " requires Component of type " << requirements_[i].name();
+                LOG(Error) << "Component of type " << get_type_name() << " on Object " << object_->name << " requires Component of type " << requirements_[i].name();
                 requirements_met = false;
             }
         }
         return requirements_met;
+    }
+
+    std::string Component::get_type_name() {
+        std::string name = typeid(*this).name();
+        return name.erase(0, 6);
     }
 
 } // namespace mel

@@ -50,6 +50,17 @@ public:
         return dynamic_cast<T*>(get_component(std::type_index(typeid(T))));
     }
 
+    /// Gets a derived Component attached to the Object
+    template <typename T>
+    T* get_derived_component() {
+        for (std::size_t i = 0; i < components_.size(); ++i) {
+            T* component = dynamic_cast<T*>(components_[i]);
+            if (component)
+                return component;
+        }
+        return nullptr;
+    }
+
     /// Adds a child Object to this Object
     void add_child(Object* child);
 
