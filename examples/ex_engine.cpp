@@ -7,113 +7,105 @@
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <string>
 #include <vector>
+#include <MEL/Communications/Windows/MelShare.hpp>
 
 using namespace mel;
 
-// Basic Component
-class ComponentA : public Component {
+class Encoder : public Component {
 public:
 
-    void on_start() override { print(object->name + "::ComponentA::start()"); }
+    Encoder(int32 counts_per_revolution) :
+        counts(0),
+        counts_per_revolution(counts_per_revolution) {}
 
-    void on_update() override {
-        print(object->name + "::ComponentA::update()");
+    void on_update() {
+        if (Keyboard::is_key_pressed(Key::Up))
+            counts += 1;
+        else if (Keyboard::is_key_pressed(Key::Down))
+            counts -= 1;
+        position = ((double)counts) / ((double)counts_per_revolution);
     }
 
-    void on_stop() override { print(object->name + "::ComponentA::stop()"); }
+    int32 counts;
+    int32 counts_per_revolution;
+    double position;
 };
 
-// Component w/ internal data
+class Transmission : public Component {
+public:
+
+    Transmission(double ratio) : ratio(ratio) {}
+    double ratio;
+};
+
+class Joint : public Object {
+public:
+
+    Joint(const std::string& name, Object* parent = nullptr) :
+        Object(name, parent)
+    {
+        add_component<Encoder>(4000);
+        add_component<Transmission>(20);
+    }
+
+    double get_position() {
+        return get_component<Encoder>()->position / get_component<Transmission>()->ratio;
+    }
+
+};
+
+class Observer : public Component {
+public:
+
+    Observer() {
+        add_requirement<Encoder>();
+        add_requirement<Transmission>();
+    }
+
+    void on_update() override {
+        print(get_component<Encoder>()->position / get_component<Transmission>()->ratio);
+    }
+
+};
+
+class ComponentA : public Component {
+
+};
+
 class ComponentB : public Component {
 public:
-
-    void on_start() override { print(object->name + "::ComponentB::start()"); }
-
-    void on_update() override {
-        print(object->name + "::ComponentB::update()");
-        ++i;
+    ComponentB() {
+        add_requirement<ComponentA>();
     }
-
-    void on_stop() override { print(object->name + "::Actuator::stop()"); }
-
-    int i;
 };
 
-// Component that communicates with another Component
 class ComponentC : public Component {
 public:
-
-    void on_start() override {
-        print(object->name + "::ComponentC::start()");
-        b = get_component<ComponentB>();
-        if (b) {
-            std::cout << "    b->i = " << b->i << std::endl;
-        }
-    }
-
-    void on_update() override {
-        print(object->name + "::ComponentC::update()");
-        if (b) {
-            std::cout << "    b->i = " << b->i << std::endl;
-        }
-    }
-
-    void on_stop() override { print(object->name + "::ComponentC::stop()"); }
-
-    ComponentB* b;
-};
-
-// Component w/ constructor and destructor
-class ComponentD : public Component {
-public:
-
-    ComponentD(const std::string& message) {
-        print("ComponentD: " + message);
-    }
-
-    ~ComponentD() {
-        print(object->name + "::ComponentD destructed");
-    }
-
-    void on_start() override { print(object->name + "::ComponentD::start()\n"); }
-
-    void on_update() override {
-        print(object->name + "::ComponentD::update()\n");
-    }
-
-    void on_stop() override { print(object->name + "::ComponentD::stop()\n"); }
-};
-
-class OpenWrist : Object {
-
-    OpenWrist() {
-        add_child<Joint>("joint1");
-        get_child<Joint>("joint1")
-
-    }
-
-    get_joint_position() {
-
+    ComponentC() {
+        add_requirement<ComponentA>();
+        add_requirement<ComponentB>();
     }
 };
 
 int main(int argc, char* argv[]) {
+
     init_logger(Verbose, Verbose);
 
-    Object parent("parent");
-    parent.add_component<ComponentA>();
+    Object object1("object1");
+    object1.add_component<ComponentA>();
+    Object object2("object2", &object1);
+    object2.add_component<ComponentA>();
+    object2.add_component<ComponentB>();
+    Object object3("object3", &object2);
+    // object3.add_component<ComponentA>();
+    object3.add_component<ComponentB>();
+    object3.add_component<ComponentC>();
 
-    Object child("child", &parent);
-    child.add_component<ComponentC>();
+    object1.print_family_tree();
 
-    Object gchild("gchild");
-    gchild.add_component<ComponentD>("Hello, World");
-    child.add_child(&gchild); // another way to parent gchild
-
-    // create Engine with root Object
-    Engine engine(&parent);
-    // run Engine at 10Hz for 1 second
-    engine.run(hertz(10), seconds(1));
+    Engine engine;
+    engine.set_root_object(&object2);
+    engine.run(hertz(1000), seconds(10));
 
     return 0;
 }

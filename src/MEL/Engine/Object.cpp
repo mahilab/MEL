@@ -14,7 +14,7 @@ Object::Object(const std::string& name, Object* parent) :
     name(name),
     parent_(nullptr)
 {
-    if (parent) {
+    if (register_object(this) && parent) {
         parent->add_child(this);
     }
 }
@@ -23,36 +23,30 @@ Object::~Object() {
     // delete components
     for (std::size_t i = 0; i < components_.size(); ++i) {
         delete components_[i];
-    }    
+    }
+    unregister_object(this);
 }
 
 //=============================================================================
-// COMPONENTS
+// PUBLIC FUNCTIONS
 //=============================================================================
 
-void Object::add_component(Component* component, std::type_index type) {
-    if (components_map_.count(type)) {
-        LOG(Error) << "Object " << "name already has a Component of type " << type.name();
-        delete component;
+void Object::add_child(Object* child) {
+    // check if child already has a parent
+    if (child->parent_) {
+        LOG(Error) << "Object " << child->name << " already a child of Object " << child->parent_->name;
         return;
     }
-    component->object = this;
-    components_map_[type] = components_.size();
-    components_.push_back(component);
-    LOG(Verbose) << "Added Component of type " << type.name() << " to Object " << name;
-}
-
-Component* Object::get_component(std::type_index type) {
-    if (components_map_.count(type)) {
-        return components_[components_map_[type]];
+    if (children_map_.count(child->name) == 0) {
+        children_map_.insert({ child->name, children_.size() });
+        children_.push_back(child);
+        child->parent_ = this;
+        LOG(Verbose) << "Object " << child->name << " added to Object " << name;
     }
-    LOG(Error) << "Object " << name << " has no Component of type " << type.name();
-    return nullptr;
+    else {
+        LOG(Warning) << "Object " << child->name << " already exists in Object " << name;
+    }
 }
-
-//=============================================================================
-// CHILDREN
-//=============================================================================
 
 void Object::remove_child(Object* child_object) {
     remove_child(child_object->name);
@@ -84,21 +78,41 @@ void Object::remove_all_children() {
         remove_child(children_names[i]);
 }
 
-void Object::add_child(Object* child) {
-    // check if child already has a parent
-    if (child->parent_) {
-        LOG(Error) << "Object " << child->name << " already a child of Object " << child->parent_->name;
+void Object::set_parent(Object* parent_object) {
+    parent_object->add_child(this);
+}
+
+void Object::print_family_tree(int level) {
+    for (int i = 0; i < level; ++i) {
+        std::cout << "    ";
+    }
+    std::cout << name << std::endl;
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->print_family_tree(level + 1);
+}
+
+//=============================================================================
+// PRIVATE FUNCTIONS
+//=============================================================================
+
+void Object::add_component(Component* component, std::type_index type) {
+    if (components_map_.count(type)) {
+        LOG(Error) << "Object " << "name already has a Component of type " << type.name();
+        delete component;
         return;
     }
-    if (children_map_.count(child->name) == 0) {
-        children_map_.insert({ child->name, children_.size() });
-        children_.push_back(child);
-        child->parent_ = this;
-        LOG(Verbose) << "Object " << child->name << " added to Object " << name;
+    component->object_ = this;
+    components_map_[type] = components_.size();
+    components_.push_back(component);
+    LOG(Verbose) << "Added Component of type " << type.name() << " to Object " << name;
+}
+
+Component* Object::get_component(std::type_index type) {
+    if (components_map_.count(type)) {
+        return components_[components_map_[type]];
     }
-    else {
-        LOG(Warning) << "Object " << child->name << " already exists in Object " << name;
-    }
+    LOG(Error) << "Object " << name << " has no Component of type " << type.name();
+    return nullptr;
 }
 
 Object* Object::get_child(const std::string& child_name) {
@@ -107,6 +121,16 @@ Object* Object::get_child(const std::string& child_name) {
     }
     else {
         LOG(Error) << "Object " << name << " has no child Object " << child_name;
+        return nullptr;
+    }
+}
+
+Object* Object::get_global_object_(const std::string& object_name) {
+    if (object_registry_.count(object_name)) {
+        return object_registry_[object_name];
+    }
+    else {
+        LOG(Error) << "No Object with name " << object_name << " exists";
         return nullptr;
     }
 }
@@ -155,6 +179,56 @@ void Object::stop_all() {
     // call children
     for (std::size_t i = 0; i < children_.size(); ++i)
         children_[i]->stop_all();
+}
+
+void Object::reset_all() {
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        components_[i]->on_reset();
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->reset_all();
+}
+
+bool Object::enforce_requirements() {
+    bool componet_req_met = true;
+    bool children_req_met = true;
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        if (!components_[i]->enforce_requirements())
+            componet_req_met = false;
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        if (!children_[i]->enforce_requirements())
+            children_req_met = false;
+    return componet_req_met && children_req_met;
+}
+
+//=============================================================================
+// STATIC FUNCTIONS
+//=============================================================================
+
+std::unordered_map<std::string, Object*> Object::object_registry_;
+
+bool Object::register_object(Object* object) {
+    if (Object::object_registry_.count(object->name)) {
+        LOG(Error) << "Object named " << object->name << " already exists";
+        return false;
+    }
+    else {
+        Object::object_registry_[object->name] = object;
+        return true;
+    }
+}
+
+bool Object::unregister_object(Object* object) {
+    if (Object::object_registry_.count(object->name)) {
+        Object::object_registry_.erase(object->name);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 }  // namespace mel
