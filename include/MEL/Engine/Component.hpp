@@ -30,6 +30,9 @@ protected:
 
     friend class Object;
 
+    /// Default Constructor
+    Component() {}
+
     /// Virtual Destructor
     virtual ~Component();
 
@@ -78,8 +81,7 @@ private:
 private:
 
     Object* object_;  ///< Object this Component is attached to
-    std::vector<std::type_index> requirements_;  ///< Required Components
-    
+    std::vector<std::type_index> requirements_;  ///< Required Components   
 
 };
 

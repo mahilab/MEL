@@ -45,7 +45,7 @@ public:
     void on_update() override {
         counts = get_counts();
         position = 2 * PI * static_cast<double>(counts) /
-                   static_cast<double>(counts_per_rev);
+            static_cast<double>(counts_per_rev);
     }
 
     int counts_per_rev;
@@ -67,7 +67,7 @@ public:
     }
 
     void on_start() override {
-        actuator     = get_component<Actuator>();
+        actuator = get_component<Actuator>();
         pos_sensor = get_component<PositionSensor>();
         transmission = get_component<Transmission>();
     }
@@ -83,7 +83,7 @@ public:
             actuator->torque = torque * transmission->ratio;
         else if (actuator)
             actuator->torque = torque;
-    }    
+    }
 
     Actuator* actuator;
     PositionSensor* pos_sensor;
