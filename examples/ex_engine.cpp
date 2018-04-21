@@ -11,6 +11,53 @@
 
 using namespace mel;
 
+#define MAX_COMPONENT_FAMILY_DEPTH 10
+
+class BaseObject {
+public:
+    static int next_family_id;
+};
+
+int BaseObject::next_family_id(0);
+
+template <typename T>
+struct Comp : public BaseObject
+{
+    static int family_id;
+    static int id;
+
+    Comp()
+    {
+        if (family_id == 0) {
+            family_id = next_family_id + MAX_COMPONENT_FAMILY_DEPTH;
+            next_family_id += MAX_COMPONENT_FAMILY_DEPTH;
+        }
+    }
+
+
+protected:
+    ~Comp() // objects should never be removed through pointers of this type
+    {
+    }
+};
+
+template <typename T> int Comp<T>::family_id(0);
+
+class X :public Comp<X>
+{
+    // ...
+};
+
+class Y : public Comp<Y>
+{
+    // ...
+};
+
+class Z : public Comp<X> {
+
+};
+
+
 class ComponentA : public Component {
 
 };
@@ -29,19 +76,7 @@ int main(int argc, char* argv[]) {
 
     init_logger(Verbose, Verbose);
 
-    Object object1("object1");
-    object1.add_component<ComponentA>();
-    object1.add_component<ComponentB>();
-    object1.add_component<ComponentC>();
-    if (object1.get_derived_component<ComponentB>())
-        print(object1.get_derived_component<ComponentB>()->get_type_name());
 
-    Clock clock;
-    for (size_t i = 0; i < 1000; i++)
-    {
-        object1.get_component<ComponentC>();
-    }
-    print(clock.get_elapsed_time());
 
     //Engine engine;
     //engine.set_root_object(&object2);
@@ -76,3 +111,6 @@ int main(int argc, char* argv[]) {
 // - should DAQ derive from Engine?
 // - order components and objects linearly in memory (this is impossible without a custom pool allocator)
 // - multipe-root objects (make engine "root object")
+// - add requirements with tuple!
+// - can give unique ID with CRTP, e.g. class PositionSensor : public Component<PositionSensor>, but
+//   inheritcan would have to look like class Encoder : public PositionSensor, so it'd have same ID
