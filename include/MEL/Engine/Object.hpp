@@ -138,7 +138,6 @@ private:
     /// Recursively enforces all Component requirements
     bool enforce_requirements();
 
-
 private:
 
     Engine* engine_;  ///< pointer to Engine this Object runs on

@@ -7,10 +7,6 @@
 #include <map>
 #include <unordered_map>
 
-#define CLASS_WITH_NAME(name)  name { const char * __NAME = #name;
-
-class CLASS_WITH_NAME(class_name) // No "{" here!
-
 //=============================================================================
 // UTILITY
 //=============================================================================
@@ -132,8 +128,8 @@ unsigned int get(const std::type_info& x);
 template<class T, class V> 
 T priori_cast(V base) {
     if (base != nullptr) {
-        //if (std::is_convertible<std::remove_pointer<V>::type, std::remove_pointer<T>::type>::value == true)
-        //    return reinterpret_cast<T>(base);
+        if (std::is_convertible<std::remove_pointer<V>::type, std::remove_pointer<T>::type>::value == true)
+            return reinterpret_cast<T>(base);
         const auto factor = get(typeid(std::remove_pointer<T>::type));
         if ((factor != 0) && (base->priori(factor) == true))
             return reinterpret_cast<T>(base);
