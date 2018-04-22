@@ -6,6 +6,9 @@
 #include <cassert>
 #include <map>
 #include <unordered_map>
+#include <algorithm>
+#include <typeindex>
+#include <map>
 
 //=============================================================================
 // UTILITY
@@ -116,20 +119,20 @@ public:
     Base(Base& other);
     Base(Base&& other);
     virtual ~Base() throw();
-    
+
     bool priori(const unsigned int x) const;
     void priori(Base* x);
     unsigned int prioriFactor;
 };
 
 unsigned int get(Base* x);
-unsigned int get(const std::type_info& x);
+unsigned int get(const std::type_index& x);
 
-template<class T, class V> 
+template<class T, class V>
 T priori_cast(V base) {
     if (base != nullptr) {
-        if (std::is_convertible<std::remove_pointer<V>::type, std::remove_pointer<T>::type>::value == true)
-            return reinterpret_cast<T>(base);
+        // if (std::is_convertible<std::remove_pointer<V>::type, std::remove_pointer<T>::type>::value == true)
+        //     return reinterpret_cast<T>(base);
         const auto factor = get(typeid(std::remove_pointer<T>::type));
         if ((factor != 0) && (base->priori(factor) == true))
             return reinterpret_cast<T>(base);
@@ -137,25 +140,29 @@ T priori_cast(V base) {
     return nullptr;
 }
 
-static std::unordered_map<const type_info*, unsigned int> CastMap;
+static std::map<std::type_index, unsigned int> CastMap;
 static unsigned int Idx;
 
 unsigned int get(Base* x) {
     return get(typeid(*x));
 }
 
-unsigned int get(const std::type_info& ti)
+unsigned int get(const std::type_index& ti)
 {
-    auto it = std::find_if(CastMap.begin(), CastMap.end(),
-        [&ti](std::pair<const type_info*, unsigned int> entry) -> bool
-    {
-        return entry.first->operator==(ti);
-    });
+    // auto it = std::find_if(CastMap.begin(), CastMap.end(),
+    //     [&ti](std::pair<const std::type_index*, unsigned int> entry) -> bool
+    // {
+    //     return entry.first->operator==(ti);
+    // });
 
+    // if (it != CastMap.end())
+    // {
+    //     return it->second;
+    // }
+    //if (CastMap.count(ti) > 0)
+    auto it = CastMap.find(ti);
     if (it != CastMap.end())
-    {
         return it->second;
-    }
     return 0;
 }
 
@@ -178,7 +185,7 @@ void Base::priori(Base* x) {
     if (prioriNumber == 0) {
         assert(Idx < primeSize);
         prioriNumber = primes[Idx];
-        CastMap.insert(std::make_pair(&typeid(*x), prioriNumber));
+        CastMap.insert(std::make_pair(std::type_index(typeid(*x)), prioriNumber));
         Idx++;
     }
     this->prioriFactor *= prioriNumber;
@@ -294,7 +301,7 @@ public:
 // BENCHMARK
 //=============================================================================
 
-int main() {    
+int main() {
 
     Base* x1 = new Base;
     Base* x2 = new Base;
@@ -354,6 +361,8 @@ int main() {
         }
         print(accumulated);
     });
+
+    print(typeid(xd).name());
 
     measure("Priori Cast", [&]() {
         volatile size_t accumulated = 0;
