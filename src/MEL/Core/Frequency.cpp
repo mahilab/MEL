@@ -4,6 +4,7 @@
 namespace mel {
 
 const Frequency Frequency::Zero;
+const Frequency Frequency::Inf = hertz(std::numeric_limits<int64>::max());
 
 Frequency::Frequency() :
     hertz_(0)
@@ -30,6 +31,10 @@ double Frequency::as_megahertz() const {
 }
 
 Time Frequency::to_time() const {
+    if (hertz_ == std::numeric_limits<int64>::max())
+        return Time::Zero;
+    if (hertz_ == 0)
+        return Time::Inf;
     return seconds(1.0 / static_cast<double>(hertz_));
 }
 
@@ -47,6 +52,15 @@ Frequency kilohertz(int32 amount) {
 
 Frequency megahertz(double amount) {
     return Frequency(static_cast<int64>(amount * 1000000.0));
+}
+
+//==============================================================================
+// OPERATOR OVERLOADS
+//==============================================================================
+
+std::ostream& operator << (std::ostream& os, const Frequency& t) {
+    os << t.as_hertz() << " Hz";
+    return os;
 }
 
 } // namespace mel

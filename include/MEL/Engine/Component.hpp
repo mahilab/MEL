@@ -61,10 +61,6 @@ public:
     template <typename T>
     T* get_component() { return object_->get_component<T>(); }
 
-    /// Adds a Component to a list of required sibling Components
-    template <typename T>
-    void add_requirement() { add_requirement(std::type_index(typeid(T))); }
-
     /// Gets the Component type name
     std::string get_type_name();
 
@@ -72,14 +68,6 @@ private:
 
     friend class Object;
     
-    /// Adds a Component to a list of required sibling Components
-    void add_requirement(std::type_index type);
-
-    /// Returns True if Component requirements are met
-    bool enforce_requirements();
-
-private:
-
     Object* object_;  ///< Object this Component is attached to
     std::vector<std::type_index> requirements_;  ///< Required Components   
 

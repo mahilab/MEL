@@ -337,8 +337,13 @@ if(EXAMPLES)
 endif()
 
 if(TESTS)
-    add_executable(testing tests/testing.cpp)
-    target_link_libraries(testing MEL)
+    add_executable(testing1 tests/testing1.cpp)
+    target_link_libraries(testing1 MEL)
+endif()
+
+if(TESTS)
+    add_executable(testing2 tests/testing2.cpp)
+    target_link_libraries(testing2 MEL)
 endif()
 
 if(BUILD_DOC)

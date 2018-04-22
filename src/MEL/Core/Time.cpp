@@ -38,6 +38,10 @@ int64 Time::as_microseconds() const
 
 
 Frequency Time::to_frequency() const {
+    if (microseconds_ == std::numeric_limits<int64>::max())
+        return Frequency::Zero;
+    if (microseconds_ == 0)
+        return Frequency::Inf;
     return megahertz(1.0 / static_cast<double>(microseconds_));
 }
 

@@ -42,8 +42,8 @@ Time Timer::wait() {
             wait_busy(remaining_time);
         }
     }
-    ticks_ += 1;
     prev_time_ = Clock::get_current_time();
+    ticks_ += 1;
     return clock_.get_elapsed_time();
 }
 
@@ -62,7 +62,6 @@ int64 Timer::get_elapsed_ticks() {
 Frequency Timer::get_frequency() {
     return period_.to_frequency();
 }
-
 
 Time Timer::get_period() {
     return period_;

@@ -23,6 +23,7 @@
 #include <typeindex>
 #include <unordered_map>
 #include <MEL/Core/Time.hpp>
+#include <MEL/Logging/Log.hpp>
 
 namespace mel {
 
@@ -38,27 +39,39 @@ public:
     /// Virtual destructor
     virtual ~Object();
 
-    /// Adds a Component to the Object
-    template <typename T, typename ... Args>
-    void add_component(Args ... args) {
-        add_component(new T(args...), std::type_index(typeid(T)));
-    }
-
     /// Gets a Component attached to the Object
     template <typename T>
     T* get_component() {
-        return dynamic_cast<T*>(get_component(std::type_index(typeid(T))));
-    }
-
-    /// Gets a derived Component attached to the Object
-    template <typename T>
-    T* get_derived_component() {
         for (std::size_t i = 0; i < components_.size(); ++i) {
             T* component = dynamic_cast<T*>(components_[i]);
             if (component)
                 return component;
         }
+        LOG(Error) << "Object " << name << " has no Component of type " << typeid(T).name();
         return nullptr;
+    }
+
+    template <typename T>
+    bool has_component() {
+        for (std::size_t i = 0; i < components_.size(); ++i) {
+            T* component = dynamic_cast<T*>(components_[i]);
+            if (component)
+                return true;
+        }
+        return false;
+    }
+
+    /// Adds a Component to the Object
+    template <typename T, typename ... Args>
+    void add_component(Args ... args) {
+        if (!has_component<T>()) {
+            Component* component = new T(args...);
+            component->object_ = this;
+            components_.push_back(component);
+            LOG(Verbose) << "Added Component of type " << typeid(T).name() << " to Object " << name;
+        }
+        else
+            LOG(Error) << "Object " << name << " already has a Component of type " << typeid(T).name();
     }
 
     /// Adds a child Object to this Object
@@ -106,10 +119,7 @@ private:
     friend class Component;
 
     /// Adds a Component to the Object (internal)
-    void add_component(Component* component, std::type_index type);
-
-    /// Gets a Component attached to the Object (internal)
-    Component* get_component(std::type_index type);
+    void add_component(Component* component);
 
     /// Returns a child Object from this Object by name (internal)
     Object* get_child(const std::string& child_name);
@@ -135,8 +145,6 @@ private:
     /// Recursively resets all Components and child Objects
     void reset_all();
 
-    /// Recursively enforces all Component requirements
-    bool enforce_requirements();
 
 private:
 
@@ -150,8 +158,6 @@ private:
 
     /// Componets attached to this Object
     std::vector<Component*> components_;
-    /// Map of Component types to components_ indices
-    std::unordered_map<std::type_index, std::size_t> components_map_;
 
 private:
 

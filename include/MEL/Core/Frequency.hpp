@@ -52,6 +52,7 @@ public:
 
 public:
     static const Frequency Zero;  ///< Predefined "zero" frequency value
+    static const Frequency Inf;  ///< Predfined "infinite" frequency value
 
 private:
     friend Frequency hertz(int64);

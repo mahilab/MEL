@@ -9,19 +9,11 @@
 #include <vector>
 #include <MEL/Communications/Windows/MelShare.hpp>
 #include <MEL/Math/Constants.hpp>
+#include <MEL/Math/Waveform.hpp>
 
 using namespace mel;
 
 MelShare actuator_torque("torque");
-
-double get_counts() {
-    static double counts = 0;
-    if (Keyboard::is_key_pressed(Key::Up))
-        counts += 1;
-    if (Keyboard::is_key_pressed(Key::Down))
-        counts -= 1;
-    return counts;
-}
 
 class Actuator : public Component {
 public:
@@ -43,7 +35,7 @@ public:
     Encoder(int counts_per_rev) : counts_per_rev(counts_per_rev) {}
 
     void on_update() override {
-        counts = get_counts();
+        counts++;
         position = 2 * PI * static_cast<double>(counts) /
             static_cast<double>(counts_per_rev);
     }
@@ -61,9 +53,6 @@ public:
 class Joint : public Component {
 public:
     Joint() {
-        add_requirement<Actuator>();
-        add_requirement<PositionSensor>();
-        add_requirement<Transmission>();
     }
 
     void on_start() override {
@@ -95,7 +84,7 @@ public:
 
 class Monitor : public Component {
 public:
-    Monitor() : ms("monitor"), data(3) {}
+    Monitor(const std::string& name) : ms(name), data(3) {}
     void on_update() override {
         data[0] = get_component<Encoder>()->counts;
         data[1] = get_component<Joint>()->position;
@@ -111,14 +100,23 @@ int main(int argc, char* argv[]) {
     init_logger(Verbose, Warning);
     enable_realtime();
 
-    Object joint1("joint1");
+    Object root("root");
+
+    Object joint1("joint1", &root);
     joint1.add_component<Encoder>(2000);
-    joint1.add_component<Joint>();
     joint1.add_component<Actuator>();
-    joint1.add_component<Transmission>(1.0 / 20.0);
-    joint1.add_component<Monitor>();
+    joint1.add_component<Transmission>(0.05);
+    joint1.add_component<Joint>();
+    joint1.add_component<Monitor>("monitor1");
+    //Object joint2("joint2",&root);
+    //joint2.add_component<Encoder>(2000);
+    //joint2.add_component<Actuator>();
+    //joint2.add_component<Transmission>(0.025);
+    //joint2.add_component<Joint>();
+    //joint2.add_component<Monitor>("monitor2");
+
     Engine engine;
-    engine.set_root_object(&joint1);
+    engine.set_root_object(&root);    
     engine.run(hertz(1000), seconds(60));
 
     return 0;

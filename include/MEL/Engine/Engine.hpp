@@ -43,6 +43,9 @@ public:
     /// Runs the Engine on a custom Timer for the specified duration
     void run(Timer timer, Time duration = Time::Inf);
 
+    /// Runs the Engine without a Timer for a fixed number of iterations
+    void run(uint32 iterations);
+
     /// Stops the Engine if it is running
     void stop();
 
@@ -50,6 +53,9 @@ public:
     void reset();
 
 private:
+
+    /// Boots the Eninge
+    bool perfom_checks();
 
     Object* root_object_;
     Timer timer_;

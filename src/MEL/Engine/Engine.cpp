@@ -29,17 +29,9 @@ void Engine::run(Frequency loop_rate, Time duration) {
 
 void Engine::run(Timer timer, Time duration) {
     
-    // check if the engine contains Objects
-    if (!root_object_) {
-        LOG(Fatal) << "Cannot run the Engine because it contains no root Object";
+    // perform checks
+    if (!perfom_checks())
         return;
-    }
-
-    // enforce Component requirements
-    if (!root_object_->enforce_requirements()) {
-        LOG(Fatal) << "Cannot run the Engine because one or more Component requirements were not satisfied";
-        return;
-    }
 
     // update Timer
     timer_ = timer;
@@ -56,7 +48,7 @@ void Engine::run(Timer timer, Time duration) {
     timer_.restart();
 
     // run the Engine loop
-    while (timer_.get_elapsed_time_actual() < duration && !stop_) {
+    while (timer_.get_elapsed_time() < duration && !stop_) {
         // update root Object 
         root_object_->update_all();
         // late update root Object
@@ -69,6 +61,44 @@ void Engine::run(Timer timer, Time duration) {
 
     // stop root Object
     root_object_->stop_all();    
+}
+
+void Engine::run(uint32 iterations) {
+
+    // perform checks
+    if (!perfom_checks())
+        return;
+
+    LOG(Verbose) << "Starting Engine";
+
+    // reset the stop flag
+    stop_ = false;
+
+    // start root Object
+    root_object_->start_all();
+
+    Clock clock;
+    // run the Engine loop
+    for (uint32 i = 0; i < iterations; ++i) {
+        // update root Object 
+        root_object_->update_all();
+        // late update root Object
+        root_object_->late_update_all();
+    }
+    print(clock.get_elapsed_time());
+
+    LOG(Verbose) << "Stopping Engine";
+
+    // stop root Object
+    root_object_->stop_all();
+}
+
+bool Engine::perfom_checks() {
+    // check if the engine contains Objects
+    if (!root_object_) {
+        LOG(Fatal) << "Cannot run the Engine because it contains no root Object";
+        return false;
+    }
 }
 
 void Engine::stop() {
