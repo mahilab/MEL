@@ -69,7 +69,7 @@ enable_language(C)
 enable_language(CXX)
 
 # enable C++11
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # create project
 project(MEL)

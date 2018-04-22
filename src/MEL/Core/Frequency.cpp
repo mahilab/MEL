@@ -1,5 +1,6 @@
 #include <MEL/Core/Frequency.hpp>
 #include <MEL/Core/Time.hpp>
+#include <limits>
 
 namespace mel {
 
