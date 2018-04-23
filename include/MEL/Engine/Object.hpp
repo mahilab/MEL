@@ -18,39 +18,43 @@
 #ifndef MEL_OBJECT_HPP
 #define MEL_OBJECT_HPP
 
+#include <MEL/Core/Time.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <string>
-#include <vector>
 #include <typeindex>
 #include <unordered_map>
-#include <MEL/Engine/Detail/Detail.hpp>
-#include <string>
+#include <vector>
 
 namespace mel {
 
-/// BaseObject class
-class BaseObject {
+class Engine;
+class Component;
+
+class Object {
 public:
+    /// Constructs a child Object
+    Object(const std::string& name, Object* parent = nullptr);
 
-    BaseObject(const std::string& name, BaseObject* parent);
+    /// Virtual destructor
+    virtual ~Object();
 
-    virtual void start() {}
+    /// Gets a Component attached to the Object
+    template <typename T>
+    T* get();
 
-    virtual void update() {}
+    /// Returns true if an Object has a Component
+    template <typename T>
+    bool has();
 
-    virtual void late_update() {}
-
-    virtual void stop() {}
-
-    virtual void reset() {}
-
-    /// Sets the parent of this Object
-    void set_parent(BaseObject& parent);
+    /// Adds a Component to the Object
+    template <typename T, typename... Args>
+    void add(Args... args);
 
     /// Adds a child Object to this Object
-    void add_child(BaseObject& child);
+    void add_child(Object* child);
 
     /// Removes a child Object from this Object
-    void remove_child(BaseObject* child_object);
+    void remove_child(Object* child_object);
 
     /// Removes a child Object from this Object by name
     void remove_child(const std::string& child_name);
@@ -58,103 +62,133 @@ public:
     /// Removes all child Objects from tis Object
     void remove_all_children();
 
-    /// Prints Object familiy tree
+    /// Returns a child T Object from this Object by name
+    template <typename T = Object>
+    T* get_child(const std::string& name);
+
+    /// Sets the parent of this Object
+    void set_parent(Object* parent_object);
+
+    /// Gets the parent Object of this Object
+    template <typename T = Object>
+    T* get_parent();
+
+    /// Gets any existing Object by name
+    template <typename T = Object>
+    static T* get_global_object(const std::string& object_name);
+
     void print_family_tree(int level = 0);
 
 public:
+    const std::string name;  ///< the name of this Object
 
-    const std::string name;
+private:
+    friend class Engine;
+    friend class Component;
 
-//private:
+    /// Adds a Component to the Object (internal)
+    void add(Component* component, std::type_index type);
 
-    /// Parent Object of this Object
-    BaseObject* parent_;
+    /// Returns a child Object from this Object by name (internal)
+    Object* get_child(const std::string& child_name);
+
+    /// Gets any existing Object by name (internal)
+    static Object* get_global_object_(const std::string& object_name);
+
+    /// Recursively sets the Engine of this Object and all child Objects
+    void set_engine(Engine* engine);
+
+    /// Recursively starts all Components and child Objects
+    void start_all();
+
+    /// Recursively updates all Components and child Objects
+    void update_all();
+
+    /// Recursively late updates all Components and child Objects
+    void late_update_all();
+
+    /// Recursively stops all Components and child Objects
+    void stop_all();
+
+    /// Recursively resets all Components and child Objects
+    void reset_all();
+
+private:
+    Engine* engine_;  ///< pointer to Engine this Object runs on
+    Object* parent_;  ///< pointer to parent Oject of this Object
+
     /// Children Objects of this Object
-    std::vector<BaseObject*> children_;
+    std::vector<Object*> children_;
     /// Map of childlren names to children_ indices
     std::unordered_map<std::string, std::size_t> children_map_;
 
-private:
+    /// Componets attached to this Object
+    std::vector<Component*> components_;
 
+private:
     /// Adds an Object to the Object registry
-    static bool register_object(BaseObject* object);
+    static bool register_object(Object* object);
 
     /// Removes an Object from the Object registry
-    static bool unregister_object(BaseObject* object);
+    static bool unregister_object(Object* object);
 
 private:
-
     /// Registry of all Objects
-    static std::unordered_map<std::string, BaseObject*> object_registry_;
-
+    static std::unordered_map<std::string, Object*> object_registry_;
 };
 
+//==============================================================================
+// TEMPLATE FUNCTION IMPLEMENTATIONS
+//==============================================================================
 
-/// Object Class
-template <typename ... TComponents>
-class Object : public BaseObject {
-public:
-
-    /// Constructor
-    Object(const std::string& name, 
-           BaseObject* parent,
-           const TComponents& ... args) : 
-        BaseObject(name, parent), components(args...) { }
-
-    /// Starts all Components attached to this Object
-    void start() override {
-        for_each_in_tuple(components, start_functor());
-        for (std::size_t i = 0; i < children_.size(); ++i)
-            children_[i]->start();
+template <typename T>
+T* Object::get() {
+    for (std::size_t i = 0; i < components_.size(); ++i) {
+        T* component = dynamic_cast<T*>(components_[i]);
+        if (component)
+            return component;
     }
+    LOG(Error) << "Object " << name << " has no Component of type "
+               << typeid(T).name();
+    return nullptr;
+}
 
-    /// Updates all Components attached to this Object
-    void update() override {
-        for_each_in_tuple(components, update_functor());
-        for (std::size_t i = 0; i < children_.size(); ++i)
-            children_[i]->update();
+template <typename T>
+bool Object::has() {
+    for (std::size_t i = 0; i < components_.size(); ++i) {
+        T* component = dynamic_cast<T*>(components_[i]);
+        if (component)
+            return true;
     }
+    return false;
+}
 
-    /// Late updates all Components attached to this Object
-    void late_update() override {
-        for_each_in_tuple(components, late_update_functor());
-        for (std::size_t i = 0; i < children_.size(); ++i)
-            children_[i]->late_update();
-    }
+template <typename T, typename... Args>
+void Object::add(Args... args) {
+    if (!has<T>()) {
+        add(new T(args...), typeid(T));
+    } else
+        LOG(Error) << "Object " << name << " already has a Component of type "
+                   << typeid(T).name();
+}
 
-    /// Stops all Components attached to this Object
-    void stop() override {
-        for_each_in_tuple(components, stop_functor());
-        for (std::size_t i = 0; i < children_.size(); ++i)
-            children_[i]->stop();
-    }
+template <typename T = Object>
+T* Object::get_child(const std::string& name) {
+    return dynamic_cast<T*>(get_child(name));
+}
 
-    /// Resets all Components attached to this Object
-    void reset() override {
-        for_each_in_tuple(components, reset_functor());
-        for (std::size_t i = 0; i < children_.size(); ++i)
-            children_[i]->reset();
-    }
+/// Gets the parent Object of this Object
+template <typename T = Object>
+T* Object::get_parent() {
+    return dynamic_cast<T*>(parent_);
+}
 
-    /// Gets a Component attached to this Object
-    template <typename TComponent>
-    TComponent* get() {
-        return &std::get<TComponent>(components);
-    }
-
-private:
-
-    /// Componets attached to this Object
-    std::tuple<TComponents ...> components;
-};
+/// Gets any existing Object by name
+template <typename T = Object>
+T* Object::get_global_object(const std::string& object_name) {
+    return dynamic_cast<T*>(get_global_object_(object_name));
+}
 
 }  // namespace mel
 
 #endif  // MEL_OBJECT_HPP
-
-//template <typename TObject> 
-//void set_references(TObject& object) {
-//    t = &object.template get<T>();
-//}
-//T* t;
-//for_each_in_tuple(components, set_references_functor<Object>(this)); //< in ctor

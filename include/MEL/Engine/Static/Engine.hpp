@@ -24,42 +24,9 @@
 
 namespace mel {
 
-class Object;
-
 class Engine {
 public:
-    /// Constructor
-    Engine(Object* root_object = nullptr);
 
-    /// Deconstructor
-    ~Engine();
-
-    /// Sets the root Object of the Engine
-    void set_root_object(Object* root_object);
-
-    /// Runs the Engine for the specified duration
-    void run(Frequency loop_rate, Time duration = Time::Inf);
-
-    /// Runs the Engine on a custom Timer for the specified duration
-    void run(Timer timer, Time duration = Time::Inf);
-
-    /// Runs the Engine without a Timer for a fixed number of iterations
-    void run(uint32 iterations);
-
-    /// Stops the Engine if it is running
-    void stop();
-
-    /// Resets the Engine
-    void reset();
-
-private:
-
-    /// Boots the Eninge
-    bool perfom_checks();
-
-    Object* root_object_;
-    Timer timer_;
-    bool stop_;
 };
 
 }  // namespace mel

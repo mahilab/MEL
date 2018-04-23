@@ -19,12 +19,16 @@
 #define MEL_COMPONENT_HPP
 
 #include <MEL/Engine/Object.hpp>
+#include <typeindex>
 
 namespace mel {
 
-/// Component Interface
+// Component interface
 class Component {
-public:
+
+protected:
+
+    friend class Object;
 
     /// Default Constructor
     Component() {}
@@ -46,6 +50,26 @@ public:
 
     /// Called when this Component's Object resets
     virtual void reset();
+
+public:
+
+    /// Gets the Object this Component is attached to
+    template <typename T = Object>
+    T* get_object() { return dynamic_cast<T*>(object_); }
+
+    /// Gets a Component attached to the same Object as this Component
+    template <typename T>
+    T* get() { return object_->get<T>(); }
+
+    /// Gets the Component type name
+    std::string get_type_name();
+
+private:
+
+    friend class Object;
+
+    Object* object_;  ///< Object this Component is attached to
+    std::vector<std::type_index> requirements_;  ///< Required Components
 
 };
 

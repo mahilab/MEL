@@ -4,58 +4,59 @@
 #include <MEL/Engine/Component.hpp>
 #include <MEL/Logging/Log.hpp>
 
+
 namespace mel {
 
 //=============================================================================
 // CONSTRUCTOR / DESTRUCTOR
 //=============================================================================
 
-BaseObject::BaseObject(const std::string& object_name, BaseObject* parent) :
-    name(object_name),
+Object::Object(const std::string& name, Object* parent) :
+    name(name),
     parent_(nullptr)
 {
     if (register_object(this) && parent) {
-        parent->add_child(*this);
+        parent->add_child(this);
     }
+}
+
+Object::~Object() {
+    // delete components
+    for (std::size_t i = 0; i < components_.size(); ++i) {
+        delete components_[i];
+    }
+    unregister_object(this);
 }
 
 //=============================================================================
 // PUBLIC FUNCTIONS
 //=============================================================================
 
-void BaseObject::set_parent(BaseObject& parent_object) {
-    parent_object.add_child(*this);
-}
-
-void BaseObject::add_child(BaseObject& child) {
+void Object::add_child(Object* child) {
     // check if child already has a parent
-    if (child.parent_) {
-        LOG(Error) << "Object " << child.name << " already a child of Object " << child.parent_->name;
+    if (child->parent_) {
+        LOG(Error) << "Object " << child->name << " already a child of Object " << child->parent_->name;
         return;
     }
-    if (&child == this) {
-        LOG(Error) << "Object " << name << " cannot be made a child of itself";
-        return;
-    }
-    if (children_map_.count(child.name) == 0) {
-        children_map_.insert({ child.name, children_.size() });
-        children_.push_back(&child);
-        child.parent_ = this;
-        LOG(Verbose) << "Object " << child.name << " added to Object " << name;
+    if (children_map_.count(child->name) == 0) {
+        children_map_.insert({ child->name, children_.size() });
+        children_.push_back(child);
+        child->parent_ = this;
+        LOG(Verbose) << "Object " << child->name << " added to Object " << name;
     }
     else {
-        LOG(Warning) << "Object " << child.name << " already exists in Object " << name;
+        LOG(Warning) << "Object " << child->name << " already exists in Object " << name;
     }
 }
 
-void BaseObject::remove_child(BaseObject* child_object) {
+void Object::remove_child(Object* child_object) {
     remove_child(child_object->name);
 }
 
-void BaseObject::remove_child(const std::string& child_name) {
+void Object::remove_child(const std::string& child_name) {
     if (children_map_.count(child_name)) {
         // nullify child Engine
-        //children_[children_map_[child_name]]->set_engine(nullptr);
+        children_[children_map_[child_name]]->set_engine(nullptr);
         // remove child from children vector
         children_.erase(children_.begin() + children_map_[child_name]);
         // update children map
@@ -70,7 +71,7 @@ void BaseObject::remove_child(const std::string& child_name) {
     }
 }
 
-void BaseObject::remove_all_children() {
+void Object::remove_all_children() {
     std::vector<std::string> children_names;
     for (auto it = children_map_.begin(); it != children_map_.end(); ++it)
         children_names.push_back(it->first);
@@ -78,7 +79,11 @@ void BaseObject::remove_all_children() {
         remove_child(children_names[i]);
 }
 
-void BaseObject::print_family_tree(int level) {
+void Object::set_parent(Object* parent_object) {
+    parent_object->add_child(this);
+}
+
+void Object::print_family_tree(int level) {
     for (int i = 0; i < level; ++i) {
         std::cout << "    ";
     }
@@ -91,40 +96,112 @@ void BaseObject::print_family_tree(int level) {
 // PRIVATE FUNCTIONS
 //=============================================================================
 
+void Object::add(Component* component, std::type_index type) {
+    component->object_ = this;
+    components_.push_back(component);
+    LOG(Verbose) << "Added Component of type " << type.name() << " to Object " << name;
+}
 
+Object* Object::get_child(const std::string& child_name) {
+    if (children_map_.count(child_name)) {
+        return children_[children_map_[child_name]];
+    }
+    else {
+        LOG(Error) << "Object " << name << " has no child Object " << child_name;
+        return nullptr;
+    }
+}
+
+Object* Object::get_global_object_(const std::string& object_name) {
+    if (object_registry_.count(object_name)) {
+        return object_registry_[object_name];
+    }
+    else {
+        LOG(Error) << "No Object with name " << object_name << " exists";
+        return nullptr;
+    }
+}
 
 //=============================================================================
 // RECURSIVE FUNCTIONS
 //=============================================================================
 
+void Object::set_engine(Engine* engine) {
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->set_engine(engine);
+    engine_ = engine;
+}
 
+void Object::start_all() {
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        components_[i]->start();
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->start_all();
+}
+
+void Object::update_all() {
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        components_[i]->update();
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->update_all();
+}
+
+void Object::late_update_all() {
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        components_[i]->late_update();
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->late_update_all();
+}
+
+void Object::stop_all() {
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        components_[i]->stop();
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->stop_all();
+}
+
+void Object::reset_all() {
+    // call components
+    for (std::size_t i = 0; i < components_.size(); ++i)
+        components_[i]->reset();
+    // call children
+    for (std::size_t i = 0; i < children_.size(); ++i)
+        children_[i]->reset_all();
+}
 
 //=============================================================================
 // STATIC FUNCTIONS
 //=============================================================================
 
-std::unordered_map<std::string, BaseObject*> BaseObject::object_registry_;
+std::unordered_map<std::string, Object*> Object::object_registry_;
 
-bool BaseObject::register_object(BaseObject* object) {
-    if (BaseObject::object_registry_.count(object->name)) {
+bool Object::register_object(Object* object) {
+    if (Object::object_registry_.count(object->name)) {
         LOG(Error) << "Object named " << object->name << " already exists";
         return false;
     }
     else {
-        BaseObject::object_registry_[object->name] = object;
+        Object::object_registry_[object->name] = object;
         return true;
     }
 }
 
-bool BaseObject::unregister_object(BaseObject* object) {
-    if (BaseObject::object_registry_.count(object->name)) {
-        BaseObject::object_registry_.erase(object->name);
+bool Object::unregister_object(Object* object) {
+    if (Object::object_registry_.count(object->name)) {
+        Object::object_registry_.erase(object->name);
         return true;
     }
     else {
         return false;
     }
 }
-
 
 }  // namespace mel
