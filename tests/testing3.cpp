@@ -1,7 +1,7 @@
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Engine/Component.hpp>
-#include <MEL/Engine/Engine.hpp>
-#include <MEL/Engine/Object.hpp>
+#include <MEL/Engine/Old/Component.hpp>
+#include <MEL/Engine/Old/Engine.hpp>
+#include <MEL/Engine/Old/Object.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
@@ -18,9 +18,10 @@ MelShare actuator_torque("torque");
 class Actuator : public Component {
 public:
     void on_late_update() override {
-        actuator_torque.write_data({ torque });
+        dummy = torque;
     }
     double torque;
+    double dummy;
 };
 
 class PositionSensor : public Component {
@@ -85,12 +86,22 @@ public:
 class Monitor : public Component {
 public:
     Monitor(const std::string& name) : ms(name), data(3) {}
-    void on_update() override {
-        data[0] = get_component<Encoder>()->counts;
-        data[1] = get_component<Joint>()->position;
-        data[2] = get_component<Transmission>()->ratio;
-        ms.write_data(data);
+
+    void on_start() override {
+        encoder = get_component<Encoder>();
+        joint = get_component<Joint>();
+        transmission = get_component<Transmission>();
     }
+
+    void on_update() override {
+        data[0] = encoder->counts;
+        data[1] = joint->position;
+        data[2] = transmission->ratio;
+        //ms.write_data(data);
+    }
+    Encoder* encoder = nullptr;
+    Joint* joint = nullptr;
+    Transmission* transmission = nullptr;
     MelShare ms;
     std::vector<double> data;
 };
@@ -100,24 +111,17 @@ int main(int argc, char* argv[]) {
     init_logger(Verbose, Warning);
     enable_realtime();
 
-    Object root("root");
-
-    Object joint1("joint1", &root);
+    Object joint1("joint1");
     joint1.add_component<Encoder>(2000);
     joint1.add_component<Actuator>();
     joint1.add_component<Transmission>(0.05);
     joint1.add_component<Joint>();
     joint1.add_component<Monitor>("monitor1");
-    //Object joint2("joint2",&root);
-    //joint2.add_component<Encoder>(2000);
-    //joint2.add_component<Actuator>();
-    //joint2.add_component<Transmission>(0.025);
-    //joint2.add_component<Joint>();
-    //joint2.add_component<Monitor>("monitor2");
+
 
     Engine engine;
-    engine.set_root_object(&root);    
-    engine.run(hertz(1000), seconds(60));
+    engine.set_root_object(&joint1);    
+    engine.run(10000000);
 
     return 0;
 }

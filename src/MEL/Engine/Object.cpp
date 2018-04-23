@@ -10,11 +10,12 @@ namespace mel {
 // CONSTRUCTOR / DESTRUCTOR
 //=============================================================================
 
-BaseObject::BaseObject(const std::string& name, BaseObject* parent) :
-    name(name) 
+BaseObject::BaseObject(const std::string& object_name, BaseObject* parent) :
+    name(object_name),
+    parent_(nullptr)
 {
     if (register_object(this) && parent) {
-        parent->add_child(this);
+        parent->add_child(*this);
     }
 }
 
@@ -22,24 +23,28 @@ BaseObject::BaseObject(const std::string& name, BaseObject* parent) :
 // PUBLIC FUNCTIONS
 //=============================================================================
 
-void BaseObject::set_parent(BaseObject* parent_object) {
-    parent_object->add_child(this);
+void BaseObject::set_parent(BaseObject& parent_object) {
+    parent_object.add_child(*this);
 }
 
-void BaseObject::add_child(BaseObject* child) {
+void BaseObject::add_child(BaseObject& child) {
     // check if child already has a parent
-    if (child->parent_) {
-        LOG(Error) << "Object " << child->name << " already a child of Object " << child->parent_->name;
+    if (child.parent_) {
+        LOG(Error) << "Object " << child.name << " already a child of Object " << child.parent_->name;
         return;
     }
-    if (children_map_.count(child->name) == 0) {
-        children_map_.insert({ child->name, children_.size() });
-        children_.push_back(child);
-        child->parent_ = this;
-        LOG(Verbose) << "Object " << child->name << " added to Object " << name;
+    if (&child == this) {
+        LOG(Error) << "Object " << name << " cannot be made a child of itself";
+        return;
+    }
+    if (children_map_.count(child.name) == 0) {
+        children_map_.insert({ child.name, children_.size() });
+        children_.push_back(&child);
+        child.parent_ = this;
+        LOG(Verbose) << "Object " << child.name << " added to Object " << name;
     }
     else {
-        LOG(Warning) << "Object " << child->name << " already exists in Object " << name;
+        LOG(Warning) << "Object " << child.name << " already exists in Object " << name;
     }
 }
 

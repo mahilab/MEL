@@ -4,93 +4,116 @@
 #include <string>
 #include <tuple>
 #include <MEL/Logging/Log.hpp>
-
+#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Engine/Component.hpp>
+#include <MEL/Math/Constants.hpp>
+#include <MEL/Core/Clock.hpp>
 
 using namespace mel;
 
-// COMPONENTS
+MelShare actuator_torque("torque");
 
-class A;
-
-class B {
+class Actuator : public Component {
 public:
-    B(const std::string& name);
-    virtual void update();
-    std::string name;
-    A* a;
-};
-
-class A {
-public:
-    A(const std::string& name) : name(name), b(nullptr) {}
-    virtual void update() {
-        if (b)
-            print("A " + name + " knows B " + b->name);
-        else
-            print("A " + name + " doesn't know an B");
+    void late_update() override {
+        //actuator_torque.write_data({ torque });
+        dummy = torque;
     }
-    std::string name;
-    B* b;
+    double torque;
+    double dummy;
 };
 
-B::B(const std::string& name) : name(name), a(nullptr) {}
-void B::update() {
-    if (a)
-        print("B " + name + " knows A " + a->name);
-    else
-        print("B " + name + " doesn't know an A");
-}
-
-class C : public A {
+class PositionSensor : public Component  {
 public:
-    C() : A("Carl") {}
-
+    double position;
 };
 
-class D  {
-public:
-    D(const std::string& name) : name(name), a(nullptr) {}
 
-    void update() {
-        if (a)
-            print("D " + name + " knows A " + a->name);
-        else
-            print("B " + name + " doesn't know an A");
+class Encoder : public PositionSensor {
+public:
+
+    Encoder(int counts_per_rev) : counts_per_rev(counts_per_rev) {}
+
+    void update() override {
+        counts++;
+        position = 2 * PI * static_cast<double>(counts) /
+            static_cast<double>(counts_per_rev);
     }
-    std::string name;
-    A* a;
+
+    int counts_per_rev;
+    int counts;
 };
 
-
-class AB : public Object<A, B> {
+class Transmission : public Component {
 public:
-    AB() : Object<A, B>("AB", { "Alex" }, { "Burt" }, nullptr) { }
+    Transmission(double ratio) : ratio(ratio) {}
+    const double ratio;
 };
 
-class CD : public Object<C, D> {
+class Joint : public Component {
 public:
-    CD() : Object<C, D>("CD", {}, { "Dane" }, nullptr) { }
+    void update() override {
+        if (pos_sensor)
+            position = pos_sensor->position;
+        else
+            position = 0.0;
+        if (transmission)
+            position *= transmission->ratio;
+        if (actuator && transmission)
+            actuator->torque = torque * transmission->ratio;
+        else if (actuator)
+            actuator->torque = torque;
+    }
+
+    Actuator* actuator = nullptr;
+    PositionSensor* pos_sensor = nullptr;
+    Transmission* transmission = nullptr;
+
+    double position;
+    double torque;
 };
+
+MelShare ms("monitor");
+
+class Monitor : public Component {
+public:
+    Monitor() : data(3) {}
+    void update() override {
+        data[0] = encoder->counts;
+        data[1] = joint->position;
+        data[2] = transmission->ratio;
+        //ms.write_data(data);
+    }
+    Encoder* encoder = nullptr;
+    Joint* joint = nullptr;
+    Transmission* transmission = nullptr;
+    std::vector<double> data;
+};
+
 
 
 int main() {
 
     init_logger(Verbose, Verbose);
+    enable_realtime();
 
-    AB object1;
-    object1.update();
-    object1.get<A>()->b = object1.get<B>();
-    object1.get<B>()->a = object1.get<A>();
-    object1.get<A>()->name = "Andy";
-    object1.get<B>()->name = "Beth";
-    object1.update();
-
-    CD object2;
-    object2.get<D>()->a = object2.get<C>();
-    object2.update();
-
-    object2.add_child(&object1);
-    //object1.print_family_tree();
+    Object<Encoder, Actuator, Transmission, Joint, Monitor> object1("object1", nullptr, { 2000 }, {}, { 0.05 }, {}, {});
+    object1.get<Joint>()->actuator = object1.get<Actuator>();
+    object1.get<Joint>()->pos_sensor = object1.get<Encoder>();
+    object1.get<Joint>()->transmission = object1.get<Transmission>();
+    object1.get<Monitor>()->encoder = object1.get<Encoder>();
+    object1.get<Monitor>()->joint = object1.get<Joint>();
+    object1.get<Monitor>()->transmission = object1.get<Transmission>();
+    
+    object1.start();
+    Clock clock;
+    for (std::size_t i = 0; i < 10000000; i++)
+    {
+        object1.update();
+        object1.late_update();
+    }
+    print(clock.get_elapsed_time());
+    object1.stop();
 
     return 0;
 }

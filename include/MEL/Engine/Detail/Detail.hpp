@@ -29,10 +29,38 @@ void for_each_in_tuple(std::tuple<Ts...> & t, F f)
     detail::for_each(t, f, detail::gen_seq<sizeof...(Ts)>());
 }
 
+struct start_functor {
+    template<typename T>
+    void operator() (T&& t) {
+        t.start();
+    }
+};
+
 struct update_functor {
     template<typename T>
     void operator() (T&& t) {
         t.update();
+    }
+};
+
+struct late_update_functor {
+    template<typename T>
+    void operator() (T&& t) {
+        t.late_update();
+    }
+};
+
+struct stop_functor {
+    template<typename T>
+    void operator() (T&& t) {
+        t.stop();
+    }
+};
+
+struct reset_functor {
+    template<typename T>
+    void operator() (T&& t) {
+        t.reset();
     }
 };
 

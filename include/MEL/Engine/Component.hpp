@@ -22,9 +22,30 @@
 
 namespace mel {
 
-// Component interface
+/// Component Interface
 class Component {
+public:
 
+    /// Default Constructor
+    Component() {}
+
+    /// Virtual Destructor
+    virtual ~Component();
+
+    /// Called when this Component's Object starts running
+    virtual void start();
+
+    /// Called every time this Component's Object updates
+    virtual void update();
+
+    /// Called every time this Component's Object late updates
+    virtual void late_update();
+
+    /// Called this Component's Object stops running
+    virtual void stop();
+
+    /// Called when this Component's Object resets
+    virtual void reset();
 
 };
 

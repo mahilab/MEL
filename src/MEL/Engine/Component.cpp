@@ -10,7 +10,17 @@ namespace mel {
 // INTERFACE FUNCTIONS
 //=============================================================================
 
+Component::~Component() {}
 
+void Component::start() {}
+
+void Component::update() {}
+
+void Component::late_update() {}
+
+void Component::stop() {}
+
+void Component::reset() {}
 
 //=============================================================================
 // PRIVATE FUNCTIONS

@@ -31,15 +31,23 @@ namespace mel {
 class BaseObject {
 public:
 
-    BaseObject(const std::string& name, BaseObject* parent = nullptr);
+    BaseObject(const std::string& name, BaseObject* parent);
+
+    virtual void start() {}
 
     virtual void update() {}
 
+    virtual void late_update() {}
+
+    virtual void stop() {}
+
+    virtual void reset() {}
+
     /// Sets the parent of this Object
-    void set_parent(BaseObject* parent);
+    void set_parent(BaseObject& parent);
 
     /// Adds a child Object to this Object
-    void add_child(BaseObject* child);
+    void add_child(BaseObject& child);
 
     /// Removes a child Object from this Object
     void remove_child(BaseObject* child_object);
@@ -89,13 +97,43 @@ public:
 
     /// Constructor
     Object(const std::string& name, 
-           const TComponents& ... args, 
-           BaseObject* parent = nullptr) : 
+           BaseObject* parent,
+           const TComponents& ... args) : 
         BaseObject(name, parent), components(args...) { }
 
+    /// Starts all Components attached to this Object
+    void start() override {
+        for_each_in_tuple(components, start_functor());
+        for (std::size_t i = 0; i < children_.size(); ++i)
+            children_[i]->start();
+    }
+
     /// Updates all Components attached to this Object
-    void update() {
+    void update() override {
         for_each_in_tuple(components, update_functor());
+        for (std::size_t i = 0; i < children_.size(); ++i)
+            children_[i]->update();
+    }
+
+    /// Late updates all Components attached to this Object
+    void late_update() override {
+        for_each_in_tuple(components, late_update_functor());
+        for (std::size_t i = 0; i < children_.size(); ++i)
+            children_[i]->late_update();
+    }
+
+    /// Stops all Components attached to this Object
+    void stop() override {
+        for_each_in_tuple(components, stop_functor());
+        for (std::size_t i = 0; i < children_.size(); ++i)
+            children_[i]->stop();
+    }
+
+    /// Resets all Components attached to this Object
+    void reset() override {
+        for_each_in_tuple(components, reset_functor());
+        for (std::size_t i = 0; i < children_.size(); ++i)
+            children_[i]->reset();
     }
 
     /// Gets a Component attached to this Object
