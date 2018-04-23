@@ -19,57 +19,12 @@
 #define MEL_COMPONENT_HPP
 
 #include <MEL/Engine/Object.hpp>
-#include <typeindex>
 
 namespace mel {
 
 // Component interface
 class Component {
 
-protected:
-
-    friend class Object;
-
-    /// Default Constructor
-    Component() {}
-
-    /// Virtual Destructor
-    virtual ~Component();
-
-    /// Called when this Component's Object starts running
-    virtual void on_start();
-
-    /// Called every time this Component's Object updates
-    virtual void on_update();
-
-    /// Called every time this Component's Object late updates
-    virtual void on_late_update();
-
-    /// Called this Component's Object stops running
-    virtual void on_stop();
-
-    /// Called when this Component's Object resets
-    virtual void on_reset();
-
-public:
-
-    /// Gets the Object this Component is attached to
-    template <typename T = Object>
-    T* get_object() { return dynamic_cast<T*>(object_); }
-
-    /// Gets a Component attached to the same Object as this Component
-    template <typename T>
-    T* get_component() { return object_->get_component<T>(); }
-
-    /// Gets the Component type name
-    std::string get_type_name();
-
-private:
-
-    friend class Object;
-    
-    Object* object_;  ///< Object this Component is attached to
-    std::vector<std::type_index> requirements_;  ///< Required Components   
 
 };
 

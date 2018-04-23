@@ -1,194 +1,97 @@
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Engine/Object.hpp>
 #include <deque>
 #include <string>
 #include <tuple>
+#include <MEL/Logging/Log.hpp>
 
-// Variadic Template Engine Design
 
 using namespace mel;
 
-//=============================================================================
-// VERSION 3
-//=============================================================================
+// COMPONENTS
 
-// Template Metaprogramming Magic
+class A;
 
-namespace detail
-{
-    template<int... Is>
-    struct seq { };
-
-    template<int N, int... Is>
-    struct gen_seq : gen_seq<N - 1, N - 1, Is...> { };
-
-    template<int... Is>
-    struct gen_seq<0, Is...> : seq<Is...> { };
-
-    template<typename T, typename F, int... Is>
-    void for_each(T&& t, F f, seq<Is...>)
-    {
-        auto l = { (f(std::get<Is>(t)), 0)... };
-    }
-}
-
-template<typename... Ts, typename F>
-void for_each_in_tuple(std::tuple<Ts...> & t, F f)
-{
-    detail::for_each(t, f, detail::gen_seq<sizeof...(Ts)>());
-}
-
-struct update_functor {
-    template<typename T>
-    void operator() (T&& t) {
-        t.update();
-    }
-};
-
-template <typename TObject>
-struct set_references_functor {
-    set_references_functor(TObject* object) : object(object) {}
-
-    template<typename T>
-    void operator() (T&& t) {
-        t.set_references(*object);
-    }
-    TObject* object;
-};
-
-class BaseObject {
+class B {
 public:
-    virtual void update() {}
-};
-
-template <typename ... Components>
-class Object : public BaseObject {
-public:
-    Object(const Components& ... arg) : components(arg...) {
-        for_each_in_tuple(components, set_references_functor<Object>(this));
-    }
-    void update() {
-        for_each_in_tuple(components, update_functor());
-    }
-    template <typename Component>
-    Component& get() {
-        return std::get<Component>(components);
-    }
-private:
-    std::tuple<Components ...> components;
-};
-
-#define GET_COMPONENT(T,t) \
-        template <typename TObject> \
-        void set_references(TObject& object) { \
-            t = &object.template get<T>(); \
-        } \
-        T* t;
-
-// USAGE
-
-class E;
-
-class F {
-public:
-    GET_COMPONENT(E, e)
-    F(const std::string& name);
-    void update();
+    B(const std::string& name);
+    virtual void update();
     std::string name;
+    A* a;
 };
 
-class E {
+class A {
 public:
-    GET_COMPONENT(F, f)
-    E(const std::string& name) : name(name), f(nullptr) {}
-    void update() {
-        print("E " + name + " knows F " + f->name);
+    A(const std::string& name) : name(name), b(nullptr) {}
+    virtual void update() {
+        if (b)
+            print("A " + name + " knows B " + b->name);
+        else
+            print("A " + name + " doesn't know an B");
     }
     std::string name;
+    B* b;
 };
 
-F::F(const std::string& name) : name(name), e(nullptr) {}
-void F::update() {
-    print("F " + name + " knows E " + e->name);
+B::B(const std::string& name) : name(name), a(nullptr) {}
+void B::update() {
+    if (a)
+        print("B " + name + " knows A " + a->name);
+    else
+        print("B " + name + " doesn't know an A");
 }
 
-class EF : public Object<E, F> {
+class C : public A {
 public:
-    EF() : Object<E,F>({ "Evan" }, { "Fred" } )
-    {
+    C() : A("Carl") {}
 
+};
+
+class D  {
+public:
+    D(const std::string& name) : name(name), a(nullptr) {}
+
+    void update() {
+        if (a)
+            print("D " + name + " knows A " + a->name);
+        else
+            print("B " + name + " doesn't know an A");
     }
+    std::string name;
+    A* a;
+};
+
+
+class AB : public Object<A, B> {
+public:
+    AB() : Object<A, B>("AB", { "Alex" }, { "Burt" }, nullptr) { }
+};
+
+class CD : public Object<C, D> {
+public:
+    CD() : Object<C, D>("CD", {}, { "Dane" }, nullptr) { }
 };
 
 
 int main() {
-    Object<E, F> object ( { "Evan" }, { "Fred" } );
-    object.update();
-    object.get<E>().name = "Elane";
-    object.get<F>().name = "Frank";
-    object.update();
+
+    init_logger(Verbose, Verbose);
+
+    AB object1;
+    object1.update();
+    object1.get<A>()->b = object1.get<B>();
+    object1.get<B>()->a = object1.get<A>();
+    object1.get<A>()->name = "Andy";
+    object1.get<B>()->name = "Beth";
+    object1.update();
+
+    CD object2;
+    object2.get<D>()->a = object2.get<C>();
+    object2.update();
+
+    object2.add_child(&object1);
+    //object1.print_family_tree();
+
     return 0;
 }
 
-/*
-//=============================================================================
-// VERSION 1
-//=============================================================================
-
-class A {
-public:
-    void printA() {
-        print("A");
-    }
-};
-
-class B {
-public:
-    void printB() {
-        print("B");
-    }
-};
-
-template <typename... Components>
-class Object1 : public Components ... {
-public:
-
-};
-
-//=============================================================================
-// VERSION 2
-//=============================================================================
-
-class C {
-public:
-    void printC() {
-        print("C");
-    }
-    void update() {
-        printC();
-    }
-};
-
-class D {
-public:
-    void printD() {
-        print("D");
-    }
-    void update() {
-        printD();
-    }
-};
-
-class BaseObject2 {
-public:
-    virtual void update() {}
-};
-
-template <typename ... Components>
-class Object2 : public BaseObject2 {
-public:
-    void update() {
-        int list[] = { (Components().update(),0)... };
-        (void)list;
-    }
-};
-*/

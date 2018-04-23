@@ -22,63 +22,27 @@
 #include <vector>
 #include <typeindex>
 #include <unordered_map>
-#include <MEL/Core/Time.hpp>
-#include <MEL/Logging/Log.hpp>
+#include <MEL/Engine/Detail/Detail.hpp>
+#include <string>
 
 namespace mel {
 
-class Engine;
-class Component;
-
-class Object {
+/// BaseObject class
+class BaseObject {
 public:
 
-    /// Constructs a child Object
-    Object(const std::string& name, Object* parent = nullptr);
+    BaseObject(const std::string& name, BaseObject* parent = nullptr);
 
-    /// Virtual destructor
-    virtual ~Object();
+    virtual void update() {}
 
-    /// Gets a Component attached to the Object
-    template <typename T>
-    T* get_component() {
-        for (std::size_t i = 0; i < components_.size(); ++i) {
-            T* component = dynamic_cast<T*>(components_[i]);
-            if (component)
-                return component;
-        }
-        LOG(Error) << "Object " << name << " has no Component of type " << typeid(T).name();
-        return nullptr;
-    }
-
-    template <typename T>
-    bool has_component() {
-        for (std::size_t i = 0; i < components_.size(); ++i) {
-            T* component = dynamic_cast<T*>(components_[i]);
-            if (component)
-                return true;
-        }
-        return false;
-    }
-
-    /// Adds a Component to the Object
-    template <typename T, typename ... Args>
-    void add_component(Args ... args) {
-        if (!has_component<T>()) {
-            Component* component = new T(args...);
-            component->object_ = this;
-            components_.push_back(component);
-            LOG(Verbose) << "Added Component of type " << typeid(T).name() << " to Object " << name;
-        }
-        else
-            LOG(Error) << "Object " << name << " already has a Component of type " << typeid(T).name();
-    }
+    /// Sets the parent of this Object
+    void set_parent(BaseObject* parent);
 
     /// Adds a child Object to this Object
-    void add_child(Object* child);
+    void add_child(BaseObject* child);
 
     /// Removes a child Object from this Object
-    void remove_child(Object* child_object);
+    void remove_child(BaseObject* child_object);
 
     /// Removes a child Object from this Object by name
     void remove_child(const std::string& child_name);
@@ -86,94 +50,73 @@ public:
     /// Removes all child Objects from tis Object
     void remove_all_children();
 
-    /// Returns a child T Object from this Object by name
-    template <typename T = Object>
-    T* get_child(const std::string& name) {
-        return dynamic_cast<T*>(get_child(name));
-    }
-
-    /// Sets the parent of this Object
-    void set_parent(Object* parent_object);
-
-    /// Gets the parent Object of this Object
-    template <typename T = Object>
-    T* get_parent() { 
-        return dynamic_cast<T*>(parent_);
-    }
-
-    /// Gets any existing Object by name
-    template <typename T = Object>
-    static T* get_global_object(const std::string& object_name) {
-        return dynamic_cast<T*>(get_global_object_(object_name));
-    }
-    
+    /// Prints Object familiy tree
     void print_family_tree(int level = 0);
 
 public:
 
-    const std::string name; ///< the name of this Object
+    const std::string name;
 
-private:
+//private:
 
-    friend class Engine;
-    friend class Component;
-
-    /// Adds a Component to the Object (internal)
-    void add_component(Component* component);
-
-    /// Returns a child Object from this Object by name (internal)
-    Object* get_child(const std::string& child_name);
-
-    /// Gets any existing Object by name (internal)
-    static Object* get_global_object_(const std::string& object_name);
-
-    /// Recursively sets the Engine of this Object and all child Objects
-    void set_engine(Engine* engine);
-
-    /// Recursively starts all Components and child Objects
-    void start_all();
-
-    /// Recursively updates all Components and child Objects
-    void update_all();
-
-    /// Recursively late updates all Components and child Objects
-    void late_update_all();
-
-    /// Recursively stops all Components and child Objects
-    void stop_all();
-
-    /// Recursively resets all Components and child Objects
-    void reset_all();
-
-
-private:
-
-    Engine* engine_;  ///< pointer to Engine this Object runs on
-    Object* parent_;  ///< pointer to parent Oject of this Object
-
+    /// Parent Object of this Object
+    BaseObject* parent_;
     /// Children Objects of this Object
-    std::vector<Object*> children_;
+    std::vector<BaseObject*> children_;
     /// Map of childlren names to children_ indices
     std::unordered_map<std::string, std::size_t> children_map_;
-
-    /// Componets attached to this Object
-    std::vector<Component*> components_;
 
 private:
 
     /// Adds an Object to the Object registry
-    static bool register_object(Object* object);
+    static bool register_object(BaseObject* object);
 
     /// Removes an Object from the Object registry
-    static bool unregister_object(Object* object);
+    static bool unregister_object(BaseObject* object);
 
 private:
 
     /// Registry of all Objects
-    static std::unordered_map<std::string, Object*> object_registry_;
+    static std::unordered_map<std::string, BaseObject*> object_registry_;
 
+};
+
+
+/// Object Class
+template <typename ... TComponents>
+class Object : public BaseObject {
+public:
+
+    /// Constructor
+    Object(const std::string& name, 
+           const TComponents& ... args, 
+           BaseObject* parent = nullptr) : 
+        BaseObject(name, parent), components(args...) { }
+
+    /// Updates all Components attached to this Object
+    void update() {
+        for_each_in_tuple(components, update_functor());
+    }
+
+    /// Gets a Component attached to this Object
+    template <typename TComponent>
+    TComponent* get() {
+        return &std::get<TComponent>(components);
+    }
+
+private:
+
+    /// Componets attached to this Object
+    std::tuple<TComponents ...> components;
 };
 
 }  // namespace mel
 
 #endif  // MEL_OBJECT_HPP
+
+//template <typename TObject> 
+//void set_references(TObject& object) {
+//    t = &object.template get<T>();
+//}
+//T* t;
+//for_each_in_tuple(components, set_references_functor<Object>(this)); //< in ctor
