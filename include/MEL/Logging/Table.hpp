@@ -40,11 +40,23 @@ public:
 
 	bool push_back_row(const std::vector<double> &row);
 
-	bool add_rows(const std::vector<std::vector<double>> &values);
+	bool push_back_rows(const std::vector<std::vector<double>> &values);
+
+	/// Insert a row of data before index.
+	bool insert_row(const std::vector<double> &row, std::size_t index);
+
+	/// Inserts a block of data starting before row index first.
+	bool insert_rows(const std::vector<std::vector<double>> &rows, std::size_t index);
+
+	/// Insert a column of data before index.
+	bool insert_col(const std::string &col_name, const std::vector<double> &col, std::size_t index);
+
+	/// Inserts a block of data starting before column index first.
+	bool insert_cols(const std::vector<std::string> &col_names, const std::vector<std::vector<double>> &cols, std::size_t index);
 
 	bool push_back_col(const std::string &col_name, const std::vector<double> &col = std::vector<double>());
 
-	bool add_cols(const std::vector<std::string> &col_names, const std::vector<std::vector<double>> &values = std::vector<std::vector<double>>());
+	bool push_back_cols(const std::vector<std::string> &col_names, const std::vector<std::vector<double>> &values = std::vector<std::vector<double>>());
 
 	const std::vector<std::string> &get_col_names() const;
 

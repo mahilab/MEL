@@ -63,9 +63,9 @@ bool Table::push_back_row(const std::vector<double> &row) {
 	return true;
 }
 
-bool Table::add_rows(const std::vector<std::vector<double>> &values) {
+bool Table::push_back_rows(const std::vector<std::vector<double>> &values) {
 	if (!check_inner_dim(values, n_cols_)) {
-		LOG(Warning) << "Values given to Table do not match number of columns. Values not stored";
+		LOG(Warning) << "Values given to Table do not match number of columns. Values not stored.";
 		return false;
 	}
 	for (std::size_t i = 0; i < values.size(); ++i) {
@@ -76,9 +76,37 @@ bool Table::add_rows(const std::vector<std::vector<double>> &values) {
 
 }
 
+bool Table::insert_row(const std::vector<double> &row, std::size_t index) {
+	if (row.size() != n_cols_) {
+		LOG(Warning) << "Values given to Table do not match number of columns. Values not inserted.";
+		return false;
+	}
+	if (index > n_rows_) {
+		LOG(Warning) << "Row index given to Table outside of range. Values not inserted.";
+		return false;
+	}
+	values_.insert(values_.begin() + index, row);
+	n_rows_++;
+	return true;
+}
+
+bool Table::insert_rows(const std::vector<std::vector<double>> &rows, std::size_t index) {	
+	if (!check_inner_dim(rows, n_cols_)) {
+		LOG(Warning) << "Values given to Table do not match number of columns. Values not inserted.";
+		return false;
+	}
+	if (index > n_rows_) {
+		LOG(Warning) << "Row index given to Table outside of range. Values not inserted.";
+		return false;
+	}
+	values_.insert(values_.begin() + index, rows.begin(), rows.end());
+	n_rows_ += rows.size();
+	return true;
+}
+
 bool Table::push_back_col(const std::string &col_name, const std::vector<double> &col) {
 	if (n_cols_ > 0 && col.size() != n_rows_) {
-		LOG(Warning) << "Values given to Table do not match size of previously stored values. Values not stored";
+		LOG(Warning) << "Values given to Table do not match size of previously stored values. Values not stored.";
 		return false;
 	}
 	if (n_cols_ == 0) {
@@ -93,13 +121,13 @@ bool Table::push_back_col(const std::string &col_name, const std::vector<double>
 	return true;
 }
 
-bool Table::add_cols(const std::vector<std::string> &col_names, const std::vector<std::vector<double>> &values) {
+bool Table::push_back_cols(const std::vector<std::string> &col_names, const std::vector<std::vector<double>> &values) {
 	if (n_cols_ > 0 && values.size() != n_rows_) {
-		LOG(Warning) << "Values given to Table do not match size of previously stored values. Values not stored";
+		LOG(Warning) << "Values given to Table do not match size of previously stored values. Values not stored.";
 		return false;
 	}
 	if (!check_inner_dim(values, col_names.size())) {
-		LOG(Warning) << "Values given to Table do not match number of columns. Values not stored";
+		LOG(Warning) << "Values given to Table do not match number of column names given. Values not stored.";
 		return false;
 	}
 	if (n_cols_ == 0) {
@@ -112,8 +140,53 @@ bool Table::add_cols(const std::vector<std::string> &col_names, const std::vecto
 			values_[i].push_back(values[i][j]);
 		}		
 	}
+	return true;	
+}
+
+bool Table::insert_col(const std::string &col_name, const std::vector<double> &col, std::size_t index) {
+	if (col.size() != n_rows_) {
+		LOG(Warning) << "Values given to Table do not match number of rows. Values not inserted.";
+		return false;
+	}
+	if (index > n_cols_) {
+		LOG(Warning) << "Column index given to Table outside of range. Values not inserted.";
+		return false;
+	}
+	col_names_.insert(col_names_.begin() + index, col_name);
+	if (n_cols_ == 0) {
+		n_rows_ = 1;
+		values_.resize(n_rows_);
+	}
+	for (std::size_t i = 0; i < n_rows_; ++i) {
+		values_[i].insert(values_[i].begin() + index, col[i]);
+	}
+	n_cols_++;
 	return true;
-	
+}
+
+bool Table::insert_cols(const std::vector<std::string> &col_names, const std::vector<std::vector<double>> &cols, std::size_t index) {
+	if (cols.size() != n_rows_) {
+		LOG(Warning) << "Values given to Table do not match number of rows. Values not inserted.";
+		return false;
+	}
+	if (!check_inner_dim(cols, col_names.size())) {
+		LOG(Warning) << "Values given to Table do not match number of column names given. Values not inserted.";
+		return false;
+	}
+	if (index > n_cols_) {
+		LOG(Warning) << "Column index given to Table outside of range. Values not inserted.";
+		return false;
+	}
+	if (n_cols_ == 0) {
+		n_rows_ = cols.size();
+		values_.resize(n_rows_);
+	}
+	n_cols_ += col_names.size();
+	col_names_.insert(col_names_.begin() + index, col_names.begin(), col_names.end());
+	for (std::size_t i = 0; i < n_rows_; ++i) {
+		values_[i].insert(values_[i].begin() + index, cols[i].begin(), cols[i].end());
+	}	
+	return true;
 }
 
 const std::vector<std::string> &Table::get_col_names() const {
@@ -262,16 +335,16 @@ bool Table::check_inner_dim(const std::vector<std::vector<double>> &values, std:
 }
 
 std::ostream& operator<<(std::ostream& os, const Table& table) {
-	os << table.name() << std::endl;
+	os << table.name() << ": " << table.n_rows_ << " rows by " << table.n_cols_ << " columns" << std::endl;
 	if (!table.empty()) {
 		for (std::size_t i = 0; i < table.n_cols_ - 1; i++) {
-			os << table.col_names_[i] << " ";
+			os << table.col_names_[i] << "\t";
 		}
 		os << table.col_names_[table.n_cols_ - 1] << std::endl;
 	}
 	for (std::size_t i = 0; i < table.n_rows_; i++) {
 		for (size_t j = 0; j < table.n_cols_ - 1; ++j) {
-			os << table(i, j) << " ";
+			os << table(i, j) << "\t";
 		}
 		os << table(i, table.n_cols_ - 1) << std::endl;
 	}
