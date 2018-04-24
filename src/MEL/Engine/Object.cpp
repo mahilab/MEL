@@ -4,7 +4,6 @@
 #include <MEL/Engine/Component.hpp>
 #include <MEL/Logging/Log.hpp>
 
-
 namespace mel {
 
 //=============================================================================

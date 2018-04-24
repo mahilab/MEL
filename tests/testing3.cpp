@@ -92,7 +92,7 @@ public:
         data[0] = encoder->counts;
         data[1] = joint->position;
         data[2] = transmission->ratio;
-        // ms.write_data(data);
+        ms.write_data(data);
     }
     Encoder* encoder           = nullptr;
     Joint* joint               = nullptr;

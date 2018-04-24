@@ -345,6 +345,10 @@ if(TESTS)
 
     add_executable(testing3 tests/testing3.cpp)
     target_link_libraries(testing3 MEL)
+
+    add_executable(testing4 tests/testing4.cpp)
+    target_link_libraries(testing4 MEL)
+
 endif()
 
 if(BUILD_DOC)

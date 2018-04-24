@@ -121,7 +121,6 @@ private:
     std::vector<Object*> children_;
     /// Map of childlren names to children_ indices
     std::unordered_map<std::string, std::size_t> children_map_;
-
     /// Componets attached to this Object
     std::vector<Component*> components_;
 
