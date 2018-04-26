@@ -1,0 +1,30 @@
+DATA_SOURCES:
+- curve_colors:
+  - [31, 120, 180]
+  - [227, 26, 28]
+  - [51, 160, 44]
+  - [255, 127, 0]
+  - [106, 61, 154]
+  - [177, 89, 40]
+  - [166, 206, 227]
+  - [251, 154, 153]
+  curve_names: ['mes[0]', 'mes[1]', 'mes[2]', 'mes[3]', 'mes[4]', 'mes[5]', 'mes[6]',
+    'mes[7]']
+  curve_styles: [Solid, Solid, Solid, Solid, Solid, Solid, Solid, Solid]
+  curve_widths: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+  mode: Read Only
+  name: mes
+  settings: null
+  size: 8
+  type: melshare
+GRID_COLS: 1
+GRID_ROWS: 1
+SCOPES:
+- filter:
+    mes: [true, true, true, true, true, true, true, true]
+  index: 0
+  legend: false
+  mode: Plot
+  title: Scope0
+  yrange: [-1.0, 1.0]
+THEME: Dark

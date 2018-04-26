@@ -26,14 +26,16 @@ option(NI_X64    "Turn ON if compiling for NI Intel x64 basedhardware"        OF
 option(NI_ARM    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
 option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
 option(XINPUT    "Turn ON if you have XInput installed for Xbox controllers." OFF)
+option(MYO       "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
 option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
 option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
 
-set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"   CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"   CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(QUANSER_ROOT "C:/Program Files/Quanser" CACHE FILEPATH "Absolute path to Quanser installation."          )
+set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"            CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"            CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(QUANSER_ROOT "C:/Program Files/Quanser"          CACHE FILEPATH "Absolute path to Quanser installation."          )
+set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"          CACHE FILEPATH "Absolute path to Myo SDK."                       )
 
 #===============================================================================
 # SETUP BUILD
@@ -156,6 +158,10 @@ elseif (QUANSER)
     list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
 endif()
 
+if (MYO)
+    list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
+endif()
+
 # include directories
 include_directories(${INCLUDE_DIRS})
 
@@ -198,6 +204,11 @@ file(GLOB SRC_QUANSER
 file(GLOB SRC_DEVICES
     "${CMAKE_SOURCE_DIR}/include/MEL/Devices/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/*.cpp"
+)
+
+file(GLOB SRC_MYO
+    "${CMAKE_SOURCE_DIR}/include/MEL/Devices/Myo/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Myo/*.cpp"
 )
 
 file(GLOB SRC_LEGACY
@@ -243,6 +254,7 @@ source_group("Daq" FILES ${SRC_DAQ})
 source_group("Daq\\NI" FILES ${SRC_NI})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Devices" FILES ${SRC_DEVICES})
+source_group("Devices\\Myo" FILES ${SRC_MYO})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
 source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
@@ -282,6 +294,10 @@ elseif (QUANSER)
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
+if (MYO)
+    list(APPEND SOURCE_FILES ${SRC_MYO})
+endif()
+
 #===============================================================================
 # CREATE MEL LIBRARY
 #===============================================================================
@@ -309,6 +325,15 @@ elseif(QUANSER)
         quanser_common
         bufferoverflowU
         legacy_stdio_definitions) # not sure if needed anymore
+endif()
+
+if (MYO)
+    link_directories("${MYO_ROOT}/lib")
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
+        list(APPEND LINK_LIBS myo64)
+    else() # 32-bit
+        list(APPEND LINK_LIBS myo32)
+    endif()
 endif()
 
 if(WIN32)

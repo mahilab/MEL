@@ -37,7 +37,7 @@ bool DataLogger::write_to_csv(const std::vector<std::string> &header, const std:
 		for (std::size_t i = 0; i < header.size() - 1; i++) {			
 			ss << header[i] << ",";			
 		}
-		ss << header.back() << "\n";
+		ss << header.back() << "\r\n";
 		file.write(ss.str());
 		file.close();
 	}	
@@ -71,7 +71,7 @@ bool DataLogger::write_to_csv(const std::vector<std::vector<double>> &data, cons
 		for (size_t j = 0; j < data[i].size() - 1; ++j) {
 			ss << data[i][j] << ",";
 		}
-		ss << data[i].back() << "\n";
+		ss << data[i].back() << "\r\n";
 		file.write(ss.str());
 	}
 	file.close();
@@ -106,12 +106,12 @@ bool DataLogger::write_to_csv(const Table &data, const std::string &filename, co
 		for (std::size_t i = 0; i < data.col_count() - 1; i++) {
 			oss << data.get_col_name(i) << ",";
 		}
-		oss << data.get_col_name(data.col_count() - 1) << std::endl;
+		oss << data.get_col_name(data.col_count() - 1) << "\r\n";
 		for (std::size_t i = 0; i < data.row_count(); i++) {
 			for (size_t j = 0; j < data.col_count() - 1; ++j) {
 				oss << data(i, j) << ",";
 			}
-			oss << data(i, data.col_count() - 1) << std::endl;			
+			oss << data(i, data.col_count() - 1) << "\r\n";
 		}		
 	}
 	file.write(oss.str());
@@ -148,15 +148,15 @@ bool DataLogger::write_to_csv(const std::vector<Table> &data, const std::string 
 			for (std::size_t i = 0; i < data[k].col_count() - 1; i++) {
 				oss << data[k].get_col_name(i) << ",";
 			}
-			oss << data[k].get_col_name(data[k].col_count() - 1) << std::endl;
+			oss << data[k].get_col_name(data[k].col_count() - 1) << "\r\n";
 		}
 		for (std::size_t i = 0; i < data[k].row_count(); i++) {
 			for (size_t j = 0; j < data[k].col_count() - 1; ++j) {
 				oss << data[k](i, j) << ",";
 			}
-			oss << data[k](i, data[k].col_count() - 1) << std::endl;			
+			oss << data[k](i, data[k].col_count() - 1) << "\r\n";
 		}
-		oss << std::endl;
+		oss << "\r\n";
 	}
 	file.write(oss.str());
 	file.close();
@@ -382,7 +382,7 @@ std::string DataLogger::make_csv_header(const Table &table) {
 	oss << Table::table_id << ",";
 	oss << "name" << "=" << table.name() << ",";
 	oss << "n_rows" << "=" << table.row_count() << ",";
-	oss << "n_cols" << "=" << table.col_count() << std::endl;
+	oss << "n_cols" << "=" << table.col_count() << "\r\n";
 	return oss.str();
 }
 
@@ -646,7 +646,7 @@ std::string DataLogger::format(const std::vector<double>& data_record) {
     for (size_t i = 0; i < data_record.size() - 1; ++i) {
         ss << data_record[i] << ",";
     }
-    ss << data_record[data_record.size() - 1] << "\n";
+    ss << data_record[data_record.size() - 1] << "\r\n";
     return ss.str();
 }
 
@@ -656,7 +656,7 @@ void DataLogger::write_header() {
         for (size_t i = 0; i < header_.size() - 1; ++i) {
             ss << header_[i] << ",";
         }
-        ss << header_[header_.size() - 1] << "\n";
+        ss << header_[header_.size() - 1] << "\r\n";
         file_.write(ss.str());
     }
 }
