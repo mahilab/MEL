@@ -77,6 +77,7 @@ public:
     template <typename T = Object>
     static T* get_global_object(const std::string& object_name);
 
+    /// Prints Object family tree to console (for debugging purposes)
     void print_family_tree(int level = 0);
 
 public:
@@ -171,19 +172,19 @@ void Object::add(Args... args) {
                    << typeid(T).name();
 }
 
-template <typename T = Object>
+template <typename T>
 T* Object::get_child(const std::string& name) {
     return dynamic_cast<T*>(get_child(name));
 }
 
 /// Gets the parent Object of this Object
-template <typename T = Object>
+template <typename T>
 T* Object::get_parent() {
     return dynamic_cast<T*>(parent_);
 }
 
 /// Gets any existing Object by name
-template <typename T = Object>
+template <typename T>
 T* Object::get_global_object(const std::string& object_name) {
     return dynamic_cast<T*>(get_global_object_(object_name));
 }
