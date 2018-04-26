@@ -141,6 +141,8 @@
 		[
 			"-I$project_base_path/include",
 			"-IC:/Program Files/Quanser/QUARC/include"
-		]
+		],
+		"ecc_flags_sources": []
 	}
 }
+
