@@ -20,6 +20,7 @@
 
 #include <MEL/Logging/File.hpp>
 #include <MEL/Utility/Mutex.hpp>
+#include <MEL/Logging/Table.hpp>
 #include <string>
 #include <vector>
 
@@ -36,11 +37,40 @@ enum class DataFormat {
     Scientific  ///< values are written with scientific notion
 };
 
+
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
 class DataLogger {
+public:
+
+	/// Write a vector of strings to a file
+	static bool write_to_csv(const std::vector<std::string> &header, const std::string &filename, const std::string& directory = ".", bool timestamp = true);
+
+	/// Write a vector of vectors to a file
+	static bool write_to_csv(const std::vector<std::vector<double>> &data, const std::string &filename, const std::string& directory = ".", bool timestamp = true);
+
+	/// Write a Table to a file
+	static bool write_to_csv(const Table &data, const std::string &filename = "", const std::string& directory = ".", bool timestamp = true);
+
+	/// Write a vector of Tables to a file
+	static bool write_to_csv(const std::vector<Table> &data, const std::string &filename = "", const std::string& directory = ".", bool timestamp = true);
+
+	/// Read a vector of vectors from a file
+	static bool read_from_csv(std::vector<std::vector<double>> &data, const std::string &filename, const std::string& directory = ".");
+
+	/// Read a Table from a file
+	static bool read_from_csv(Table &data, const std::string &filename, const std::string& directory = ".");
+
+	/// Read a vector of Tables from a file
+	static bool read_from_csv(std::vector<Table> &data, const std::string &filename, const std::string& directory = ".");
+
+	static std::string make_csv_header(const Table &table);
+
+	static bool parse_csv_header(Table &table, const std::string &header);
+
+
 public:
     /// Constructor.
     DataLogger(WriterType writer_type = WriterType::Buffered,
