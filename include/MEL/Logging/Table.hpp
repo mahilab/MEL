@@ -19,6 +19,7 @@
 #define MEL_TABLE_HPP
 
 #include <vector>
+#include <string>
 
 namespace mel{
 
@@ -67,7 +68,7 @@ public:
 
 	/// Read access to rows
 	const std::vector<double> &operator()(std::size_t row_index) const;
-	
+
 	/// Read access to all values
 	const std::vector<std::vector<double>> &values() const;
 
@@ -100,11 +101,9 @@ public:
 	/// Overload the << stream operator with a Table as the rhs argument
 	friend std::ostream& operator<<(std::ostream& os, const Table& table);
 
-	
-
 private:
 
-	bool check_inner_dim(const std::vector<std::vector<double>> &values, std::size_t row_size) const;	
+	bool check_inner_dim(const std::vector<std::vector<double>> &values, std::size_t row_size) const;
 
 private:
 	std::string name_;

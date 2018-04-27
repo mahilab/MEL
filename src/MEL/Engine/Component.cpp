@@ -4,6 +4,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <algorithm>
 #include <MEL/Engine/Object.hpp>
+#include <MEL/Utility/Types.hpp>
 
 namespace mel {
 
@@ -27,9 +28,8 @@ namespace mel {
 // PRIVATE FUNCTIONS
 //=============================================================================
 
-    std::string Component::get_type_name() {
-        std::string name = typeid(*this).name();
-        return name.erase(0, 6);
+    std::string Component::get_type() {
+        return type(*this);
     }
 
 } // namespace mel

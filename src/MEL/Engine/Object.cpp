@@ -86,7 +86,13 @@ void Object::print_family_tree(int level) {
     for (int i = 0; i < level; ++i) {
         std::cout << "    ";
     }
-    std::cout << name << std::endl;
+    std::cout << name << " [";
+    for (std::size_t i = 0; i < components_.size(); ++i) {
+        std::cout << components_[i]->get_type();
+        if (i < (components_.size() - 1))
+            std::cout << ", ";
+    }
+    std::cout << "]" << std::endl;
     for (std::size_t i = 0; i < children_.size(); ++i)
         children_[i]->print_family_tree(level + 1);
 }
@@ -98,7 +104,7 @@ void Object::print_family_tree(int level) {
 void Object::add(Component* component, std::type_index type) {
     component->object_ = this;
     components_.push_back(component);
-    LOG(Verbose) << "Added Component of type " << type.name() << " to Object " << name;
+    LOG(Verbose) << "Added Component of type " << demangle(type.name()) << " to Object " << name;
 }
 
 Object* Object::get_child(const std::string& child_name) {
@@ -150,21 +156,21 @@ void Object::update_all() {
 }
 
 void Object::late_update_all() {
-    // call components
-    for (std::size_t i = 0; i < components_.size(); ++i)
-        components_[i]->late_update();
-    // call children
-    for (std::size_t i = 0; i < children_.size(); ++i)
-        children_[i]->late_update_all();
+    // call children in reverse order
+    for (auto it = children_.rbegin(); it != children_.rend(); ++it)
+        (*it)->late_update_all();
+    // call components in reverse order
+    for (auto it = components_.rbegin(); it != components_.rend(); ++it)
+        (*it)->late_update();
 }
 
 void Object::stop_all() {
-    // call components
-    for (std::size_t i = 0; i < components_.size(); ++i)
-        components_[i]->stop();
-    // call children
-    for (std::size_t i = 0; i < children_.size(); ++i)
-        children_[i]->stop_all();
+    // call children in reverse order
+    for (auto it = children_.rbegin(); it != children_.rend(); ++it)
+        (*it)->stop_all();
+    // call components in reverse order
+    for (auto it = components_.rbegin(); it != components_.rend(); ++it)
+        (*it)->stop();
 }
 
 void Object::reset_all() {

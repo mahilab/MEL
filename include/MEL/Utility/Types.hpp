@@ -19,8 +19,8 @@
 #ifndef MEL_TYPES_HPP
 #define MEL_TYPES_HPP
 
-#include <vector>
-#include <array>
+#include <string>
+#include <typeinfo>
 
 namespace mel {
 
@@ -62,6 +62,17 @@ enum QuadFactor {
     X2   = 2,  ///< 2X counts per revolution
     X4   = 4,  ///< 4X counts per revolution
 };
+
+//==============================================================================
+// UTILITY FUNCTIONS
+//==============================================================================
+
+std::string demangle(const char* name);
+
+template <class T>
+std::string type(const T& t) {
+    return demangle(typeid(t).name());
+}
 
 } // namespace mel
 

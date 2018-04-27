@@ -62,7 +62,7 @@ public:
     T* get() { return object_->get<T>(); }
 
     /// Gets the Component type name
-    std::string get_type_name();
+    std::string get_type();
 
 private:
 

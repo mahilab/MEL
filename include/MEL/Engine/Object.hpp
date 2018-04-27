@@ -20,6 +20,7 @@
 
 #include <MEL/Core/Time.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <MEL/Utility/Types.hpp>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
@@ -148,8 +149,8 @@ T* Object::get() {
         if (component)
             return component;
     }
-    LOG(Error) << "Object " << name << " has no Component of type "
-               << typeid(T).name();
+    LOG(Warning) << "Object " << name << " has no Component of type "
+                 << demangle(typeid(T).name());
     return nullptr;
 }
 
@@ -169,7 +170,7 @@ void Object::add(Args... args) {
         add(new T(args...), typeid(T));
     } else
         LOG(Error) << "Object " << name << " already has a Component of type "
-                   << typeid(T).name();
+                   << demangle(typeid(T).name());
 }
 
 template <typename T>
