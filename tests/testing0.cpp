@@ -1,24 +1,23 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
-#include <MEL/Core/Clock.hpp>
+#include <MEL/Logging/DataLogger.hpp>
 #include <MEL/Utility/Console.hpp>
 
 using namespace mel;
 int main() {
 
-    MelShare ms("benchmark");
+    DataLogger log;
+    log.set_header({"A","B","C","D","E"});
+    log.buffer({1,2,3,4,5});
+    log.buffer({6,7,8,9,10});
 
-    std::vector<double> data(5);
-    Clock clock;
-    for (std::size_t i = 0; i < 1000000; ++i) {
-        data[0] = 1.0;
-        data[1] = 2.0;
-        data[2] = 3.0;
-        data[3] = 4.0;
-        data[4] = 5.0;
+    print(log.get_col_count());
+    print(log.get_row_count());
 
-        ms.write_data(data);
-    }
-    print(clock.get_elapsed_time());
+    log.save_data("test1");
+
+    log.buffer({1,2,3,4,5});
+    log.buffer({6,7,8,9,10});
+
+    log.save_data("test2");
 
 
     return 0;
