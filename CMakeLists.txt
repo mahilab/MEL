@@ -362,18 +362,7 @@ if(EXAMPLES)
 endif()
 
 if(TESTS)
-    add_executable(testing1 tests/testing1.cpp)
-    target_link_libraries(testing1 MEL)
-
-    add_executable(testing2 tests/testing2.cpp src/MEL/Engine/Static/Engine.cpp src/MEL/Engine/Static/Component.cpp src/MEL/Engine/Static/Object.cpp)
-    target_link_libraries(testing2 MEL)
-
-    add_executable(testing3 tests/testing3.cpp)
-    target_link_libraries(testing3 MEL)
-
-    add_executable(testing4 tests/testing4.cpp)
-    target_link_libraries(testing4 MEL)
-
+    add_subdirectory(tests)
 endif()
 
 if(BUILD_DOC)
