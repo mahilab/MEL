@@ -2,13 +2,13 @@
 #include <MEL/Logging/File.hpp>
 #include <sys/stat.h>
 
-#ifdef __linux__
-#include <sys/types.h>
-#include <unistd.h>
-#elif _WIN32
+#ifdef _WIN32
 #include <io.h>
 #include <share.h>
 #include <windows.h>
+#else
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 namespace mel {

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <thread>
 
-#ifdef __linux__
+#if defined(__linux__) ||  defined(__APPLE__)
 #include <unistd.h>
 #endif
 
@@ -30,17 +30,17 @@ bool DataLogger::write_to_csv(const std::vector<std::string> &header, const std:
 	LOG(Verbose) << "Writing header to " << full_filename;
 	create_directory(directory);
 	_unlink(full_filename.c_str());
-	File file;	
+	File file;
 	if (!header.empty()) {
 		file.open(full_filename.c_str());
 		std::ostringstream ss;
-		for (std::size_t i = 0; i < header.size() - 1; i++) {			
-			ss << header[i] << ",";			
+		for (std::size_t i = 0; i < header.size() - 1; i++) {
+			ss << header[i] << ",";
 		}
 		ss << header.back() << "\r\n";
 		file.write(ss.str());
 		file.close();
-	}	
+	}
 	return true;
 }
 
@@ -64,7 +64,7 @@ bool DataLogger::write_to_csv(const std::vector<std::vector<double>> &data, cons
 	_unlink(full_filename.c_str());
 	File file;
 	file.open(full_filename.c_str());
-	
+
 	for (std::size_t i = 0; i < data.size(); i++) {
 		std::ostringstream ss;
 		ss << std::setprecision(6);
@@ -102,7 +102,7 @@ bool DataLogger::write_to_csv(const Table &data, const std::string &filename, co
 	std::ostringstream oss;
 	oss << std::setprecision(6);
 	oss << make_csv_header(data);
-	if (!data.empty()) {	
+	if (!data.empty()) {
 		for (std::size_t i = 0; i < data.col_count() - 1; i++) {
 			oss << data.get_col_name(i) << ",";
 		}
@@ -112,7 +112,7 @@ bool DataLogger::write_to_csv(const Table &data, const std::string &filename, co
 				oss << data(i, j) << ",";
 			}
 			oss << data(i, data.col_count() - 1) << "\r\n";
-		}		
+		}
 	}
 	file.write(oss.str());
 	file.close();
@@ -138,13 +138,13 @@ bool DataLogger::write_to_csv(const std::vector<Table> &data, const std::string 
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
 	_unlink(full_filename.c_str());
-	File file;	
+	File file;
 	file.open(full_filename.c_str());
 	std::ostringstream oss;
 	oss << std::setprecision(6);
-	for (std::size_t k = 0; k < data.size(); ++k) {	
+	for (std::size_t k = 0; k < data.size(); ++k) {
 		oss << make_csv_header(data[k]);
-		if (!data[k].empty()) {					
+		if (!data[k].empty()) {
 			for (std::size_t i = 0; i < data[k].col_count() - 1; i++) {
 				oss << data[k].get_col_name(i) << ",";
 			}
@@ -224,7 +224,7 @@ bool DataLogger::read_from_csv(Table &data, const std::string &filename, const s
 	while (std::getline(input, csv_line)) {
 		std::istringstream iss(csv_line);
 		if (std::getline(iss, el_str, ',')) {
-			if (el_str.compare(Table::table_id) == 0) {				
+			if (el_str.compare(Table::table_id) == 0) {
 				if (!parse_csv_header(data, csv_line)) {
 					LOG(Warning) << "Table header in " << full_filename << " could not be parsed.";
 					return false;
@@ -232,7 +232,7 @@ bool DataLogger::read_from_csv(Table &data, const std::string &filename, const s
 				is_table = true;
 				break;
 			}
-		}		
+		}
 	}
 	if (!is_table) {
 		LOG(Warning) << "File does not contain valid MEL::Table header.";
@@ -299,7 +299,7 @@ bool DataLogger::read_from_csv(std::vector<Table> &data, const std::string &file
 					is_table = true;
 					scan_for_table = false;
 					new_table = true;
-					
+
 				}
 			}
 		}
@@ -330,7 +330,7 @@ bool DataLogger::read_from_csv(std::vector<Table> &data, const std::string &file
 				}
 				else {
 					scan_for_table = true;
-					table_index++;					
+					table_index++;
 				}
 			}
 		}
@@ -345,7 +345,7 @@ bool DataLogger::read_from_csv(std::vector<Table> &data, const std::string &file
 	//data.emplace_back();
 	//
 	//bool new_table = true;
-	//std::string csv_line;	
+	//std::string csv_line;
 	//while (std::getline(input, csv_line)) {
 	//	if (csv_line.empty()) {
 	//		new_table = true;
@@ -361,12 +361,12 @@ bool DataLogger::read_from_csv(std::vector<Table> &data, const std::string &file
 	//		}
 	//		data[table_index].set_header(header_row);
 	//		new_table = false;
-	//	}		
+	//	}
 	//	std::istringstream csv_stream(csv_line);
 	//	std::vector<double> row;
 	//	std::string value_str;
 	//	double value;
-	//	while (std::getline(csv_stream, value_str, ',')) {			
+	//	while (std::getline(csv_stream, value_str, ',')) {
 	//		std::istringstream ss(value_str);
 	//		ss >> value;
 	//		row.push_back(value);
@@ -405,7 +405,7 @@ bool DataLogger::parse_csv_header(Table &table, const std::string &header) {
 				else if (param_name_str.compare("n_rows") == 0) {
 					std::size_t n_rows;
 					el_iss >> n_rows;
-					
+
 				}
 				else if (param_name_str.compare("n_cols") == 0) {
 					std::size_t n_cols;
@@ -477,7 +477,7 @@ void DataLogger::save_data(const std::string& filename, const std::string& direc
         else
             full_filename = directory + get_path_slash() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Saving data to " << full_filename;
-        std::thread t(&DataLogger::save_thread_func, this, full_filename, directory);
+        std::thread t(&DataLogger::save_thread_func, this, full_filename, directory, data_buffer_);
         t.detach();
     }
     else {
@@ -636,6 +636,20 @@ std::size_t DataLogger::get_col_count() const {
     return col_count_;
 }
 
+std::vector<double> DataLogger::get_row(std::size_t row) {
+    return data_buffer_[row];
+}
+
+std::vector<double> DataLogger::get_col(std::size_t col) {
+    std::vector<double> col_data(row_count_);
+    for (std::size_t i = 0; i < col_data.size(); ++i) {
+        col_data[i] = data_buffer_[i][col];
+    }
+    return col_data;
+}
+
+
+
 std::string DataLogger::format(const std::vector<double>& data_record) {
     std::ostringstream ss;
     ss << std::setprecision(precision_);
@@ -668,15 +682,15 @@ void DataLogger::double_rows() {
     data_buffer_.reserve(max_rows_);
 }
 
-void DataLogger::save_thread_func(const std::string& full_filename, const std::string& directory) {
+void DataLogger::save_thread_func(const std::string& full_filename, const std::string& directory, std::vector<std::vector<double>> temp_data) {
     Lock lock(mutex_);
     create_directory(directory);
     _unlink(full_filename.c_str());
     file_.open(full_filename.c_str());
     file_opened_ = true;
     write_header();
-    for (std::size_t i = 0; i < row_count_; i++) {
-        file_.write(format(data_buffer_[i]));
+    for (std::size_t i = 0; i < temp_data.size(); i++) {
+        file_.write(format(temp_data[i]));
     }
     file_.close();
     file_opened_ = false;

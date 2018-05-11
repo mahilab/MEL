@@ -1,8 +1,11 @@
 #include <MEL/Core/Clock.hpp>
-#ifdef __linux__
-    #include <time.h>
-#elif _WIN32
-    #include <windows.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#elif __APPLE__
+#include <mach/mach_time.h>
+#else
+#include <time.h>
 #endif
 
 namespace mel {
@@ -27,25 +30,13 @@ Time Clock::restart() {
     return elapsed;
 }
 
-//==============================================================================
-// LINUX IMPLEMENTATION
-//==============================================================================
 
-#ifdef __linux__
-
-Time Clock::get_current_time() {
-    // POSIX implementation
-    // https://linux.die.net/man/3/clock_gettime
-    timespec time;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &time);
-    return mel::microseconds(static_cast<uint64>(time.tv_sec) * 1000000 + time.tv_nsec / 1000);
-}
 
 //==============================================================================
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-#elif _WIN32
+#ifdef _WIN32
 
 LARGE_INTEGER get_frequency() {
     LARGE_INTEGER frequency;
@@ -62,6 +53,32 @@ Time Clock::get_current_time() {
     QueryPerformanceCounter(&time);
     // Return the current time as microseconds
     return mel::microseconds(1000000 * time.QuadPart / frequency.QuadPart);
+}
+
+#elif __APPLE__
+
+//==============================================================================
+// APPLE IMPLEMENTATION
+//==============================================================================
+
+static mach_timebase_info_data_t frequency = {0, 0};
+if (frequency.denom == 0)
+    mach_timebase_info(&frequency);
+uint64 nanoseconds = mach_absolute_time() * frequency.numer / frequency.denom;
+return mel::microseconds(nanoseconds / 1000);
+
+#else
+
+//==============================================================================
+// LINUX IMPLEMENTATION
+//==============================================================================
+
+Time Clock::get_current_time() {
+    // POSIX implementation
+    // https://linux.die.net/man/3/clock_gettime
+    timespec time;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &time);
+    return mel::microseconds(static_cast<uint64>(time.tv_sec) * 1000000 + time.tv_nsec / 1000);
 }
 
 #endif

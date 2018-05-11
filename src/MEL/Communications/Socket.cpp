@@ -3,17 +3,7 @@
 #include <cstring>
 #include <iostream>
 
-#ifdef __linux__
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <errno.h>
-#include <fcntl.h>
-#elif _WIN32
+#ifdef _WIN32
 #include <basetsd.h>
 #ifdef _WIN32_WINDOWS
     #undef _WIN32_WINDOWS
@@ -25,7 +15,18 @@
 #define _WIN32_WINNT   0x0501
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 #endif
+
 namespace mel
 {
 
@@ -88,6 +89,13 @@ void Socket::create(SocketHandle handle) {
             if (setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&yes), sizeof(yes)) == -1) {
                 LOG(Warning) << "Failed to set socket option \"TCP_NODELAY\" ; " << "all your TCP packets will be buffered";
             }
+
+            // On Mac OS X, disable the SIGPIPE signal on disconnection
+            #ifdef __APPLE__
+                if (setsockopt(socket_, SOL_SOCKET, SO_NOSIGPIPE, reinterpret_cast<char*>(&yes), sizeof(yes)) == -1) {
+                    LOG(Warning) << "Failed to set socket option \"SO_NOSIGPIPE\"";
+                }
+            #endif
         }
         else {
             // Enable broadcast by default for UDP sockets
@@ -109,75 +117,10 @@ void Socket::close() {
 }
 
 //==============================================================================
-// LINUX IMPLEMENTATION
-//==============================================================================
-
-#ifdef __linux__
-
-sockaddr_in Socket::create_address(uint32 address, unsigned short port) {
-    sockaddr_in addr;
-    std::memset(&addr, 0, sizeof(addr));
-    addr.sin_addr.s_addr = htonl(address);
-    addr.sin_family      = AF_INET;
-    addr.sin_port        = htons(port);
-
-#if defined(SFML_SYSTEM_MACOS)
-    addr.sin_len = sizeof(addr);
-#endif
-
-    return addr;
-}
-
-SocketHandle Socket::invalid_socket() {
-    return -1;
-}
-
-void Socket::close(SocketHandle sock) {
-    ::close(sock);
-}
-
-void Socket::set_blocking(SocketHandle sock, bool block) {
-    int status = fcntl(sock, F_GETFL);
-    if (block)
-    {
-        if (fcntl(sock, F_SETFL, status & ~O_NONBLOCK) == -1) {
-            LOG(mel::Error) << "Failed to set file status flags: " << errno;
-        }
-    }
-    else
-    {
-        if (fcntl(sock, F_SETFL, status | O_NONBLOCK) == -1) {
-           LOG(mel::Error) << "Failed to set file status flags: " << errno;
-        }
-
-    }
-}
-
-Socket::Status Socket::get_error_status() {
-    // The followings are sometimes equal to EWOULDBLOCK,
-    // so we have to make a special case for them in order
-    // to avoid having double values in the switch case
-    if ((errno == EAGAIN) || (errno == EINPROGRESS))
-        return Socket::NotReady;
-
-    switch (errno)
-    {
-        case EWOULDBLOCK:  return Socket::NotReady;
-        case ECONNABORTED: return Socket::Disconnected;
-        case ECONNRESET:   return Socket::Disconnected;
-        case ETIMEDOUT:    return Socket::Disconnected;
-        case ENETRESET:    return Socket::Disconnected;
-        case ENOTCONN:     return Socket::Disconnected;
-        case EPIPE:        return Socket::Disconnected;
-        default:           return Socket::Error;
-    }
-}
-
-//==============================================================================
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-#elif _WIN32
+#ifdef _WIN32
 
 // Windows needs some initialization and cleanup to get sockets working
 // properly... so let's create a class that will do it automatically
@@ -229,6 +172,71 @@ Socket::Status Socket::get_error_status() {
         case WSAENOTCONN:     return Socket::Disconnected;
         case WSAEISCONN:      return Socket::Done; // when connecting a non-blocking socket
         default:              return Socket::Error;
+    }
+}
+
+#else
+
+//==============================================================================
+// UNIX IMPLEMENTATION
+//==============================================================================
+
+sockaddr_in Socket::create_address(uint32 address, unsigned short port) {
+    sockaddr_in addr;
+    std::memset(&addr, 0, sizeof(addr));
+    addr.sin_addr.s_addr = htonl(address);
+    addr.sin_family      = AF_INET;
+    addr.sin_port        = htons(port);
+
+#if defined(__APPLE__)
+    addr.sin_len = sizeof(addr);
+#endif
+
+    return addr;
+}
+
+SocketHandle Socket::invalid_socket() {
+    return -1;
+}
+
+void Socket::close(SocketHandle sock) {
+    ::close(sock);
+}
+
+void Socket::set_blocking(SocketHandle sock, bool block) {
+    int status = fcntl(sock, F_GETFL);
+    if (block)
+    {
+        if (fcntl(sock, F_SETFL, status & ~O_NONBLOCK) == -1) {
+            LOG(mel::Error) << "Failed to set file status flags: " << errno;
+        }
+    }
+    else
+    {
+        if (fcntl(sock, F_SETFL, status | O_NONBLOCK) == -1) {
+           LOG(mel::Error) << "Failed to set file status flags: " << errno;
+        }
+
+    }
+}
+
+Socket::Status Socket::get_error_status() {
+    // The followings are sometimes equal to EWOULDBLOCK,
+    // so we have to make a special case for them in order
+    // to avoid having double values in the switch case
+    if ((errno == EAGAIN) || (errno == EINPROGRESS))
+        return Socket::NotReady;
+
+    switch (errno)
+    {
+        case EWOULDBLOCK:  return Socket::NotReady;
+        case ECONNABORTED: return Socket::Disconnected;
+        case ECONNRESET:   return Socket::Disconnected;
+        case ETIMEDOUT:    return Socket::Disconnected;
+        case ENETRESET:    return Socket::Disconnected;
+        case ENOTCONN:     return Socket::Disconnected;
+        case EPIPE:        return Socket::Disconnected;
+        default:           return Socket::Error;
     }
 }
 

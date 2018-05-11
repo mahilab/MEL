@@ -30,7 +30,7 @@ namespace mel {
 
 #if defined(_WIN32)
 typedef void* MapHandle;
-#elif __linux__
+#else
 typedef int MapHandle;
 #endif
 

@@ -26,10 +26,10 @@
 #include <MEL/Utility/Types.hpp>
 #include <vector>
 
-#ifdef __linux__
-#include <sys/socket.h>
-#elif _WIN32
+#ifdef _WIN32
 #include <basetsd.h>
+#else
+#include <sys/socket.h>
 #endif
 
 struct sockaddr_in;
@@ -43,7 +43,7 @@ namespace mel {
 // Low-level socket handle type, specific to each platform
 #if defined(_WIN32)
 typedef UINT_PTR SocketHandle;
-#elif __linux__
+#elif
 typedef int SocketHandle;
 #endif
 

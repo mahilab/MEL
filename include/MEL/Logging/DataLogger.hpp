@@ -136,6 +136,12 @@ public:
     /// Get the number of columns currently in the data buffer
     std::size_t get_col_count() const;
 
+    /// Gets a row of data
+    std::vector<double> get_row(std::size_t row);
+
+    /// Gets a column of data
+    std::vector<double> get_col(std::size_t col);
+
 private:
     /// Writes the current header to the file
     void write_header();
@@ -146,7 +152,8 @@ private:
 
     /// Function called by saving thread
     void save_thread_func(const std::string& full_filename,
-                          const std::string& directory);
+                          const std::string& directory,
+                          std::vector<std::vector<double>> temp_data);
 
     /// Doubles the number of reserved rows in data_
     void double_rows();

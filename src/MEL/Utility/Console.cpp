@@ -2,11 +2,11 @@
 #include <csignal>
 #include <iostream>
 
-#ifdef __linux__
-#include <unistd.h>
-#elif _WIN32
+#ifdef _WIN32
 #include <io.h>
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 namespace mel {

@@ -3,13 +3,13 @@
 #include <iostream>
 #include <cstring>
 
-#ifdef __linux__
-
-#elif _WIN32
+#ifdef _WIN32
     #include <windows.h>
     #include <stdio.h>
     #include <conio.h>
     #include <tchar.h>
+#else
+
 #endif
 
 namespace mel {
@@ -57,13 +57,8 @@ std::string SharedMemory::get_name() const {
     return name_;
 }
 
-#ifdef __linux__
 
-//==============================================================================
-// LINUX IMPLEMENTATION
-//==============================================================================
-
-#elif _WIN32
+#ifdef _WIN32
 
 //==============================================================================
 // WINDOWS IMPLEMENTATION
@@ -109,6 +104,13 @@ void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
 void SharedMemory::unmap_buffer(void* buffer) {
     UnmapViewOfFile(buffer);
 }
+
+#else
+
+//==============================================================================
+// UNIX IMPLEMENTATION
+//==============================================================================
+
 
 #endif
 

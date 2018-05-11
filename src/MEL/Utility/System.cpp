@@ -3,7 +3,12 @@
 #include <ctime>
 #include <iomanip>
 
-#ifdef __linux__
+#ifdef _WIN32
+#include <pdh.h>
+#include <psapi.h>
+#include <tchar.h>
+#include <windows.h>
+#else
 #include <errno.h>
 #include <pthread.h>
 #include <sched.h>
@@ -11,11 +16,6 @@
 #include <sys/syscall.h>
 #include <time.h>
 #include <unistd.h>
-#elif _WIN32
-#include <pdh.h>
-#include <psapi.h>
-#include <tchar.h>
-#include <windows.h>
 #endif
 
 namespace mel {
@@ -25,10 +25,10 @@ namespace mel {
 //==============================================================================
 
 std::string get_path_slash() {
-    #ifdef __linux__
-        return "/";
-    #elif _WIN32
+    #ifdef _WIN32
         return "\\";
+    #else
+        return "/";
     #endif
 }
 
@@ -53,10 +53,10 @@ void create_directory(std::string directory) {
             sub_path += dirs[j];
             sub_path += get_path_slash();
         }
-        #ifdef __linux__
-            mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-        #elif _WIN32
+        #ifdef _WIN32
             CreateDirectory(sub_path.c_str(), NULL);
+        #else
+            mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
         #endif
     }
 }
@@ -81,19 +81,7 @@ void split_file_name(const char* file_name, std::string& file_name_no_ext, std::
 
 void sleep(Time duration) {
     if (duration >= Time::Zero) {
-        #ifdef __linux__
-            uint64 usecs = duration.as_microseconds();
-            // Construct the time to wait
-            timespec ti;
-            ti.tv_nsec = (usecs % 1000000) * 1000;
-            ti.tv_sec = usecs / 1000000;
-            // If nanosleep returns -1, we check errno. If it is EINTR
-            // nanosleep was interrupted and has set ti to the remaining
-            // duration. We continue sleeping until the complete duration
-            // has passed. We stop sleeping if it was due to an error.
-            while ((nanosleep(&ti, &ti) == -1) && (errno == EINTR)) {
-            }
-        #elif _WIN32
+        #ifdef _WIN32
             TIMECAPS tc;
             timeGetDevCaps(&tc, sizeof(TIMECAPS));
             timeBeginPeriod(tc.wPeriodMin);
@@ -106,14 +94,24 @@ void sleep(Time duration) {
             WaitForSingleObject(timer, INFINITE);
             CloseHandle(timer);
             // timeEndPeriod(tc.wPeriodMin); // to much overhead, not necessary?
+        #else
+            uint64 usecs = duration.as_microseconds();
+            // Construct the time to wait
+            timespec ti;
+            ti.tv_nsec = (usecs % 1000000) * 1000;
+            ti.tv_sec = usecs / 1000000;
+            // If nanosleep returns -1, we check errno. If it is EINTR
+            // nanosleep was interrupted and has set ti to the remaining
+            // duration. We continue sleeping until the complete duration
+            // has passed. We stop sleeping if it was due to an error.
+            while ((nanosleep(&ti, &ti) == -1) && (errno == EINTR)) {
+            }
         #endif
     }
 }
 
 std::string get_last_os_error() {
-    #ifdef __linux__
-        return std::string("get_last_os_error() not yet implemented on Linux!");
-    #elif _WIN32
+    #ifdef _WIN32
         //Get the error message, if any.
         DWORD errorMessageID = ::GetLastError();
         if (errorMessageID == 0)
@@ -125,11 +123,27 @@ std::string get_last_os_error() {
         //Free the buffer.
         LocalFree(messageBuffer);
         return message;
+    #else
+        return std::string("get_last_os_error() not yet implemented on UNIX!");
     #endif
 }
 
 bool enable_realtime() {
-    #ifdef __linux__
+    #ifdef _WIN32
+        DWORD dwError;
+        if (!SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS)) {
+            dwError = GetLastError();
+            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), static_cast<int>(dwError));
+            return false;
+        }
+        DWORD dwPriClass;
+        if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL)){
+            dwPriClass = GetLastError();
+            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), static_cast<int>(dwPriClass));
+            return false;
+        }
+        return true;
+    #else
         int ret;
         // We'll operate on the currently running thread.
         pthread_t this_thread = pthread_self();
@@ -159,25 +173,24 @@ bool enable_realtime() {
             // Success
             return true;
         }
-    #elif _WIN32
-        DWORD dwError;
-        if (!SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS)) {
-            dwError = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), static_cast<int>(dwError));
-            return false;
-        }
-        DWORD dwPriClass;
-        if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL)){
-            dwPriClass = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), static_cast<int>(dwPriClass));
-            return false;
-        }
-        return true;
     #endif
 }
 
 bool disable_realtime() {
-    #ifdef __linux__
+    #ifdef _WIN32
+        DWORD dwError;
+        if (!SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS)) {
+            dwError = GetLastError();
+            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), static_cast<int>(dwError));;
+            return false;
+        }
+        if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL)) {
+            dwError = GetLastError();
+            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), static_cast<int>(dwError));
+            return false;
+        }
+        return true;
+    #else
         int ret;
         // We'll operate on the currently running thread.
         pthread_t this_thread = pthread_self();
@@ -207,19 +220,6 @@ bool disable_realtime() {
             // Success
             return true;
         }
-    #elif _WIN32
-        DWORD dwError;
-        if (!SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS)) {
-            dwError = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate process priority (%d)\n"), static_cast<int>(dwError));;
-            return false;
-        }
-        if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL)) {
-            dwError = GetLastError();
-            _tprintf(TEXT("ERROR: Failed to elevate thread priority (%d)\n"), static_cast<int>(dwError));
-            return false;
-        }
-        return true;
     #endif
 }
 
@@ -236,18 +236,10 @@ uint32 get_thread_id() {
 }
 
 //==============================================================================
-// PEROFRMANCE MONITORING FUNCTIONS (LINUX)
-//==============================================================================
-
-#ifdef __linux__
-
-// TODO
-
-//==============================================================================
 // PEROFRMANCE MONITORING FUNCTIONS (WINDOWS)
 //==============================================================================
 
-#elif _WIN32
+#ifdef _WIN32
 
 // for CPU usage total
 static PDH_HQUERY cpuQuery;

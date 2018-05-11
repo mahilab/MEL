@@ -4,17 +4,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <algorithm>
 
-#ifdef __linux__
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <errno.h>
-#include <fcntl.h>
-#elif _WIN32
+#ifdef _WIN32
 #include <basetsd.h>
 #ifdef _WIN32_WINDOWS
     #undef _WIN32_WINDOWS
@@ -26,6 +16,16 @@
 #define _WIN32_WINNT   0x0501
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 #endif
 
 namespace mel {
