@@ -9,7 +9,9 @@
     #include <conio.h>
     #include <tchar.h>
 #else
-
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
 #endif
 
 namespace mel {
@@ -76,7 +78,7 @@ MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
 
     if (hMapFile == NULL) {
         LOG(Error) << "Could not create file mapping object " << name << " (Windows Error #" << (int)GetLastError() << ")";
-        return NULL;
+        return INVALID_HANDLE_VALUEs;
     }
     return hMapFile;
 }
