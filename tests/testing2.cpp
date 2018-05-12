@@ -1,4 +1,4 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Communications/MelShare.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Engine/Static/Component.hpp>
 #include <MEL/Engine/Static/Object.hpp>

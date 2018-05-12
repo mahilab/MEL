@@ -1,4 +1,4 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Communications/MelShare.hpp>
 #include <MEL/Core/Motor.hpp>
 #include <MEL/Core/Robot.hpp>
 #include <MEL/Core/VirtualVelocitySensor.hpp>
@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) {
     }
 
     // create control loop timer
-    Timer timer(hertz(2000));    
+    Timer timer(hertz(2000));
 
     // Butterworth filters for position and velocity
     Butterworth buttpos(4, hertz(25), timer.get_frequency());
@@ -326,7 +326,7 @@ int main(int argc, char* argv[]) {
     Butterworth buttorq(2, hertz(10), timer.get_frequency());
     double filtered_pos, filtered_vel;
 
-    // torque 
+    // torque
     double torque;
 
     // enter control loop
@@ -337,7 +337,7 @@ int main(int argc, char* argv[]) {
         // update hardware
         q8.update_input();
         hp[0].get_velocity_sensor<VirtualVelocitySensor>().update();
-        
+
         // read from MELScope
         from_ms_data = from_ms.read_data();
 
@@ -352,7 +352,7 @@ int main(int argc, char* argv[]) {
             torque = wall(hp[0].get_position(), filtered_vel);
         else if (input.count("n") > 0)
             torque = notches(hp[0].get_position(), filtered_vel);
-        else if (input.count("p") > 0) 
+        else if (input.count("p") > 0)
             torque = buttorq.update(pendulum(filtered_pos, filtered_vel, timer.get_elapsed_time()));
         else
             torque = 0;

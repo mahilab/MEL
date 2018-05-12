@@ -177,11 +177,6 @@ file(GLOB SRC_COMMUNICATIONS
     "${CMAKE_SOURCE_DIR}/src/MEL/Communications/*.cpp"
 )
 
-file(GLOB SRC_COMMUNICATIONS_WINDOWS
-    "${CMAKE_SOURCE_DIR}/include/MEL/Communications/Windows/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Communications/Windows/*.cpp"
-)
-
 file(GLOB SRC_CORE
     "${CMAKE_SOURCE_DIR}/include/MEL/Core/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Core/*.cpp"
@@ -251,7 +246,6 @@ file(GLOB SRC_UTILITY_WINDOWS
 
 # create filters for Visual Studio
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
-source_group("Communications\\Windows" FILES ${SRC_COMMUNICATIONS_WINDOWS})
 source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
 source_group("Daq\\NI" FILES ${SRC_NI})
@@ -285,7 +279,6 @@ set(SOURCE_FILES
 )
 
 if(WIN32)
-    list(APPEND SOURCE_FILES ${SRC_COMMUNICATIONS_WINDOWS})
     list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS})
 endif()
 

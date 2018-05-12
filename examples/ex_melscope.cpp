@@ -6,9 +6,8 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Core/Timer.hpp>
-#ifdef _WIN32
-#include <MEL/Communications/Windows/MelShare.hpp>
-#endif
+#include <MEL/Communications/MelShare.hpp>
+
 
 // To see this example in action, start this exectable then run MelScope.pyw
 // and open the provided example.scope file.
@@ -40,11 +39,9 @@ int main(int argc, char* argv[]) {
     print("MELNet: (lp:55002, rp:55001, ra:" + remote_address.to_string() +
           ")");
 
-#ifdef _WIN32
     // make MelShare (Windows only, and prefered over MelNet)
     MelShare ms("melscope");
     print("MELShare: \"melscope\"");
-#endif
 
     // create data buffers so we don't have to make them in each loop iteration
     std::vector<double> data_ms(2);

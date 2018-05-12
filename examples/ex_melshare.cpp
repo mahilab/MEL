@@ -1,4 +1,4 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Communications/MelShare.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <vector>

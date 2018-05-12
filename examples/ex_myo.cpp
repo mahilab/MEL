@@ -1,8 +1,8 @@
-#include <MEL/Devices/Myo/MyoBand.hpp>  
+#include <MEL/Devices/Myo/MyoBand.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Communications/MelShare.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Timer.hpp>
@@ -12,7 +12,7 @@ using namespace mel;
 
 int main() {
 
-    // handle inputs 
+    // handle inputs
     std::vector<uint32> emg_channel_numbers = { 0,1,2,3,4,5,6,7 };
 
     MyoBand myo("my_myo");

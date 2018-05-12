@@ -1,4 +1,4 @@
-#include <MEL/Communications/Windows/MelShare.hpp>
+#include <MEL/Communications/MelShare.hpp>
 #include <MEL/Utility/Windows/Keyboard.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Core/Limiter.hpp>
