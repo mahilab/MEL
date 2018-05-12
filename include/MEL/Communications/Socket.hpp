@@ -43,7 +43,7 @@ namespace mel {
 // Low-level socket handle type, specific to each platform
 #if defined(_WIN32)
 typedef UINT_PTR SocketHandle;
-#elif
+#else
 typedef int SocketHandle;
 #endif
 

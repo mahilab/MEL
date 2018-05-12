@@ -16,15 +16,18 @@ keep = ['bin/linux/sftp-config.json',
 folders = ['build',
            'build/linux_make',
            'build/linux_ninja',
+           'build/mac_make',
            'build/windows_make',
            'build/windows_msvc',
            'build/windows_ninja',
            'bin',
            'bin/linux',
+           'bin/mac',
            'bin/windows',
            'bin/windows/Release',
            'lib',
            'lib/linux',
+           'lib/mac',
            'lib/windows']
 
 files = []

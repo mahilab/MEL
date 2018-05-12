@@ -30,7 +30,6 @@ option(MYO       "Turn ON if compiling for Thalmic Labs Myo Armband"          OF
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
 option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
-option(LEGACY    "Turn ON if you need depreciated MEL classes."               OFF)
 
 set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"            CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
 set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"            CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
@@ -81,6 +80,10 @@ if(WIN32)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/windows)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/windows)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/windows)
+elseif(APPLE)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/mac)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/mac)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/mac)
 else()
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
@@ -216,11 +219,6 @@ file(GLOB SRC_MYO
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Myo/*.cpp"
 )
 
-file(GLOB SRC_LEGACY
-    "${CMAKE_SOURCE_DIR}/include/MEL/Legacy/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Legacy/*.cpp"
-)
-
 file(GLOB SRC_LOGGING
     "${CMAKE_SOURCE_DIR}/include/MEL/Logging/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Logging/*.cpp"
@@ -285,10 +283,6 @@ set(SOURCE_FILES
     ${SRC_MATH}
     ${SRC_UTILITY}
 )
-
-if(LEGACY)
-    list(APPEND SOURCE_FILES ${SRC_LEGACY})
-endif()
 
 if(WIN32)
     list(APPEND SOURCE_FILES ${SRC_COMMUNICATIONS_WINDOWS})

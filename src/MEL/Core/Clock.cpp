@@ -61,11 +61,13 @@ Time Clock::get_current_time() {
 // APPLE IMPLEMENTATION
 //==============================================================================
 
-static mach_timebase_info_data_t frequency = {0, 0};
-if (frequency.denom == 0)
-    mach_timebase_info(&frequency);
-uint64 nanoseconds = mach_absolute_time() * frequency.numer / frequency.denom;
-return mel::microseconds(nanoseconds / 1000);
+Time Clock::get_current_time() {
+    static mach_timebase_info_data_t frequency = {0, 0};
+    if (frequency.denom == 0)
+        mach_timebase_info(&frequency);
+    uint64 nanoseconds = mach_absolute_time() * frequency.numer / frequency.denom;
+    return mel::microseconds(nanoseconds / 1000);
+}
 
 #else
 

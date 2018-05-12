@@ -51,6 +51,17 @@
 			"shell_cmd": "cmake ../.. -G \"Ninja\" -DTESTS=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build/windows_ninja"
 		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Mac Make)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"Unix Makefiles\" -DTESTS=ON -DEXAMPLES=ON",
+			"working_dir": "$project_path/../build/mac_make"
+		},
+
 		// {
 		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 		// 	"name": "Make (Windows)",
@@ -62,17 +73,17 @@
 		// 	"shell_cmd": "mingw32-make -j",
 		// 	"working_dir": "$project_path/../build/windows_make"
 		// },
-		// {
-		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-		// 	"name": "Make (Linux)",
-		// 	"selector":
-		// 	[
-		// 		"source.c++",
-		// 		"source.c++.11"
-		// 	],
-		// 	"shell_cmd": "mingw32-make -j",
-		// 	"working_dir": "$project_path/../build/linux_make"
-		// },
+		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "Make (Mac)",
+			"selector":
+			[
+				"source.c++",
+				"source.c++.11"
+			],
+			"shell_cmd": "make -j",
+			"working_dir": "$project_path/../build/mac_make"
+		},
 		// {
 		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 		// 	"name": "Ninja (Linux)",
@@ -140,7 +151,7 @@
 		"ecc_common_flags":
 		[
 			"-I$project_base_path/include",
-			"-IC:/Program Files/Quanser/QUARC/include"
+			"-I/Program Files/Quanser/QUARC/include"
 		],
 		"ecc_flags_sources": []
 	}

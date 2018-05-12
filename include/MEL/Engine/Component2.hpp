@@ -20,6 +20,7 @@
 #define MEL_COMPONENT2_HPP
 
 #include <array>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
