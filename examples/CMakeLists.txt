@@ -44,14 +44,14 @@ target_link_libraries(math MEL)
 add_executable(shared_memory ex_shared_memory.cpp)
 target_link_libraries(shared_memory MEL)
 
+add_executable(melshare ex_melshare.cpp)
+target_link_libraries(melshare MEL)
+
 #===============================================================================
 # WINDOWS EXAMPLES
 #===============================================================================
 
 if(WIN32)
-    add_executable(melshare ex_melshare.cpp)
-    target_link_libraries(melshare MEL)
-
     add_executable(limiter ex_limiter.cpp)
     target_link_libraries(limiter MEL)
 endif()

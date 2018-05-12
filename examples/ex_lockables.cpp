@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
             Lock lock(named_mutex);
             prompt("Press ENTER to unlock the named_mutex");
         } else if (id == "named_mutex_B") {
-            NamedMutex named_mutex("my_named_mutex", NamedMutex::OpenOnly);
+            NamedMutex named_mutex("my_named_mutex");
             // you *can* lock and unlock a mutex like this, but this is not
             // exception safe and you run the risk of unlock never getting
             // called.

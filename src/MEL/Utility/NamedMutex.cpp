@@ -26,15 +26,14 @@ public:
     ~Impl();
     void lock();
     void unlock();
-
 private:
+    std::string name_;
 #ifdef _WIN32
     HANDLE mutex_;
 #else
-    pthread_mutex_t* ptr_;
-    int shm_fd_;
-    std::string name_;
-    int created_;
+    pthread_mutex_t* mutex_;
+    int map_;
+    bool is_owner_;
 #endif
 };
 
@@ -44,7 +43,9 @@ private:
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) {
+NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) :
+    name_(name)
+{
     switch (mode) {
         case OpenOrCreate:
             mutex_ = CreateMutexA(NULL, FALSE, name.c_str());
@@ -117,29 +118,29 @@ void NamedMutex::Impl::unlock() {
 // https://gist.github.com/yamnikov-oleg/abf61cf96b4867cbf72d
 
 NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode)
-    : ptr_(nullptr), created_(0), name_(name) {
+    : mutex_(nullptr), is_owner_(false), name_(name) {
     errno = 0;
     switch (mode) {
         case OpenOrCreate: {
             // try to open existing mutex shared memory
-            shm_fd_ = shm_open(name_.c_str(), O_RDWR, 0660);
+            map_ = shm_open(name_.c_str(), O_RDWR, 0660);
             if (errno == ENOENT) {
                 // create new mutex shared memory
-                shm_fd_ = shm_open(name_.c_str(), O_RDWR | O_CREAT, 0660);
-                created_ = 1;
-                if (ftruncate(shm_fd_, sizeof(pthread_mutex_t)) != 0) {
+                map_ = shm_open(name_.c_str(), O_RDWR | O_CREAT, 0660);
+                is_owner_ = true;
+                if (ftruncate(map_, sizeof(pthread_mutex_t)) != 0) {
                     LOG(Error) << "Could not truncate file mapping object "
                                << name_ << " (Error # " << errno << " - "
                                << strerror(errno) << ")";
                 }
             }
-            if (shm_fd_ == -1) {
+            if (map_ == -1) {
                 LOG(Error) << "Could not create file mapping object " << name_
                            << " (Error # " << errno << " - " << strerror(errno) << ")";
                 break;
             }
             void* addr = mmap(NULL, sizeof(pthread_mutex_t),
-                              PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd_, 0);
+                              PROT_READ | PROT_WRITE, MAP_SHARED, map_, 0);
             if (addr == MAP_FAILED) {
                 LOG(Error) << "Could not map view of file"
                            << " (Error #" << errno << " - "
@@ -147,24 +148,24 @@ NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode)
                 break;
             }
             pthread_mutex_t* mutex_ptr = (pthread_mutex_t*)addr;
-            if (created_) {
+            if (is_owner_) {
                 pthread_mutexattr_t attributes;
                 pthread_mutexattr_init(&attributes);
                 pthread_mutexattr_setpshared(&attributes, PTHREAD_PROCESS_SHARED);
                 pthread_mutex_init(mutex_ptr, &attributes);
             }
-            ptr_ = mutex_ptr;
+            mutex_ = mutex_ptr;
             break;
         }
         case OpenOnly: {
-            shm_fd_ = shm_open(name_.c_str(), O_RDWR, 0660);
-            if (shm_fd_ == -1) {
+            map_ = shm_open(name_.c_str(), O_RDWR, 0660);
+            if (map_ == -1) {
                 LOG(Error) << "Could not create file mapping object " << name_
                            << " (Error #" << errno << " - " << strerror(errno) << ")";
                 break;
             }
             void* addr = mmap(NULL, sizeof(pthread_mutex_t),
-                              PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd_, 0);
+                              PROT_READ | PROT_WRITE, MAP_SHARED, map_, 0);
             if (addr == MAP_FAILED) {
                 LOG(Error) << "Could not map view of file"
                            << " (Error #" << errno << " - "
@@ -172,34 +173,34 @@ NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode)
                 break;
             }
             pthread_mutex_t* mutex_ptr = (pthread_mutex_t*)addr;
-            ptr_ = mutex_ptr;
+            mutex_ = mutex_ptr;
             break;
         }
     }
 }
 
 NamedMutex::Impl::~Impl() {
-    if (created_) {
-        pthread_mutex_destroy(ptr_);
+    if (is_owner_) {
+        pthread_mutex_destroy(mutex_);
     }
-    if (munmap((void*)ptr_, sizeof(pthread_mutex_t))) {
+    if (munmap((void*)mutex_, sizeof(pthread_mutex_t))) {
         LOG(Error) << "Could not unmap view of file"
                    << " (Error #" << errno << " - " << strerror(errno) << ")";
     }
-    ptr_ = NULL;
-    close(shm_fd_);
-    shm_fd_ = 0;
-    if (created_) {
+    mutex_ = NULL;
+    close(map_);
+    map_ = 0;
+    if (is_owner_) {
         shm_unlink(name_.c_str());
     }
 }
 
 void NamedMutex::Impl::lock() {
-    pthread_mutex_lock(ptr_);
+    pthread_mutex_lock(mutex_);
 }
 
 void NamedMutex::Impl::unlock() {
-    pthread_mutex_unlock(ptr_);
+    pthread_mutex_unlock(mutex_);
 }
 
 #endif

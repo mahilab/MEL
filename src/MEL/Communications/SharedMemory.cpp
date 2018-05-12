@@ -123,10 +123,7 @@ MapHandle SharedMemory::create_or_open(const std::string& name,
     MapHandle map;
     map = shm_open(name.c_str(), O_RDWR, 0666);
     if (map != -1) {
-        LOG(Info) << "Opened existing file mapping object " << name;
-        struct stat info;
-        fstat(map, &info);
-        LOG(Info) << info.st_size;
+        LOG(Verbose) << "Opened existing file mapping object " << name;
         return map;
     }
     map = shm_open(name.c_str(), O_CREAT | O_RDWR, 0666);
@@ -142,9 +139,6 @@ MapHandle SharedMemory::create_or_open(const std::string& name,
         }
         // https://stackoverflow.com/questions/25502229/ftruncate-not-working-on-posix-shared-memory-in-mac-os-x
     }
-    struct stat info;
-    fstat(map, &info);
-    LOG(Info) << info.st_size;
     return map;
 }
 
