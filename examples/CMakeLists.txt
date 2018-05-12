@@ -41,14 +41,14 @@ target_link_libraries(melscope MEL)
 add_executable(math ex_math.cpp)
 target_link_libraries(math MEL)
 
+add_executable(shared_memory ex_shared_memory.cpp)
+target_link_libraries(shared_memory MEL)
+
 #===============================================================================
 # WINDOWS EXAMPLES
 #===============================================================================
 
 if(WIN32)
-    add_executable(shared_memory ex_shared_memory.cpp)
-    target_link_libraries(shared_memory MEL)
-
     add_executable(melshare ex_melshare.cpp)
     target_link_libraries(melshare MEL)
 

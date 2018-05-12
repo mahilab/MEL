@@ -18,7 +18,7 @@
 #ifndef MEL_MELSHARE_HPP
 #define MEL_MELSHARE_HPP
 
-#include <MEL/Communications/Windows/SharedMemory.hpp>
+#include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <MEL/Utility/Windows/NamedMutex.hpp>

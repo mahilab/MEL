@@ -3,9 +3,7 @@
 #include <MEL/Utility/Spinlock.hpp>
 #include <MEL/Utility/System.hpp>
 #include <thread>
-#ifdef _WIN32
-#include <MEL/Utility/Windows/NamedMutex.hpp>
-#endif
+#include <MEL/Utility/NamedMutex.hpp>
 
 using namespace mel;
 
@@ -59,7 +57,6 @@ int main(int argc, char* argv[]) {
             sleep(milliseconds(10));
             print("Main: Thanks!");
         }
-#ifdef _WIN32
         else if (id == "named_mutex_A") {
             NamedMutex named_mutex("my_named_mutex");
             // lock the mutex using a Lock RAII wrapper
@@ -74,7 +71,6 @@ int main(int argc, char* argv[]) {
             print("B can continue now");
             named_mutex.unlock();
         }
-#endif
     }
     return 0;
 }

@@ -1,6 +1,7 @@
-#include <MEL/Communications/Windows/SharedMemory.hpp>
+#include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Communications/Packet.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <vector>
 
 // To run this example, open two terminals and run the following:
@@ -13,6 +14,9 @@
 using namespace mel;
 
 int main(int argc, char *argv[]) {
+
+    init_logger();
+
     if (argc > 1) {
         std::string id = argv[1];
         if (id == "1A") {
@@ -29,7 +33,7 @@ int main(int argc, char *argv[]) {
         }
         else if (id == "1B") {
             // create shared memory map (same string name as A)
-            SharedMemory map("my_map");
+            SharedMemory map("my_map",512);
             // receive message
             char msg[4];
             map.read(msg, 4);
@@ -44,17 +48,16 @@ int main(int argc, char *argv[]) {
             char msg[5] = "abcd";
             map.write(msg, 5);
             prompt("Press Enter after executing 2B");
-            char c;
-            map.read(&c, 1, 2);
-            print(c);
+            map.read(&msg, 5);
+            print(msg); // axcd
 
         }
         else if (id == "2B") {
             SharedMemory map("my_map");
             char msg[5];
             map.read(msg, 5);
-            print(msg);
-            char x = 120;
+            print(msg); // abcd
+            char x = 'x';
             map.write(&x, 1, 1);
         }
         else if (id == "3A") {
