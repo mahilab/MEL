@@ -4,10 +4,10 @@
 #include <cstring>
 
 #ifdef _WIN32
-    #include <windows.h>
-    #include <stdio.h>
-    #include <conio.h>
-    #include <tchar.h>
+#include <windows.h>
+#include <stdio.h>
+#include <conio.h>
+#include <tchar.h>
 #else
 #include <fcntl.h>
 #include <unistd.h>
@@ -68,7 +68,7 @@ std::string SharedMemory::get_name() const {
 
 MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
     HANDLE hMapFile;
-    hMapFile = CreateFileMappingA(
+    hMapFile = ::CreateFileMappingA(
                   INVALID_HANDLE_VALUE,     // use paging file
                   NULL,                     // default security
                   PAGE_READWRITE,           // read/write access
@@ -78,20 +78,21 @@ MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
 
     if (hMapFile == NULL) {
         LOG(Error) << "Could not create file mapping object " << name << " (Windows Error #" << (int)GetLastError() << ")";
-        return INVALID_HANDLE_VALUEs;
+        return INVALID_HANDLE_VALUE;
     }
     return hMapFile;
 }
 
 void SharedMemory::close(MapHandle map) {
-    if (CloseHandle(map) == 0) {
+    if (::CloseHandle(map) == 0) {
         LOG(Error) << "Failed to close handle (Windows Error #" << (int)GetLastError() << ")";
     }
+    map = INVALID_HANDLE_VALUE;
 }
 
 void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
     void* pBuf;
-    pBuf = MapViewOfFile(map,          // handle to map object
+    pBuf = ::MapViewOfFile(map,          // handle to map object
                 FILE_MAP_ALL_ACCESS,   // read/write permission
                 0,
                 0,
@@ -103,8 +104,8 @@ void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
     return pBuf;
 }
 
-void SharedMemory::unmap_buffer(void* buffer) {
-    UnmapViewOfFile(buffer);
+void SharedMemory::unmap_buffer(void* buffer, std::size_t size) {
+    ::UnmapViewOfFile(buffer);
 }
 
 #else
@@ -112,6 +113,22 @@ void SharedMemory::unmap_buffer(void* buffer) {
 //==============================================================================
 // UNIX IMPLEMENTATION
 //==============================================================================
+
+MapHandle SharedMemory::create_or_open(std::string name, std::size_t size) {
+
+}
+
+void SharedMemory::close(MapHandle map) {
+    ::close(map);
+}
+
+void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
+
+}
+
+void SharedMemory::unmap_buffer(void* buffer, std::size_t size) {
+    ::munmap(buffer, size);
+}
 
 
 #endif

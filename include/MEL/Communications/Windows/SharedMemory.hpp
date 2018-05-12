@@ -70,7 +70,7 @@ private:
     static void* map_buffer(MapHandle map, std::size_t size);
 
     /// Unmaps a memory map buffer from the calling process's address space
-    static void unmap_buffer(void* buffer);
+    static void unmap_buffer(void* buffer, std::size_t size);
 
 private:
     const std::string name_;       ///< The name of the memory map file
