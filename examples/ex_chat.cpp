@@ -17,15 +17,49 @@ using namespace mel;
 
 ctrl_bool stop(false);
 bool handler(CtrlEvent event);
-void server();
-void client(const std::string& username);
-void client_helper(TcpSocket& tcp, bool& new_line, std::string& message, std::string username, Mutex& mutex);
+
+//==============================================================================
+// SERVER
+//==============================================================================
+class Server {
+public:
+    Server();
+    ~Server();
+    void run();
+private:
+    void broadcast();
+private:
+    UdpSocket udp;
+    TcpListener listener;
+    SocketSelector selector;
+    std::list<TcpSocket*> clients;
+};
+
+//==============================================================================
+// CLIENT
+//==============================================================================
+class Client {
+public:
+    Client(const std::string& username);
+    ~Client();
+    bool connect();
+    void run();
+private:
+    void clear_line();
+    void resume_line();
+    void helper_thread_func();
+private:
+    std::string username;
+    std::string message;
+    TcpSocket tcp;
+    Mutex mutex;
+    bool connected;
+};
 
 //==============================================================================
 // MAIN
 //==============================================================================
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     // Set up command line options
 	Options options("chat.exe", "MEL Chat");
 	options.add_options()
@@ -36,10 +70,15 @@ int main(int argc, char *argv[])
     init_logger();
     register_ctrl_handler(handler);
 
-    if (input.count("server"))
-        server();
-    else if (input.count("user"))
-        client(input["user"].as<std::string>());
+    if (input.count("server")){
+        Server server;
+        server.run();
+    }
+    else if (input.count("user")) {
+        Client client(input["user"].as<std::string>());
+        if (client.connect())
+            client.run();
+    }
     else {
         print(options.help());
     }
@@ -57,23 +96,27 @@ bool handler(CtrlEvent event) {
 }
 
 //==============================================================================
-// SERVER
+// SERVER IMPL
 //==============================================================================
-void server() {
-    LOG(Info) << "Starting Chat Sever at " << IpAddress::get_local_address();
-    // UDP socket for broadcasting IP address to clients (users)
-    UdpSocket udp;
+
+Server::Server() {
     udp.bind(55001);
-    Packet empty_packet;
-    // setup TCP network
-    TcpListener listener;
     listener.listen(55003);
-    std::list<TcpSocket*> clients;
-    SocketSelector selector;
     selector.add(listener);
-    // packets
-    std::vector<Packet> prev_packets, next_packets;
-    // run the server
+}
+
+Server::~Server() {
+    LOG(Info) << "Stopping Chat Sever at " << IpAddress::get_local_address();
+    for (auto it = clients.begin(); it != clients.end(); ++it) {
+        TcpSocket& client = **it;
+        selector.remove(client);
+        client.disconnect();
+        delete *it;
+    }
+}
+
+void Server::run() {
+    LOG(Info) << "Starting Chat Sever at " << IpAddress::get_local_address();
     while (!stop) {
         if (selector.wait(seconds(1))) {
             // check for connecting clients
@@ -125,95 +168,27 @@ void server() {
 
             }
         }
-        sleep(milliseconds(100));
-        // broadcast over UDP so Users can get Sever address
-        udp.send(empty_packet, IpAddress::Broadcast, 55002);
-    }
-
-    // cleanup
-    LOG(Info) << "Stopping Chat Sever at " << IpAddress::get_local_address();
-    for (auto it = clients.begin(); it != clients.end(); ++it) {
-        TcpSocket& client = **it;
-        selector.remove(client);
-        client.disconnect();
-        delete *it;
+        sleep(milliseconds(10));
+        broadcast();
     }
 }
 
-//==============================================================================
-// CLIENT
-//==============================================================================
-void client(const std::string& username) {
-    LOG(Info) << "Starting Chat as User \"" << username << "\"";
-    // listen for Chat Sever UDP broadcast port 55002 so we can get its address
-    LOG(Info) << "Searching for Chat Server";
-    UdpSocket udp;
-    if (udp.bind(55002) == Socket::Error)
-        return;
-    IpAddress server_address;
-    unsigned short server_port;
+void Server::broadcast() {
     Packet empty_packet;
-    udp.receive(empty_packet, server_address, server_port);
-    LOG(Info) << "Found Chat Sever at " << server_address.to_string();
-    udp.unbind();
-    // connect to Chat Server over TCP
-    TcpSocket tcp;
-    tcp.connect(server_address, 55003);
-    LOG(Info) << "Connected to Chat Sever at " << tcp.get_remote_address()
-              << "@" << tcp.get_remote_port();
-    tcp.set_blocking(false);
-    Packet outgoing_packet, incomming_packet;
-    std::string message;
-    bool new_line = true;
-    char ch;
-    Mutex mutex;
-    // start helper thread
-    std::thread helper_thread(client_helper, std::ref(tcp), std::ref(new_line), std::ref(message), username, std::ref(mutex));
-    // messaging loop
-    while(!stop) {
-        // process user input
-        {
-            Lock lock(mutex);
-            if (new_line) {
-                set_text_color(Color::Green);
-                std::cout << username << ": ";
-                set_text_color(Color::None);
-                std::cout << message;
-                new_line = false;
-            }
-        }
-        ch = _getch();
-        {
-            Lock lock(mutex);
-            if (ch == '\n') {
-                std::cout << "\n";
-                stop = true;
-            }
-            else if (ch == '\r') {
-                if (message.length() > 0) {
-                    std::cout << "\n";
-                    outgoing_packet.clear();
-                    outgoing_packet << username << message;
-                    tcp.send(outgoing_packet);
-                    message = "";
-                    new_line = true;
-                }
-            }
-            else if (ch == '\b') {
-                if (message.length() > 0) {
-                    message.pop_back();
-                    std::cout << ch << " \b";
-                }
-            }
-            else {
-                message += ch;
-                std::cout << ch;
-            }
-        }
-    }
+    udp.send(empty_packet, IpAddress::Broadcast, 55002);
+}
 
-    // disconnect from Chat Server if stopped
-    helper_thread.join();
+//==============================================================================
+// CLIENT IMPL
+//==============================================================================
+
+Client::Client(const std::string& username) :
+    username(username)
+{
+    LOG(Info) << "Starting Chat as User \"" << username << "\"";
+}
+
+Client::~Client() {
     if (stop) {
         LOG(Info) << "Disconnecting from Chat Sever at "
                   << tcp.get_remote_address() << "@" << tcp.get_remote_port();
@@ -221,46 +196,118 @@ void client(const std::string& username) {
     }
 }
 
-void client_helper(TcpSocket& tcp, bool& new_line, std::string& message, std::string username, Mutex& mutex) {
+bool Client::connect() {
+    UdpSocket udp;
+    if (udp.bind(55002) == Socket::Error)
+        return (connected = false);
+    IpAddress server_address;
+    unsigned short server_port;
+    Packet packet;
+    udp.receive(packet, server_address, server_port);
+    LOG(Info) << "Found Chat Sever at " << server_address.to_string();
+    udp.unbind();
+    tcp.connect(server_address, 55003);
+    LOG(Info) << "Connected to Chat Sever at " << tcp.get_remote_address()
+              << "@" << tcp.get_remote_port();
+    tcp.set_blocking(false);
+    return (connected = true);
+}
+
+void Client::run() {
+    resume_line();
+    // start helper thread
+    std::thread helper_thread( [this] { this->helper_thread_func(); });
+    // messaging loop
+    Packet outgoing_packet;
+    while(connected && !stop) {
+        // process user input
+        char ch = _getch();
+        {
+            Lock lock(mutex);
+            if (!connected)
+                break;
+            if (ch == '\n') {
+                // Ctrl+Enter pressed, exit
+                std::cout << "\n";
+                stop = true;
+            }
+            else if (ch == '\r') {
+                // Enter pressed, send message
+                if (message.length() > 0) {
+                    std::cout << "\n";
+                    outgoing_packet.clear();
+                    outgoing_packet << username << message;
+                    tcp.send(outgoing_packet);
+                    message = "";
+                    resume_line();
+                }
+            }
+            else if (ch == '\b') {
+                // Backspace pressed, remove character
+                if (message.length() > 0) {
+                    message.pop_back();
+                    std::cout << ch << " \b";
+                }
+            }
+            else {
+                // Add character to message
+                message += ch;
+                std::cout << ch;
+            }
+        }
+    }
+
+    // joint helper thread
+    helper_thread.join();
+}
+
+void Client::clear_line() {
+    for (int i = 0; i < 100; ++i)
+        std::cout << "\b \b";
+}
+
+void Client::resume_line() {
+    set_text_color(Color::Green);
+    std::cout << username << ": ";
+    set_text_color(Color::None);
+    std::cout << message;
+}
+
+void Client::helper_thread_func() {
     bool cleared = false;
+    std::string other_username, other_message;
     Packet incomming_packet;
-    while (!stop) {
+    while (connected && !stop) {
         // receive message packets
         {
             Lock lock(mutex);
             while (tcp.receive(incomming_packet) == Socket::Done) {
-                std::string other_username, other_message;
                 incomming_packet >> other_username >> other_message;
                 if (other_username != username) {
-                    // clear line
+                    // clear line to print messages
                     if (!cleared) {
-                        for (int i = 0; i < 100; ++i)
-                            std::cout << "\b \b";
+                        clear_line();
                         cleared = true;
                     }
+                    // print messages
                     set_text_color(Color::Cyan);
                     std::cout << other_username << ": ";
                     set_text_color(Color::None);
                     std::cout << other_message << std::endl;
-                    new_line = true;
                 }
             }
-            cleared = false;
             // check for disconnection
             if (tcp.receive(incomming_packet) == Socket::Disconnected) {
                 std::cout << "\n";
                 LOG(Error) << "Lost connection to Chat Sever at "
                            << tcp.get_remote_address() << "@"
                            << tcp.get_remote_port();
-                stop = true;
+                connected = false;
             }
-            if (new_line) {
-                set_text_color(Color::Green);
-                std::cout << username << ": ";
-                set_text_color(Color::None);
-                std::cout << message;
-                new_line = false;
-            }
+            // if cleared, resume line
+            if (cleared)
+                resume_line();
+            cleared = false;
         }
         sleep(milliseconds(10));
     }
