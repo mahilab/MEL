@@ -134,6 +134,7 @@ public:
     Packet& operator>>(std::string& data);
     Packet& operator>>(wchar_t* data);
     Packet& operator>>(std::wstring& data);
+    template <typename T>  Packet& operator>>(std::vector<T>& data);
 
     /// Overloads of operator << to write data into the packet
     Packet& operator<<(bool data);
@@ -151,6 +152,7 @@ public:
     Packet& operator<<(const std::string& data);
     Packet& operator<<(const wchar_t* data);
     Packet& operator<<(const std::wstring& data);
+    template <typename T> Packet& operator<<(const std::vector<T>& data);
 
 protected:
     friend class TcpSocket;
@@ -160,7 +162,7 @@ protected:
     /// Called before the packet is sent over the network
     ///
     /// This function can be defined by derived classes to
-    /// tranmelorm the data before it is sent; this can be
+    /// tranform the data before it is sent; this can be
     /// used for compression, encryption, etc.
     /// The function must return a pointer to the modified data,
     /// as well as the number of bytes pointed.
@@ -201,6 +203,32 @@ private:
                               ///< handling partial sends)
     bool is_valid_;           ///< Reading state of the packet
 };
+
+template <typename T>
+Packet& Packet::operator>>(std::vector<T>& data) {
+    uint32 length = 0;
+    *this >> length;
+    if (length > 0) { // should call check_size, but cannot with templates
+        data.resize(static_cast<std::size_t>(length));
+        for (std::size_t i = 0; i < data.size(); ++i) {
+            T value;
+            *this >> value;
+            data[i] = value;
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Packet& Packet::operator<<(const std::vector<T>& data) {
+    uint32 length = static_cast<uint32>(data.size());
+    *this << length;
+    if (length > 0) {
+        for (std::size_t i = 0; i < data.size(); ++i)
+            *this << data[i];
+    }
+    return *this;
+}
 
 }  // namespace mel
 

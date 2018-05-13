@@ -206,7 +206,6 @@ Packet& Packet::operator >>(std::string& data) {
     if ((length > 0) && check_size(length)) {
         // Then extract characters
         data.assign(&data_[read_pos_], length);
-
         // Update reading position
         read_pos_ += length;
     }
