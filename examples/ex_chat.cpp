@@ -8,6 +8,10 @@
 #include <MEL/Utility/Options.hpp>
 #include <string>
 #include <list>
+#include <conio.h>
+#include <cstdio>
+#include <thread>
+#include <MEL/Utility/Mutex.hpp>
 
 using namespace mel;
 
@@ -15,6 +19,7 @@ ctrl_bool stop(false);
 bool handler(CtrlEvent event);
 void server();
 void client(const std::string& username);
+void client_helper(TcpSocket& tcp, bool& new_line, std::string& message, std::string username, Mutex& mutex);
 
 //==============================================================================
 // MAIN
@@ -35,8 +40,9 @@ int main(int argc, char *argv[])
         server();
     else if (input.count("user"))
         client(input["user"].as<std::string>());
-    else
+    else {
         print(options.help());
+    }
 
     return 0;
 }
@@ -156,41 +162,106 @@ void client(const std::string& username) {
     LOG(Info) << "Connected to Chat Sever at " << tcp.get_remote_address()
               << "@" << tcp.get_remote_port();
     tcp.set_blocking(false);
-    Packet packet;
-    std::string message, other_username;
+    Packet outgoing_packet, incomming_packet;
+    std::string message;
+    bool new_line = true;
+    char ch;
+    Mutex mutex;
+    // start helper thread
+    std::thread helper_thread(client_helper, std::ref(tcp), std::ref(new_line), std::ref(message), username, std::ref(mutex));
+    // messaging loop
     while(!stop) {
-        set_text_color(Color::Green);
-        std::cout << username << ": ";
-        set_text_color(Color::None);
-        std::getline(std::cin, message);
-        if (message != "") {
-            // send packet
-            packet.clear();
-            packet << username << message;
-            tcp.send(packet);
-        }
-        // receive packets
-        while (tcp.receive(packet) == Socket::Done) {
-            packet >> other_username >> message;
-            if (other_username != username) {
-                set_text_color(Color::Cyan);
-                std::cout << other_username << ": ";
+        // process user input
+        {
+            Lock lock(mutex);
+            if (new_line) {
+                set_text_color(Color::Green);
+                std::cout << username << ": ";
                 set_text_color(Color::None);
-                std::cout << message << std::endl;
+                std::cout << message;
+                new_line = false;
             }
         }
-        // check for disconnection
-        if (tcp.receive(packet) == Socket::Disconnected) {
-            LOG(Error) << "Lost connection to Chat Sever at "
-                       << tcp.get_remote_address() << "@"
-                       << tcp.get_remote_port();
-            break;
+        ch = _getch();
+        {
+            Lock lock(mutex);
+            if (ch == '\n') {
+                std::cout << "\n";
+                stop = true;
+            }
+            else if (ch == '\r') {
+                if (message.length() > 0) {
+                    std::cout << "\n";
+                    outgoing_packet.clear();
+                    outgoing_packet << username << message;
+                    tcp.send(outgoing_packet);
+                    message = "";
+                    new_line = true;
+                }
+            }
+            else if (ch == '\b') {
+                if (message.length() > 0) {
+                    message.pop_back();
+                    std::cout << ch << " \b";
+                }
+            }
+            else {
+                message += ch;
+                std::cout << ch;
+            }
         }
-
     }
+
     // disconnect from Chat Server if stopped
+    helper_thread.join();
     if (stop) {
-        LOG(Info) << "Disconnecting from Chat Sever at " << tcp.get_remote_address() << "@" << tcp.get_remote_port();
+        LOG(Info) << "Disconnecting from Chat Sever at "
+                  << tcp.get_remote_address() << "@" << tcp.get_remote_port();
         tcp.disconnect();
+    }
+}
+
+void client_helper(TcpSocket& tcp, bool& new_line, std::string& message, std::string username, Mutex& mutex) {
+    bool cleared = false;
+    Packet incomming_packet;
+    while (!stop) {
+        // receive message packets
+        {
+            Lock lock(mutex);
+            while (tcp.receive(incomming_packet) == Socket::Done) {
+                std::string other_username, other_message;
+                incomming_packet >> other_username >> other_message;
+                if (other_username != username) {
+                    // clear line
+                    if (!cleared) {
+                        for (int i = 0; i < 100; ++i)
+                            std::cout << "\b \b";
+                        cleared = true;
+                    }
+                    set_text_color(Color::Cyan);
+                    std::cout << other_username << ": ";
+                    set_text_color(Color::None);
+                    std::cout << other_message << std::endl;
+                    new_line = true;
+                }
+            }
+            cleared = false;
+            // check for disconnection
+            if (tcp.receive(incomming_packet) == Socket::Disconnected) {
+                std::cout << "\n";
+                LOG(Error) << "Lost connection to Chat Sever at "
+                           << tcp.get_remote_address() << "@"
+                           << tcp.get_remote_port();
+                stop = true;
+            }
+            if (new_line) {
+                set_text_color(Color::Green);
+                std::cout << username << ": ";
+                set_text_color(Color::None);
+                std::cout << message;
+                new_line = false;
+            }
+        }
+        sleep(milliseconds(10));
     }
 }
