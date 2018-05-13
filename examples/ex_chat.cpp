@@ -8,10 +8,32 @@
 #include <MEL/Utility/Options.hpp>
 #include <string>
 #include <list>
+#ifdef _WIN32
 #include <conio.h>
+#else
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 #include <cstdio>
 #include <thread>
 #include <MEL/Utility/Mutex.hpp>
+
+#ifndef _WIN32
+int _getch( ) {
+    struct termios oldt,
+    newt;
+    int ch;
+    tcgetattr( STDIN_FILENO, &oldt );
+    newt = oldt;
+    newt.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+    ch = getchar();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+    return ch;
+}
+#endif
 
 using namespace mel;
 
