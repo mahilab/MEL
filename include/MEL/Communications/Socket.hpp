@@ -56,6 +56,7 @@ class TcpListener;
 class UdpSocket;
 class IpAddress;
 class Packet;
+class SocketSelector;
 
 //==============================================================================
 // CLASS DECLARATION
@@ -140,6 +141,7 @@ private:
     friend class UdpSocket;
     friend class IpAddress;
     friend class Packet;
+    friend class SocketSelector;
 
     /// Create an internal sockaddr_in address
     static sockaddr_in create_address(uint32 address, unsigned short port);

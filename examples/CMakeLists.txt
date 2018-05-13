@@ -47,6 +47,9 @@ target_link_libraries(shared_memory MEL)
 add_executable(melshare ex_melshare.cpp)
 target_link_libraries(melshare MEL)
 
+add_executable(chat ex_chat.cpp)
+target_link_libraries(chat MEL)
+
 #===============================================================================
 # WINDOWS EXAMPLES
 #===============================================================================
