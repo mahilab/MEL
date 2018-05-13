@@ -108,7 +108,7 @@ public:
     /// server, you may use a time limit if you don't want your program
     /// to be possibly stuck waiting in case there is a problem; this
     /// limit is deactivated by default.
-    // static IpAddress get_public_address(Time timeout = Time::Zero);
+    static IpAddress get_public_address(Time timeout = Time::Zero);
 
     static const IpAddress
         None;  ///< Value representing an empty/invalid address

@@ -1,5 +1,6 @@
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Socket.hpp>
+#include <MEL/Communications/Http.hpp>
 #include <cstring>
 #include <utility>
 
@@ -119,7 +120,7 @@ IpAddress IpAddress::get_local_address() {
 }
 
 
-/*
+
 IpAddress IpAddress::get_public_address(Time timeout)
 {
     // The trick here is more complicated, because the only way
@@ -130,14 +131,14 @@ IpAddress IpAddress::get_public_address(Time timeout)
 
     Http server("www.sfml-dev.org");
     Http::Request request("/ip-provider.php", Http::Request::Get);
-    Http::Response page = server.sendRequest(request, timeout);
-    if (page.getStatus() == Http::Response::Ok)
-        return IpAddress(page.getBody());
+    Http::Response page = server.send_request(request, timeout);
+    if (page.get_status() == Http::Response::Ok)
+        return IpAddress(page.get_body());
 
     // Something failed: return an invalid address
     return IpAddress();
 }
-*/
+
 
 void IpAddress::resolve(const std::string& address) {
     address_ = 0;

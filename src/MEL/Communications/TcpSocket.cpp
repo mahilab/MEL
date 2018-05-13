@@ -108,6 +108,9 @@ unsigned short TcpSocket::get_remote_port() const
 
 Socket::Status TcpSocket::connect(const IpAddress& remoteAddress, unsigned short remotePort, Time timeout)
 {
+    // Disconnect the socket if it is already connected
+    disconnect();
+
     // Create the internal socket if it doesn't exist
     create();
 
