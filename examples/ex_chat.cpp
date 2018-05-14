@@ -1,3 +1,20 @@
+// MIT License
+//
+// MEL - Mechatronics Engine and Library
+// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// Author(s): Evan Pezent (epezent@rice.edu)
+
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/SocketSelector.hpp>
 #include <MEL/Communications/TcpListener.hpp>
@@ -41,7 +58,8 @@ using namespace mel;
 // Socket Ports
 unsigned short SERVER_UDP = 55001;
 unsigned short CLIENT_UDP = 55002;
-unsigned short SERVER_TCP = 55003;
+unsigned short SERVER_TCP = 55003; // this port must be port-forwarded on the
+                                   // server machine for internet chat to work
 
 std::size_t MAX_USERNAME_LENGTH = 16;
 std::size_t MAX_MESSAGE_LENGTH = 64;
@@ -83,6 +101,7 @@ public:
     Client(const std::string& username);
     ~Client();
     bool connect();
+    bool connect(IpAddress server_address);
     void run();
 private:
     void print_border();
@@ -106,7 +125,8 @@ int main(int argc, char *argv[]) {
 	Options options("chat.exe", "MEL Chat");
 	options.add_options()
 		("s,server","Starts MEL Chat in Server Mode")
-		("u,user",  "Starts MEL Chat in User Mode and sets username", value<std::string>());
+		("u,user",  "Starts MEL Chat in User Mode and sets username", value<std::string>())
+        ("i,ip",    "IP dddress of the Sever if connecting over internet", value<std::string>());
 	auto input = options.parse(argc, argv);
 
     init_logger();
@@ -119,13 +139,21 @@ int main(int argc, char *argv[]) {
     }
     else if (input.count("user")) {
         Client client(input["user"].as<std::string>());
-        if (client.connect())
-            client.run();
+        if (input.count("ip")) {
+            if (client.connect(input["ip"].as<std::string>()))
+                client.run();
+        }
+        else {
+            if (client.connect())
+                client.run();
+        }
     }
     else {
         print(options.help());
-        print("  Example: ./chat.exe -u epezent\n");
-        print(IpAddress::get_public_address());
+        print("  Examples:");
+        print("    Server:   ./chat.exe -s");
+        print("    LAN User: ./chat.exe -u epezent");
+        print("    WWW User: ./chat.exe -u epezent -i 68.225.108.149\n");
     }
 
     return 0;
@@ -150,7 +178,6 @@ Server::Server() { }
 bool Server::init() {
     if (udp.bind(SERVER_UDP) == Socket::Error)
         return false;
-
     listener.listen(SERVER_TCP);
     selector.add(listener);
     return true;
@@ -167,7 +194,9 @@ Server::~Server() {
 }
 
 void Server::run() {
-    LOG(Info) << "Starting Server at " << IpAddress::get_local_address();
+    LOG(Info) << "Starting Server";
+    LOG(Info) << "Server Local IP Address:  " << IpAddress::get_local_address();
+    LOG(Info) << "Server Public IP Address: " << IpAddress::get_public_address();
     while (!STOP) {
         if (selector.wait(seconds(1))) {
             // check for connections
@@ -288,12 +317,6 @@ Client::~Client() {
 }
 
 bool Client::connect() {
-    if (username.length() > MAX_USERNAME_LENGTH) {
-        LOG(Warning) << "Username must be " << MAX_USERNAME_LENGTH
-                     << " or fewer characters long";
-        return (connected = false);
-    }
-    LOG(Info) << "Joining Chat as \"" << username << "\"";
     UdpSocket udp;
     if (udp.bind(CLIENT_UDP) == Socket::Error)
         return (connected = false);
@@ -303,11 +326,21 @@ bool Client::connect() {
     udp.receive(packet, server_address, server_port);
     LOG(Info) << "Found Server at " << server_address.to_string();
     udp.unbind();
+    return connect(server_address);
+}
+
+bool Client::connect(IpAddress server_address) {
+    if (username.length() > MAX_USERNAME_LENGTH) {
+        LOG(Warning) << "Username must be " << MAX_USERNAME_LENGTH
+                     << " or fewer characters long";
+        return (connected = false);
+    }
+    LOG(Info) << "Joining Chat as \"" << username << "\"";
     tcp.connect(server_address, SERVER_TCP);
     LOG(Info) << "Connected to Server at " << tcp.get_remote_address()
               << "@" << tcp.get_remote_port();
     // register username
-    packet.clear();
+    Packet packet;
     packet << username;
     tcp.send(packet);
     std::string response;
@@ -319,6 +352,7 @@ bool Client::connect() {
     }
     tcp.set_blocking(false);
     return (connected = true);
+
 }
 
 void Client::run() {
@@ -412,6 +446,7 @@ void Client::message_thread_func() {
                     std::cout << other_username << ": ";
                     set_text_color(Color::None);
                     std::cout << other_message << std::endl;
+                    beep();
                 }
             }
             // check for disconnection

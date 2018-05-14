@@ -1,6 +1,6 @@
 #include <MEL/Communications/MelShare.hpp>
 #include <MEL/Utility/Types.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Communications/Packet.hpp>
 
 namespace mel {
 
@@ -12,6 +12,26 @@ MelShare::MelShare(const std::string& name, std::size_t max_bytes) :
     shm_(name, max_bytes),
     mutex_(name + "_mutex")
 {
+}
+
+void MelShare::write(Packet& packet) {
+    Lock lock(mutex_);
+    std::size_t size = 0;
+    const void* data = packet.on_send(size);
+    uint32 size32 = static_cast<uint32>(size);
+    shm_.write(&size32, sizeof(uint32));
+    shm_.write(data, size, sizeof(uint32));
+}
+
+void MelShare::read(Packet& packet) {
+    Lock lock(mutex_);
+    uint32 size32 = get_size();
+    std::size_t size = static_cast<std::size_t>(size32);
+    if (size > 0) {
+        std::vector<char> data(size);
+        shm_.read(&data[0], size, sizeof(uint32));
+        packet.on_receive(&data[0], size);
+    }
 }
 
 void MelShare::write_data(const std::vector<double>& data) {

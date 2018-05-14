@@ -27,6 +27,8 @@
 
 namespace mel {
 
+class Packet;
+
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
@@ -36,6 +38,12 @@ class MelShare : NonCopyable {
 public:
     /// Default constructor.
     MelShare(const std::string& name, std::size_t max_bytes = 256);
+
+    /// Writes a Packet to the MelShare
+    void write(Packet& packet);
+
+    /// Reads a Packet from the MelShare
+    void read(Packet& packet);
 
     /// Writes a vector of doubles to the MelShare
     void write_data(const std::vector<double>& data);

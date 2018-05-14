@@ -34,7 +34,7 @@ namespace mel {
 
 class TcpSocket;
 class UdpSocket;
-class SharedMemory;
+class MelShare;
 
 //==============================================================================
 // CLASS DECLARATION
@@ -157,7 +157,7 @@ public:
 protected:
     friend class TcpSocket;
     friend class UdpSocket;
-    friend class SharedMemory;
+    friend class MelShare;
 
     /// Called before the packet is sent over the network
     ///
@@ -206,27 +206,18 @@ private:
 
 template <typename T>
 Packet& Packet::operator>>(std::vector<T>& data) {
-    uint32 length = 0;
-    *this >> length;
-    if (length > 0) { // should call check_size, but cannot with templates
-        data.resize(static_cast<std::size_t>(length));
-        for (std::size_t i = 0; i < data.size(); ++i) {
-            T value;
-            *this >> value;
-            data[i] = value;
-        }
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        T value;
+        *this >> value;
+        data[i] = value;
     }
     return *this;
 }
 
 template <typename T>
 Packet& Packet::operator<<(const std::vector<T>& data) {
-    uint32 length = static_cast<uint32>(data.size());
-    *this << length;
-    if (length > 0) {
-        for (std::size_t i = 0; i < data.size(); ++i)
-            *this << data[i];
-    }
+    for (std::size_t i = 0; i < data.size(); ++i)
+        *this << data[i];
     return *this;
 }
 

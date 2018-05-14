@@ -14,11 +14,12 @@ All:
   ☐ Documentation!
 
 Communication:
-  ☐ Write Linux implementation of SharedMemory
-  ☐ Add methods for vector to Packet (just use underlying in loop?)
+  ✔ Write Linux implementation of SharedMemory @done (18-05-13 18:54)
+  ✔ Add methods for vector to Packet (just use underlying in loop?) @done (18-05-13 18:54)
   ☐ Make MelNet not use packets (for string at least)
   ☐ BTP? http://ieeexplore.ieee.org/document/5089429/
   ☐ make MelShare use [] operators and templetize to one type
+  ☐ melshare uses packets but sting<->packet don't work
 
 Core:
   ☐ add Clock to PdController, generalize for all exos
