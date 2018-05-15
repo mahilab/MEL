@@ -327,7 +327,14 @@ int get_key(void) {
                 case 83: return KEY_DELETE;
                 default: return kk-123+KEY_F1; // Function keys
             }}
+#ifdef __APPLE__
+        case 10:  return KEY_ENTER;
+        case 127: return KEY_BACKSPACE;
+#else
         case 13: return KEY_ENTER;
+        case 8:  return KEY_BACKSPACE;
+#endif
+
 #ifdef _WIN32
         case 27: return KEY_ESCAPE;
 #else // _WIN32

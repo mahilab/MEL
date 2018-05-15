@@ -7,7 +7,6 @@
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <MEL/Utility/Windows/Keyboard.hpp>
 #include <string>
 #include <vector>
 
