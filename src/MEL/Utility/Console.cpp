@@ -1,12 +1,21 @@
 #include <MEL/Utility/Console.hpp>
 #include <csignal>
 #include <iostream>
+#include <cstdio>
 
 #ifdef _WIN32
 #include <io.h>
 #include <windows.h>
+#define _NO_OLDNAMES  // for MinGW compatibility
+#include <conio.h>    // for getch() and kbhit()
+#define getch _getch
+#define kbhit _kbhit
 #else
-#include <unistd.h>
+#include <termios.h> // for getch() and kbhit()
+#include <unistd.h> // for getch(), kbhit() and (u)sleep()
+#include <sys/ioctl.h> // for getkey()
+#include <sys/types.h> // for kbhit()
+#include <sys/time.h> // for kbhit()
 #endif
 
 namespace mel {
@@ -28,28 +37,8 @@ Initializer initializer;
 #endif
 
 //==============================================================================
-// CONSOLE OUTPUT
+// SIGNAL HANDLING
 //==============================================================================
-
-#ifdef _WIN32
-void print_string(const std::string& str) {
-    WriteConsoleA(stdout_handle, str.c_str(), static_cast<DWORD>(str.size()),
-                  NULL, NULL);
-}
-#else
-void print_string(const std::string& str) {
-    std::cout << str;
-}
-#endif
-
-//==============================================================================
-// CONSOLE INPUT
-//==============================================================================
-
-void prompt(const std::string& message) {
-    print_string(message);
-    getchar();
-}
 
 bool (*ctrl_handler)(CtrlEvent);
 
@@ -90,7 +79,6 @@ bool register_ctrl_handler(bool (*handler)(CtrlEvent)) {
 }
 
 #endif
-
 
 //==============================================================================
 // CONSOLE FORMAT
@@ -247,6 +235,147 @@ void reset_text_color() {
 #endif
 
 //==============================================================================
+// CONSOLE INPUT
+//==============================================================================
+
+#ifndef _WIN32
+/// Get character without waiting for Return to be pressed.
+/// Windows has this in conio.h
+int getch(void) {
+    struct termios oldt, newt;
+    int ch;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
+}
+
+/// Determines if keyboard has been hit.
+/// Windows has this in conio.h
+int kbhit(void) {
+    static struct termios oldt, newt;
+    int cnt = 0;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag    &= ~(ICANON | ECHO);
+    newt.c_iflag     = 0; // input mode
+    newt.c_oflag     = 0; // output mode
+    newt.c_cc[VMIN]  = 1; // minimum time to wait
+    newt.c_cc[VTIME] = 1; // minimum characters to wait for
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ioctl(0, FIONREAD, &cnt); // Read count
+    struct timeval tv;
+    tv.tv_sec  = 0;
+    tv.tv_usec = 100;
+    select(STDIN_FILENO+1, NULL, NULL, NULL, &tv); // A small time delay
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return cnt; // Return number of characters
+}
+#endif
+
+int kb_hit() {
+    return kbhit();
+}
+
+int get_ch() {
+    return getch();
+}
+
+int get_ch_nb() {
+    if (kbhit())
+        return getch();
+    else
+        return 0;
+}
+
+int get_key(void) {
+    #ifndef _WIN32
+    int cnt = kbhit(); // for ANSI escapes processing
+    #endif
+    int k = getch();
+    switch(k) {
+        case 0: {
+            int kk;
+            switch (kk = getch()) {
+                case 71: return KEY_NUMPAD7;
+                case 72: return KEY_NUMPAD8;
+                case 73: return KEY_NUMPAD9;
+                case 75: return KEY_NUMPAD4;
+                case 77: return KEY_NUMPAD6;
+                case 79: return KEY_NUMPAD1;
+                case 80: return KEY_NUMPAD2;
+                case 81: return KEY_NUMPAD3;
+                case 82: return KEY_NUMPAD0;
+                case 83: return KEY_NUMDEL;
+                default: return kk-59+KEY_F1; // Function keys
+            }}
+        case 224: {
+            int kk;
+            switch (kk = getch()) {
+                case 71: return KEY_HOME;
+                case 72: return KEY_UP;
+                case 73: return KEY_PGUP;
+                case 75: return KEY_LEFT;
+                case 77: return KEY_RIGHT;
+                case 79: return KEY_END;
+                case 80: return KEY_DOWN;
+                case 81: return KEY_PGDOWN;
+                case 82: return KEY_INSERT;
+                case 83: return KEY_DELETE;
+                default: return kk-123+KEY_F1; // Function keys
+            }}
+        case 13: return KEY_ENTER;
+#ifdef _WIN32
+        case 27: return KEY_ESCAPE;
+#else // _WIN32
+        case 155: // single-character CSI
+        case 27: {
+            // Process ANSI escape sequences
+            if (cnt >= 3 && getch() == '[') {
+                switch (k = getch()) {
+                    case 'A': return KEY_UP;
+                    case 'B': return KEY_DOWN;
+                    case 'C': return KEY_RIGHT;
+                    case 'D': return KEY_LEFT;
+                }
+            } else return KEY_ESCAPE;
+        }
+#endif // _WIN32
+        default: return k;
+    }
+}
+
+int get_key_nb() {
+    if (kbhit())
+        return get_key();
+    else
+        return 0;
+}
+
+void prompt(const std::string& message) {
+    print_string(message);
+    getchar();
+}
+
+//==============================================================================
+// CONSOLE OUTPUT
+//==============================================================================
+
+#ifdef _WIN32
+void print_string(const std::string& str) {
+    WriteConsoleA(stdout_handle, str.c_str(), static_cast<DWORD>(str.size()),
+                  NULL, NULL);
+}
+#else
+void print_string(const std::string& str) {
+    std::cout << str;
+}
+#endif
+
+//==============================================================================
 // MISC
 //==============================================================================
 
@@ -259,6 +388,32 @@ const bool STDOUT_IS_A_TTY = !!isatty(fileno(stdout));
 void beep() {
 #ifdef _WIN32
     Beep(750, 250);
+#endif
+}
+
+#define UTIL_PRINT(st) do { std::cout << st; } while(false)
+const std::string ANSI_CLS                = "\033[2J\033[3J";
+const std::string ANSI_CURSOR_HOME        = "\033[H";
+
+void cls(void) {
+#if defined(_WIN32)
+    // Based on https://msdn.microsoft.com/en-us/library/windows/desktop/ms682022%28v=vs.85%29.aspx
+    const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    const COORD coordScreen = {0, 0};
+    DWORD cCharsWritten;
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    const DWORD dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+    FillConsoleOutputCharacter(hConsole, (TCHAR)' ', dwConSize, coordScreen, &cCharsWritten);
+
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+
+    SetConsoleCursorPosition(hConsole, coordScreen);
+#else
+    UTIL_PRINT(ANSI_CLS);
+    UTIL_PRINT(ANSI_CURSOR_HOME);
 #endif
 }
 

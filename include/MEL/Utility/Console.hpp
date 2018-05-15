@@ -28,11 +28,8 @@
 namespace mel {
 
 //==============================================================================
-// CONSOLE INPUT & SIGNAL HANDLING
+// SIGNAL HANDLING
 //==============================================================================
-
-/// Prompts the user with a message and waits for Enter to be pressed.
-void prompt(const std::string& message);
 
 /// Types of events that can be caught in in a console
 enum class CtrlEvent {
@@ -85,6 +82,30 @@ void set_text_color(Color foreground, Color background = Color::None);
 void reset_text_color();
 
 //==============================================================================
+// CONSOLE INPUT
+//==============================================================================
+
+/// Determines if keyboard has been hit
+int kb_hit();
+
+/// Get character without waiting for Return to be pressed (blocking).
+int get_ch();
+
+/// Get character without waiting for Return to be pressed (non-blocking).
+/// Returns 0 if no key was pressed.
+int get_ch_nb();
+
+/// Reads a key press and returns a key code (blocking).
+int get_key();
+
+/// Reads a key press and returns a key code (blocking).
+/// Returns 0 if no key was pressed.
+int get_key_nb();
+
+/// Prompts the user with a message and waits for Enter to be pressed.
+void prompt(const std::string& message);
+
+//==============================================================================
 // CONSOLE OUTPUT
 //==============================================================================
 
@@ -109,6 +130,16 @@ void print(const T& value, Color foreground, Color background = Color::None) {
 }
 
 //==============================================================================
+// FORMATTING
+//==============================================================================
+
+/// Turns basic types into a string
+template <typename T>
+std::string stringify(T value) {
+    return std::to_string(value);
+}
+
+//==============================================================================
 // MISC
 //==============================================================================
 
@@ -119,45 +150,53 @@ extern const bool STDOUT_IS_A_TTY;
 /// Causes the console to emit a beep sound
 void beep();
 
-//==============================================================================
-// FORMATTING
-//==============================================================================
+/// Clears screen, resets all attributes and moves cursor home.
+void cls();
 
-/// Turns basic types into a string
-template <typename T>
-std::string stringify(T value) {
-    return std::to_string(value);
-}
+/// Key Codes
+enum {
+    KEY_ESCAPE    = 0,
+    KEY_ENTER     = 1,
+    KEY_BACKSPACE = 8,
+    KEY_SPACE     = 32,
 
-/// Turns STL vector into horizontal string
-template <typename T>
-std::string stringify(std::vector<T> v) {
-    std::string s;
-    for (auto it = v.begin(); it != v.end(); ++it)
-        s += stringify(*it) + " ";
-    s.pop_back();
-    return s;
-}
+    KEY_INSERT  = 2,
+    KEY_HOME    = 3,
+    KEY_PGUP    = 4,
+    KEY_DELETE  = 5,
+    KEY_END     = 6,
+    KEY_PGDOWN  = 7,
 
-/// Turns STL array into horizontal string
-template <typename T, std::size_t N>
-std::string stringify(std::array<T, N> a) {
-    std::string s;
-    for (auto it = a.begin(); it != a.end(); ++it)
-        s += stringify(*it) + " ";
-    s.pop_back();
-    return s;
-}
+    KEY_UP      = 14,
+    KEY_DOWN    = 15,
+    KEY_LEFT    = 16,
+    KEY_RIGHT   = 17,
 
-/// Turns C-style array into horizontal string
-template <typename T>
-std::string stringify(T* a, std::size_t size) {
-    std::string s;
-    for (int i = 0; i < size; i++)
-        s += stringify(a[i]) + " ";
-    s.pop_back();
-    return s;
-}
+    KEY_F1      = 18,
+    KEY_F2      = 19,
+    KEY_F3      = 20,
+    KEY_F4      = 21,
+    KEY_F5      = 22,
+    KEY_F6      = 23,
+    KEY_F7      = 24,
+    KEY_F8      = 25,
+    KEY_F9      = 26,
+    KEY_F10     = 27,
+    KEY_F11     = 28,
+    KEY_F12     = 29,
+
+    KEY_NUMDEL  = 30,
+    KEY_NUMPAD0 = 31,
+    KEY_NUMPAD1 = 127,
+    KEY_NUMPAD2 = 128,
+    KEY_NUMPAD3 = 129,
+    KEY_NUMPAD4 = 130,
+    KEY_NUMPAD5 = 131,
+    KEY_NUMPAD6 = 132,
+    KEY_NUMPAD7 = 133,
+    KEY_NUMPAD8 = 134,
+    KEY_NUMPAD9 = 135
+};
 
 }  // namespace mel
 
