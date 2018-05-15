@@ -356,18 +356,25 @@ void Client::run() {
             Lock lock(mutex);
             if (!connected)
                 break;
-            if (ch == KEY_ESCAPE) {
-                clear_input();
+            if (ch == KEY_ESCAPE)
                 STOP = true;
-            }
             else if (ch == KEY_ENTER) {
                 if (message.length() > 0) {
-                    cout << "\n";
-                    Packet packet;
-                    packet << username << message;
-                    tcp.send(packet);
-                    message = "";
-                    resume_input();
+                    if (message == "cls" || message == "clear") {
+                        cls();
+                        message = "";
+                        resume_input();
+                    }
+                    else if (message == "exit" || message == "quit")
+                        STOP = true;
+                    else {
+                        cout << "\n";
+                        Packet packet;
+                        packet << username << message;
+                        tcp.send(packet);
+                        message = "";
+                        resume_input();
+                    }
                 }
             }
             else if (ch == KEY_BACKSPACE) {
@@ -384,6 +391,7 @@ void Client::run() {
         }
     }
     messaging_thread.join();
+    clear_input();
     if (STOP)
         print_border();
 }
