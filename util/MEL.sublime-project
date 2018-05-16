@@ -11,16 +11,16 @@
 		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DNI=ON -DEXAMPLES=ON",
 		// 	"working_dir": "$project_path/../build/linux_make"
 		// },
-		// {
-		// 	"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-		// 	"name": "CMake (Linux Ninja)",
-		// 	"selector":
-		// 	[
-		// 		"source.cmake"
-		// 	],
-		// 	"shell_cmd": "cmake ../.. -G \"Ninja\" -DNI_X64=ON -DEXAMPLES=ON -DTESTS=ON",
-		// 	"working_dir": "$project_path/../build/linux_ninja"
-		// },
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Linux Ninja)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DNI_X64=ON -DEXAMPLES=ON -DTESTS=ON",
+			"working_dir": "$project_path/../build/linux_ninja"
+		},
 		// {
 		// 	"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 		// 	"name": "CMake (Windows Make)",
@@ -84,17 +84,17 @@
 			"shell_cmd": "make -j",
 			"working_dir": "$project_path/../build/mac_make"
 		},
-		// {
-		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-		// 	"name": "Ninja (Linux)",
-		// 	"selector":
-		// 	[
-		// 		//"source.c++",
-		// 		"source.c++.11"
-		// 	],
-		// 	"shell_cmd": "ninja -j 5",
-		// 	"working_dir": "$project_path/../build/linux_ninja"
-		// },
+		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "Ninja (Linux)",
+			"selector":
+			[
+				//"source.c++",
+				"source.c++.11"
+			],
+			"shell_cmd": "ninja -j 5",
+			"working_dir": "$project_path/../build/linux_ninja"
+		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "Ninja (Windows)",

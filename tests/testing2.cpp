@@ -89,26 +89,13 @@ public:
 };
 
 int main() {
-    init_logger(Verbose, Verbose);
-    enable_realtime();
 
-    Object<Encoder, Actuator, Transmission, Joint, Monitor> object1(
-        "object1", nullptr, {2000}, {}, {0.05}, {}, {});
-    object1.get<Joint>()->actuator       = object1.get<Actuator>();
-    object1.get<Joint>()->pos_sensor     = object1.get<Encoder>();
-    object1.get<Joint>()->transmission   = object1.get<Transmission>();
-    object1.get<Monitor>()->encoder      = object1.get<Encoder>();
-    object1.get<Monitor>()->joint        = object1.get<Joint>();
-    object1.get<Monitor>()->transmission = object1.get<Transmission>();
 
-    object1.start();
-    Clock clock;
-    for (std::size_t i = 0; i < 10000000; i++) {
-        object1.update();
-        object1.late_update();
-    }
-    print(clock.get_elapsed_time());
-    object1.stop();
+    // Object<Encoder, Actuator, Transmission, Joint, Monitor> object1(
+    //     "object1", nullptr, {2000}, {}, {0.05}, {}, {});
+
+    std::tuple<std::string, int, double> m;
+    m.
 
     return 0;
 }

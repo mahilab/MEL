@@ -1,4 +1,3 @@
-
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
@@ -305,7 +304,7 @@ add_library(MEL STATIC ${SOURCE_FILES})
 set(LINK_LIBS "")
 
 if(NI_X64 OR NI_ARM)
-    list(APPEND LINK_LIBS dl)
+    list(APPEND LINK_LIBS dl rt) # rt for SharedMemory
 elseif(QUANSER)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
         link_directories("${QUANSER_ROOT}/QUARC/lib/win64")

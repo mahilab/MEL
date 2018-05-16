@@ -31,6 +31,8 @@ namespace mel {
 class BaseObject {
 public:
 
+    BaseObject();
+
     BaseObject(const std::string& name, BaseObject* parent);
 
     virtual void start() {}
@@ -63,7 +65,7 @@ public:
 
 public:
 
-    const std::string name;
+    std::string name;
 
 //private:
 
@@ -94,6 +96,9 @@ private:
 template <typename ... TComponents>
 class Object : public BaseObject {
 public:
+
+    /// Constructor
+    Object();
 
     /// Constructor
     Object(const std::string& name,

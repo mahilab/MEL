@@ -20,6 +20,7 @@ Communication:
   ☐ BTP? http://ieeexplore.ieee.org/document/5089429/
   ☐ make MelShare use [] operators and templetize to one type
   ☐ melshare uses packets but sting<->packet don't work
+  ☐ Packet classes for Python and C#
 
 Core:
   ☐ add Clock to PdController, generalize for all exos
