@@ -112,6 +112,7 @@ int main(int argc, char *argv[]) {
 
     init_logger();
     register_ctrl_handler(handler);
+    cls();
 
     if (input.count("server")){
         Server server;

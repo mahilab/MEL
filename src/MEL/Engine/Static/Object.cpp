@@ -1,5 +1,5 @@
-#include <MEL/Engine/Static/Engine.hpp>
 #include <MEL/Engine/Static/Component.hpp>
+#include <MEL/Engine/Static/Engine.hpp>
 #include <MEL/Engine/Static/Object.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Utility/Console.hpp>
@@ -9,6 +9,8 @@ namespace mel {
 //=============================================================================
 // CONSTRUCTOR / DESTRUCTOR
 //=============================================================================
+
+BaseObject::BaseObject() : name(""), parent_(nullptr) {}
 
 BaseObject::BaseObject(const std::string& object_name, BaseObject* parent)
     : name(object_name), parent_(nullptr) {

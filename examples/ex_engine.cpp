@@ -134,3 +134,18 @@ a1 [ComponentA]
 |---b2 [ComponentB]
 |---c3 [ComponentC]
 */
+
+// DESIGN REQUIRMENTS
+// - Updating should be on demand, values should only be updated when they
+//   needed. This does away with the having to order updates
+// - Adding componets to objects (e.g. added actuator, endocder to Axis)
+// - Components may need to get sibling components, and should be able to axis
+//   objects get function
+// - simple syntax for create objects. template parameteres ok, but what about
+//   when templates take arguments?
+// - Engine should take in Sources, and Sinks and update them automatically
+// - User code should go in between these functions, as a virtual function,
+//   functor, template, or something
+// - certain elements must be updated on each time step, Engine should do this
+//   for the user. updates must be order agnostic!
+//
