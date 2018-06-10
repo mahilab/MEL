@@ -452,6 +452,7 @@ void Client::messaging_thread_func() {
             // if cleared, resume input
             if (cleared)
                 resume_input();
+            std::cout << "";
             cleared = false;
         }
         sleep(milliseconds(10));
