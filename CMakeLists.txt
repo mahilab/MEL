@@ -1,14 +1,14 @@
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
-# Updated: 4/2018
+# Updated: 5/2018
 
 #===============================================================================
 # HOW TO USE THIS FILE
 #===============================================================================
 
 # 1) Open console and navigate to the /build folder
-# 2) To generate makefile for NI hardware, run:
+# 2) To generate Ninja build file for NI hardware, run:
 #        $: cmake .. -G "Ninja" -DNI=ON
 #    To generate Visual Studio MEL.sln file for Quanser hardware, run:
 #        $: cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
@@ -30,10 +30,10 @@ option(EXAMPLES  "Turn ON to build example executable(s)"                     OF
 option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
 
-set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"            CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"            CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(QUANSER_ROOT "C:/Program Files/Quanser"          CACHE FILEPATH "Absolute path to Quanser installation."          )
-set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"          CACHE FILEPATH "Absolute path to Myo SDK."                       )
+set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(QUANSER_ROOT "C:/Program Files/Quanser"    CACHE FILEPATH "Absolute path to Quanser installation."          )
+set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."                       )
 
 #===============================================================================
 # SETUP BUILD
@@ -69,7 +69,7 @@ enable_language(C)
 enable_language(CXX)
 
 # enable C++11
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
 # create project
 project(MEL)
@@ -191,11 +191,11 @@ file(GLOB SRC_ENGINE
     "${CMAKE_SOURCE_DIR}/src/MEL/Engine/*.cpp"
 )
 
-file(GLOB SRC_NI
+file(GLOB SRC_NI_MYRIO
     "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/*.cpp"
-    "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.h"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/*.c"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/Detail/*.h"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/Detail/*.c"
 )
 
 file(GLOB SRC_QUANSER
@@ -247,7 +247,7 @@ file(GLOB SRC_UTILITY_WINDOWS
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
 source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
-source_group("Daq\\NI" FILES ${SRC_NI})
+source_group("Daq\\NI" FILES ${SRC_NI_MYRIO})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Devices" FILES ${SRC_DEVICES})
 source_group("Engine" FILES ${SRC_ENGINE})
@@ -282,7 +282,7 @@ if(WIN32)
 endif()
 
 if(NI_X64 OR NI_ARM)
-    list(APPEND SOURCE_FILES ${SRC_NI})
+    list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
 elseif (QUANSER)
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
@@ -354,3 +354,5 @@ endif()
 if(BUILD_DOC)
     add_subdirectory(doc)
 endif()
+
+

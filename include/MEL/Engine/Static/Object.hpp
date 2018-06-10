@@ -98,7 +98,7 @@ class Object : public BaseObject {
 public:
 
     /// Constructor
-    Object();
+    Object() {}
 
     /// Constructor
     Object(const std::string& name,
@@ -106,6 +106,7 @@ public:
            const TComponents& ... args) :
         BaseObject(name, parent), components(args...) { }
 
+    /*
     /// Starts all Components attached to this Object
     void start() override {
         for_each_in_tuple(components, start_functor());
@@ -140,11 +141,16 @@ public:
         for (std::size_t i = 0; i < children_.size(); ++i)
             children_[i]->reset();
     }
-
+    */
     /// Gets a Component attached to this Object
-    template <typename TComponent>
-    TComponent* get() {
-        return &std::get<TComponent>(components);
+    template <typename TComponent, int Index = 0>
+    TComponent& get() {
+        return mel::get<TComponent,Index>(components);
+    }
+
+    template <typename TComponent, int Index = 0, class ...Args>
+    void init(Args... args) {
+        mel::get<TComponent,Index>(components) = TComponent(args...);
     }
 
 private:

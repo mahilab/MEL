@@ -1,7 +1,7 @@
 /*
- * FPGA Interface C API 15.0 source file.
+ * FPGA Interface C API 17.0 source file.
  *
- * Copyright (c) 2015,
+ * Copyright (c) 2017,
  * National Instruments Corporation.
  * All rights reserved.
  */
@@ -296,6 +296,34 @@ NiFpga_Status NiFpga_ReadU64(NiFpga_Session session,
         : NiFpga_Status_ResourceNotInitialized;
 }
 
+static NiFpga_Status (NiFpga_CCall *NiFpga_readSgl)(
+                             NiFpga_Session session,
+                             uint32_t       indicator,
+                             float*         value) = NULL;
+
+NiFpga_Status NiFpga_ReadSgl(NiFpga_Session session,
+                             uint32_t       indicator,
+                             float*         value)
+{
+   return NiFpga_readSgl
+        ? NiFpga_readSgl(session, indicator, value)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_readDbl)(
+                             NiFpga_Session session,
+                             uint32_t       indicator,
+                             double*        value) = NULL;
+
+NiFpga_Status NiFpga_ReadDbl(NiFpga_Session session,
+                             uint32_t       indicator,
+                             double*        value)
+{
+   return NiFpga_readDbl
+        ? NiFpga_readDbl(session, indicator, value)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
 /*
  * Functions to write to scalar controls and indicators.
  */
@@ -422,6 +450,34 @@ NiFpga_Status NiFpga_WriteU64(NiFpga_Session session,
 {
    return NiFpga_writeU64
         ? NiFpga_writeU64(session, control, value)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_writeSgl)(
+                              NiFpga_Session session,
+                              uint32_t       control,
+                              float          value) = NULL;
+
+NiFpga_Status NiFpga_WriteSgl(NiFpga_Session session,
+                              uint32_t       control,
+                              float          value)
+{
+   return NiFpga_writeSgl
+        ? NiFpga_writeSgl(session, control, value)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_writeDbl)(
+                              NiFpga_Session session,
+                              uint32_t       control,
+                              double         value) = NULL;
+
+NiFpga_Status NiFpga_WriteDbl(NiFpga_Session session,
+                              uint32_t       control,
+                              double         value)
+{
+   return NiFpga_writeDbl
+        ? NiFpga_writeDbl(session, control, value)
         : NiFpga_Status_ResourceNotInitialized;
 }
 
@@ -572,6 +628,38 @@ NiFpga_Status NiFpga_ReadArrayU64(NiFpga_Session session,
         : NiFpga_Status_ResourceNotInitialized;
 }
 
+static NiFpga_Status (NiFpga_CCall *NiFpga_readArraySgl)(
+                                  NiFpga_Session session,
+                                  uint32_t       indicator,
+                                  float*         array,
+                                  size_t         size) = NULL;
+
+NiFpga_Status NiFpga_ReadArraySgl(NiFpga_Session session,
+                                  uint32_t       indicator,
+                                  float*         array,
+                                  size_t         size)
+{
+   return NiFpga_readArraySgl
+        ? NiFpga_readArraySgl(session, indicator, array, size)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_readArrayDbl)(
+                                  NiFpga_Session session,
+                                  uint32_t       indicator,
+                                  double*        array,
+                                  size_t         size) = NULL;
+
+NiFpga_Status NiFpga_ReadArrayDbl(NiFpga_Session session,
+                                  uint32_t       indicator,
+                                  double*        array,
+                                  size_t         size)
+{
+   return NiFpga_readArrayDbl
+        ? NiFpga_readArrayDbl(session, indicator, array, size)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
 /*
  * Functions to write to array controls and indicators.
  */
@@ -716,6 +804,38 @@ NiFpga_Status NiFpga_WriteArrayU64(NiFpga_Session  session,
 {
    return NiFpga_writeArrayU64
         ? NiFpga_writeArrayU64(session, control, array, size)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_writeArraySgl)(
+                                   NiFpga_Session session,
+                                   uint32_t       control,
+                                   const float*   array,
+                                   size_t         size) = NULL;
+
+NiFpga_Status NiFpga_WriteArraySgl(NiFpga_Session session,
+                                   uint32_t       control,
+                                   const float*   array,
+                                   size_t         size)
+{
+   return NiFpga_writeArraySgl
+        ? NiFpga_writeArraySgl(session, control, array, size)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_writeArrayDbl)(
+                                   NiFpga_Session session,
+                                   uint32_t       control,
+                                   const double*  array,
+                                   size_t         size) = NULL;
+
+NiFpga_Status NiFpga_WriteArrayDbl(NiFpga_Session session,
+                                   uint32_t       control,
+                                   const double*  array,
+                                   size_t         size)
+{
+   return NiFpga_writeArrayDbl
+        ? NiFpga_writeArrayDbl(session, control, array, size)
         : NiFpga_Status_ResourceNotInitialized;
 }
 
@@ -1083,6 +1203,56 @@ NiFpga_Status NiFpga_ReadFifoU64(NiFpga_Session session,
         : NiFpga_Status_ResourceNotInitialized;
 }
 
+static NiFpga_Status (NiFpga_CCall *NiFpga_readFifoSgl)(
+                                 NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 float*         data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        elementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_ReadFifoSgl(NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 float*         data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        elementsRemaining)
+{
+   return NiFpga_readFifoSgl
+        ? NiFpga_readFifoSgl(session,
+                             fifo,
+                             data,
+                             numberOfElements,
+                             timeout,
+                             elementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_readFifoDbl)(
+                                 NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 double*        data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        elementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_ReadFifoDbl(NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 double*        data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        elementsRemaining)
+{
+   return NiFpga_readFifoDbl
+        ? NiFpga_readFifoDbl(session,
+                             fifo,
+                             data,
+                             numberOfElements,
+                             timeout,
+                             elementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
 /*
  * Functions to write to host-to-target DMA FIFOs.
  */
@@ -1310,6 +1480,58 @@ NiFpga_Status NiFpga_WriteFifoU64(
 {
    return NiFpga_writeFifoU64
         ? NiFpga_writeFifoU64(session,
+                              fifo,
+                              data,
+                              numberOfElements,
+                              timeout,
+                              emptyElementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_writeFifoSgl)(
+                                 NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 const float*   data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        emptyElementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_WriteFifoSgl(
+                                 NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 const float*   data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        emptyElementsRemaining)
+{
+   return NiFpga_writeFifoSgl
+        ? NiFpga_writeFifoSgl(session,
+                              fifo,
+                              data,
+                              numberOfElements,
+                              timeout,
+                              emptyElementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_writeFifoDbl)(
+                                 NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 const double*  data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        emptyElementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_WriteFifoDbl(
+                                 NiFpga_Session session,
+                                 uint32_t       fifo,
+                                 const double*  data,
+                                 size_t         numberOfElements,
+                                 uint32_t       timeout,
+                                 size_t*        emptyElementsRemaining)
+{
+   return NiFpga_writeFifoDbl
+        ? NiFpga_writeFifoDbl(session,
                               fifo,
                               data,
                               numberOfElements,
@@ -1570,6 +1792,64 @@ NiFpga_Status NiFpga_AcquireFifoReadElementsU64(
 {
    return NiFpga_acquireFifoReadElementsU64
         ? NiFpga_acquireFifoReadElementsU64(session,
+                                            fifo,
+                                            elements,
+                                            elementsRequested,
+                                            timeout,
+                                            elementsAcquired,
+                                            elementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_acquireFifoReadElementsSgl)(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      float**        elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_AcquireFifoReadElementsSgl(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      float**        elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining)
+{
+   return NiFpga_acquireFifoReadElementsSgl
+        ? NiFpga_acquireFifoReadElementsSgl(session,
+                                            fifo,
+                                            elements,
+                                            elementsRequested,
+                                            timeout,
+                                            elementsAcquired,
+                                            elementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_acquireFifoReadElementsDbl)(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      double**       elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_AcquireFifoReadElementsDbl(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      double**       elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining)
+{
+   return NiFpga_acquireFifoReadElementsDbl
+        ? NiFpga_acquireFifoReadElementsDbl(session,
                                             fifo,
                                             elements,
                                             elementsRequested,
@@ -1840,6 +2120,64 @@ NiFpga_Status NiFpga_AcquireFifoWriteElementsU64(
         : NiFpga_Status_ResourceNotInitialized;
 }
 
+static NiFpga_Status (NiFpga_CCall *NiFpga_acquireFifoWriteElementsSgl)(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      float**        elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_AcquireFifoWriteElementsSgl(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      float**        elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining)
+{
+   return NiFpga_acquireFifoWriteElementsSgl
+        ? NiFpga_acquireFifoWriteElementsSgl(session,
+                                             fifo,
+                                             elements,
+                                             elementsRequested,
+                                             timeout,
+                                             elementsAcquired,
+                                             elementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
+static NiFpga_Status (NiFpga_CCall *NiFpga_acquireFifoWriteElementsDbl)(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      double**       elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining) = NULL;
+
+NiFpga_Status NiFpga_AcquireFifoWriteElementsDbl(
+                                      NiFpga_Session session,
+                                      uint32_t       fifo,
+                                      double**       elements,
+                                      size_t         elementsRequested,
+                                      uint32_t       timeout,
+                                      size_t*        elementsAcquired,
+                                      size_t*        elementsRemaining)
+{
+   return NiFpga_acquireFifoWriteElementsDbl
+        ? NiFpga_acquireFifoWriteElementsDbl(session,
+                                             fifo,
+                                             elements,
+                                             elementsRequested,
+                                             timeout,
+                                             elementsAcquired,
+                                             elementsRemaining)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
 static NiFpga_Status (NiFpga_CCall *NiFpga_releaseFifoElements)(
                                          NiFpga_Session session,
                                          uint32_t       fifo,
@@ -1880,6 +2218,28 @@ NiFpga_Status NiFpga_GetBitfileContents(NiFpga_Session session,
         : NiFpga_Status_ResourceNotInitialized;
 }
 
+static NiFpga_Status (NiFpga_CCall *NiFpga_clientFunctionCall)(
+                                        NiFpga_Session session,
+                                        uint32_t group,
+                                        uint32_t functionId,
+                                        const void* inBuffer,
+                                        size_t inBufferSize,
+                                        void* outBuffer,
+                                        size_t outBufferSize) = NULL;
+
+NiFpga_Status NiFpga_ClientFunctionCall(NiFpga_Session session,
+                                        uint32_t group,
+                                        uint32_t functionId,
+                                        const void* inBuffer,
+                                        size_t inBufferSize,
+                                        void* outBuffer,
+                                        size_t outBufferSize)
+{
+   return NiFpga_clientFunctionCall
+        ? NiFpga_clientFunctionCall(session, group, functionId, inBuffer, inBufferSize, outBuffer, outBufferSize)
+        : NiFpga_Status_ResourceNotInitialized;
+}
+
 /**
  * A type large enough to hold entry point function pointer.
  */
@@ -1909,6 +2269,8 @@ static const struct
    {"NiFpgaDll_ReadU32",             (NiFpga_FunctionPointer*)&NiFpga_readU32},
    {"NiFpgaDll_ReadI64",             (NiFpga_FunctionPointer*)&NiFpga_readI64},
    {"NiFpgaDll_ReadU64",             (NiFpga_FunctionPointer*)&NiFpga_readU64},
+   {"NiFpgaDll_ReadSgl",             (NiFpga_FunctionPointer*)&NiFpga_readSgl},
+   {"NiFpgaDll_ReadDbl",             (NiFpga_FunctionPointer*)&NiFpga_readDbl},
    {"NiFpgaDll_WriteBool",           (NiFpga_FunctionPointer*)&NiFpga_writeBool},
    {"NiFpgaDll_WriteI8",             (NiFpga_FunctionPointer*)&NiFpga_writeI8},
    {"NiFpgaDll_WriteU8",             (NiFpga_FunctionPointer*)&NiFpga_writeU8},
@@ -1918,6 +2280,8 @@ static const struct
    {"NiFpgaDll_WriteU32",            (NiFpga_FunctionPointer*)&NiFpga_writeU32},
    {"NiFpgaDll_WriteI64",            (NiFpga_FunctionPointer*)&NiFpga_writeI64},
    {"NiFpgaDll_WriteU64",            (NiFpga_FunctionPointer*)&NiFpga_writeU64},
+   {"NiFpgaDll_WriteSgl",            (NiFpga_FunctionPointer*)&NiFpga_writeSgl},
+   {"NiFpgaDll_WriteDbl",            (NiFpga_FunctionPointer*)&NiFpga_writeDbl},
    {"NiFpgaDll_ReadArrayBool",       (NiFpga_FunctionPointer*)&NiFpga_readArrayBool},
    {"NiFpgaDll_ReadArrayI8",         (NiFpga_FunctionPointer*)&NiFpga_readArrayI8},
    {"NiFpgaDll_ReadArrayU8",         (NiFpga_FunctionPointer*)&NiFpga_readArrayU8},
@@ -1927,6 +2291,8 @@ static const struct
    {"NiFpgaDll_ReadArrayU32",        (NiFpga_FunctionPointer*)&NiFpga_readArrayU32},
    {"NiFpgaDll_ReadArrayI64",        (NiFpga_FunctionPointer*)&NiFpga_readArrayI64},
    {"NiFpgaDll_ReadArrayU64",        (NiFpga_FunctionPointer*)&NiFpga_readArrayU64},
+   {"NiFpgaDll_ReadArraySgl",        (NiFpga_FunctionPointer*)&NiFpga_readArraySgl},
+   {"NiFpgaDll_ReadArrayDbl",        (NiFpga_FunctionPointer*)&NiFpga_readArrayDbl},
    {"NiFpgaDll_WriteArrayBool",      (NiFpga_FunctionPointer*)&NiFpga_writeArrayBool},
    {"NiFpgaDll_WriteArrayI8",        (NiFpga_FunctionPointer*)&NiFpga_writeArrayI8},
    {"NiFpgaDll_WriteArrayU8",        (NiFpga_FunctionPointer*)&NiFpga_writeArrayU8},
@@ -1936,6 +2302,8 @@ static const struct
    {"NiFpgaDll_WriteArrayU32",       (NiFpga_FunctionPointer*)&NiFpga_writeArrayU32},
    {"NiFpgaDll_WriteArrayI64",       (NiFpga_FunctionPointer*)&NiFpga_writeArrayI64},
    {"NiFpgaDll_WriteArrayU64",       (NiFpga_FunctionPointer*)&NiFpga_writeArrayU64},
+   {"NiFpgaDll_WriteArraySgl",       (NiFpga_FunctionPointer*)&NiFpga_writeArraySgl},
+   {"NiFpgaDll_WriteArrayDbl",       (NiFpga_FunctionPointer*)&NiFpga_writeArrayDbl},
    {"NiFpgaDll_ReserveIrqContext",   (NiFpga_FunctionPointer*)&NiFpga_reserveIrqContext},
    {"NiFpgaDll_UnreserveIrqContext", (NiFpga_FunctionPointer*)&NiFpga_unreserveIrqContext},
    {"NiFpgaDll_WaitOnIrqs",          (NiFpga_FunctionPointer*)&NiFpga_waitOnIrqs},
@@ -1953,6 +2321,8 @@ static const struct
    {"NiFpgaDll_ReadFifoU32",         (NiFpga_FunctionPointer*)&NiFpga_readFifoU32},
    {"NiFpgaDll_ReadFifoI64",         (NiFpga_FunctionPointer*)&NiFpga_readFifoI64},
    {"NiFpgaDll_ReadFifoU64",         (NiFpga_FunctionPointer*)&NiFpga_readFifoU64},
+   {"NiFpgaDll_ReadFifoSgl",         (NiFpga_FunctionPointer*)&NiFpga_readFifoSgl},
+   {"NiFpgaDll_ReadFifoDbl",         (NiFpga_FunctionPointer*)&NiFpga_readFifoDbl},
    {"NiFpgaDll_WriteFifoBool",       (NiFpga_FunctionPointer*)&NiFpga_writeFifoBool},
    {"NiFpgaDll_WriteFifoI8",         (NiFpga_FunctionPointer*)&NiFpga_writeFifoI8},
    {"NiFpgaDll_WriteFifoU8",         (NiFpga_FunctionPointer*)&NiFpga_writeFifoU8},
@@ -1962,6 +2332,8 @@ static const struct
    {"NiFpgaDll_WriteFifoU32",        (NiFpga_FunctionPointer*)&NiFpga_writeFifoU32},
    {"NiFpgaDll_WriteFifoI64",        (NiFpga_FunctionPointer*)&NiFpga_writeFifoI64},
    {"NiFpgaDll_WriteFifoU64",        (NiFpga_FunctionPointer*)&NiFpga_writeFifoU64},
+   {"NiFpgaDll_WriteFifoSgl",        (NiFpga_FunctionPointer*)&NiFpga_writeFifoSgl},
+   {"NiFpgaDll_WriteFifoDbl",        (NiFpga_FunctionPointer*)&NiFpga_writeFifoDbl},
    {"NiFpgaDll_AcquireFifoReadElementsBool",  (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsBool},
    {"NiFpgaDll_AcquireFifoReadElementsI8",    (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsI8},
    {"NiFpgaDll_AcquireFifoReadElementsU8",    (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsU8},
@@ -1971,6 +2343,8 @@ static const struct
    {"NiFpgaDll_AcquireFifoReadElementsU32",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsU32},
    {"NiFpgaDll_AcquireFifoReadElementsI64",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsI64},
    {"NiFpgaDll_AcquireFifoReadElementsU64",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsU64},
+   {"NiFpgaDll_AcquireFifoReadElementsSgl",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsSgl},
+   {"NiFpgaDll_AcquireFifoReadElementsDbl",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoReadElementsDbl},
    {"NiFpgaDll_AcquireFifoWriteElementsBool", (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsBool},
    {"NiFpgaDll_AcquireFifoWriteElementsI8",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsI8},
    {"NiFpgaDll_AcquireFifoWriteElementsU8",   (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsU8},
@@ -1980,9 +2354,12 @@ static const struct
    {"NiFpgaDll_AcquireFifoWriteElementsU32",  (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsU32},
    {"NiFpgaDll_AcquireFifoWriteElementsI64",  (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsI64},
    {"NiFpgaDll_AcquireFifoWriteElementsU64",  (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsU64},
+   {"NiFpgaDll_AcquireFifoWriteElementsSgl",  (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsSgl},
+   {"NiFpgaDll_AcquireFifoWriteElementsDbl",  (NiFpga_FunctionPointer*)&NiFpga_acquireFifoWriteElementsDbl},
    {"NiFpgaDll_ReleaseFifoElements",          (NiFpga_FunctionPointer*)&NiFpga_releaseFifoElements},
    {"NiFpgaDll_GetPeerToPeerFifoEndpoint",    (NiFpga_FunctionPointer*)&NiFpga_getPeerToPeerFifoEndpoint},
    {"NiFpgaDll_GetBitfileContents",           (NiFpga_FunctionPointer*)&NiFpga_getBitfileContents},
+   {"NiFpgaDll_ClientFunctionCall",           (NiFpga_FunctionPointer*)&NiFpga_clientFunctionCall},
    {NULL, NULL}
 };
 
@@ -2030,7 +2407,7 @@ NiFpga_Status NiFpga_Initialize(void)
                               &type) != OK)
                return NiFpga_Status_VersionMismatch;
          #elif NiFpga_Linux || NiFpga_MacOsX
-            *address = dlsym(NiFpga_library, name);
+            *address = (NiFpga_FunctionPointer)dlsym(NiFpga_library, name);
             if (!*address)
                return NiFpga_Status_VersionMismatch;
          #else

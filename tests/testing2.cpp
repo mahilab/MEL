@@ -1,101 +1,59 @@
-#include <MEL/Communications/MelShare.hpp>
-#include <MEL/Core/Clock.hpp>
-#include <MEL/Engine/Static/Component.hpp>
 #include <MEL/Engine/Static/Object.hpp>
-#include <MEL/Logging/Log.hpp>
-#include <MEL/Math/Constants.hpp>
+#include <MEL/Engine/Static/Component.hpp>
 #include <MEL/Utility/Console.hpp>
-#include <deque>
-#include <string>
-#include <tuple>
+#include <array>
 
 using namespace mel;
 
-MelShare actuator_torque("torque");
+class Encoder : public Component {
+public:
+
+};
 
 class Actuator : public Component {
 public:
-    void late_update() override {
-        // actuator_torque.write_data({ torque });
-        dummy = torque;
-    }
-    double torque;
-    double dummy;
-};
 
-class PositionSensor : public Component {
-public:
-    double position;
-};
-
-class Encoder : public PositionSensor {
-public:
-    Encoder(int counts_per_rev) : counts_per_rev(counts_per_rev) {}
-
-    void update() override {
-        counts++;
-        position = 2 * PI * static_cast<double>(counts) /
-                   static_cast<double>(counts_per_rev);
-    }
-
-    int counts_per_rev;
-    int counts;
 };
 
 class Transmission : public Component {
 public:
-    Transmission(double ratio) : ratio(ratio) {}
-    const double ratio;
-};
-
-class Joint : public Component {
-public:
-    void update() override {
-        if (pos_sensor)
-            position = pos_sensor->position;
-        else
-            position = 0.0;
-        if (transmission)
-            position *= transmission->ratio;
-        if (actuator && transmission)
-            actuator->torque = torque * transmission->ratio;
-        else if (actuator)
-            actuator->torque = torque;
+    Transmission() {
+        msg_ = "void";
+    }
+    Transmission(std::string msg) {
+        msg_ = msg;
     }
 
-    Actuator* actuator         = nullptr;
-    PositionSensor* pos_sensor = nullptr;
-    Transmission* transmission = nullptr;
-
-    double position;
-    double torque;
+    std::string msg_;
 };
 
-MelShare ms("monitor");
+typedef Object<Actuator,Encoder,Transmission> Joint;
 
-class Monitor : public Component {
+template <int Size>
+class Robot {
 public:
-    Monitor() : data(3) {}
-    void update() override {
-        data[0] = encoder->counts;
-        data[1] = joint->position;
-        data[2] = transmission->ratio;
-        // ms.write_data(data);
+    Joint& operator[](std::size_t i) {
+        return joints_[i];
     }
-    Encoder* encoder           = nullptr;
-    Joint* joint               = nullptr;
-    Transmission* transmission = nullptr;
-    std::vector<double> data;
+
+    std::array<Joint,Size> joints_;
 };
 
-int main() {
+class OpenWrist : public Robot<3> {
 
+};
 
-    // Object<Encoder, Actuator, Transmission, Joint, Monitor> object1(
-    //     "object1", nullptr, {2000}, {}, {0.05}, {}, {});
+int main(int argc, char* argv[]) {
 
-    std::tuple<std::string, int, double> m;
-    m.
+    OpenWrist rob;
+    print(rob[0].get<Transmission>().msg_);
+    rob[0].get<Transmission>() = Transmission("evan");
+    rob[0].init<Transmission>("joe");
+    print(rob[0].get<Transmission>().msg_);
+
+    std::array<int,3> x;
 
     return 0;
 }
+
+// HomogenousObject<typename T> overloads brackets (e.g. Robot)

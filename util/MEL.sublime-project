@@ -1,16 +1,6 @@
 {
 	"build_systems":
 	[
-		// {
-		// 	"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-		// 	"name": "CMake (Linux Make)",
-		// 	"selector":
-		// 	[
-		// 		"source.cmake"
-		// 	],
-		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DNI=ON -DEXAMPLES=ON",
-		// 	"working_dir": "$project_path/../build/linux_make"
-		// },
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (Linux Ninja)",
@@ -18,19 +8,9 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DNI_X64=ON -DEXAMPLES=ON -DTESTS=ON",
+			"shell_cmd": "cmake ../.. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON -DTESTS=ON",
 			"working_dir": "$project_path/../build/linux_ninja"
 		},
-		// {
-		// 	"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-		// 	"name": "CMake (Windows Make)",
-		// 	"selector":
-		// 	[
-		// 		"source.cmake"
-		// 	],
-		// 	"shell_cmd": "cmake ../.. -G \"MinGW Makefiles\" -DEXAMPLES=ON",
-		// 	"working_dir": "$project_path/../build/windows_make"
-		// },
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (Windows MSVC)",
@@ -61,18 +41,6 @@
 			"shell_cmd": "cmake ../.. -G \"Unix Makefiles\" -DEXAMPLES=ON -DTESTS=ON",
 			"working_dir": "$project_path/../build/mac_make"
 		},
-
-		// {
-		// 	"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-		// 	"name": "Make (Windows)",
-		// 	"selector":
-		// 	[
-		// 		"source.c++",
-		// 		"source.c++.11"
-		// 	],
-		// 	"shell_cmd": "mingw32-make -j",
-		// 	"working_dir": "$project_path/../build/windows_make"
-		// },
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "Make (Mac)",
@@ -89,7 +57,6 @@
 			"name": "Ninja (Linux)",
 			"selector":
 			[
-				//"source.c++",
 				"source.c++.11"
 			],
 			"shell_cmd": "ninja -j 5",
@@ -100,7 +67,6 @@
 			"name": "Ninja (Windows)",
 			"selector":
 			[
-				//"source.c++",
 				"source.c++.11"
 			],
 			"shell_cmd": "ninja -j 5",
@@ -111,7 +77,6 @@
 			"name": "MSVC",
 			"selector":
 			[
-				//"source.c++",
 				"source.c++.11"
 			],
 			"shell_cmd": "cmake --build . --config Release",
@@ -134,11 +99,12 @@
 			"shell_cmd": "python MelScope.pyw",
 			"working_dir": "$project_path/../src/MELScope"
 		},
-		// {
-		// 	"name": "PuTTY",
-		// 	"shell_cmd": "putty admin@169.254.105.30 -pw mahimahi",
-
-		// },
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
+		}
 	],
 	"folders":
 	[
@@ -153,7 +119,8 @@
 			"-I$project_base_path/include",
 			"-I/Program Files/Quanser/QUARC/include"
 		],
-		"ecc_flags_sources": []
+		"ecc_flags_sources":
+		[
+		]
 	}
 }
-

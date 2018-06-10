@@ -5,8 +5,8 @@
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /* Title   : VISA.H                                                          */
-/* Date    : 04-21-2014                                                      */
-/* Purpose : Include file for the VISA Library 5.4 specification             */
+/* Date    : 02-12-2016                                                      */
+/* Purpose : Include file for the VISA Library 5.7 specification             */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
 /* When using NI-VISA extensions, you must link with the VISA library that   */
@@ -34,7 +34,7 @@
 #include "visatype.h"
 #endif
 
-#define VI_SPEC_VERSION     (0x00500400UL)
+#define VI_SPEC_VERSION     (0x00500700UL)
 
 #if defined(__cplusplus) || defined(__cplusplus__)
    extern "C" {
@@ -753,6 +753,10 @@ ViStatus _VI_FUNC  viPxiReserveTriggers(ViSession vi, ViInt16 cnt, ViAInt16 trig
 #define VI_TRIG_STAR_VXI0           (29)
 #define VI_TRIG_STAR_VXI1           (30)
 #define VI_TRIG_STAR_VXI2           (31)
+#define VI_TRIG_TTL8                (32)
+#define VI_TRIG_TTL9                (33)
+#define VI_TRIG_TTL10               (34)
+#define VI_TRIG_TTL11               (35)
 
 #define VI_TRIG_PROT_DEFAULT        (0)
 #define VI_TRIG_PROT_ON             (1)

@@ -74,6 +74,14 @@ if(QUANSER)
     target_link_libraries(haptic_paddle MEL)
 endif()
 
+#===============================================================================
+# MYRIO EXAMPLES
+#===============================================================================
+
+if(NI_ARM)
+    add_executable(myrio ex_myrio.cpp)
+    target_link_libraries(myrio MEL)
+endif()
 
 #===============================================================================
 # MYO EXAMPLES

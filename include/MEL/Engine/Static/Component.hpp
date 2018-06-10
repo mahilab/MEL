@@ -47,6 +47,12 @@ public:
     /// Called when this Component's Object resets
     virtual void reset();
 
+private:
+
+    void set_references() {
+
+    }
+
 };
 
 } // namespace mel

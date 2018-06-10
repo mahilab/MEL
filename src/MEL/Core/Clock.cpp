@@ -78,6 +78,7 @@ Time Clock::get_current_time() {
 Time Clock::get_current_time() {
     // POSIX implementation
     // https://linux.die.net/man/3/clock_gettime
+    // https://forums.ni.com/t5/NI-Linux-Real-Time-Discussions/Help-to-solve-a-problem-with-C-on-cRIO-9068/td-p/3469892
     timespec time;
     clock_gettime(CLOCK_MONOTONIC_RAW, &time);
     return mel::microseconds(static_cast<uint64>(time.tv_sec) * 1000000 + time.tv_nsec / 1000);
