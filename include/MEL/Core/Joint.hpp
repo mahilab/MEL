@@ -60,7 +60,10 @@ public:
     double get_velocity();
 
     /// Returns the currently set joint torque
-    double get_torque();
+    double get_torque_command();
+
+    /// Returns the sensed joint torque if the Actuator supports sensing
+    double get_torque_sense();
 
     /// Sets the joint torque to #new_torque
     void set_torque(double new_torque);

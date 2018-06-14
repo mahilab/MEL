@@ -58,8 +58,12 @@ double Joint::get_velocity() {
     return velocity_;
 }
 
-double Joint::get_torque() {
+double Joint::get_torque_command() {
     return torque_;
+}
+
+double Joint::get_torque_sense() {
+    return actuator_.get_torque_sense() / actuator_transmission_;
 }
 
 void Joint::set_torque(double new_torque) {
