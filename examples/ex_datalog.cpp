@@ -20,8 +20,8 @@ int main() {
        std::vector<double> row{1.0*i, 2.0*i, 3.0*i, 4.0*i};
        logger.buffer(row);
     }
-    // save data
-    logger.save_data("datalogger_data.csv");
+    // save data to C:\data\
+    logger.save_data("datalogger_data.csv", "/data/");
 
 
     // Advanced data logging with Tables
