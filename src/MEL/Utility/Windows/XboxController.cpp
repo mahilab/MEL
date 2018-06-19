@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <Xinput.h>
 #include <MEL/Utility/Windows/XboxController.hpp>
+#include <MEL/Math/Functions.hpp>
 #include <array>
 
 namespace mel {
@@ -141,6 +142,8 @@ bool XboxController::Impl::is_connected() {
 }
 
 void XboxController::Impl::vibrate(double left_motor, double right_motor) {
+    left_motor = saturate(left_motor,0.0,1.0);
+    right_motor = saturate(right_motor,0.0,1.0);
     XINPUT_VIBRATION vibration;
     ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
     vibration.wLeftMotorSpeed  = static_cast<WORD>(65535 * left_motor);

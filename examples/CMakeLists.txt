@@ -57,6 +57,9 @@ target_link_libraries(chat MEL)
 if(WIN32)
     add_executable(limiter ex_limiter.cpp)
     target_link_libraries(limiter MEL)
+
+    add_executable(keyboard ex_keyboard.cpp)
+    target_link_libraries(keyboard MEL)
 endif()
 
 #===============================================================================

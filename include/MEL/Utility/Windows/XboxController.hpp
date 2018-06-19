@@ -55,7 +55,7 @@ public:
 
 public:
     /// Constructor
-    XboxController(int controller_number);
+    XboxController(int controller_number = 0);
 
     /// Destructor
     ~XboxController();
@@ -72,7 +72,7 @@ public:
     /// Sets the deadzone of an axis in range 0.0 to 1.0
     void set_deadzone(Axis axis, double deadzone = 0.0);
 
-    /// Vibriates the controller
+    /// Vibriates the controller in range 0.0 to 1.0
     void vibrate(double left_motor = 0.0, double right_motor = 0.0);
 
 private:
