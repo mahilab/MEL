@@ -46,9 +46,9 @@ int main() {
         ms_mes.write_data(myo.get_values());
 
         // check for exit key
-        if (Keyboard::is_key_pressed(Key::Escape)) {
-            stop = true;
-        }
+        // if (Keyboard::is_key_pressed(Key::Escape)) {
+        //     stop = true;
+        // }
 
         // wait for remainder of sample period
         timer.wait();

@@ -1,5 +1,4 @@
 #include <MEL/Devices/Myo/MyoBand.hpp>
-#include <myo\myo.hpp>
 #include <array>
 #include <iostream>
 #include <sstream>

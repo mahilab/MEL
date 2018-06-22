@@ -33,7 +33,11 @@ option(TESTS     "Turn ON to build test executable(s)"                        OF
 set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
 set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
 set(QUANSER_ROOT "C:/Program Files/Quanser"    CACHE FILEPATH "Absolute path to Quanser installation."          )
-set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."                       )
+if (Windows)
+    set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."   )
+elseif(APPLE)
+    set(MYO_ROOT     "/Users/craigmcdonald/Documents/dev/myo-sdk-mac-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."   )
+endif()                    
 
 #===============================================================================
 # SETUP BUILD
@@ -161,7 +165,11 @@ elseif (QUANSER)
 endif()
 
 if (MYO)
-    list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
+    if (Windows)
+        list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
+    elseif(APPLE)
+        list(APPEND INCLUDE_DIRS "${MYO_ROOT}")
+    endif()
 endif()
 
 # include directories
@@ -321,11 +329,13 @@ elseif(QUANSER)
 endif()
 
 if (MYO)
-    link_directories("${MYO_ROOT}/lib")
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
-        list(APPEND LINK_LIBS myo64)
-    else() # 32-bit
-        list(APPEND LINK_LIBS myo32)
+    if (Windows)
+        link_directories("${MYO_ROOT}/lib")
+        if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
+            list(APPEND LINK_LIBS myo64)
+        else() # 32-bit
+            list(APPEND LINK_LIBS myo32)
+        endif()
     endif()
 endif()
 

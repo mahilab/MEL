@@ -38,7 +38,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Unix Makefiles\" -DEXAMPLES=ON -DTESTS=ON",
+			"shell_cmd": "cmake ../.. -G \"Unix Makefiles\" -DEXAMPLES=ON -DTESTS=ON -DMYO=ON",
 			"working_dir": "$project_path/../build/mac_make"
 		},
 		{
