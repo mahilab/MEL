@@ -107,6 +107,16 @@
 			"working_dir": "$project_path/../build/windows_msvc"
 		},
 		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Mac Make)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake ../.. -G \"Unix Makefiles\" -DEXAMPLES=ON -DTESTS=ON",
+			"working_dir": "$project_path/../build/mac_make"
+		},
+		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "CMake (Clean)",
 			"shell_cmd": "python clean.py",
