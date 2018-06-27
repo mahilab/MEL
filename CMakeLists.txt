@@ -1,7 +1,7 @@
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
-# Updated: 5/2018
+# Updated: 6/2018
 
 #===============================================================================
 # HOW TO USE THIS FILE
