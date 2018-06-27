@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DQUANSER=ON -DMYO=ON -DXINPUT=ON -DEXAMPLES=ON -DTESTS=ON",
+			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DXINPUT=ON -DEXAMPLES=ON -DTESTS=ON -DSENSORAY=ON",
 			"working_dir": "$project_path/../build/windows_msvc"
 		},
 		{
@@ -85,7 +85,7 @@
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "CMake (Clean)",
-			"shell_cmd": "python clean.py",
+			"shell_cmd": "python2 clean.py",
 			"working_dir": "$project_path/../util"
 		},
 		{

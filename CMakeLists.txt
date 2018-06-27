@@ -24,15 +24,17 @@ cmake_minimum_required(VERSION 3.7)
 option(NI_X64    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
 option(NI_ARM    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
 option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
+option(SENSORAY  "Turn ON if compiling for Sensoray hardware and MSVC"        OFF)
 option(XINPUT    "Turn ON if you have XInput installed for Xbox controllers." OFF)
 option(MYO       "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
 option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
 option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
 option(TESTS     "Turn ON to build test executable(s)"                        OFF)
 
-set(NI_X64_ROOT  "C:/dev/nirlt-linux-x64"      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(NI_ARM_ROOT  "C:/dev/nirlt-linux-arm"      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(QUANSER_ROOT "C:/Program Files/Quanser"    CACHE FILEPATH "Absolute path to Quanser installation."          )
+set(NI_X64_ROOT   "C:/dev/nirlt-linux-x64"          CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(NI_ARM_ROOT   "C:/dev/nirlt-linux-arm"          CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
+set(QUANSER_ROOT  "C:/Program Files/Quanser"        CACHE FILEPATH "Absolute path to Quanser installation."          )
+set(SENSORAY_ROOT "C:/Program Files (x86)/Sensoray" CACHE FILEPATH "Absolute path to Sensoray installation."         )
 if (Windows)
     set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."   )
 elseif(APPLE)
@@ -160,7 +162,9 @@ elseif(NI_ARM)
     list(APPEND INCLUDE_DIR
         ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2
         ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2/arm-nilrt-linux-gnueabi)
-elseif (QUANSER)
+endif()
+
+if (QUANSER)
     list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
 endif()
 
@@ -211,6 +215,12 @@ file(GLOB SRC_QUANSER
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/Quanser/*.cpp"
 )
 
+file(GLOB SRC_SENSORAY
+    "${CMAKE_SOURCE_DIR}/include/MEL/Daq/Sensoray/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/Sensoray/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/Sensoray/*.h"
+)
+
 file(GLOB SRC_DEVICES
     "${CMAKE_SOURCE_DIR}/include/MEL/Devices/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/*.cpp"
@@ -257,6 +267,7 @@ source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
 source_group("Daq\\NI" FILES ${SRC_NI_MYRIO})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
+source_group("Daq\\Sensoray" FILES ${SRC_SENSORAY})
 source_group("Devices" FILES ${SRC_DEVICES})
 source_group("Engine" FILES ${SRC_ENGINE})
 source_group("Devices\\Myo" FILES ${SRC_MYO})
@@ -295,6 +306,10 @@ elseif (QUANSER)
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
+if (SENSORAY)
+    list(APPEND SOURCE_FILES ${SRC_SENSORAY})
+endif()
+
 if (MYO)
     list(APPEND SOURCE_FILES ${SRC_MYO})
 endif()
@@ -313,7 +328,9 @@ set(LINK_LIBS "")
 
 if(NI_X64 OR NI_ARM)
     list(APPEND LINK_LIBS dl rt) # rt for SharedMemory
-elseif(QUANSER)
+endif()
+
+if(QUANSER)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
         link_directories("${QUANSER_ROOT}/QUARC/lib/win64")
     else() # 32-bit
@@ -326,6 +343,15 @@ elseif(QUANSER)
         quanser_common
         bufferoverflowU
         legacy_stdio_definitions) # not sure if needed anymore
+endif()
+
+if(SENSORAY)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
+        link_directories("${SENSORAY_ROOT}/826/API/x32")
+    else() # 32-bit
+        link_directories("${SENSORAY_ROOT}/826/API/x64")
+    endif()   
+    list(APPEND LINK_LIBS s826)
 endif()
 
 if (MYO)
