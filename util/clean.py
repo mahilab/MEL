@@ -8,27 +8,14 @@
 import os
 import shutil
 
-keep = ['bin/linux/sftp-config.json',
-        'bin/linux/NiFpga_quadrature.lvbitx',
-        'bin/windows/Release/myo32.dll',
-        'bin/windows/Release/myo64.dll']
+keep = ['bin/sftp-config.json',
+        'bin/NiFpga_quadrature.lvbitx',
+        'bin/Release/myo32.dll',
+        'bin/Release/myo64.dll']
 
 folders = ['build',
-           'build/linux_make',
-           'build/linux_ninja',
-           'build/mac_make',
-           'build/windows_make',
-           'build/windows_msvc',
-           'build/windows_ninja',
            'bin',
-           'bin/linux',
-           'bin/mac',
-           'bin/windows',
-           'bin/windows/Release',
-           'lib',
-           'lib/linux',
-           'lib/mac',
-           'lib/windows']
+           'lib']
 
 files = []
 

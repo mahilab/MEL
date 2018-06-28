@@ -1,109 +1,97 @@
 {
 	"build_systems":
 	[
+		//=====================================================================
+		// CMAKE GENERATION
+		//=====================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Linux Ninja)",
+			"name": "CMake (Make)",
 			"selector":
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON -DTESTS=ON",
-			"working_dir": "$project_path/../build/linux_ninja"
+			"shell_cmd": "cmake .. -G \"Unix Makefiles\"",
+			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Windows MSVC)",
+			"name": "CMake (Ninja)",
 			"selector":
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Visual Studio 15 2017 Win64\" -DXINPUT=ON -DEXAMPLES=ON -DTESTS=ON -DSENSORAY=ON",
-			"working_dir": "$project_path/../build/windows_msvc"
+			"shell_cmd": "cmake .. -G \"Ninja\"",
+			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Windows Ninja)",
+			"name": "CMake (MSVC)",
 			"selector":
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake ../.. -G \"Ninja\" -DTESTS=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/../build/windows_ninja"
+			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\"",
+			"working_dir": "$project_path/../build"
 		},
-		{
-			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Mac Make)",
-			"selector":
-			[
-				"source.cmake"
-			],
-			"shell_cmd": "cmake ../.. -G \"Unix Makefiles\" -DEXAMPLES=ON -DTESTS=ON -DMYO=ON",
-			"working_dir": "$project_path/../build/mac_make"
-		},
+		//=====================================================================
+		// BUILDING
+		//=====================================================================
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Make (Mac)",
+			"name": "Build (Make)",
 			"selector":
 			[
 				"source.c++",
 				"source.c++.11"
 			],
 			"shell_cmd": "make -j",
-			"working_dir": "$project_path/../build/mac_make"
+			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Ninja (Linux)",
+			"name": "Build (Ninja)",
 			"selector":
 			[
 				"source.c++.11"
 			],
-			"shell_cmd": "ninja -j 5",
-			"working_dir": "$project_path/../build/linux_ninja"
+			"shell_cmd": "ninja",
+			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Ninja (Windows)",
-			"selector":
-			[
-				"source.c++.11"
-			],
-			"shell_cmd": "ninja -j 5",
-			"working_dir": "$project_path/../build/windows_ninja"
-		},
-		{
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "MSVC",
+			"name": "Build (MSVC)",
 			"selector":
 			[
 				"source.c++.11"
 			],
 			"shell_cmd": "cmake --build . --config Release",
-			"working_dir": "$project_path/../build/windows_msvc"
+			"working_dir": "$project_path/../build"
+		},
+		//=====================================================================
+		// UTILITIES
+		//=====================================================================
+		{
+			"name": "Reset Cache",
+			"shell_cmd": "del CMakeCache.txt",
+			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "CMake (Clean)",
+			"name": "Clean",
 			"shell_cmd": "python2 clean.py",
 			"working_dir": "$project_path/../util"
 		},
 		{
 			"name": "Visual Studio",
 			"shell_cmd": "start MEL.sln",
-			"working_dir": "$project_path/../build/windows_msvc"
+			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "MELScope",
 			"shell_cmd": "python MelScope.pyw",
 			"working_dir": "$project_path/../src/MELScope"
-		},
-		{
-			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Anaconda Python Builder",
-			"selector": "source.python",
-			"shell_cmd": "\"python\" -u \"$file\""
 		}
 	],
 	"folders":

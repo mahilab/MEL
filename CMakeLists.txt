@@ -4,16 +4,26 @@
 # Updated: 6/2018
 
 #===============================================================================
-# HOW TO USE THIS FILE
+# HOW TO USE THIS FILE TO BUILD MEL
 #===============================================================================
 
-# 1) Open console and navigate to the /build folder
-# 2) To generate Ninja build file for NI hardware, run:
-#        $: cmake .. -G "Ninja" -DNI=ON
-#    To generate Visual Studio MEL.sln file for Quanser hardware, run:
-#        $: cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
-# 3) To build example programs in ./examples, append -DEXAMPLES=ON
-# 4) Proceed to build generated makefile or MEL.sln file with the necessary software
+# OPTION 1: WITH SUBLIME TEXT
+# 1) Open the MEL Sublime project file (util/MEL.sublime-project) with Sublime
+#
+# 2) Run the "Clean" build system (CTRL+SHIFT+B -> Clean) to remove existing
+#    build files and/or generate the necessary folders 
+#
+# 3) Turn on the desired build options below by changing "OFF" to "ON"
+#
+# 4) Run one of the provided CMake (...) build systems to generate build files 
+#    for the desired build toolchain:
+#
+#    a) CMake (MSVC) for Quanser, NI DAQ, or Sensoray hardware
+#    b) CMake (Make) or CMake (Ninja) for embedded NI cRIO, NI myRIO
+#
+# 5) Run the matching Build (...) build system to compile MEL
+#
+# 6) If you decide to change options, run the Reset Cache build system first
 
 cmake_minimum_required(VERSION 3.7)
 
@@ -21,163 +31,26 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(NI_X64    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
-option(NI_ARM    "Turn ON if compiling for NI Intel x64 basedhardware"        OFF)
-option(QUANSER   "Turn ON if compiling for Quanser hardware and MSVC"         OFF)
-option(SENSORAY  "Turn ON if compiling for Sensoray hardware and MSVC"        OFF)
-option(XINPUT    "Turn ON if you have XInput installed for Xbox controllers." OFF)
-option(MYO       "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
-option(EXAMPLES  "Turn ON to build example executable(s)"                     OFF)
-option(BUILD_DOC "Turn ON to build MEL documentation"                         OFF)
-option(TESTS     "Turn ON to build test executable(s)"                        OFF)
+option(QUANSER    "Turn ON if compiling for Quanser hardware"                  OFF) # e.g. Q8 USB, Q2 USB
+option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"      ON ) # e.g. NI myDAQ 
+option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI cRIO
+option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI myRIO
+option(SENSORAY   "Turn ON if compiling for Sensoray hardware"                 ON ) # e.g. Sensoray 826
+option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
+option(EXAMPLES   "Turn ON to build example executable(s)"                     ON )
+option(TESTS      "Turn ON to build test executable(s)"                        ON )
+option(BUILD_DOC  "Turn ON to build MEL documentation"                         OFF)
 
-set(NI_X64_ROOT   "C:/dev/nirlt-linux-x64"          CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(NI_ARM_ROOT   "C:/dev/nirlt-linux-arm"          CACHE FILEPATH "Absolute path to NI Linux Realtime GNU compiler.")
-set(QUANSER_ROOT  "C:/Program Files/Quanser"        CACHE FILEPATH "Absolute path to Quanser installation."          )
-set(SENSORAY_ROOT "C:/Program Files (x86)/Sensoray" CACHE FILEPATH "Absolute path to Sensoray installation."         )
-if (Windows)
-    set(MYO_ROOT     "C:/dev/myo-sdk-win-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."   )
-elseif(APPLE)
-    set(MYO_ROOT     "/Users/craigmcdonald/Documents/dev/myo-sdk-mac-0.9.0"    CACHE FILEPATH "Absolute path to Myo SDK."   )
-endif()                    
+set(QUANSER_ROOT  "/Program Files/Quanser"                    CACHE FILEPATH "Absolute path to Quanser installation directory.")
+set(NI_ROOT       "/Program Files (x86)/National Instruments" CACHE FILEPATH "Absolute path to NI installation directory.")
+set(NI_X64_ROOT   "/dev/nirlt-linux-x64"                      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU toolchain (x64).")
+set(NI_ARM_ROOT   "/dev/nirlt-linux-arm"                      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU toolchain (ARM).")
+set(SENSORAY_ROOT "/Program Files (x86)/Sensoray"             CACHE FILEPATH "Absolute path to Sensoray installation directory.")
+set(MYO_ROOT      "/dev/myo-sdk-win-0.9.0"                    CACHE FILEPATH "Absolute path to Myo SDK.")
 
-#===============================================================================
-# SETUP BUILD
-#===============================================================================
-
-# set NI RT Linux specific options if enabled
-if (NI_X64)
-    # add compiler to path
-    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_X64_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux)
-    # set compiler (must be called before project/enable)
-    set(CMAKE_C_COMPILER x86_64-nilrt-linux-gcc)
-    set(CMAKE_CXX_COMPILER x86_64-nilrt-linux-g++)
-    # set to cross compile
-    set(CMAKE_SYSTEM_NAME Generic)
-    set(CMAKE_CROSSCOMPILING 1)
-    # setup sysroot (for NI RT cross compiler)
-    set(CMAKE_SYSROOT ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux)
-elseif (NI_ARM)
-    # add compiler to path
-    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_ARM_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/arm-nilrt-linux-gnueabi)
-    # set compiler (must be called before project/enable)
-    set(CMAKE_C_COMPILER arm-nilrt-linux-gnueabi-gcc)
-    set(CMAKE_CXX_COMPILER arm-nilrt-linux-gnueabi-g++)
-    # set to cross compile
-    set(CMAKE_SYSTEM_NAME Generic)
-    set(CMAKE_CROSSCOMPILING 1)
-    # setup sysroot (for NI RT cross compiler)
-    set(CMAKE_SYSROOT ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi)
-endif()
-
-# enable C/C++
-enable_language(C)
-enable_language(CXX)
-
-# enable C++11
-set(CMAKE_CXX_STANDARD 11)
-
-# create project
-project(MEL)
-
-# set binary output locations
-if(WIN32)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/windows)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/windows)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/windows)
-elseif(APPLE)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/mac)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/mac)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/mac)
-else()
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/linux)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/linux)
-endif()
-
-# add definitons
-if(WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
-endif()
-
-if (QUANSER)
-    add_definitions(-DMEL_INCLUDE_QUANSER)
-endif()
-
-# set compiler flags
-if (NI_X64)
-    # need pthread for multithreading
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-elseif (NI_ARM)
-    # need pthread for multithreading and other stuff for ARM float performance
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -mfpu=vfpv3 -mfloat-abi=softfp")
-endif()
-
-# add configurations
-set(CMAKE_CONFIGURATION_TYPES Release)
-
-#===============================================================================
-# COMPILER SPECIFIC
-#===============================================================================
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O3") # ALL WARNINGS
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # WARNING LEVEL 4
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP") # MULTICORE BUILDS
-endif()
-
-#===============================================================================
-# PERFORM CHECKS
-#===============================================================================
-
-if (NI_X64 AND NI_ARM)
-    message(FATAL_ERROR "FATAL_ERROR: MEL cannot be built for NI x64 and NI ARM based hardware simultaneously. Choose only one")
-endif()
-if((NI_X64 OR NI_ARM) AND QUANSER)
-    message(FATAL_ERROR "FATAL ERROR: MEL cannot be built for NI and Quanser hardware simultaneously. Choose only one.")
-endif()
-
-if((NI_X64 OR NI_ARM) AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
-    message(FATAL_ERROR "FATAL_ERROR: Must use Linux G++ compiler when using NI hardware.")
-endif()
-
-if(QUANSER AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "MSVC"))
-    message(FATAL_ERROR "FATAL ERROR: Must use MSVC compiler when using Quanser hardware.")
-endif()
-
-#===============================================================================
-# INCLUDES
-#===============================================================================
-
-# MEL Lib
 set(INCLUDE_DIRS include)
-
-# Hardware Lib(s)
-if (NI_X64)
-    list(APPEND INCLUDE_DIR
-        ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2
-        ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux)
-elseif(NI_ARM)
-    list(APPEND INCLUDE_DIR
-        ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2
-        ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2/arm-nilrt-linux-gnueabi)
-endif()
-
-if (QUANSER)
-    list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
-endif()
-
-if (MYO)
-    if (Windows)
-        list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
-    elseif(APPLE)
-        list(APPEND INCLUDE_DIRS "${MYO_ROOT}")
-    endif()
-endif()
-
-# include directories
-include_directories(${INCLUDE_DIRS})
+set(LINK_DIRS "")
+set(LINK_LIBS "")                
 
 #===============================================================================
 # FIND MEL SOURCE FILES
@@ -218,7 +91,6 @@ file(GLOB SRC_QUANSER
 file(GLOB SRC_SENSORAY
     "${CMAKE_SOURCE_DIR}/include/MEL/Daq/Sensoray/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/Sensoray/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/Sensoray/*.h"
 )
 
 file(GLOB SRC_DEVICES
@@ -261,7 +133,7 @@ file(GLOB SRC_UTILITY_WINDOWS
     "${CMAKE_SOURCE_DIR}/src/MEL/Utility/Windows/*.cpp"
 )
 
-# create filters for Visual Studio
+# create source groups
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
 source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
@@ -279,10 +151,6 @@ source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
 source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
 
-#===============================================================================
-# SELECT SOURCE FILES BASED ON OPTIONS/PLATFORM
-#===============================================================================
-
 set(SOURCE_FILES
     ${SRC_COMMUNICATIONS}
     ${SRC_CORE}
@@ -296,21 +164,155 @@ set(SOURCE_FILES
     ${SRC_UTILITY}
 )
 
+#===============================================================================
+# SETUP CROSS COMPILERS
+#===============================================================================
+
+# set NI RT Linux specific options if enabled
+if (NI_X64)
+    # add compiler to path
+    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_X64_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/x86_64-nilrt-linux)
+    # set compiler (must be called before project/enable)
+    set(CMAKE_C_COMPILER x86_64-nilrt-linux-gcc)
+    set(CMAKE_CXX_COMPILER x86_64-nilrt-linux-g++)
+    # set to cross compile
+    set(CMAKE_SYSTEM_NAME Generic)
+    set(CMAKE_CROSSCOMPILING 1)
+    # setup sysroot (for NI RT cross compiler)
+    set(CMAKE_SYSROOT ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux)
+elseif (NI_ARM)
+    # add compiler to path
+    LIST(APPEND CMAKE_PROGRAM_PATH ${NI_ARM_ROOT}/sysroots/i686-nilrtsdk-mingw32/usr/bin/arm-nilrt-linux-gnueabi)
+    # set compiler (must be called before project/enable)
+    set(CMAKE_C_COMPILER arm-nilrt-linux-gnueabi-gcc)
+    set(CMAKE_CXX_COMPILER arm-nilrt-linux-gnueabi-g++)
+    # set to cross compile
+    set(CMAKE_SYSTEM_NAME Generic)
+    set(CMAKE_CROSSCOMPILING 1)
+    # setup sysroot (for NI RT cross compiler)
+    set(CMAKE_SYSROOT ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi)
+endif()
+
+#===============================================================================
+# BASIC SETUP
+#===============================================================================
+
+# enable C/C++
+enable_language(C)
+enable_language(CXX)
+
+# enable C++11
+set(CMAKE_CXX_STANDARD 11)
+
+# create project
+project(MEL)
+
+# set binary output locations
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+#===============================================================================
+# PLATFORM SPECIFIC SETUP
+#===============================================================================
+
+set(MEL_64BIT OFF)
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(MEL_64BIT ON)
+endif()
+
 if(WIN32)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
+    list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi XInput)
     list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS})
 endif()
 
-if(NI_X64 OR NI_ARM)
-    list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
-elseif (QUANSER)
+#===============================================================================
+# COMPILER SPECIFIC SETUP
+#===============================================================================
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O3") # all warnings
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # warning level 4
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP") # multicore build
+    set(CMAKE_CONFIGURATION_TYPES Release)
+endif()
+
+#===============================================================================
+# HARDWARE SPECIFIC SETUP
+#===============================================================================
+
+if (QUANSER)
+    # hardware includes
+    list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
+    # hardware libs
+    if (MEL_64BIT) 
+        list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/win64")
+    else() 
+        list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/windows")
+    endif()
+    list(APPEND LINK_LIBS hil quanser_communications quanser_runtime quanser_common bufferoverflowU legacy_stdio_definitions)
+    # MEL source
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
+if(NI_DAQ)
+    # hardware includes
+    list(APPEND INCLUDE_DIRS "${NI_ROOT}/NI-DAQ/DAQmx ANSI C Dev/include")
+    # hardware libs
+    list(APPEND LINK_DIRS "${NI_ROOT}/NI-DAQ/DAQmx ANSI C Dev/lib/msvc")
+    list(APPEND LINK_LIBS NIDAQmx.lib)
+endif()
+
+if (NI_X64)
+    # compiler flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    # hardware includes
+    list(APPEND INCLUDE_DIRS
+        "${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2"
+        "${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux")
+    # hardware libs
+    list(APPEND LINK_LIBS dl rt)
+endif()
+
+if(NI_ARM)
+    # compiler flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -mfpu=vfpv3 -mfloat-abi=softfp")
+    # hardware inclues
+    list(APPEND INCLUDE_DIRS
+        "${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2"
+        "${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2/arm-nilrt-linux-gnueabi")
+    # hardware libs
+    list(APPEND LINK_LIBS dl rt)
+    # MEL source
+    list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
+endif()
+
 if (SENSORAY)
+    # hardware includes
+    list(APPEND INCLUDE_DIRS "${SENSORAY_ROOT}/826/API")
+    if (MEL_64BIT) 
+        list(APPEND LINK_DIRS "${SENSORAY_ROOT}/826/API/x64")
+    else() 
+        list(APPEND LINK_DIRS "${SENSORAY_ROOT}/826/API/x32")
+    endif()   
+    list(APPEND LINK_LIBS s826)
+    # MEL source
     list(APPEND SOURCE_FILES ${SRC_SENSORAY})
 endif()
 
 if (MYO)
+    # hardware includes
+    list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
+    # hardware libs
+    list(APPEND LINK_DIRS "${MYO_ROOT}/lib")
+    if (MEL_64BIT) 
+        list(APPEND LINK_LIBS myo64)
+    else()
+        list(APPEND LINK_LIBS myo32)
+    endif()
+    # MEL source
     list(APPEND SOURCE_FILES ${SRC_MYO})
 endif()
 
@@ -318,65 +320,13 @@ endif()
 # CREATE MEL LIBRARY
 #===============================================================================
 
+include_directories(${INCLUDE_DIRS})
 add_library(MEL STATIC ${SOURCE_FILES})
-
-#===============================================================================
-# LINK EXTERNAL LIBS
-#===============================================================================
-
-set(LINK_LIBS "")
-
-if(NI_X64 OR NI_ARM)
-    list(APPEND LINK_LIBS dl rt) # rt for SharedMemory
-endif()
-
-if(QUANSER)
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
-        link_directories("${QUANSER_ROOT}/QUARC/lib/win64")
-    else() # 32-bit
-        link_directories("${QUANSER_ROOT}/QUARC/lib/windows")
-    endif()
-    list(APPEND LINK_LIBS
-        hil
-        quanser_communications
-        quanser_runtime
-        quanser_common
-        bufferoverflowU
-        legacy_stdio_definitions) # not sure if needed anymore
-endif()
-
-if(SENSORAY)
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
-        link_directories("${SENSORAY_ROOT}/826/API/x32")
-    else() # 32-bit
-        link_directories("${SENSORAY_ROOT}/826/API/x64")
-    endif()   
-    list(APPEND LINK_LIBS s826)
-endif()
-
-if (MYO)
-    if (Windows)
-        link_directories("${MYO_ROOT}/lib")
-        if (CMAKE_SIZEOF_VOID_P EQUAL 8) # 64-bit
-            list(APPEND LINK_LIBS myo64)
-        else() # 32-bit
-            list(APPEND LINK_LIBS myo32)
-        endif()
-    endif()
-endif()
-
-if(WIN32)
-    list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi)
-endif()
-
-if(XINPUT)
-    list(APPEND LINK_LIBS XInput)
-endif()
-
+link_directories(${LINK_DIRS})
 target_link_libraries(MEL ${LINK_LIBS})
 
 #===============================================================================
-# ADD SUBDIRECTORIES
+# EXECUTABLES
 #===============================================================================
 
 if(EXAMPLES)
@@ -387,8 +337,10 @@ if(TESTS)
     add_subdirectory(tests)
 endif()
 
+#==============================================================================
+# DOCUMENTATION
+#==============================================================================
+
 if(BUILD_DOC)
     add_subdirectory(doc)
 endif()
-
-
