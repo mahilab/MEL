@@ -18,7 +18,7 @@
 #ifndef MEL_COMPONENT_HPP
 #define MEL_COMPONENT_HPP
 
-#include <MEL/Engine/Static/Object.hpp>
+#include <MEL/Experimental/Engine/Static/Object.hpp>
 
 namespace mel {
 

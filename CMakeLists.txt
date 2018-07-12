@@ -1,7 +1,7 @@
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
-# Updated: 6/2018
+# Updated: 7/2018
 
 #===============================================================================
 # HOW TO USE THIS FILE TO BUILD MEL
@@ -31,14 +31,15 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(QUANSER    "Turn ON if compiling for Quanser hardware"                  OFF) # e.g. Q8 USB, Q2 USB
+option(QUANSER    "Turn ON if compiling for Quanser hardware"                  ON ) # e.g. Q8 USB, Q2 USB
 option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"      OFF) # e.g. NI myDAQ
 option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI cRIO
 option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI myRIO
 option(SENSORAY   "Turn ON if compiling for Sensoray hardware"                 OFF) # e.g. Sensoray 826
-option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
-option(EXAMPLES   "Turn ON to build example executable(s)"                     OFF)
+option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"          ON )
+option(EXAMPLES   "Turn ON to build example executable(s)"                     ON )
 option(TESTS      "Turn ON to build test executable(s)"                        OFF)
+option(EXP        "Turn ON to build experimetnal features (not recommended)"   OFF)
 option(BUILD_DOC  "Turn ON to build MEL documentation"                         OFF)
 
 set(QUANSER_ROOT  "/Program Files/Quanser"                    CACHE FILEPATH "Absolute path to Quanser installation directory.")
@@ -72,8 +73,8 @@ file(GLOB SRC_DAQ
 )
 
 file(GLOB SRC_ENGINE
-    "${CMAKE_SOURCE_DIR}/include/MEL/Engine/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Engine/*.cpp"
+    "${CMAKE_SOURCE_DIR}/include/MEL/Experimental/Engine/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Experimental/Engine/*.cpp"
 )
 
 file(GLOB SRC_NI_MYRIO
@@ -141,7 +142,7 @@ source_group("Daq\\NI" FILES ${SRC_NI_MYRIO})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Daq\\Sensoray" FILES ${SRC_SENSORAY})
 source_group("Devices" FILES ${SRC_DEVICES})
-source_group("Engine" FILES ${SRC_ENGINE})
+source_group("Experimental\\Engine" FILES ${SRC_ENGINE})
 source_group("Devices\\Myo" FILES ${SRC_MYO})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
@@ -156,13 +157,16 @@ set(SOURCE_FILES
     ${SRC_CORE}
     ${SRC_DAQ}
     ${SRC_DEVICES}
-    ${SRC_ENGINE}
     ${SRC_LOGGING}
     ${SRC_LOGGING_FORMATTERS}
     ${SRC_LOGGING_WRITERS}
     ${SRC_MATH}
     ${SRC_UTILITY}
 )
+
+if (EXP)
+    list(APPEND SOURCE_FILES ${SRC_ENGINE})
+endif()
 
 #===============================================================================
 # SETUP CROSS COMPILERS
