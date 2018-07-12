@@ -1,6 +1,6 @@
 // MIT License
 //
-// MEL - Mechatronics Engine and Library
+// MEL - Mechatronics Engine & Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
