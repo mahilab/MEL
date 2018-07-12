@@ -1,7 +1,7 @@
 
 ![MEL Logo](https://raw.githubusercontent.com/epezent/MEL/master/logo.png)
 
-# MEL - Mechatronics Library
+# MEL - Mechatronics Engine & Library
 
 ## Developers
 
@@ -62,28 +62,22 @@ cmake ..
 ```
 This will generate a build file for the bare bones MEL library (i.e. no hardware implementations) using whatever CMake thinks the default generator/compiler is. If you're on Linux using GCC, this will probably be a `makefile` in which case you simple run `make` to compile MEL. If you're on Windows using MSVC, this will be a `.sln` file which you can open, edit, compile, and debug using Visual Studio.
 
-#### Example 2: MEL + NI Hardware + Ninja
+#### Example 2: MEL + Quanser Hardware + Visual Studio
+```shell
+cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
+```
+This generates a `.sln` file for MEL with Quanser hardware. The `.sln` can then be opened and compiled with Visual Studio, or built from an MSVC Developer Command Prompt using the command `msbuild MEL.sln`.
+
+#### Example 3: MEL + NI Hardware + Ninja
 ```shell
 cmake .. -G "Ninja" -DNI_X64=ON
 ninja
 ```
 The first line generates Ninja build files for MEL with NI hardware. The second line then calls Ninja which builds MEL using NI's cross-compiler.
 
-#### Example 3: MEL + Quanser Hardware + Visual Studio
-```shell
-cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
-```
-This generates a `.sln` file for MEL with Quanser hardware. The `.sln` can then be opened and compiled with Visual Studio, or built from an MSVC Developer Command Prompt using the command `msbuild MEL.sln`.
+#### CMake Build Options
 
-#### CMake Options
-
-MEL provides the following options when building with CMake:
-
-* `-DNI_X64=ON` adds MEL implementations for NI Intel x64 hardware (e.g. cRIO), and sets the compiler to NI's GNU/Linux cross-compiler
-* `-DNI_ARM=ON` adds MEL implementations for NI hardware (e.g. myRIO), and sets the compiler to NI's GNU/Linux cross-compiler
-* `-DQUANSER=ON` adds MEL implementations for Quanser hardware (Q8 USB, Q2 USB, etc.) and statically links MEL to QUARC
-* `-DXINPUT=ON` adds support for Xbox controllers
-* `-DEXAMPLES=ON` builds all MEL example executables which are compatible with the platform, compiler, and any of the options above which are specified
+MEL provides several build options depending on which hardware or compiler is being used. To see a full list of options, consult the top of [CMakeLists.txt](https://github.com/epezent/MEL/blob/master/CMakeLists.txt)
 
 ## Creating Projects for MEL
 
