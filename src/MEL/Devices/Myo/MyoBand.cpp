@@ -7,6 +7,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Utility/Mutex.hpp>
 #include <thread>
+#include <myo/myo.hpp>
 
 namespace mel {
 

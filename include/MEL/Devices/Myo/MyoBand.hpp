@@ -1,8 +1,7 @@
 #ifndef MEL_MYO_HPP
 #define MEL_MYO_HPP
 
-#include <MEL/Daq/Input.hpp>  
-#include "/Users/craigmcdonald/Documents/dev/myo-sdk-mac-0.9.0/myo/myo.hpp"
+#include <MEL/Daq/Input.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
