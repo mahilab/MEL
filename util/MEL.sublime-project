@@ -79,7 +79,7 @@
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Clean",
-			"shell_cmd": "python2 clean.py",
+			"shell_cmd": "python clean.py",
 			"working_dir": "$project_path/../util"
 		},
 		{

@@ -11,11 +11,11 @@
 # 1) Open the MEL Sublime project file (util/MEL.sublime-project) with Sublime
 #
 # 2) Run the "Clean" build system (CTRL+SHIFT+B -> Clean) to remove existing
-#    build files and/or generate the necessary folders 
+#    build files and/or generate the necessary folders
 #
 # 3) Turn on the desired build options below by changing "OFF" to "ON"
 #
-# 4) Run one of the provided CMake (...) build systems to generate build files 
+# 4) Run one of the provided CMake (...) build systems to generate build files
 #    for the desired build toolchain:
 #
 #    a) CMake (MSVC) for Quanser, NI DAQ, or Sensoray hardware
@@ -31,11 +31,11 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(QUANSER    "Turn ON if compiling for Quanser hardware"                  OFF) # e.g. Q8 USB, Q2 USB
-option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"      ON ) # e.g. NI myDAQ 
+option(QUANSER    "Turn ON if compiling for Quanser hardware"                  OFF ) # e.g. Q8 USB, Q2 USB
+option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"      OFF) # e.g. NI myDAQ
 option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI cRIO
 option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI myRIO
-option(SENSORAY   "Turn ON if compiling for Sensoray hardware"                 ON ) # e.g. Sensoray 826
+option(SENSORAY   "Turn ON if compiling for Sensoray hardware"                 OFF) # e.g. Sensoray 826
 option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
 option(EXAMPLES   "Turn ON to build example executable(s)"                     ON )
 option(TESTS      "Turn ON to build test executable(s)"                        ON )
@@ -50,7 +50,7 @@ set(MYO_ROOT      "/dev/myo-sdk-win-0.9.0"                    CACHE FILEPATH "Ab
 
 set(INCLUDE_DIRS include)
 set(LINK_DIRS "")
-set(LINK_LIBS "")                
+set(LINK_LIBS "")
 
 #===============================================================================
 # FIND MEL SOURCE FILES
@@ -247,9 +247,9 @@ if (QUANSER)
     # hardware includes
     list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
     # hardware libs
-    if (MEL_64BIT) 
+    if (MEL_64BIT)
         list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/win64")
-    else() 
+    else()
         list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/windows")
     endif()
     list(APPEND LINK_LIBS hil quanser_communications quanser_runtime quanser_common bufferoverflowU legacy_stdio_definitions)
@@ -292,11 +292,11 @@ endif()
 if (SENSORAY)
     # hardware includes
     list(APPEND INCLUDE_DIRS "${SENSORAY_ROOT}/826/API")
-    if (MEL_64BIT) 
+    if (MEL_64BIT)
         list(APPEND LINK_DIRS "${SENSORAY_ROOT}/826/API/x64")
-    else() 
+    else()
         list(APPEND LINK_DIRS "${SENSORAY_ROOT}/826/API/x32")
-    endif()   
+    endif()
     list(APPEND LINK_LIBS s826)
     # MEL source
     list(APPEND SOURCE_FILES ${SRC_SENSORAY})
@@ -307,7 +307,7 @@ if (MYO)
     list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
     # hardware libs
     list(APPEND LINK_DIRS "${MYO_ROOT}/lib")
-    if (MEL_64BIT) 
+    if (MEL_64BIT)
         list(APPEND LINK_LIBS myo64)
     else()
         list(APPEND LINK_LIBS myo32)
