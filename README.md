@@ -81,7 +81,7 @@ MEL provides several build options depending on which hardware or compiler is be
 
 ## Creating Projects for MEL
 
-After the build/compile process has completed, the library binary will be output to `MEL/lib/[platform]/` while example executables will be output to `MEL/bin/<platform>/` where `<platform>` may be either `linux` or `windows`. To use MEL, you simply need to include the `MEL/include` directory and link to the MEL library binary.
+After the build/compile process has completed, the library binary will be output to `MEL/lib/` while example executables will be output to `MEL/bin/`. To use MEL, you simply need to include the `MEL/include` directory and link to the MEL library binary.
 
 ### With CMake
 
@@ -113,7 +113,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 # include directories (your includes and MEL's)
 include_directories("include" "/path/to/.../MEL/include")
 # indicate where MEL.lib is
-link_directories("/path/to/.../MEL/lib/<platform")
+link_directories("/path/to/.../MEL/lib")
 # create application
 add_executable(MyApp include/MyClass.hpp src/MyClass.cpp ... src/main.cpp)
 # link MEL
