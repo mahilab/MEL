@@ -25,6 +25,8 @@ THE SOFTWARE.
 #ifndef CXXOPTS_HPP_INCLUDED
 #define CXXOPTS_HPP_INCLUDED
 
+#pragma warning( disable : 4018 )
+
 #include <cstring>
 #include <cctype>
 #include <exception>

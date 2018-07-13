@@ -1,6 +1,6 @@
 # Evan Pezent (epezent@rice.edu)
 # MEL Universal Clean Script
-# 1/2018
+# 7/2018
 
 # This script cleans the build and binary directories associated with MEL. If
 # a particular directory does not exist, it is created.

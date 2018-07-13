@@ -352,7 +352,7 @@ void Client::run() {
     // messaging loop
     while(connected && !STOP) {
         // process user input
-        char ch = get_key();
+        char ch = static_cast<char>(get_key());
         {
             Lock lock(mutex);
             if (!connected)

@@ -89,7 +89,7 @@ MapHandle SharedMemory::create_or_open(const std::string& name,
 
 void SharedMemory::close(const std::string& name, MapHandle map) {
     if (::CloseHandle(map) == 0) {
-        LOG(Error) << "Failed to close handle (Windows Error #"
+        LOG(Error) << "Failed to close file mapping handle "  << name << " (Windows Error #"
                    << (int)GetLastError() << ")";
     }
     map = INVALID_HANDLE_VALUE;
@@ -108,7 +108,7 @@ void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
     return pBuf;
 }
 
-void SharedMemory::unmap_buffer(void* buffer, std::size_t size) {
+void SharedMemory::unmap_buffer(void* buffer, std::size_t) {
     ::UnmapViewOfFile(buffer);
 }
 
@@ -144,8 +144,7 @@ MapHandle SharedMemory::create_or_open(const std::string& name,
 
 void SharedMemory::close(const std::string& name, MapHandle map) {
     ::close(map);
-    ::shm_unlink(
-        name.c_str());  // this should probably be called by the LAST process
+    ::shm_unlink(name.c_str());  // this should probably be called by the LAST process
 }
 
 void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
