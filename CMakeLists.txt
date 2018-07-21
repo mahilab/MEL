@@ -31,15 +31,15 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(QUANSER    "Turn ON if compiling for Quanser hardware"                  OFF) # e.g. Q8 USB, Q2 USB
-option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"      OFF) # e.g. NI myDAQ
-option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI cRIO
-option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI myRIO
-option(SENSORAY   "Turn ON if compiling for Sensoray hardware"                 OFF) # e.g. Sensoray 826
-option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
-option(EXAMPLES   "Turn ON to build example executable(s)"                     OFF)
-option(TESTS      "Turn ON to build test executable(s)"                        OFF)
-option(BUILD_DOC  "Turn ON to build MEL documentation"                         OFF)
+option(QUANSER    "Turn ON if compiling for Quanser hardware"               OFF) # e.g. Q8 USB, Q2 USB
+option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"   OFF) # e.g. NI myDAQ
+option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"  OFF) # e.g. NI cRIO
+option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"  OFF) # e.g. NI myRIO
+option(SENSORAY   "Turn ON if compiling for Sensoray hardware"              OFF) # e.g. Sensoray 826
+option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"       OFF)
+option(EXAMPLES   "Turn ON to build example executable(s)"                  OFF)
+option(TESTS      "Turn ON to build test executable(s)"                     OFF)
+option(BUILD_DOC  "Turn ON to build MEL documentation"                      OFF)
 
 set(QUANSER_ROOT  "/Program Files/Quanser"                    CACHE FILEPATH "Absolute path to Quanser installation directory.")
 set(NI_ROOT       "/Program Files (x86)/National Instruments" CACHE FILEPATH "Absolute path to NI installation directory.")
