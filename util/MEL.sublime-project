@@ -1,9 +1,6 @@
 {
 	"build_systems":
 	[
-		//=====================================================================
-		// CMAKE GENERATION
-		//=====================================================================
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
 			"name": "CMake (Make)",
@@ -34,9 +31,6 @@
 			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\"",
 			"working_dir": "$project_path/../build"
 		},
-		//=====================================================================
-		// BUILDING
-		//=====================================================================
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
 			"name": "Build (Make)",
@@ -68,9 +62,6 @@
 			"shell_cmd": "cmake --build . --config Release",
 			"working_dir": "$project_path/../build"
 		},
-		//=====================================================================
-		// UTILITIES
-		//=====================================================================
 		{
 			"name": "Reset Cache",
 			"shell_cmd": "del CMakeCache.txt",
@@ -113,6 +104,12 @@
 			"name": "MELScope",
 			"shell_cmd": "python MelScope.pyw",
 			"working_dir": "$project_path/../src/MELScope"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
 		}
 	],
 	"folders":
