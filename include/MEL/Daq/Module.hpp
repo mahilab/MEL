@@ -49,11 +49,11 @@ public:
     /// Constructor
     ModuleBase(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers);
 
-    /// Calls the Modules's API to update all channels with the real-world.
-    virtual bool update() = 0;
-
     /// Calls the Modules's API to update a single channel with the real-world.
     virtual bool update_channel(uint32 channel_number) = 0;
+
+    /// Calls the Modules's API to update all channels with the real-world.
+    virtual bool update();
 
     /// Gets the vector of channel numbers this Module maintains
     const std::vector<uint32>& get_channel_numbers() const;

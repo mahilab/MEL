@@ -15,10 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MYRIOANALOGINPUT_HPP
-#define MEL_MYRIOANALOGINPUT_HPP
+#ifndef MEL_MYRIOAO_HPP
+#define MEL_MYRIOAO_HPP
 
-#include <MEL/Daq/Input.hpp>
+#include <MEL/Daq/Output.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 //==============================================================================
@@ -28,40 +28,30 @@
 namespace mel {
 
 class MyRio;
-
+enum MyRioConnectorType : int;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class MyRioAnalogInput : public AnalogInput, NonCopyable {
+class MyRioAO : public AnalogOutput, NonCopyable {
 public:
 
-    MyRioAnalogInput(MyRio& daq);
-
-    ~MyRioAnalogInput();
+    MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers);
 
     bool enable() override;
 
     bool disable() override;
 
-    bool update() override;
-
     bool update_channel(uint32 channel_number) override;
-
-    // bool set_ranges(const std::vector<Voltage>& min_values,
-    //                 const std::vector<Voltage>& max_values) override {}
-
-    // bool set_range(uint32 channel_number,
-    //                Voltage min_value,
-    //                Voltage max_value) override {}
 
 private:
 
     MyRio& daq_;
+    MyRioConnectorType type_;
 
 };
 
 }  // namespace mel
 
-#endif  // MEL_QANALOGINPUT_HPP
+#endif  // MEL_MYRIOAO_HPP

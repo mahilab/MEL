@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 
     Waveform sinwave(Waveform::Sin, seconds(1), 10);
 
-    Timer timer(hertz(1000));
+    Timer timer(hertz(100));
     while (timer.get_elapsed_time() < seconds(1)) {
         myrio.analog_input_C.update();
         print(myrio.analog_input_C[1].get_value());

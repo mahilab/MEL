@@ -4,17 +4,60 @@
 
 namespace mel {
 
-MyRio::MyRio(const std::string& name, bool open) :
+//==============================================================================
+// CONNECTOR
+//==============================================================================
+
+MyRio::Connector::Connector(MyRio& myrio,
+    MyRioConnectorType type,
+    const std::vector<uint32>& ai_channels,
+    const std::vector<uint32>& ao_channels) :
+    Device("myrio_connector_" + std::to_string(type)),
+    AI(myrio, type, ai_channels),
+    AO(myrio, type, ao_channels)
+{}
+
+bool MyRio::Connector::enable() {
+    if (AI.enable() && AO.enable())
+        return Device::enable();
+    else
+        return false;
+}
+
+bool MyRio::Connector::disable() {
+    if (AI.disable() && AO.disable())
+        return Device::disable();
+    else
+        return false;
+}
+
+bool MyRio::Connector::update_input() {
+    return AI.update();
+}
+
+bool MyRio::Connector::update_output() {
+    return AO.update();
+}
+
+//==============================================================================
+// MYRIO
+//==============================================================================
+
+MyRio::MyRio(const std::string& name, bool auto_open) :
     Daq(name),
-    analog_input_C(*this)
+    A(*this, MyRioConnectorType::MxpA, {0,1,2,3}, {0,1}),
+    B(*this, MyRioConnectorType::MxpB, {0,1,2,3}, {0,1}),
+    C(*this, MyRioConnectorType::MspC, {0,1},     {0,1})
  {
-    if (open) {
-        this->open();
-    }
+    if (auto_open)
+        open();
 }
 
 MyRio::~MyRio() {
-    this->close();
+    if (is_enabled())
+        disable();
+    if (is_open())
+        close();
 }
 
 bool MyRio::open() {
@@ -38,27 +81,18 @@ bool MyRio::close() {
 }
 
 bool MyRio::enable() {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;
     }
-    // enable each module
-    if (!analog_input_C.enable())
+    // enable each connector
+    if (A.enable() && B.enable() && C.enable()) {
+        sleep(milliseconds(10));
+        return Device::enable();
+    }
+    else
         return false;
-    // if (!analog_output.enable())
-    //     return false;
-    // if (!digital_input.enable())
-    //     return false;
-    // if (!digital_output.enable())
-    //     return false;
-    // if (!encoder.enable())
-    //     return false;
-    // if (!velocity.enable())
-    //     return false;
-    // allow changes to take effect
-    sleep(milliseconds(10));
-    return Device::enable();
 }
 
 bool MyRio::disable() {
@@ -67,33 +101,22 @@ bool MyRio::disable() {
             << get_name() << " is not open";
         return false;
     }
-    // disable each module
-    if (!analog_input_C.disable())
-        return false;
-    // if (!analog_output.disable())
-    //     return false;
-    // if (!digital_input.disable())
-    //     return false;
-    // if (!digital_output.disable())
-    //     return false;
-    // if (!encoder.disable())
-    //     return false;
-    // if (!velocity.disable())
-        return false;
+    // disable each connect
+    if (A.disable() && B.disable() && C.disable()) {
+        sleep(milliseconds(10));
+        return Device::disable();
+    }
     // allow changes to take effect
     sleep(milliseconds(10));
     return Device::disable();
 }
 
 bool MyRio::update_input() {
-    if (!analog_input_C.update())
-        return false;
-    return true;
+    return (A.update_input() && B.update_input() && C.update_input());
 }
 
 bool MyRio::update_output() {
-    return true;
+    return (A.update_output() && B.update_output() && C.update_output());
 }
-
 
 }  // namespace mel

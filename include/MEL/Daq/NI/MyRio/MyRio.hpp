@@ -21,31 +21,45 @@
 #include <MEL/Daq/Daq.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
-#include <MEL/Daq/NI/MyRio/MyRioAnalogInput.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioAO.hpp>
 
 namespace mel {
 
+class MyRioAI;
+class MyRioAO;
+
+/// myRIO Expansion Port (MXP) and Mini System Port (MSP) connector types
+enum MyRioConnectorType : int {
+    MxpA  = 0,  ///< MXP connector A (rear)
+    MxpB  = 1,  ///< MXP connector B (rear)
+    MspC  = 2,  ///< MSP connector C (front)
+    Audio = 3   ///< Audio connector (front)
+};
+
+/// National Instruments myRIO embedded system
 class MyRio : public Daq, NonCopyable {
+
 public:
 
     /// Constructor
-    MyRio(const std::string& name, bool open = true);
+    MyRio(const std::string& name, bool auto_open = true);
 
     /// Default Destructor
     ~MyRio();
 
-    /// Opens the MyRio
+    /// Opens the myRIO
     virtual bool open() override;
 
-    /// Closes the MyRio
+    /// Closes the myRIO
     virtual bool close() override;
 
-    /// Enables the Q8Usb by sequentially calling the enable() function
+    /// Enables the myRIO by sequentially calling the enable() function
     /// on all I/O modules. Consult the documentation for each module for
     /// details on what the enable functions do.
     bool enable() override;
 
-    /// Disables the Q8Usb by sequentially calling the disable() function
+    /// Disables the myRIO by sequentially calling the disable() function
     /// on all I/O modules. Consult the documentation for each module for
     /// details on what the enable functions do.
     bool disable() override;
@@ -60,14 +74,26 @@ public:
     /// function on each module separately.
     bool update_output() override;
 
+private:
+
+    /// Represents a myRIO connector
+    struct Connector : public Device {
+        Connector(MyRio& myrio, MyRioConnectorType type,
+            const std::vector<uint32>& ai_channels,
+            const std::vector<uint32>& ao_channels);
+        bool enable() override;
+        bool disable() override;
+        bool update_input();
+        bool update_output();
+        MyRioAI AI;
+        MyRioAO AO;
+    };
 
 public:
 
-    MyRioAnalogInput analog_input_C;
-
-private:
-
-    friend class MyRioAnalogInput;
+     Connector A;  ///< MXP connector A
+     Connector B;  ///< MXP connector B
+     Connector C;  ///< MSP connector C
 
 };
 
