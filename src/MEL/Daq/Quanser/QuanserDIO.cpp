@@ -83,7 +83,7 @@ namespace mel {
         }
         char buffer;
         t_error result;
-        if (directions_[channel_map_.at(channel_number)] == Direction::Input) {
+        if (directions_[channel_map_.at(channel_number)] == In) {
             result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
             values_[channel_map_.at(channel_number)] = static_cast<Logic>(buffer);
         }

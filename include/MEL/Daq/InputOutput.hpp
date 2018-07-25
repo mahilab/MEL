@@ -31,8 +31,7 @@ namespace mel {
 template <typename T>
 class InputOutput : public Input<T>, public Output<T> {
 public:
-    /// Represents an InputOutput direction
-    enum Direction { Input, Output };
+
 
     class Channel;
 
@@ -104,9 +103,9 @@ protected:
         input_channel_numbers_.clear();
         output_channel_numbers_.clear();
         for (std::size_t i = 0; i < channel_numbers_.size(); ++i) {
-            if (directions_[i] == Direction::Input)
+            if (directions_[i] == In)
                 input_channel_numbers_.push_back(channel_numbers_[i]);
-            else if (directions_[i] == Direction::Output)
+            else if (directions_[i] == Out)
                 output_channel_numbers_.push_back(channel_numbers_[i]);
         }
     }

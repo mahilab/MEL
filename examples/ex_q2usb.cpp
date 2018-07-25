@@ -80,7 +80,7 @@ int main() {
     // ask for user input
     prompt("Connect DIO0 to DIO7 then press ENTER to start test.");
     // set directions
-    q2.DIO.set_direction(7, QuanserDIO::Direction::Output);
+    q2.DIO.set_direction(7, Out);
     Logic signal = High;
     // start analog loopback loop
     timer.restart();
