@@ -55,7 +55,7 @@ enum Logic {
     High = 1  ///< High TTL level (typically 5V)
 };
 
-/// Represents a digital direction
+/// Represents a digital pin direction
 enum Direction {
     In,  ///< Digital input
     Out  ///< Digital output

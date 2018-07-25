@@ -11,6 +11,7 @@ namespace mel {
 
     QuanserDI::QuanserDI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
         Module(daq.get_name() + "_digital_input", IoType::InputOnly, channel_numbers),
+        DigitalInput(daq.get_name() + "_digital_input", channel_numbers),
         daq_(daq),
         quanser_values_(channel_count_, char(0))
     {

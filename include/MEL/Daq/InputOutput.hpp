@@ -36,11 +36,11 @@ public:
     class Channel;
 
     /// Default constructor
-    InputOutput(const std::vector<Direction>& directions)
-        : directions_(directions),
-          enable_values_(Module<T>::channel_count_),
-          disable_values_(Module<T>::channel_count_),
-          expire_values_(Module<T>::channel_count_) {
+    InputOutput(const std::string& name, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions) :
+        Module<T>(name, IoType::InputOutput, channel_numbers),      
+        Input<T>(name, channel_numbers),
+        Output<T>(name, channel_numbers),
+        directions_(directions) {
         sort_input_output_channel_numbers();
     }
 
@@ -121,7 +121,7 @@ protected:
 public:
 
     /// Encapsulates a Module channel
-    class Channel : public Input::Channel, public Output::Channel {
+    class Channel : public Input<T>::Channel, public Output<T>::Channel {
     public:
         /// Default constructor. Creates invalid channel
         Channel() : ChannelBase<T>() {}

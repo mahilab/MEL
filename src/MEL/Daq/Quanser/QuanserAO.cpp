@@ -11,6 +11,7 @@ namespace mel {
 
 QuanserAO::QuanserAO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
     Module(daq.get_name() + "_analog_output", IoType::OutputOnly, channel_numbers),
+    AnalogOutput(daq.get_name() + "_analog_output", channel_numbers),
     daq_(daq)
 {
 }

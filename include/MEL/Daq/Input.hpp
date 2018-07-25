@@ -34,7 +34,9 @@ public:
     class Channel;
 
     /// Default constructor
-    Input() {}
+    Input(const std::string& name, const std::vector<uint32>& channel_numbers) :
+        Module<T>(name, IoType::InputOnly, channel_numbers)
+    {}
 
     /// Default destructor
     virtual ~Input() {}

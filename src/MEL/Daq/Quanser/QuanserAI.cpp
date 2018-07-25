@@ -11,6 +11,7 @@ namespace mel {
 
 QuanserAI::QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
     Module(daq.get_name() + "_analog_input", IoType::InputOnly, channel_numbers),
+    AnalogInput(daq.get_name() + "_analog_input", channel_numbers),
     daq_(daq)
 {
 }

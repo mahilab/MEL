@@ -11,7 +11,7 @@ namespace mel {
 
     QuanserDIO::QuanserDIO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions) :
         Module(daq.get_name() + "_digital_input", IoType::InputOutput, channel_numbers),
-        InputOutput(directions),
+        InputOutput(daq.get_name() + "_digital_input", channel_numbers, directions),
         daq_(daq)
     {
     }

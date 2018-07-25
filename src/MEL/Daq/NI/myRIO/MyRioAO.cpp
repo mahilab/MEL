@@ -30,7 +30,8 @@ static const std::vector<std::vector<double>> OFFSETS({
 
 
 MyRioAO::MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-  Output(daq.get_name() + "_AO", channel_numbers),
+  Module(daq.get_name() + "_AO", IoType::OutputOnly, channel_numbers),
+  AnalogOutput(daq.get_name() + "_AO", channel_numbers),
   daq_(daq),
   type_(type)
 {}

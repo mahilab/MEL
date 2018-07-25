@@ -29,7 +29,8 @@ static const std::vector<std::vector<double>> OFFSETS({
 });
 
 MyRioAI::MyRioAI(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-  Input(daq.get_name() + "_AI", channel_numbers),
+  Module(daq.get_name() + "_AI", IoType::InputOnly, channel_numbers),
+  AnalogInput(daq.get_name() + "_AI", channel_numbers),
   daq_(daq),
   type_(type)
 {}

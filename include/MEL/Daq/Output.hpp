@@ -34,10 +34,11 @@ public:
     class Channel;
 
     /// Constructor
-    Output() :
+    Output(const std::string& name, const std::vector<uint32>& channel_numbers) :
+          Module<T>(name, IoType::OutputOnly, channel_numbers),
           enable_values_(Module<T>::channel_count_),
           disable_values_(Module<T>::channel_count_),
-          expire_values_(Module<T>::channel_count_) 
+          expire_values_(Module<T>::channel_count_)
     {}
 
     /// Default destructor
@@ -138,17 +139,17 @@ public:
 
         /// Sets the enable value of the channel
         void set_enable_value(T enable_value) {
-            dynamic_cast<Output<T>*>(module_)->set_enable_value(channel_number_, enable_value);
+            dynamic_cast<Output<T>*>(this->module_)->set_enable_value(this->channel_number_, enable_value);
         }
 
         /// Sets the disable value of the channel
         void set_disable_value(T disable_value) {
-            dynamic_cast<Output<T>*>(module_)->set_disable_value(channel_number_, disable_value);
+            dynamic_cast<Output<T>*>(this->module_)->set_disable_value(this->channel_number_, disable_value);
         }
 
         /// Sets the expiration value of the channel
         bool set_expire_value(T expire_value) {
-            return dynamic_cast<Output<T>*>(module_)->set_expire_value(channel_number_, expire_value);
+            return dynamic_cast<Output<T>*>(this->module_)->set_expire_value(this->channel_number_, expire_value);
         }
     };
 };
