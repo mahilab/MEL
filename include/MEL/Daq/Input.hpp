@@ -29,13 +29,12 @@ namespace mel {
 
 /// Encapsulates an Input only Module
 template <typename T>
-class Input : public Module<T> {
+class Input : virtual public Module<T> {
 public:
     class Channel;
 
-    /// Constructor
-    Input(const std::string& name, const std::vector<uint32>& channel_numbers)
-        : Module<T>(name, IoType::InputOnly, channel_numbers) {}
+    /// Default constructor
+    Input() {}
 
     /// Default destructor
     virtual ~Input() {}
@@ -69,14 +68,14 @@ public:
     }
 
     /// Encapsulates a Module channel
-    class Channel : public ChannelBase<T, Input<T>> {
+    class Channel : virtual public ChannelBase<T> {
     public:
         /// Default constructor. Creates invalid channel
-        Channel() : ChannelBase<T, Input<T>>() {}
+        Channel() : ChannelBase<T>() {}
 
         /// Creates a valid channel.
         Channel(Input* module, uint32 channel_number)
-            : ChannelBase<T, Input<T>>(module, channel_number) {}
+            : ChannelBase<T>(module, channel_number) {}
     };
 };
 

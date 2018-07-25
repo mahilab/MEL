@@ -29,16 +29,16 @@ namespace mel {
 
 /// Encapsulates an Output only Module, with added functionality
 template <typename T>
-class Output : public Module<T> {
+class Output : virtual public Module<T> {
 public:
     class Channel;
 
     /// Constructor
-    Output(const std::string& name, const std::vector<uint32>& channel_numbers)
-        : Module<T>(name, IoType::OutputOnly, channel_numbers),
+    Output() :
           enable_values_(Module<T>::channel_count_),
           disable_values_(Module<T>::channel_count_),
-          expire_values_(Module<T>::channel_count_) {}
+          expire_values_(Module<T>::channel_count_) 
+    {}
 
     /// Default destructor
     virtual ~Output() {}
@@ -121,40 +121,34 @@ public:
     }
 
 protected:
-    std::vector<T>
-        enable_values_;  ///< The initial values set when the Module is enabled
-    std::vector<T>
-        disable_values_;  ///< The final values set when the Module is disabled
-    std::vector<T>
-        expire_values_;  ///< The expire values when the Module expires
+    std::vector<T> enable_values_;   ///< The initial values set when the Module is enabled
+    std::vector<T> disable_values_;  ///< The final values set when the Module is disabled
+    std::vector<T> expire_values_;   ///< The expire values when the Module expires
 
 public:
     /// Encapsulates a Module channel
-    class Channel : public ChannelBase<T, Output<T>> {
+    class Channel : virtual public ChannelBase<T> {
     public:
         /// Default constructor. Creates invalid channel
-        Channel() : ChannelBase<T, Output<T>>() {}
+        Channel() : ChannelBase<T>() {}
 
         /// Creates a valid channel.
         Channel(Output* module, uint32 channel_number)
-            : ChannelBase<T, Output<T>>(module, channel_number) {}
+            : ChannelBase<T>(module, channel_number) {}
 
         /// Sets the enable value of the channel
         void set_enable_value(T enable_value) {
-            ChannelBase<T, Output<T>>::module_->set_intial_value(
-                ChannelBase<T, Output<T>>::channel_number_, enable_value);
+            dynamic_cast<Output<T>*>(module_)->set_enable_value(channel_number_, enable_value);
         }
 
         /// Sets the disable value of the channel
         void set_disable_value(T disable_value) {
-            ChannelBase<T, Output<T>>::module_->set_disable_value(
-                ChannelBase<T, Output<T>>::channel_number_, disable_value);
+            dynamic_cast<Output<T>*>(module_)->set_disable_value(channel_number_, disable_value);
         }
 
         /// Sets the expiration value of the channel
         bool set_expire_value(T expire_value) {
-            return ChannelBase<T, Output<T>>::module_->set_expire_value(
-                ChannelBase<T, Output<T>>::channel_number_, expire_value);
+            return dynamic_cast<Output<T>*>(module_)->set_expire_value(channel_number_, expire_value);
         }
     };
 };

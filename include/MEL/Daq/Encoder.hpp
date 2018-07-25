@@ -103,7 +103,7 @@ protected:
 
 public:
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
-    class Channel : public ChannelBase<int32, Encoder>, public PositionSensor {
+    class Channel : public ChannelBase<int32>, public PositionSensor {
     public:
         /// Default constructor. Creates invalid channel
         Channel();

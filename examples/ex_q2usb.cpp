@@ -66,9 +66,9 @@ int main() {
     timer.restart();
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q2.update_input();
-        print(q2.analog_input.get_value(0));
+        print(q2.AI.get_value(0));
         double voltage = wave.evaluate(timer.get_elapsed_time_actual());
-        q2.analog_output.set_value(0, voltage);
+        q2.AO.set_value(0, voltage);
         q2.update_output();
         timer.wait();
     }
@@ -80,16 +80,16 @@ int main() {
     // ask for user input
     prompt("Connect DIO0 to DIO7 then press ENTER to start test.");
     // set directions
-    q2.digital_io.set_direction(7, QDigitalInputOutput::Direction::Output);
+    q2.DIO.set_direction(7, QuanserDIO::Direction::Output);
     Logic signal = High;
     // start analog loopback loop
     timer.restart();
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
-        q2.digital_io.update();
-        print((int)q2.digital_io[0].get_value());
+        q2.DIO.update();
+        print((int)q2.DIO[0].get_value());
         signal = (Logic)(High - signal);
-        q2.digital_io[7].set_value(signal);
-        q2.digital_io.update();
+        q2.DIO[7].set_value(signal);
+        q2.DIO.update();
         timer.wait();
     }
 
@@ -100,8 +100,8 @@ int main() {
     // ask for user input
     prompt("Press enter then hold L to turn on LED.");
     // make sure LED Mode is set to User
-    QOptions options;
-    options.set_led_mode(QOptions::LedMode::User);
+    QuanserOptions options;
+    options.set_led_mode(QuanserOptions::LedMode::User);
     q2.set_options(options);
     timer.restart();
     while (timer.get_elapsed_time_actual() < seconds(10) && !stop) {

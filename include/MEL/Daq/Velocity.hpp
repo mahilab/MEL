@@ -92,7 +92,7 @@ protected:
 
 public:
     /// Encapsulates and EncoderModule channel, which is also a PositionSensor
-    class Channel : public ChannelBase<double, Velocity>,
+    class Channel : public ChannelBase<double>,
                     public VelocitySensor {
     public:
         /// Default constructor. Creates invalid channel

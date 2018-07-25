@@ -18,15 +18,14 @@
 #ifndef MEL_Q2USB_HPP
 #define MEL_Q2USB_HPP
 
-#include <MEL/Daq/Quanser/QAnalogInput.hpp>
-#include <MEL/Daq/Quanser/QAnalogOutput.hpp>
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QDigitalInput.hpp>
-#include <MEL/Daq/Quanser/QDigitalInputOutput.hpp>
-#include <MEL/Daq/Quanser/QDigitalOutput.hpp>
-#include <MEL/Daq/Quanser/QEncoder.hpp>
-#include <MEL/Daq/Quanser/QOptions.hpp>
-#include <MEL/Daq/Quanser/QWatchdog.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserAI.hpp>
+#include <MEL/Daq/Quanser/QuanserAO.hpp>
+#include <MEL/Daq/Quanser/QuanserDIO.hpp>
+#include <MEL/Daq/Quanser/QuanserEncoder.hpp>
+#include <MEL/Daq/Quanser/QuanserOptions.hpp>
+#include <MEL/Daq/Quanser/QuanserVelocity.hpp>
+#include <MEL/Daq/Quanser/QuanserWatchdog.hpp>
 
 namespace mel {
 
@@ -35,13 +34,13 @@ namespace mel {
 //==============================================================================
 
 /// Quanser Q2 USB class
-class Q2Usb : public QDaq {
+class Q2Usb : public QuanserDaq {
 public:
     /// Default constructor. Creates Q2 USB with all channels enabled and
     /// default QOptions
-    Q2Usb(QOptions options = QOptions(),
-          bool open        = true,
-          uint32 id        = next_id_);
+    Q2Usb(QuanserOptions options = QuanserOptions(),
+          bool auto_open         = true,
+          uint32 id              = next_id_);
 
     /// Default destructor. First calls disable() if the Q2Usb is enabled
     /// then close() if the Q2Usb is open.
@@ -92,11 +91,11 @@ public:
     static std::size_t get_q2_usb_count();
 
 public:
-    QAnalogInput analog_input;       ///< The analog input Module
-    QAnalogOutput analog_output;     ///< The analog output Module
-    QDigitalInputOutput digital_io;  ///< The digital input/output module
-    QEncoder encoder;                ///< The encoder Module
-    QWatchdog watchdog;              ///< The watchdog timer of this Q2 USB
+    QuanserAI       AI;        ///< The analog input Module
+    QuanserAO       AO;        ///< The analog output Module
+    QuanserDIO      DIO;       ///< The digital input/output module
+    QuanserEncoder  encoder;   ///< The encoder Module
+    QuanserWatchdog watchdog;  ///< The watchdog timer of this Q2 USB
 
 private:
     static uint32

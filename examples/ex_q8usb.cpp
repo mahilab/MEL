@@ -34,12 +34,12 @@ int main() {
     Q8Usb q8;
 
     // override default enable/disable/expiration states
-    q8.digital_output.set_enable_values(std::vector<Logic>(8, High));  // default is LOW
-    q8.digital_output.set_disable_values(std::vector<Logic>(8, High)); // default is LOW
-    q8.digital_output.set_expire_values(std::vector<Logic>(8, High));  // default is LOW
-    q8.analog_output.set_enable_values(std::vector<Voltage>(8, 1.0));  // default is 0.0
-    q8.analog_output.set_disable_values(std::vector<Voltage>(8, 2.0)); // default is 0.0
-    q8.analog_output.set_expire_values(std::vector<Voltage>(8, 3.0));  // default is 0.0
+    q8.DO.set_enable_values(std::vector<Logic>(8, High));  // default is LOW
+    q8.DO.set_disable_values(std::vector<Logic>(8, High)); // default is LOW
+    q8.DO.set_expire_values(std::vector<Logic>(8, High));  // default is LOW
+    q8.AO.set_enable_values(std::vector<Voltage>(8, 1.0));  // default is 0.0
+    q8.AO.set_disable_values(std::vector<Voltage>(8, 2.0)); // default is 0.0
+    q8.AO.set_expire_values(std::vector<Voltage>(8, 3.0));  // default is 0.0
 
     //==============================================================================
     // ENABLE
@@ -81,9 +81,9 @@ int main() {
     timer.restart();
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.analog_input.get_value(0));
+        print(q8.AI.get_value(0));
         double voltage = wave.evaluate(timer.get_elapsed_time_actual());
-        q8.analog_output.set_value(0, voltage);
+        q8.AO.set_value(0, voltage);
         q8.update_output();
         timer.wait();
     }
@@ -100,9 +100,9 @@ int main() {
     timer.restart();
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.digital_input.get_value(0));
+        print(q8.DI.get_value(0));
         signal = (Logic)(High - signal);
-        q8.digital_output.set_value(0, signal);
+        q8.DO.set_value(0, signal);
         q8.update_output();
         timer.wait();
     }
