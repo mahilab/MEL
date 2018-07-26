@@ -23,13 +23,7 @@ The basic MEL library has no external dependencies but does rely on a few common
 
 Depending on how you use MEL, you may need to install a few additional hardware specific libraries:
 
-#### National Instruments Linux Real-Time (Optional)
-
-If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO), you'll need to install NI's GNU/Linux cross-compiler [[x64](http://www.ni.com/download/labview-real-time-module-2017/6762/en/)] [[ARM](http://www.ni.com/download/labview-real-time-module-2017/6761/en/)]. MEL expects the top level of the compiler directories to be in `C:/dev/nirlt-linux-x64` or `C:/dev/nirlt-linux-arm`, which should contain `sysroots/`, `relocate_sdk.py`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt options `NI_X64_ROOT` and/or `NI_ARM_ROOT`.
-
-You will also want a suitable build system. The recommended tool is the [Ninja](https://ninja-build.org/), but you can also `make`, (Linux host) `mingw32-make`, or `nmake` (Windows host).
-
-#### Quanser QUARC (Optional)
+#### Quanser QUARC
 
 If you plan to use MEL for developing on Quanser hardware (e.g. Q8 USB), you'll need to install QUARC (v2.5 or greater). MEL expects to find the necessary QUARC headers and libs in the following directories:
 ```shell
@@ -37,9 +31,15 @@ C:/Program Files/Quanser/QUARC/include
 C:/Program Files/Quanser/QUARC/lib/windows
 C:/Program Files/Quanser/QUARC/lib/win64
 ```
-These directories and files are created automatically when you install QUARC. If you installed QUARC in another location, make sure you update CMakeLists.txt. Note that **QUARC can only be compiled with MSVC** so make sure you install [Visual Studio](https://www.visualstudio.com/).
+These directories and files are created automatically when you install QUARC. If you installed QUARC in another location, make sure you update the CMakeLists.txt option `QUANSER_ROOT`. Note that **QUARC can only be compiled with the MSVC compiler** so make sure you install [Visual Studio](https://www.visualstudio.com/).
 
-#### Python / C# (Optional)
+#### National Instruments Linux Real-Time
+
+If you plan to use MEL for developing on NI Linux Real-Time hardware (e.g. cRIO, myRIO), you'll need to install NI's GNU/Linux cross-compiler [[x64](http://www.ni.com/download/labview-real-time-module-2017/6762/en/)] [[ARM](http://www.ni.com/download/labview-real-time-module-2017/6761/en/)]. MEL expects the top level of the compiler directories to be in `C:/dev/nirlt-linux-x64` or `C:/dev/nirlt-linux-arm`, both of which should contain `sysroots/`, `relocate_sdk.py`, etc. If you want to change the installation directory, make sure you update CMakeLists.txt options `NI_X64_ROOT` and/or `NI_ARM_ROOT`.
+
+You will also want a suitable build system. The recommended tool is [Ninja](https://ninja-build.org/), but you can also `make`, (Linux host) `mingw32-make`, or `nmake` (Windows host).
+
+#### Python / C#
 
 MEL comes with Python and C# bindings for it's high-level communication classes, MELShare and MELNet. It also comes with an awesome real-time scoping application MELScope, which requires Python and PyQt to build from source. For Python/MELScope installation requirements, go [here](https://github.com/epezent/MEL/tree/master/melscope). For C# (e.g. if using [Unity Engine](https://unity3d.com/) for visualizations), you should be able to use [Visual Studio](https://www.visualstudio.com/) or [MonoDevelop](http://www.monodevelop.com/) as is.
 
@@ -60,24 +60,28 @@ At this point, you can customize your MEL build to suit your platform and hardwa
 ```shell
 cmake ..
 ```
-This will generate a build file for the bare bones MEL library (i.e. no hardware implementations) using whatever CMake thinks the default generator/compiler is. If you're on Linux using GCC, this will probably be a `makefile` in which case you simple run `make` to compile MEL. If you're on Windows using MSVC, this will be a `.sln` file which you can open, edit, compile, and debug using Visual Studio.
+This will generate a build file for the bare bones MEL library (i.e. no hardware implementations) using whatever CMake thinks the default generator/compiler is. If you're on Linux using GCC, this will probably generate a `makefile` in which case you simple run `make` to compile MEL. If you're on Windows using MSVC, this will generate a `.sln` file which you can open, edit, compile, and debug using Visual Studio.
 
 #### Example 2: MEL + Quanser Hardware + Visual Studio
 ```shell
 cmake .. -G "Visual Studio 15 2017 Win64" -DQUANSER=ON
+# option 1: open solution file in Visual Studio
+./MEL.sln
+# option 2: build solution file from command line
+cmake --build . --config Release
 ```
-This generates a `.sln` file for MEL with Quanser hardware. The `.sln` can then be opened and compiled with Visual Studio, or built from an MSVC Developer Command Prompt using the command `msbuild MEL.sln`.
+The first line generates a `.sln` Visual Studio solution file for MEL configured for Quanser hardware. The `.sln` can then be opened and compiled with Visual Studio (option 1), or built from the command line (option 2).
 
 #### Example 3: MEL + NI Hardware + Ninja
 ```shell
 cmake .. -G "Ninja" -DNI_X64=ON
 ninja
 ```
-The first line generates Ninja build files for MEL with NI hardware. The second line then calls Ninja which builds MEL using NI's cross-compiler.
+The first line generates Ninja build files for MEL configured for NI x64 embedded hardware. The second line then calls Ninja which builds MEL using NI's cross-compiler.
 
 #### CMake Build Options
 
-MEL provides several build options depending on which hardware or compiler is being used. To see a full list of options, consult the top of [CMakeLists.txt](https://github.com/epezent/MEL/blob/master/CMakeLists.txt)
+MEL provides several build options depending on which hardware, platform, or compiler is being used. To see a full list of options, consult the top of [CMakeLists.txt](https://github.com/epezent/MEL/blob/master/CMakeLists.txt).
 
 ## Creating Projects for MEL
 
@@ -134,8 +138,8 @@ Right-click your project in the Solution Explorer and select **Properties**. Mak
 
 - C/C++ > General > Additional Include Directories
     - **append:** `C:\path\to\...\MEL\include;`
-- Linker > General > Additional Library Directoriesif
-    - **append:** `C:\path\to\...\MEL\lib\windows;`
+- Linker > General > Additional Library Directories
+    - **append:** `C:\path\to\...\MEL\lib;`
 - Linker > Input > Additional Dependencies
     - **append:** `MEL.lib;`
 
