@@ -28,7 +28,14 @@ enum MyRioConnectorType : int;
 
 class MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
-    MyRioDIO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers);
+    MyRioDIO(MyRio& daq, MyRioConnectorType type,
+        const std::vector<uint32>& channel_numbers);
+
+    bool enable() override;
+
+    bool disable() override;
+
+    bool update_channel(uint32 channel_number) override;
 
 private:
     MyRio& daq_;

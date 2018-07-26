@@ -1,7 +1,6 @@
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Logging/Log.hpp>
 #include "Detail/MyRio.h"
-#include <vector>
 
 extern NiFpga_Session myrio_session;
 

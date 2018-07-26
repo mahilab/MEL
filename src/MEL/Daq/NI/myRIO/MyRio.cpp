@@ -11,32 +11,34 @@ namespace mel {
 MyRio::Connector::Connector(MyRio& myrio,
     MyRioConnectorType type,
     const std::vector<uint32>& ai_channels,
-    const std::vector<uint32>& ao_channels) :
+    const std::vector<uint32>& ao_channels,
+    const std::vector<uint32>& dio_channels) :
     Device("myrio_connector_" + std::to_string(type)),
     AI(myrio, type, ai_channels),
-    AO(myrio, type, ao_channels)
+    AO(myrio, type, ao_channels),
+    DIO(myrio, type, dio_channels)
 {}
 
 bool MyRio::Connector::enable() {
-    if (AI.enable() && AO.enable())
+    if (AI.enable() && AO.enable() && DIO.enable())
         return Device::enable();
     else
         return false;
 }
 
 bool MyRio::Connector::disable() {
-    if (AI.disable() && AO.disable())
+    if (AI.disable() && AO.disable() && DIO.disable())
         return Device::disable();
     else
         return false;
 }
 
 bool MyRio::Connector::update_input() {
-    return AI.update();
+    return AI.update() && DIO.update();
 }
 
 bool MyRio::Connector::update_output() {
-    return AO.update();
+    return AO.update() && DIO.update();
 }
 
 //==============================================================================
@@ -45,9 +47,9 @@ bool MyRio::Connector::update_output() {
 
 MyRio::MyRio(const std::string& name, bool auto_open) :
     Daq(name),
-    A(*this, MyRioConnectorType::MxpA, {0,1,2,3}, {0,1}),
-    B(*this, MyRioConnectorType::MxpB, {0,1,2,3}, {0,1}),
-    C(*this, MyRioConnectorType::MspC, {0,1},     {0,1})
+    A(*this, MyRioConnectorType::MxpA, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}),
+    B(*this, MyRioConnectorType::MxpB, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}),
+    C(*this, MyRioConnectorType::MspC, {0,1},     {0,1}, {0,1,2,3,4,5,6,7})
  {
     if (auto_open)
         open();

@@ -23,6 +23,7 @@
 
 #include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioAO.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioDIO.hpp>
 
 namespace mel {
 
@@ -80,13 +81,15 @@ private:
     struct Connector : public Device {
         Connector(MyRio& myrio, MyRioConnectorType type,
             const std::vector<uint32>& ai_channels,
-            const std::vector<uint32>& ao_channels);
+            const std::vector<uint32>& ao_channels,
+            const std::vector<uint32>& dio_channels);
         bool enable() override;
         bool disable() override;
         bool update_input();
         bool update_output();
         MyRioAI AI;
         MyRioAO AO;
+        MyRioDIO DIO;
     };
 
 public:

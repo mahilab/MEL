@@ -50,9 +50,9 @@ typedef unsigned long long uint64;  ///<                          0 to 18,446,74
 typedef double Voltage;
 
 /// Represents a digital TTL logic level
-enum Logic {
-    Low  = 0, ///< Low TTL level  (typically 0V)
-    High = 1  ///< High TTL level (typically 5V)
+enum Logic : bool {
+    Low  = false, ///< Low TTL level  (typically 0V)
+    High = true  ///< High TTL level (typically 5V)
 };
 
 /// Represents a digital pin direction

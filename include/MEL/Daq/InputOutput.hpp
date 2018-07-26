@@ -37,10 +37,14 @@ public:
 
     /// Default constructor
     InputOutput(const std::string& name, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions) :
-        Module<T>(name, IoType::InputOutput, channel_numbers),      
+        Module<T>(name, IoType::InputOutput, channel_numbers),
         Input<T>(name, channel_numbers),
         Output<T>(name, channel_numbers),
-        directions_(directions) {
+        directions_(directions),
+        enable_values_(Module<T>::channel_count_),
+        disable_values_(Module<T>::channel_count_),
+        expire_values_(Module<T>::channel_count_)
+    {
         sort_input_output_channel_numbers();
     }
 
@@ -49,7 +53,7 @@ public:
 
     /// Sets the directions of all channels
     virtual bool set_directions(const std::vector<Direction>& directions) {
-        if (validate_channel_count(directions.size())) {
+        if (this->validate_channel_count(directions.size())) {
             directions_ = directions;
             sort_input_output_channel_numbers();
             return true;
@@ -59,7 +63,7 @@ public:
 
     /// Sets the direction of a single channel
     virtual bool set_direction(uint32 channel_number, Direction direction) {
-        if (Module<T>::validate_channel_number(channel_number)) {
+        if (this->validate_channel_number(channel_number)) {
             directions_[Module<T>::channel_map_.at(channel_number)] = direction;
             sort_input_output_channel_numbers();
             return true;
@@ -102,11 +106,11 @@ protected:
     void sort_input_output_channel_numbers() {
         input_channel_numbers_.clear();
         output_channel_numbers_.clear();
-        for (std::size_t i = 0; i < channel_numbers_.size(); ++i) {
+        for (std::size_t i = 0; i < this->channel_numbers_.size(); ++i) {
             if (directions_[i] == In)
-                input_channel_numbers_.push_back(channel_numbers_[i]);
+                input_channel_numbers_.push_back(this->channel_numbers_[i]);
             else if (directions_[i] == Out)
-                output_channel_numbers_.push_back(channel_numbers_[i]);
+                output_channel_numbers_.push_back(this->channel_numbers_[i]);
         }
     }
 
@@ -132,7 +136,7 @@ public:
 
         /// Sets the direction of the channel
         void set_direction(Direction direction) {
-           dynamic_cast<InputOutput<T>*>(module_)->set_direction(channel_number_, direction);
+           dynamic_cast<InputOutput<T>*>(this->module_)->set_direction(this->channel_number_, direction);
         }
 
     };

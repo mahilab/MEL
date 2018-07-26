@@ -20,7 +20,6 @@
 
 #include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Daq/Module.hpp>
-
 namespace mel {
 
 //==============================================================================
@@ -39,7 +38,9 @@ public:
           enable_values_(Module<T>::channel_count_),
           disable_values_(Module<T>::channel_count_),
           expire_values_(Module<T>::channel_count_)
-    {}
+    {
+
+    }
 
     /// Default destructor
     virtual ~Output() {}
