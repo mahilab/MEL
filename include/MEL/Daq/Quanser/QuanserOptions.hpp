@@ -15,8 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QOPTIONS_HPP
-#define MEL_QOPTIONS_HPP
+#ifndef MEL_QUANSER_OPTIONS_HPP
+#define MEL_QUANSER_OPTIONS_HPP
 
 #include <MEL/Utility/Types.hpp>
 #include <string>
@@ -28,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Utility class for creating Quanser configuration strings
-class QOptions {
+class QuanserOptions {
 public:
     enum class UpdateRate {
         Normal = 1,  ///< 1 kHz
@@ -56,7 +56,7 @@ public:
     enum class LedMode { Auto = 0, User = 1 };
 
 public:
-    QOptions();
+    QuanserOptions();
 
     void set_update_rate(UpdateRate update_rate);
 
@@ -104,6 +104,6 @@ private:
 
 }  // namespace mel
 
-#endif  // MEL_QOPTIONS_HPP
+#endif // MEL_QUANSER_OPTIONS_HPP
 
 // http://www.quanser.com/Products/quarc/documentation/q8_usb.html

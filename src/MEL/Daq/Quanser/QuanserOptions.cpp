@@ -1,4 +1,4 @@
-#include <MEL/Daq/Quanser/QOptions.hpp>
+#include <MEL/Daq/Quanser/QuanserOptions.hpp>
 
 namespace mel {
 
@@ -6,55 +6,55 @@ namespace mel {
 // CLASS DEFINTIONS
 //==============================================================================
 
-QOptions::QOptions() :
+QuanserOptions::QuanserOptions() :
     update_rate_(UpdateRate::Fast),
     decimation_(1)
 { }
 
-void QOptions::set_decimation(uint32 decimation) {
+void QuanserOptions::set_decimation(uint32 decimation) {
     decimation_ = decimation;
 }
 
-void QOptions::set_update_rate(UpdateRate update_rate) {
+void QuanserOptions::set_update_rate(UpdateRate update_rate) {
     update_rate_ = update_rate;
 }
 
-void QOptions::set_encoder_direction(uint32 channel_number, EncoderDirection direction) {
+void QuanserOptions::set_encoder_direction(uint32 channel_number, EncoderDirection direction) {
     if (direction == EncoderDirection::Reversed)
         options_ += "enc" + std::to_string(channel_number) + "_dir=1;";
 }
 
-void QOptions::set_encoder_filter(uint32 channel_number, EncoderFilter filter) {
+void QuanserOptions::set_encoder_filter(uint32 channel_number, EncoderFilter filter) {
     if (filter == EncoderFilter::Filtered)
         options_ += "enc" + std::to_string(channel_number) + "_filter=1;";
 
 }
 
-void QOptions::set_encoder_detection_a(uint32 channel_number, EncoderDetection detection) {
+void QuanserOptions::set_encoder_detection_a(uint32 channel_number, EncoderDetection detection) {
     if (detection == EncoderDetection::Low)
         options_ += "enc" + std::to_string(channel_number) + "_a=1;";
 
 }
 
-void QOptions::set_encoder_detection_b(uint32 channel_number, EncoderDetection detection) {
+void QuanserOptions::set_encoder_detection_b(uint32 channel_number, EncoderDetection detection) {
     if (detection == EncoderDetection::Low)
         options_ += "enc" + std::to_string(channel_number) + "_b=1;";
 
 }
 
-void QOptions::set_encoder_detection_z(uint32 channel_number, EncoderDetection detection) {
+void QuanserOptions::set_encoder_detection_z(uint32 channel_number, EncoderDetection detection) {
     if (detection == EncoderDetection::Low)
         options_ += "enc" + std::to_string(channel_number) + "_z=1;";
 
 }
 
-void QOptions::set_encoder_reload(uint32 channel_number, EncoderReload reload) {
+void QuanserOptions::set_encoder_reload(uint32 channel_number, EncoderReload reload) {
     if (reload == EncoderReload::OnPulse)
         options_ += "enc" + std::to_string(channel_number) + "_reload=1;";
 
 }
 
-void QOptions::set_encoder_velocity(uint32 channel_number, double velocity) {
+void QuanserOptions::set_encoder_velocity(uint32 channel_number, double velocity) {
     if (velocity > 0.0) {
         std::string v = std::to_string(velocity);
         v.resize(7);
@@ -62,7 +62,7 @@ void QOptions::set_encoder_velocity(uint32 channel_number, double velocity) {
     }
 }
 
-void QOptions::set_analog_output_mode(uint32 channel_number, AoMode mode, double kff,
+void QuanserOptions::set_analog_output_mode(uint32 channel_number, AoMode mode, double kff,
     double a0, double a1, double a2, double b0, double b1, double post) {
 
     std::string ch = "ch" + std::to_string(channel_number) + "_";
@@ -86,20 +86,20 @@ void QOptions::set_analog_output_mode(uint32 channel_number, AoMode mode, double
     options_ += ch + "post=" + post_str + ";";
 }
 
-void QOptions::set_led_mode(LedMode mode) {
+void QuanserOptions::set_led_mode(LedMode mode) {
     if (mode == LedMode::Auto)
         options_ += "led=auto;";
     else if (mode == LedMode::User)
         options_ += "led=user;";
 }
 
-void QOptions::set_special_option(std::string option) {
+void QuanserOptions::set_special_option(std::string option) {
     if (option[option.length()-1] != ';')
         option += ";";
     options_ += option;
 }
 
-std::string QOptions::get_string() {
+std::string QuanserOptions::get_string() {
     std::string base_options = "";
     if (update_rate_ == UpdateRate::Fast)
         base_options += "update_rate=fast;";

@@ -144,24 +144,24 @@ bool Encoder::Channel::disable() {
 }
 
 double Encoder::Channel::get_position() {
-    position_ = module_->get_position(channel_number_);
+    position_ = static_cast<Encoder*>(module_)->get_position(channel_number_);
     return position_;
 }
 
 bool Encoder::Channel::zero() {
-    return module_->zero_channel(channel_number_);
+    return static_cast<Encoder*>(module_)->zero_channel(channel_number_);
 }
 
 bool Encoder::Channel::reset_count(int32 count) {
-    return module_->reset_count(channel_number_, count);
+    return static_cast<Encoder*>(module_)->reset_count(channel_number_, count);
 }
 
 bool Encoder::Channel::set_quadrature_factor(QuadFactor factor) {
-    return module_->set_quadrature_factor(channel_number_, factor);
+    return static_cast<Encoder*>(module_)->set_quadrature_factor(channel_number_, factor);
 }
 
 void Encoder::Channel::set_units_per_count(double units_per_count) {
-    module_->set_units_per_count(channel_number_, units_per_count);
+    static_cast<Encoder*>(module_)->set_units_per_count(channel_number_, units_per_count);
 }
 
 } // namespace mel

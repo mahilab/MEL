@@ -15,20 +15,20 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
-    QDaq("q2_usb", id, options),
-    analog_input(*this, {0, 1}),
-    analog_output(*this, {0, 1}),
-    digital_io(*this, {0, 1, 2, 3, 4, 5, 6, 7, 8},
-                      { QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Input,
-                        QDigitalInputOutput::Direction::Output }
+Q2Usb::Q2Usb(QuanserOptions options, bool auto_open, uint32 id) :
+    QuanserDaq("q2_usb", id, options),
+    AI(*this, {0, 1}),
+    AO(*this, {0, 1}),
+    DIO(*this, {0, 1, 2, 3, 4, 5, 6, 7, 8},
+                      { In,
+                        In,
+                        In,
+                        In,
+                        In,
+                        In,
+                        In,
+                        In,
+                        Out }
                       ),
     encoder(*this, {0, 1}),
     watchdog(*this, milliseconds(100))
@@ -36,13 +36,13 @@ Q2Usb::Q2Usb(QOptions options, bool open, uint32 id) :
     // increment next_id_
     ++next_id_;
     // add modules
-    add_module(static_cast<AnalogInput*>(&analog_input));
-    add_module(static_cast<AnalogOutput*>(&analog_output));
-    add_module(static_cast<DigitalInputOutput*>(&digital_io));
+    add_module(static_cast<AnalogInput*>(&AI));
+    add_module(static_cast<AnalogOutput*>(&AO));
+    add_module(static_cast<DigitalInputOutput*>(&DIO));
     add_module(static_cast<Encoder*>(&encoder));
     // if open true, open automatically
-    if (open)
-        Q2Usb::open();
+    if (auto_open)
+        open();
 }
 
 
@@ -54,7 +54,7 @@ Q2Usb::~Q2Usb() {
     // if open, close
     if (open_) {
         // set default options on program end
-        set_options(QOptions());
+        set_options(QuanserOptions());
         close();
     }
     // decrement next_id_
@@ -63,18 +63,18 @@ Q2Usb::~Q2Usb() {
 
 bool Q2Usb::open() {
     // open as QDaq
-    if (!QDaq::open())
+    if (!QuanserDaq::open())
         return false;
     // clear watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
     // set default expire values (digital = LOW, analog = 0.0V)
-    if (!analog_output.set_expire_values(std::vector<Voltage>(2, 0.0))) {
+    if (!AO.set_expire_values(std::vector<Voltage>(2, 0.0))) {
         close();
         return false;
     }
-    if (!digital_io.set_expire_values(std::vector<Logic>(9, Low))) {
+    if (!DIO.set_expire_values(std::vector<Logic>(9, Low))) {
         close();
         return false;
     }
@@ -91,7 +91,7 @@ bool Q2Usb::close() {
     // allow changes to take effect
     sleep(milliseconds(10));
     // close as QDaq
-    return QDaq::close();
+    return QuanserDaq::close();
 }
 
 bool Q2Usb::enable() {
@@ -101,11 +101,11 @@ bool Q2Usb::enable() {
         return false;
     }
     // enable each module
-    if (!analog_input.enable())
+    if (!AI.enable())
         return false;
-    if (!analog_output.enable())
+    if (!AO.enable())
         return false;
-    if (!digital_io.enable())
+    if (!DIO.enable())
         return false;
     if (!encoder.enable())
         return false;
@@ -121,11 +121,11 @@ bool Q2Usb::disable() {
         return false;
     }
     // disable each module
-    if (!analog_input.disable())
+    if (!AI.disable())
         return false;
-    if (!analog_output.disable())
+    if (!AO.disable())
         return false;
-    if (!digital_io.disable())
+    if (!DIO.disable())
         return false;
     if (!encoder.disable())
         return false;
@@ -144,7 +144,7 @@ bool Q2Usb::update_input() {
             << get_name() << " is not open";
         return false;
     }
-    if (analog_input.update() && encoder.update() && digital_io.update())
+    if (AI.update() && encoder.update() && DIO.update())
         return true;
     else {
         return false;
@@ -157,7 +157,7 @@ bool Q2Usb::update_output() {
             << get_name() << " is not open";
         return false;
     }
-    if (analog_output.update() && digital_io.update())
+    if (AO.update() && DIO.update())
         return true;
     else
         return false;
@@ -169,8 +169,8 @@ bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) 
             << get_name() << " is not open";
         return false;
     }
-    InputOutput<Logic>::Channel di_ch = digital_io.get_channel(input_channel_number);
-    InputOutput<Logic>::Channel do_ch = digital_io.get_channel(outout_channel_number);
+    InputOutput<Logic>::Channel di_ch = DIO.get_channel(input_channel_number);
+    InputOutput<Logic>::Channel do_ch = DIO.get_channel(outout_channel_number);
     for (int i = 0; i < 5; ++i) {
         do_ch.set_value(High);
         do_ch.update();
@@ -189,11 +189,11 @@ bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) 
 }
 
 void Q2Usb::set_led(Logic value) {
-    digital_io[8].set_value(value);
+    DIO[8].set_value(value);
 }
 
 std::size_t Q2Usb::get_q2_usb_count() {
-    return QDaq::get_qdaq_count("q2_usb");
+    return QuanserDaq::get_qdaq_count("q2_usb");
 }
 
 } // namespace mel

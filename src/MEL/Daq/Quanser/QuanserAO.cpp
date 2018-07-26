@@ -1,6 +1,6 @@
 #include <hil.h>
-#include <MEL/Daq/Quanser/QAnalogOutput.hpp>
-#include <MEL/Daq/Quanser/QDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserAO.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
 #include <MEL/Logging/Log.hpp>
 
 namespace mel {
@@ -9,17 +9,18 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QAnalogOutput::QAnalogOutput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-    Output(daq.get_name() + "_analog_output", channel_numbers),
+QuanserAO::QuanserAO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    Module(daq.get_name() + "_analog_output", IoType::OutputOnly, channel_numbers),
+    AnalogOutput(daq.get_name() + "_analog_output", channel_numbers),
     daq_(daq)
 {
 }
 
-QAnalogOutput::~QAnalogOutput() {
+QuanserAO::~QuanserAO() {
 
 }
 
-bool QAnalogOutput::enable() {
+bool QuanserAO::enable() {
     if (is_enabled())
         return Device::enable();
     set_values(enable_values_);
@@ -33,7 +34,7 @@ bool QAnalogOutput::enable() {
     }
 }
 
-bool QAnalogOutput::disable() {
+bool QuanserAO::disable() {
     if (!is_enabled())
         return Device::disable();
     set_values(disable_values_);
@@ -47,7 +48,7 @@ bool QAnalogOutput::disable() {
     }
 }
 
-bool QAnalogOutput::update() {
+bool QuanserAO::update() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
@@ -59,12 +60,12 @@ bool QAnalogOutput::update() {
         return true;
     else {
         LOG(Error) << "Failed to update " << get_name() << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogOutput::update_channel(uint32 channel_number) {
+bool QuanserAO::update_channel(uint32 channel_number) {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
@@ -76,12 +77,12 @@ bool QAnalogOutput::update_channel(uint32 channel_number) {
         return true;
     else {
         LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogOutput::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
+bool QuanserAO::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
     if (!Module::set_ranges(min_values, max_values))
         return false;
     if (!daq_.open_) {
@@ -97,12 +98,12 @@ bool QAnalogOutput::set_ranges(const std::vector<Voltage>& min_values, const std
     }
     else {
         LOG(Error) << "Failed to set " << get_name() << " ranges "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogOutput::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
+bool QuanserAO::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
     if (!Module::set_range(channel_number, min_value, max_value))
         return false;
     if (!daq_.open_) {
@@ -118,12 +119,12 @@ bool QAnalogOutput::set_range(uint32 channel_number, Voltage min_value, Voltage 
     }
     else {
         LOG(Error) << "Failed to set " << get_name() << " channel number " << channel_number << " range "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogOutput::set_expire_values(const std::vector<Voltage>& expire_values) {
+bool QuanserAO::set_expire_values(const std::vector<Voltage>& expire_values) {
     if (!Output::set_expire_values(expire_values))
         return false;
     if (!daq_.open_) {
@@ -139,12 +140,12 @@ bool QAnalogOutput::set_expire_values(const std::vector<Voltage>& expire_values)
     }
     else {
         LOG(Error) << "Failed to set " << get_name() << " expire values "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogOutput::set_expire_value(uint32 channel_number, Voltage expire_value) {
+bool QuanserAO::set_expire_value(uint32 channel_number, Voltage expire_value) {
     if (!Output::set_expire_value(channel_number, expire_value))
         return false;
     if (!daq_.open_) {
@@ -160,7 +161,7 @@ bool QAnalogOutput::set_expire_value(uint32 channel_number, Voltage expire_value
     }
     else {
         LOG(Error) << "Failed to set " << get_name() << " channel number " << channel_number << " expire value "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }

@@ -18,15 +18,15 @@
 #ifndef MEL_Q8USB_HPP
 #define MEL_Q8USB_HPP
 
-#include <MEL/Daq/Quanser/QAnalogInput.hpp>
-#include <MEL/Daq/Quanser/QAnalogOutput.hpp>
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QDigitalInput.hpp>
-#include <MEL/Daq/Quanser/QDigitalOutput.hpp>
-#include <MEL/Daq/Quanser/QEncoder.hpp>
-#include <MEL/Daq/Quanser/QOptions.hpp>
-#include <MEL/Daq/Quanser/QVelocity.hpp>
-#include <MEL/Daq/Quanser/QWatchdog.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserAI.hpp>
+#include <MEL/Daq/Quanser/QuanserAO.hpp>
+#include <MEL/Daq/Quanser/QuanserDI.hpp>
+#include <MEL/Daq/Quanser/QuanserDO.hpp>
+#include <MEL/Daq/Quanser/QuanserEncoder.hpp>
+#include <MEL/Daq/Quanser/QuanserOptions.hpp>
+#include <MEL/Daq/Quanser/QuanserVelocity.hpp>
+#include <MEL/Daq/Quanser/QuanserWatchdog.hpp>
 
 namespace mel {
 
@@ -35,11 +35,11 @@ namespace mel {
 //==============================================================================
 
 /// Quanser Q8 USB class
-class Q8Usb : public QDaq {
+class Q8Usb : public QuanserDaq {
 public:
     /// Default constructor
-    Q8Usb(QOptions options                        = QOptions(),
-          bool open                               = true,
+    Q8Usb(QuanserOptions options                  = QuanserOptions(),
+          bool auto_open                          = true,
           bool perform_sanity_check               = true,
           const std::vector<uint32>& ai_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
           const std::vector<uint32>& ao_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
@@ -103,13 +103,13 @@ public:
     static std::size_t get_q8_usb_count();
 
 public:
-    QAnalogInput analog_input;      ///< The analog input Module
-    QAnalogOutput analog_output;    ///< The analog output Module
-    QDigitalInput digital_input;    ///< The digital input Module
-    QDigitalOutput digital_output;  ///< The digital output Module
-    QEncoder encoder;               ///< The encoder Module
-    QVelocity velocity;             ///< The encoder velocity Module
-    QWatchdog watchdog;             ///< The watchdog timer of this Q8 USB
+    QuanserAI      AI;         ///< The analog input Module
+    QuanserAO      AO;         ///< The analog output Module
+    QuanserDI      DI;         ///< The digital input Module
+    QuanserDO      DO;         ///< The digital output Module
+    QuanserEncoder  encoder;   ///< The encoder Module
+    QuanserVelocity velocity;  ///< The encoder velocity Module
+    QuanserWatchdog watchdog;  ///< The watchdog timer of this Q8 USB
 
 private:
     /// Quarc can sometimes fail to properly intialize a Q8 USB even if it says
@@ -122,8 +122,7 @@ private:
 private:
     bool perform_sanity_check_;  ///< If true, the sanity check will be
                                  ///< performed on enable
-    static uint32
-        next_id_;  ///< Static counter that determines the next ID# to use
+    static uint32     next_id_;  ///< Static counter that determines the next ID# to use
 };
 
 }  // namespace mel

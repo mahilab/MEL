@@ -15,11 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QANALOGOUTPUT_HPP
-#define MEL_QANALOGOUTPUT_HPP
+#ifndef MEL_QUANSER_VELOCITY_HPP
+#define MEL_QUANSER_VELOCITY_HPP
 
-#include <MEL/Daq/Output.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Daq/Velocity.hpp>
 
 namespace mel {
 
@@ -27,17 +26,18 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+class QuanserDaq;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class QAnalogOutput : public AnalogOutput, NonCopyable {
+/// Quanser implementation of Encoder
+class QuanserVelocity : public Velocity {
 public:
-    QAnalogOutput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserVelocity(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    ~QAnalogOutput();
+    ~QuanserVelocity();
 
     bool enable() override;
 
@@ -47,21 +47,29 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
-    bool set_ranges(const std::vector<Voltage>& min_values,
-                    const std::vector<Voltage>& max_values) override;
+    bool set_quadrature_factors(
+        const std::vector<QuadFactor>& factors) override;
 
-    bool set_range(uint32 channel_number,
-                   Voltage min_value,
-                   Voltage max_value) override;
+    bool set_quadrature_factor(uint32 channel_number,
+                               QuadFactor factor) override;
 
-    bool set_expire_values(const std::vector<Voltage>& expire_values) override;
-
-    bool set_expire_value(uint32 channel_number, Voltage expire_value) override;
+    const std::vector<uint32>& get_converted_channel_numbers();
 
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
+    /// Quanser velocity channels start on 14000. This ensures that 0 based and
+    /// 14000 based channel numbers are always converted to 14000 based.
+    static uint32 convert_channel_number(uint32 channel_number);
+
+    /// Performs convert_channel_number on a vector of channel numbers
+    static std::vector<uint32> convert_channel_numbers(
+        const std::vector<uint32>& channel_numbers);
+
+private:
+    const std::vector<uint32>
+        converted_channel_numbers_;  ///< Converted channel numbers
+    QuanserDaq& daq_;                      ///< Reference to parent QDaq
 };
 
 }  // namespace mel
 
-#endif  // MEL_QANALOGOUTPUT_HPP
+#endif // MEL_QUANSER_VELOCITY_HPP

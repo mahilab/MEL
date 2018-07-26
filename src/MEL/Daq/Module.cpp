@@ -11,6 +11,15 @@ ModuleBase::ModuleBase(const std::string& name, IoType type, const std::vector<u
     channel_map_(make_channel_map(channel_numbers_))
 { }
 
+bool ModuleBase::update() {
+    bool success = true;
+    for (std::size_t i = 0; i < channel_numbers_.size(); ++i) {
+        if (!update_channel(channel_numbers_[i]))
+            success = false;
+    }
+    return success;
+}
+
 const std::vector<uint32>& ModuleBase::get_channel_numbers() const {
     return channel_numbers_;
 }

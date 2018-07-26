@@ -1,5 +1,5 @@
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QAnalogInput.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserAI.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <hil.h>
 
@@ -9,25 +9,26 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QAnalogInput::QAnalogInput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-    Input(daq.get_name() + "_analog_input", channel_numbers),
+QuanserAI::QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    Module(daq.get_name() + "_analog_input", IoType::InputOnly, channel_numbers),
+    AnalogInput(daq.get_name() + "_analog_input", channel_numbers),
     daq_(daq)
 {
 }
 
-QAnalogInput::~QAnalogInput() {
+QuanserAI::~QuanserAI() {
 
 }
 
-bool QAnalogInput::enable() {
+bool QuanserAI::enable() {
     return Device::enable();
 }
 
-bool QAnalogInput::disable() {
+bool QuanserAI::disable() {
     return Device::disable();
 }
 
-bool QAnalogInput::update() {
+bool QuanserAI::update() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
@@ -39,12 +40,12 @@ bool QAnalogInput::update() {
         return true;
     else {
         LOG(Error) << "Failed to update " << get_name() << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogInput::update_channel(uint32 channel_number) {
+bool QuanserAI::update_channel(uint32 channel_number) {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << daq_.get_name() << " is not open";
@@ -56,12 +57,12 @@ bool QAnalogInput::update_channel(uint32 channel_number) {
         return true;
     else {
         LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogInput::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
+bool QuanserAI::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -77,12 +78,12 @@ bool QAnalogInput::set_ranges(const std::vector<Voltage>& min_values, const std:
     }
     else {
         LOG(Error) << "Failed to set " << get_name() << " ranges "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QAnalogInput::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
+bool QuanserAI::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -98,7 +99,7 @@ bool QAnalogInput::set_range(uint32 channel_number, Voltage min_value, Voltage m
     }
     else {
         LOG(Error) << "Failed to set " << get_name() << " channel number " << channel_number << " range "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }

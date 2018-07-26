@@ -15,10 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QDIGITALINPUT_HPP
-#define MEL_QDIGITALINPUT_HPP
+#ifndef MEL_QUANSER_DO_HPP
+#define MEL_QUANSER_DO_HPP
 
-#include <MEL/Daq/Input.hpp>
+#include <MEL/Daq/Output.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
@@ -27,17 +27,17 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+class QuanserDaq;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class QDigitalInput : public DigitalInput, NonCopyable {
+class QuanserDO : public DigitalOutput, NonCopyable {
 public:
-    QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    ~QDigitalInput();
+    ~QuanserDO();
 
     bool enable() override;
 
@@ -49,11 +49,15 @@ public:
 
     std::vector<char>& get_quanser_values();
 
+    bool set_expire_values(const std::vector<Logic>& expire_values) override;
+
+    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
+    QuanserDaq& daq_;  ///< Reference to parent QDaq
     std::vector<char> quanser_values_;
 };
 
 }  // namespace mel
 
-#endif  // MEL_QDIGITALINPUT_HPP
+#endif  // MEL_QUANSER_DO_HPP

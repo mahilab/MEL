@@ -15,11 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QDIGITALINPUTOUTPUT_HPP
-#define MEL_QDIGITALINPUTOUTPUT_HPP
+#ifndef MEL_QUANSER_ENCODER_HPP
+#define MEL_QUANSER_ENCODER_HPP
 
-#include <MEL/Daq/InputOutput.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Daq/Encoder.hpp>
 
 namespace mel {
 
@@ -27,19 +26,18 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+class QuanserDaq;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class QDigitalInputOutput : public DigitalInputOutput, NonCopyable {
+/// Quanser implementation of Encoder
+class QuanserEncoder : public Encoder {
 public:
-    QDigitalInputOutput(QDaq& daq,
-                        const std::vector<uint32>& channel_numbers,
-                        const std::vector<Direction>& directions);
+    QuanserEncoder(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    ~QDigitalInputOutput();
+    ~QuanserEncoder();
 
     bool enable() override;
 
@@ -49,18 +47,20 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
-    bool set_directions(const std::vector<Direction>& directions) override;
+    bool reset_counts(const std::vector<int32>& counts) override;
 
-    bool set_direction(uint32 channel_number, Direction direction) override;
+    bool reset_count(uint32 channel_number, int32 count) override;
 
-    bool set_expire_values(const std::vector<Logic>& expire_values) override;
+    bool set_quadrature_factors(
+        const std::vector<QuadFactor>& factors) override;
 
-    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+    bool set_quadrature_factor(uint32 channel_number,
+                               QuadFactor factor) override;
 
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
+    QuanserDaq& daq_;  ///< Reference to parent QDaq
 };
 
 }  // namespace mel
 
-#endif  // MEL_QDIGITALINPUTOUTPUT_HPP
+#endif  // MEL_QUANSER_ENCODER_HPP

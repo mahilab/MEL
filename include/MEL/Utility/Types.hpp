@@ -55,6 +55,12 @@ enum Logic {
     High = 1  ///< High TTL level (typically 5V)
 };
 
+/// Represents a digital pin direction
+enum Direction {
+    In,  ///< Digital input
+    Out  ///< Digital output
+};
+
 /// Represents encoder quadrature factors
 enum QuadFactor {
     X0   = 0,  ///< no quadrature

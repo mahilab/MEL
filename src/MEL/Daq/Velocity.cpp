@@ -117,16 +117,16 @@ namespace mel {
     }
 
     double Velocity::Channel::get_velocity() {
-        velocity_ = module_->get_velocity(channel_number_);
+        velocity_ = static_cast<Velocity*>(module_)->get_velocity(channel_number_);
         return velocity_;
     }
 
     bool Velocity::Channel::set_quadrature_factor(QuadFactor factor) {
-        return module_->set_quadrature_factor(channel_number_, factor);
+        return static_cast<Velocity*>(module_)->set_quadrature_factor(channel_number_, factor);
     }
 
     void Velocity::Channel::set_units_per_count(double units_per_count) {
-        module_->set_units_per_count(channel_number_, units_per_count);
+        static_cast<Velocity*>(module_)->set_units_per_count(channel_number_, units_per_count);
     }
 
 } // namespace mel

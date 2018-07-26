@@ -15,10 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QDIGITALOUTPUT_HPP
-#define MEL_QDIGITALOUTPUT_HPP
+#ifndef MEL_QUANSER_AI_HPP
+#define MEL_QUANSER_AI_HPP
 
-#include <MEL/Daq/Output.hpp>
+#include <MEL/Daq/Input.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
@@ -27,17 +27,17 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+class QuanserDaq;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class QDigitalOutput : public DigitalOutput, NonCopyable {
+class QuanserAI : public AnalogInput, NonCopyable {
 public:
-    QDigitalOutput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    ~QDigitalOutput();
+    ~QuanserAI();
 
     bool enable() override;
 
@@ -47,17 +47,17 @@ public:
 
     bool update_channel(uint32 channel_number) override;
 
-    std::vector<char>& get_quanser_values();
+    bool set_ranges(const std::vector<Voltage>& min_values,
+                    const std::vector<Voltage>& max_values) override;
 
-    bool set_expire_values(const std::vector<Logic>& expire_values) override;
-
-    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+    bool set_range(uint32 channel_number,
+                   Voltage min_value,
+                   Voltage max_value) override;
 
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
-    std::vector<char> quanser_values_;
+    QuanserDaq& daq_;  ///< Reference to parent QDaq
 };
 
 }  // namespace mel
 
-#endif  // MEL_QDIGITALOUTPUT_HPP
+#endif  // MEL_QUANSER_AI_HPP

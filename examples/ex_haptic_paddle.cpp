@@ -300,9 +300,9 @@ int main(int argc, char* argv[]) {
     Q8Usb q8;
 
     // create Haptic Paddle
-    HapticPaddle hp(q8.digital_output[7],
-                       q8.analog_output[0],
-                       q8.analog_input[2]);
+    HapticPaddle hp(q8.DO[7],
+                       q8.AO[0],
+                       q8.AI[2]);
 
     // enable Q8 Usb
     q8.enable();

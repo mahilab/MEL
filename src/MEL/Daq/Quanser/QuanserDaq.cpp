@@ -1,4 +1,4 @@
-#include <MEL/Daq/Quanser/QDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <quanser_messages.h>
@@ -14,7 +14,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QDaq::QDaq(const std::string& card_type, uint32 id, QOptions options) :
+QuanserDaq::QuanserDaq(const std::string& card_type, uint32 id, QuanserOptions options) :
     Daq("QDaq::" + card_type + "_" + std::to_string(id)),
     card_type_(card_type),
     id_(id),
@@ -22,11 +22,11 @@ QDaq::QDaq(const std::string& card_type, uint32 id, QOptions options) :
 {
 }
 
-QDaq::~QDaq() {
+QuanserDaq::~QuanserDaq() {
 
 }
 
-bool QDaq::open() {
+bool QuanserDaq::open() {
     if (open_)
         return false; // already open
     t_error result;
@@ -56,7 +56,7 @@ bool QDaq::open() {
     exit(1);
 }
 
-bool QDaq::close() {
+bool QuanserDaq::close() {
     if (!open_)
         return false;
     t_error result;
@@ -73,7 +73,7 @@ bool QDaq::close() {
     }
 }
 
-bool QDaq::set_options(const QOptions& options) {
+bool QuanserDaq::set_options(const QuanserOptions& options) {
     if (!open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                    << get_name() << " is not open";
@@ -96,11 +96,11 @@ bool QDaq::set_options(const QOptions& options) {
     }
 }
 
-QOptions QDaq::get_options() {
+QuanserOptions QuanserDaq::get_options() {
     return options_;
 }
 
-std::size_t QDaq::get_qdaq_count(const std::string& card_type) {
+std::size_t QuanserDaq::get_qdaq_count(const std::string& card_type) {
     std::size_t id = 0;
     std::vector<t_card> qdaqs;
     t_error result;
@@ -121,7 +121,7 @@ std::size_t QDaq::get_qdaq_count(const std::string& card_type) {
     return id;
 }
 
-std::string QDaq::get_quanser_error_message(int error, bool format) {
+std::string QuanserDaq::get_quanser_error_message(int error, bool format) {
     TCHAR message[512];
     msg_get_error_message(NULL, error, message, sizeof(message));
     if (format)

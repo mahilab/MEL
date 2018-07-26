@@ -1,5 +1,5 @@
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QVelocity.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserVelocity.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <hil.h>
@@ -10,26 +10,26 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QVelocity::QVelocity(QDaq& daq, const std::vector<uint32>& channel_numbers) :
+    QuanserVelocity::QuanserVelocity(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
         Velocity(daq.get_name() + "_velocity", channel_numbers),
         converted_channel_numbers_(convert_channel_numbers(channel_numbers)),
         daq_(daq)
     {
     }
 
-    QVelocity::~QVelocity() {
+    QuanserVelocity::~QuanserVelocity() {
 
     }
 
-    bool QVelocity::enable() {
+    bool QuanserVelocity::enable() {
         return Device::enable();
     }
 
-    bool QVelocity::disable() {
+    bool QuanserVelocity::disable() {
         return Device::disable();
     }
 
-    bool QVelocity::update() {
+    bool QuanserVelocity::update() {
         if (!daq_.open_) {
             LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
@@ -41,12 +41,12 @@ namespace mel {
             return true;
         else {
             LOG(Error) << "Failed to update " << get_name() << " "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    bool QVelocity::update_channel(uint32 channel_number) {
+    bool QuanserVelocity::update_channel(uint32 channel_number) {
         if (!daq_.open_) {
             LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
@@ -59,31 +59,31 @@ namespace mel {
             return true;
         else {
             LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    bool QVelocity::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
+    bool QuanserVelocity::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
         return Velocity::set_quadrature_factors(factors);
     }
 
-    bool QVelocity::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
+    bool QuanserVelocity::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
         return Velocity::set_quadrature_factor(channel_number, factor);
     }
 
-    const std::vector<uint32>& QVelocity::get_converted_channel_numbers() {
+    const std::vector<uint32>& QuanserVelocity::get_converted_channel_numbers() {
         return converted_channel_numbers_;
     }
 
 
-    uint32 QVelocity::convert_channel_number(uint32 channel_number) {
+    uint32 QuanserVelocity::convert_channel_number(uint32 channel_number) {
         if (channel_number < 14000)
             channel_number += 14000;
         return channel_number;
     }
 
-    std::vector<uint32> QVelocity::convert_channel_numbers(const std::vector<uint32>& channel_numbers) {
+    std::vector<uint32> QuanserVelocity::convert_channel_numbers(const std::vector<uint32>& channel_numbers) {
         std::vector<uint32> new_channel_numbers = channel_numbers;
         for (std::size_t i = 0; i < channel_numbers.size(); ++i) {
             new_channel_numbers[i] = convert_channel_number(channel_numbers[i]);

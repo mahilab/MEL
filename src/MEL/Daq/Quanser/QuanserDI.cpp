@@ -1,5 +1,5 @@
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QDigitalInput.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserDI.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <hil.h>
 
@@ -9,26 +9,27 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QDigitalInput::QDigitalInput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-        Input(daq.get_name() + "_digital_input", channel_numbers),
+    QuanserDI::QuanserDI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+        Module(daq.get_name() + "_digital_input", IoType::InputOnly, channel_numbers),
+        DigitalInput(daq.get_name() + "_digital_input", channel_numbers),
         daq_(daq),
         quanser_values_(channel_count_, char(0))
     {
     }
 
-    QDigitalInput::~QDigitalInput() {
+    QuanserDI::~QuanserDI() {
 
     }
 
-    bool QDigitalInput::enable() {
+    bool QuanserDI::enable() {
         return Device::enable();
     }
 
-    bool QDigitalInput::disable() {
+    bool QuanserDI::disable() {
         return Device::disable();
     }
 
-    bool QDigitalInput::update() {
+    bool QuanserDI::update() {
         if (!daq_.open_) {
             LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
@@ -44,12 +45,12 @@ namespace mel {
         }
         else {
             LOG(Error) << "Failed to update " << get_name() << " "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    bool QDigitalInput::update_channel(uint32 channel_number) {
+    bool QuanserDI::update_channel(uint32 channel_number) {
         if (!daq_.open_) {
             LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
@@ -63,12 +64,12 @@ namespace mel {
         }
         else {
             LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    std::vector<char>& QDigitalInput::get_quanser_values() {
+    std::vector<char>& QuanserDI::get_quanser_values() {
         return quanser_values_;
     }
 

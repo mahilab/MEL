@@ -19,6 +19,7 @@
 #define MEL_CHANNELBASE_HPP
 
 #include <MEL/Utility/Types.hpp>
+#include <MEL/Daq/Module.hpp>
 
 namespace mel {
 
@@ -26,14 +27,14 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-template <typename T, typename M>
+template <typename T>
 class ChannelBase {
 public:
     /// Default constructor. Creates invalid channel
     ChannelBase() : module_(nullptr), channel_number_(0) {}
 
     /// Creates a valid channel.
-    ChannelBase(M* module, uint32 channel_number)
+    ChannelBase(Module<T>* module, uint32 channel_number)
         : module_(module), channel_number_(channel_number) {}
 
     /// Destructor
@@ -67,7 +68,7 @@ public:
     }
 
 protected:
-    M* module_;              ///< Pointer to the module this channel is on
+    Module<T>* module_;      ///< Pointer to the module this channel is on
     uint32 channel_number_;  ///< The channel number of this channel
 };
 

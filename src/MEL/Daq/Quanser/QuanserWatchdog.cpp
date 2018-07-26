@@ -1,6 +1,6 @@
 #include <hil.h>
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QWatchdog.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserWatchdog.hpp>
 #include <MEL/Logging/Log.hpp>
 
 namespace mel {
@@ -9,16 +9,16 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QWatchdog::QWatchdog(QDaq& daq, Time timeout) :
+QuanserWatchdog::QuanserWatchdog(QuanserDaq& daq, Time timeout) :
     Watchdog(timeout),
     daq_(daq)
 { }
 
-QWatchdog::~QWatchdog() {
+QuanserWatchdog::~QuanserWatchdog() {
 
 }
 
-bool QWatchdog::start() {
+bool QuanserWatchdog::start() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -32,13 +32,13 @@ bool QWatchdog::start() {
     }
     else {
         LOG(Error) << "Failed to start watchdog on " << daq_.get_name() << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
 
         return false;
     }
 }
 
-bool QWatchdog::kick() {
+bool QuanserWatchdog::kick() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -56,12 +56,12 @@ bool QWatchdog::kick() {
     }
     else {
         LOG(Error) << "Failed to kick watchdog on " << daq_.get_name() << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QWatchdog::stop() {
+bool QuanserWatchdog::stop() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -76,12 +76,12 @@ bool QWatchdog::stop() {
     }
     else {
         LOG(Error) << "Failed to stop watchdog on " << daq_.get_name() << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QWatchdog::is_expired() {
+bool QuanserWatchdog::is_expired() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -99,12 +99,12 @@ bool QWatchdog::is_expired() {
     else {
         LOG(Error) << "Failed to check expiration of watchdog on "
                    << daq_.get_name() << " "
-                   << QDaq::get_quanser_error_message(result);
+                   << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
-bool QWatchdog::clear() {
+bool QuanserWatchdog::clear() {
     if (!daq_.open_) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << daq_.get_name() << " is not open";
@@ -118,7 +118,7 @@ bool QWatchdog::clear() {
     }
     else {
         LOG(Error) << "Failed to clear watchdog on " << daq_.get_name() << " "
-            << QDaq::get_quanser_error_message(result);
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }

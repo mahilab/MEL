@@ -15,11 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QANALOGINPUT_HPP
-#define MEL_QANALOGINPUT_HPP
+#ifndef MEL_QUANSER_WATCHDOG_HPP
+#define MEL_QUANSER_WATCHDOG_HPP
 
-#include <MEL/Daq/Input.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Daq/Watchdog.hpp>
 
 namespace mel {
 
@@ -27,37 +26,35 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+class QuanserDaq;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class QAnalogInput : public AnalogInput, NonCopyable {
+/// Encapsulates a hardware watchdog timer
+class QuanserWatchdog : public Watchdog {
 public:
-    QAnalogInput(QDaq& daq, const std::vector<uint32>& channel_numbers);
+    /// Default constructor
+    QuanserWatchdog(QuanserDaq& daq, Time timeout);
 
-    ~QAnalogInput();
+    /// Default destructor. Stops the watchdog if watching
+    ~QuanserWatchdog();
 
-    bool enable() override;
+    bool start() override;
 
-    bool disable() override;
+    bool kick() override;
 
-    bool update() override;
+    bool stop() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool is_expired() override;
 
-    bool set_ranges(const std::vector<Voltage>& min_values,
-                    const std::vector<Voltage>& max_values) override;
-
-    bool set_range(uint32 channel_number,
-                   Voltage min_value,
-                   Voltage max_value) override;
+    bool clear() override;
 
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
+    QuanserDaq& daq_;  ///< Reference to parent QDaq
 };
 
 }  // namespace mel
 
-#endif  // MEL_QANALOGINPUT_HPP
+#endif // MEL_QUANSER_WATCHDOG_HPP

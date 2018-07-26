@@ -1,6 +1,6 @@
 #include <hil.h>
-#include <MEL/Daq/Quanser/QDaq.hpp>
-#include <MEL/Daq/Quanser/QDigitalOutput.hpp>
+#include <MEL/Daq/Quanser/QuanserDaq.hpp>
+#include <MEL/Daq/Quanser/QuanserDO.hpp>
 #include <MEL/Logging/Log.hpp>
 
 namespace mel {
@@ -9,18 +9,19 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QDigitalOutput::QDigitalOutput(QDaq& daq, const std::vector<uint32>& channel_numbers) :
-        Output(daq.get_name() + "_digital_output", channel_numbers),
+    QuanserDO::QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+        Module(daq.get_name() + "_digital_oputput", IoType::OutputOnly, channel_numbers),
+        DigitalOutput(daq.get_name() + "_digital_oputput", channel_numbers),
         daq_(daq),
         quanser_values_(channel_count_, char(0))
     {
     }
 
-    QDigitalOutput::~QDigitalOutput() {
+    QuanserDO::~QuanserDO() {
 
     }
 
-    bool QDigitalOutput::enable() {
+    bool QuanserDO::enable() {
         if (is_enabled())
             return Device::enable();
         set_values(enable_values_);
@@ -34,7 +35,7 @@ namespace mel {
         }
     }
 
-    bool QDigitalOutput::disable() {
+    bool QuanserDO::disable() {
         if (!is_enabled())
             return Device::disable();
         set_values(disable_values_);
@@ -48,7 +49,7 @@ namespace mel {
         }
     }
 
-    bool QDigitalOutput::update() {
+    bool QuanserDO::update() {
         if (!daq_.open_) {
             LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
@@ -63,12 +64,12 @@ namespace mel {
             return true;
         else {
             LOG(Error) << "Failed to update " << get_name() << " "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    bool QDigitalOutput::update_channel(uint32 channel_number) {
+    bool QuanserDO::update_channel(uint32 channel_number) {
         if (!daq_.open_) {
             LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
                        << daq_.get_name() << " is not open";
@@ -82,17 +83,17 @@ namespace mel {
             return true;
         else {
             LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
 
-    std::vector<char>& QDigitalOutput::get_quanser_values() {
+    std::vector<char>& QuanserDO::get_quanser_values() {
         return quanser_values_;
     }
 
-    bool QDigitalOutput::set_expire_values(const std::vector<Logic>& expire_values) {
+    bool QuanserDO::set_expire_values(const std::vector<Logic>& expire_values) {
         if (!Output::set_expire_values(expire_values))
             return false;
         if (!daq_.open_) {
@@ -116,12 +117,12 @@ namespace mel {
         }
         else {
             LOG(Error) << "Failed to set " << get_name() << " expire values "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    bool QDigitalOutput::set_expire_value(uint32 channel_number, Logic expire_value) {
+    bool QuanserDO::set_expire_value(uint32 channel_number, Logic expire_value) {
         if (!Output::set_expire_value(channel_number, expire_value))
             return false;
         if (!daq_.open_) {
@@ -143,7 +144,7 @@ namespace mel {
         }
         else {
             LOG(Error) << "Failed to set " << get_name() << " channel number " << channel_number << " expire value "
-                << QDaq::get_quanser_error_message(result);
+                << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }

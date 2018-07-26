@@ -15,52 +15,39 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QENCODER_HPP
-#define MEL_QENCODER_HPP
+#ifndef MEL_MYRIOAI_HPP
+#define MEL_MYRIOAI_HPP
 
-#include <MEL/Daq/Encoder.hpp>
-
-namespace mel {
+#include <MEL/Daq/Input.hpp>
+#include <MEL/Utility/NonCopyable.hpp>
 
 //==============================================================================
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+namespace mel {
+
+class MyRio;
+enum MyRioConnectorType : int;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-/// Quanser implementation of Encoder
-class QEncoder : public Encoder {
+class MyRioAI : public AnalogInput, NonCopyable {
 public:
-    QEncoder(QDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    ~QEncoder();
-
-    bool enable() override;
-
-    bool disable() override;
-
-    bool update() override;
+    MyRioAI(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers);
 
     bool update_channel(uint32 channel_number) override;
 
-    bool reset_counts(const std::vector<int32>& counts) override;
-
-    bool reset_count(uint32 channel_number, int32 count) override;
-
-    bool set_quadrature_factors(
-        const std::vector<QuadFactor>& factors) override;
-
-    bool set_quadrature_factor(uint32 channel_number,
-                               QuadFactor factor) override;
-
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
+
+    MyRio& daq_;
+    MyRioConnectorType type_;
+
 };
 
 }  // namespace mel
 
-#endif  // MEL_QENCODER_HPP
+#endif  // MEL_MYRIOAI_HPP

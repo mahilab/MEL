@@ -15,10 +15,11 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QWATCHDOG_HPP
-#define MEL_QWATCHDOG_HPP
+#ifndef MEL_QUANSER_DI_HPP
+#define MEL_QUANSER_DI_HPP
 
-#include <MEL/Daq/Watchdog.hpp>
+#include <MEL/Daq/Input.hpp>
+#include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
 
@@ -26,35 +27,33 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class QDaq;
+class QuanserDaq;
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-/// Encapsulates a hardware watchdog timer
-class QWatchdog : public Watchdog {
+class QuanserDI : public DigitalInput, NonCopyable {
 public:
-    /// Default constructor
-    QWatchdog(QDaq& daq, Time timeout);
+    QuanserDI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
-    /// Default destructor. Stops the watchdog if watching
-    ~QWatchdog();
+    ~QuanserDI();
 
-    bool start() override;
+    bool enable() override;
 
-    bool kick() override;
+    bool disable() override;
 
-    bool stop() override;
+    bool update() override;
 
-    bool is_expired() override;
+    bool update_channel(uint32 channel_number) override;
 
-    bool clear() override;
+    std::vector<char>& get_quanser_values();
 
 private:
-    QDaq& daq_;  ///< Reference to parent QDaq
+    QuanserDaq& daq_;  ///< Reference to parent QDaq
+    std::vector<char> quanser_values_;
 };
 
 }  // namespace mel
 
-#endif  // MEL_QWATCHDOG_HPP
+#endif  // MEL_QUANSER_DI_HPP
