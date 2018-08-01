@@ -51,8 +51,7 @@ int main() {
     // This intializes the default MEL Logger. Severity levels Verbose and above
     // will be written to a rolling log file MEL.log, and severity levels
     // Info and above will be written to the console with color formatting.
-    init_logger();
-
+    
     LOG(Debug) << "This is a Debug log";      // goes nowhere by default
     LOG(Verbose) << "This is a Verbose log";  // goes to MEL.log only
     LOG(Info) << "This is an Info log";       // goes to MEL.log and console

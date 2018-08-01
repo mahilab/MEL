@@ -18,6 +18,7 @@
 #ifndef MEL_FREQUENCY_HPP
 #define MEL_FREQUENCY_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/Types.hpp>
 
 namespace mel {
@@ -29,7 +30,7 @@ class Time;
 //==============================================================================
 
 /// Represents a frequency value
-class Frequency {
+class MEL_API Frequency {
 public:
     /// Default constructor. Sets frequency value to zero. To construct valued
     /// frequency objects, use hertz(), kilohertz() or megahertz()
@@ -55,9 +56,9 @@ public:
     static const Frequency Inf;  ///< Predfined "infinite" frequency value
 
 private:
-    friend Frequency hertz(int64);
-    friend Frequency kilohertz(int32);
-    friend Frequency megahertz(double);
+    friend MEL_API Frequency hertz(int64);
+    friend MEL_API Frequency kilohertz(int32);
+    friend MEL_API Frequency megahertz(double);
 
     /// Internal constructor from a number of hertz
     explicit Frequency(int64 hertz);
@@ -71,13 +72,13 @@ private:
 //==============================================================================
 
 /// Construct a time value from a number of seconds
-Frequency hertz(int64 amount);
+MEL_API Frequency hertz(int64 amount);
 
 /// Construct a time value from a number of milliseconds
-Frequency kilohertz(int32 amount);
+MEL_API Frequency kilohertz(int32 amount);
 
 /// Construct a time value from a number of microseconds
-Frequency megahertz(double amount);
+MEL_API Frequency megahertz(double amount);
 
 }  // namespace mel
 

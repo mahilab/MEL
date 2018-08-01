@@ -29,7 +29,7 @@ namespace mel {
 //==========================================================================
 
 /// Encapsulates an incremental optical encoder module
-class Velocity : public Module<double> {
+class MEL_API Velocity : public Module<double> {
 public:
     class Channel;
 
@@ -92,7 +92,7 @@ protected:
 
 public:
     /// Encapsulates and EncoderModule channel, which is also a PositionSensor
-    class Channel : public ChannelBase<double>,
+    class MEL_API Channel : public ChannelBase<double>,
                     public VelocitySensor {
     public:
         /// Default constructor. Creates invalid channel

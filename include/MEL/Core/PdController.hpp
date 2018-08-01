@@ -18,13 +18,15 @@
 #ifndef MEL_PDCONTROLLER_HPP
 #define MEL_PDCONTROLLER_HPP
 
+#include <MEL/Config.hpp>
+
 namespace mel {
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
-class PdController {
+class MEL_API PdController {
 public:
     /// Constructor
     PdController(double kp = 0.0, double kd = 0.0);

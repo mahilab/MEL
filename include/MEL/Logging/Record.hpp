@@ -18,6 +18,7 @@
 #ifndef MEL_RECORD_HPP
 #define MEL_RECORD_HPP
 
+#include <MEL/Config.hpp>
 #include <sys/stat.h>
 #include <MEL/Logging/Severity.hpp>
 #include <MEL/Utility/Console.hpp>
@@ -95,7 +96,7 @@ operator<<(std::wostringstream& stream, const T& data) {
 //==============================================================================
 //
 /// Encapsulates a log line record
-class Record {
+class MEL_API Record {
 public:
     /// Constructor
     Record(Severity severity,
@@ -152,7 +153,7 @@ private:
     mutable std::string message_str_;  ///< message string
 };
 
-inline std::string process_function_name(const char* func);
+inline MEL_API std::string process_function_name(const char* func);
 
 }  // namespace mel
 

@@ -18,6 +18,7 @@
 #ifndef MEL_NAMEDMUTEX_HPP
 #define MEL_NAMEDMUTEX_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
 #include <memory>
 #include <string>
@@ -29,7 +30,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple processes
-class NamedMutex : public Lockable, NonCopyable {
+class MEL_API NamedMutex : public Lockable, NonCopyable {
 public:
     /// The mode by which a mutex is constructed
     enum Mode {

@@ -19,6 +19,7 @@
 #ifndef MEL_JOINT_HPP
 #define MEL_JOINT_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/PositionSensor.hpp>
@@ -32,15 +33,15 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Joint : public Device {
+class MEL_API Joint : public Device {
 public:
     /// Constructor
     Joint(const std::string& name,
-          Actuator& actuator,
+          Actuator* actuator,
           double actuator_transmission,
-          PositionSensor& position_sensor,
+          PositionSensor* position_sensor,
           double position_sensor_transmission,
-          VelocitySensor& velocity_sensor,
+          VelocitySensor* velocity_sensor,
           double velocity_sensor_transmission,
           std::array<double, 2> position_limits,
           double velocity_limit,
@@ -89,42 +90,42 @@ public:
 
     /// Gets the Joint Actuator
     template <class T = Actuator>
-    T& get_actuator() {
-        return static_cast<T&>(actuator_);
+    T* get_actuator() {
+        return static_cast<T*>(actuator_);
     }
 
     /// Gets the Joint PositionSensor
     template <class T = PositionSensor>
-    T& get_position_sensor() {
-        return static_cast<T&>(position_sensor_);
+    T* get_position_sensor() {
+        return static_cast<T*>(position_sensor_);
     }
 
     /// Gets the Joint VelocitySensor
     template <class T = VelocitySensor>
-    T& get_velocity_sensor() {
-        return static_cast<T&>(velocity_sensor_);
+    T* get_velocity_sensor() {
+        return static_cast<T*>(velocity_sensor_);
     }
 
 protected:
-    Actuator& actuator_;  ///< reference to the Actuator of this Joint
-    PositionSensor&
+    Actuator* actuator_;  ///< reference to the Actuator of this Joint
+    PositionSensor*
         position_sensor_;  ///< reference to the PositionSensor of this Joint
-    VelocitySensor&
+    VelocitySensor*
         velocity_sensor_;  ///< reference to the VelocitySensor of this Joint
 
-    const double
+    double
         actuator_transmission_;  ///< transmission ratio describing the
                                  ///< multiplicative gain in torque from Joint
                                  ///< space to Actuator space, actuator torque =
                                  ///< actuator transmission * joint torque
-    const double
+    double
         position_sensor_transmission_;  ///< transmission ratio describing the
                                         ///< multiplicative gain in position
                                         ///< from PositionSensor space to Joint
                                         ///< space, joint position = position
                                         ///< sensor transmission * sensed
                                         ///< position
-    const double
+    double
         velocity_sensor_transmission_;  ///< transmission ratio describing the
                                         ///< multiplicative gain in velocity
                                         ///< from VelocitySensor space to Joint

@@ -17,12 +17,8 @@ bool handler(CtrlEvent event) {
 
 int main() {
 
-    // intialize logger
-    
-
     // register CTRL-C handler
     register_ctrl_handler(handler);
-
 
     //==============================================================================
     // CONSTUCT/OPEN/CONFIGURE

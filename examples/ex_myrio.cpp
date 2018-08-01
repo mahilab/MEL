@@ -10,8 +10,6 @@ using namespace mel;
 using namespace std;
 
 int main(int argc, char** argv) {
-    init_logger(Verbose, Verbose);
-
     MelNet mn(55001, 55002, "10.0.0.117", false);
 
 

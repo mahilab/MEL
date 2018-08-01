@@ -18,6 +18,7 @@
 #ifndef MEL_PROCESS_HPP
 #define MEL_PROCESS_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Process {
+class MEL_API Process {
 public:
     /// Default constructor
     Process(){};

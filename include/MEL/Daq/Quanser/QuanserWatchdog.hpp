@@ -33,7 +33,7 @@ class QuanserDaq;
 //==============================================================================
 
 /// Encapsulates a hardware watchdog timer
-class QuanserWatchdog : public Watchdog {
+class MEL_API QuanserWatchdog : public Watchdog {
 public:
     /// Default constructor
     QuanserWatchdog(QuanserDaq& daq, Time timeout);

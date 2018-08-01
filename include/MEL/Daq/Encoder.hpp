@@ -18,6 +18,7 @@
 #ifndef MEL_ENCODER_HPP
 #define MEL_ENCODER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Daq/Module.hpp>
@@ -29,7 +30,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates an incremental optical encoder module
-class Encoder : public Module<int32> {
+class MEL_API Encoder : public Module<int32> {
 public:
     class Channel;
 
@@ -103,7 +104,7 @@ protected:
 
 public:
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
-    class Channel : public ChannelBase<int32>, public PositionSensor {
+    class MEL_API Channel : public ChannelBase<int32>, public PositionSensor {
     public:
         /// Default constructor. Creates invalid channel
         Channel();

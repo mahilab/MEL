@@ -33,7 +33,7 @@ class QuanserDaq;
 //==============================================================================
 
 /// Quanser implementation of Encoder
-class QuanserVelocity : public Velocity {
+class MEL_API QuanserVelocity : public Velocity {
 public:
     QuanserVelocity(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 

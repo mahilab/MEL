@@ -18,6 +18,7 @@
 #ifndef MEL_TXTFORMATTER_HPP
 #define MEL_TXTFORMATTER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
 #include <iomanip>
 
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 //
-class TxtFormatter {
+class MEL_API TxtFormatter {
 public:
     static std::string header() { return std::string(); }
 

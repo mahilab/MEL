@@ -22,6 +22,7 @@
 #ifndef MEL_TCPLISTENER_HPP
 #define MEL_TCPLISTENER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Socket.hpp>
 
@@ -38,7 +39,7 @@ class TcpSocket;
 //==============================================================================
 
 /// Socket that listens to new TCP connections
-class TcpListener : public Socket {
+class MEL_API TcpListener : public Socket {
 public:
     /// Default constructor
     TcpListener();

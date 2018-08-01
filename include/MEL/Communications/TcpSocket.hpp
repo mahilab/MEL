@@ -40,7 +40,7 @@ class Packet;
 //==============================================================================
 
 /// Specialized socket using the TCP protocol
-class TcpSocket : public Socket {
+class MEL_API TcpSocket : public Socket {
 public:
     /// Default constructor
     TcpSocket();

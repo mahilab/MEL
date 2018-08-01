@@ -18,6 +18,7 @@
 #ifndef MEL_INTEGRATOR_HPP
 #define MEL_INTEGRATOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
 #include <MEL/Core/Time.hpp>
 
@@ -28,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// Integrates a continous waveform
-class Integrator : public Process {
+class MEL_API Integrator : public Process {
 public:
     enum Technique { Trapezoidal, Simpsons };
 

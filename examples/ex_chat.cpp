@@ -109,7 +109,6 @@ int main(int argc, char *argv[]) {
         ("i,ip",    "IP dddress of the Sever",               value<string>());
 	auto input = options.parse(argc, argv);
 
-    init_logger();
     register_ctrl_handler(handler);
     cls();
 

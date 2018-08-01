@@ -18,6 +18,7 @@
 #ifndef MEL_SYSTEM_HPP
 #define MEL_SYSTEM_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <string>
@@ -30,16 +31,16 @@ namespace mel {
 //==============================================================================
 
 /// Returns directory path divider for current operating system
-std::string get_path_slash();
+std::string MEL_API get_path_slash();
 
 /// Parses a path string and returns a vector of directory strings
-std::vector<std::string> parse_path(std::string path);
+std::vector<std::string> MEL_API parse_path(std::string path);
 
 /// Creates a single folder or path of folders if it doesn't exist.
-void create_directory(std::string path);
+void MEL_API create_directory(std::string path);
 
 /// Splits "filename.ext" into "filename" and "ext"
-void split_file_name(const char* file_name,
+void MEL_API split_file_name(const char* file_name,
                      std::string& file_name_no_ext,
                      std::string& file_ext);
 
@@ -48,47 +49,47 @@ void split_file_name(const char* file_name,
 //==============================================================================
 
 /// Sleeps the thread for a given amount of time as accurately as possible
-void sleep(Time duration);
+void MEL_API sleep(Time duration);
 
 /// Gets the last operating system error
-std::string get_last_os_error();
+std::string MEL_API get_last_os_error();
 
 /// Enables real-time OS priority. The program must be run 'As Administrator'.
-bool enable_realtime();
+bool MEL_API enable_realtime();
 
 /// Disables real-time OS priority. The program must be run 'As Administrator'.
-bool disable_realtime();
+bool MEL_API disable_realtime();
 
 /// Gets the operating system's ID number of the calling thread
-uint32 get_thread_id();
+uint32 MEL_API get_thread_id();
 
 //==============================================================================
 // PEROFRMANCE MONITORING FUNCTIONS
 //==============================================================================
 
 /// Gets the CPU core usage as a percent used by all processes
-double cpu_usage_total();
+double MEL_API cpu_usage_total();
 
 /// Gets the CPU core usage as a percent used by this process
-double cpu_usage_process();
+double MEL_API cpu_usage_process();
 
 /// Gets the total virtual memory available in bytes
-uint64 virt_mem_available();
+uint64 MEL_API virt_mem_available();
 
 /// Gets the virtual memory used by all processes in bytes
-uint64 virt_mem_used_total();
+uint64 MEL_API virt_mem_used_total();
 
 /// Gets the virtual memory used by this process in bytes
-uint64 virt_mem_used_process();
+uint64 MEL_API virt_mem_used_process();
 
 /// Gets the total RAM available in bytes
-uint64 ram_available();
+uint64 MEL_API ram_available();
 
 /// Gets the RAM used by all process in bytes
-uint64 ram_used_total();
+uint64 MEL_API ram_used_total();
 
 /// Gets the RAM used by this process in bytes
-uint64 ram_used_process();
+uint64 MEL_API ram_used_process();
 
 }  // namespace mel
 

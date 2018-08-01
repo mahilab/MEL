@@ -19,6 +19,7 @@
 #ifndef MEL_ACTUATOR_HPP
 #define MEL_ACTUATOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 
 namespace mel {
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Actuator : public Device {
+class MEL_API Actuator : public Device {
 public:
     /// Constructor for actuator without torque limits
     Actuator(const std::string& name);

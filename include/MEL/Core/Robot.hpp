@@ -19,6 +19,7 @@
 #ifndef MEL_ROBOT_HPP
 #define MEL_ROBOT_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/Joint.hpp>
@@ -32,7 +33,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Robot : public Device {
+class MEL_API Robot : public Device {
 public:
     /// Constructor.
     Robot(const std::string& name);

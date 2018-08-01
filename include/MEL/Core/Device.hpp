@@ -19,6 +19,7 @@
 #ifndef MEL_DEVICE_HPP
 #define MEL_DEVICE_HPP
 
+#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
@@ -28,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// Abstract base class from which all physical devices should derive.
-class Device {
+class MEL_API Device {
 public:
     /// Default constructor
     Device();

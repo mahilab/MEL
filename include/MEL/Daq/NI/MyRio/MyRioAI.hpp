@@ -34,7 +34,7 @@ enum MyRioConnectorType : int;
 // CLASS DECLARATION
 //==============================================================================
 
-class MyRioAI : public AnalogInput, NonCopyable {
+class MEL_API MyRioAI : public AnalogInput, NonCopyable {
 public:
 
     MyRioAI(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers);

@@ -26,7 +26,7 @@ namespace mel {
 class MyRio;
 enum MyRioConnectorType : int;
 
-class MyRioDIO : public DigitalInputOutput, NonCopyable {
+class MEL_API MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
     MyRioDIO(MyRio& daq, MyRioConnectorType type,
         const std::vector<uint32>& channel_numbers);

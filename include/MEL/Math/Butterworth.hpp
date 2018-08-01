@@ -18,6 +18,7 @@
 #ifndef MEL_BUTTERWORTH_HPP
 #define MEL_BUTTERWORTH_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Math/Filter.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -28,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// A digital Butterworth filter implementation
-class Butterworth : public Filter {
+class MEL_API Butterworth : public Filter {
 public:
     enum Type {
         Lowpass,  ///< Lowpass filter

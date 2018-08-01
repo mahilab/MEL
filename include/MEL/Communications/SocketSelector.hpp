@@ -22,6 +22,7 @@
 #ifndef MEL_SOCKETSELECTOR_HPP
 #define MEL_SOCKETSELECTOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -29,7 +30,7 @@ namespace mel {
 class Socket;
 
 /// Multiplexer that allows to read from multiple sockets
-class SocketSelector {
+class MEL_API SocketSelector {
 public:
     /// \brief Default constructor
     SocketSelector();

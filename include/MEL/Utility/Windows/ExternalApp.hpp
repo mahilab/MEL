@@ -18,12 +18,13 @@
 #ifndef MEL_EXTERNALAPP_HPP
 #define MEL_EXTERNALAPP_HPP
 
+#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
 
 /// Class that allows for launching external applications
-class ExternalApp {
+class MEL_API ExternalApp {
 public:
     /// Constructor. #name is for MEL only. The path should be an
     /// absoulute path and include the filename and extension. For example

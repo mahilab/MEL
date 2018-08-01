@@ -18,6 +18,8 @@
 #ifndef MEL_SEVERITY_HPP
 #define MEL_SEVERITY_HPP
 
+#include <MEL/Config.hpp>
+
 namespace mel {
 
 /// Represents a logging severity level
@@ -31,7 +33,7 @@ enum Severity {
     Debug   = 6,  ///< useful information needed for diagnostics
 };
 
-inline const char* severity_to_string(Severity severity) {
+inline MEL_API const char* severity_to_string(Severity severity) {
     switch (severity) {
         case Fatal:
             return "FATAL";
@@ -50,7 +52,7 @@ inline const char* severity_to_string(Severity severity) {
     }
 }
 
-inline Severity string_to_severity(const char* str) {
+inline MEL_API Severity string_to_severity(const char* str) {
     for (Severity severity = Fatal; severity <= Debug;
          severity          = static_cast<Severity>(severity + 1)) {
         if (severity_to_string(severity)[0] == str[0]) {

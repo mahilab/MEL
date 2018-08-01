@@ -18,6 +18,7 @@
 #ifndef MEL_MELNET_HPP
 #define MEL_MELNET_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
@@ -31,7 +32,7 @@ namespace mel {
 //==============================================================================
 
 /// High-level communication class that simplifies UDP communication
-class MelNet : NonCopyable {
+class MEL_API MelNet : NonCopyable {
 public:
     /// Default constructor. Use ports in the range of 49152 to 65535.
     MelNet(unsigned short local_port,
@@ -64,10 +65,8 @@ public:
     bool is_blocking() const;
 
 private:
-    unsigned short
-        local_port_;  ///< The port to receive data on on the local host
-    unsigned short
-        remote_port_;  ///< The port to send data to on the remote host
+    unsigned short local_port_;  ///< The port to receive data on on the local host
+    unsigned short remote_port_;  ///< The port to send data to on the remote host
 
     IpAddress remote_address_;  ///< The remote IP address to send data too
 

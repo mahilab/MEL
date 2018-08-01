@@ -18,6 +18,7 @@
 #ifndef MEL_FILE_HPP
 #define MEL_FILE_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <sstream>
 
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class File : mel::NonCopyable {
+class MEL_API File : mel::NonCopyable {
 public:
     /// Default constructor
     File();

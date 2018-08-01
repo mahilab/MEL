@@ -18,6 +18,7 @@
 #ifndef MEL_FILTER_HPP
 #define MEL_FILTER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
 #include <vector>
 
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Filter : public Process {
+class MEL_API Filter : public Process {
 public:
     /// Construct Filter from transfer function coefficients
     Filter(const std::vector<double>& b,

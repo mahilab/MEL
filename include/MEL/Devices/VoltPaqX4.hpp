@@ -30,7 +30,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a Quanser VoltPAQ-X4 Linear Voltage Amplifier
-class VoltPaqX4 : public Device {
+class MEL_API VoltPaqX4 : public Device {
 public:
     /// Constructor
     VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,

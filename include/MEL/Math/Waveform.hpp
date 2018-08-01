@@ -18,6 +18,7 @@
 #ifndef MEL_WAVEFORM_HPP
 #define MEL_WAVEFORM_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -27,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a cyclic waveform with amplitude and offset in the time domain
-class Waveform {
+class MEL_API Waveform {
 public:
     /// The Type of Waveform
     enum Type {

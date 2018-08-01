@@ -34,7 +34,7 @@ namespace mel {
 //==============================================================================
 
 /// Quanser Q2 USB class
-class Q2Usb : public QuanserDaq {
+class MEL_API Q2Usb : public QuanserDaq {
 public:
     /// Default constructor. Creates Q2 USB with all channels enabled and
     /// default QOptions

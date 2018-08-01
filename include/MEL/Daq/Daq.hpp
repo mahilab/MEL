@@ -18,6 +18,7 @@
 #ifndef MEL_DAQ_HPP
 #define MEL_DAQ_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Module.hpp>
 #include <typeindex>
@@ -29,7 +30,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Daq : public Device {
+class MEL_API Daq : public Device {
 public:
     /// The default constructor
     Daq(const std::string& name);

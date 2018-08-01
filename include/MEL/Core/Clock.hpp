@@ -22,6 +22,7 @@
 #ifndef MEL_CLOCK_HPP
 #define MEL_CLOCK_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -33,7 +34,7 @@ class Timer;
 //==============================================================================
 
 /// Utility class that measures elapsed time.
-class Clock {
+class MEL_API Clock {
 public:
     /// Default constructor. Clock automatically starts on construction.
     Clock();

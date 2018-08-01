@@ -46,7 +46,7 @@ enum class CtrlEvent {
 /// The input can be checked against the the control event values above for
 /// further processsing. If this function handles the event, it should return
 /// true, otherwise it should return false.
-bool register_ctrl_handler(bool (*handler)(CtrlEvent));
+bool MEL_API register_ctrl_handler(bool (*handler)(CtrlEvent));
 
 /// Special bool type that can safely be used by a Ctrl handler
 typedef volatile std::atomic<bool> ctrl_bool;
@@ -76,41 +76,41 @@ enum class Color {
 };
 
 /// Sets the foreground and background text color in the console
-void set_text_color(Color foreground, Color background = Color::None);
+void MEL_API set_text_color(Color foreground, Color background = Color::None);
 
 /// Resets the foreground and background text color to the default style
-void reset_text_color();
+void MEL_API reset_text_color();
 
 //==============================================================================
 // CONSOLE INPUT
 //==============================================================================
 
 /// Determines if keyboard has been hit
-int kb_hit();
+int MEL_API kb_hit();
 
 /// Get character without waiting for Return to be pressed (blocking).
-int get_ch();
+int MEL_API get_ch();
 
 /// Get character without waiting for Return to be pressed (non-blocking).
 /// Returns 0 if no key was pressed.
-int get_ch_nb();
+int MEL_API get_ch_nb();
 
 /// Reads a key press and returns a key code (blocking).
-int get_key();
+int MEL_API get_key();
 
 /// Reads a key press and returns a key code (blocking).
 /// Returns 0 if no key was pressed.
-int get_key_nb();
+int MEL_API get_key_nb();
 
 /// Prompts the user with a message and waits for Enter to be pressed.
-void prompt(const std::string& message);
+void MEL_API prompt(const std::string& message);
 
 //==============================================================================
 // CONSOLE OUTPUT
 //==============================================================================
 
 /// Prints a string to the console using the fastest method the OS offers
-void print_string(const std::string& str);
+void MEL_API print_string(const std::string& str);
 
 /// Prints anything that works with stream operators (appends new line
 /// character)
@@ -145,13 +145,13 @@ std::string stringify(T value) {
 
 /// Returns true if stdout is a character device (a terminal, console, printer, or
 /// serial port)
-bool is_tty();
+bool MEL_API is_tty();
 
 /// Causes the console to emit a beep sound
-void beep();
+void MEL_API beep();
 
 /// Clears screen, resets all attributes and moves cursor home.
-void cls();
+void MEL_API cls();
 
 /// Key Codes
 enum {

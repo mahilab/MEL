@@ -18,6 +18,7 @@
 #ifndef MEL_LOCK_HPP
 #define MEL_LOCK_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 namespace mel {
@@ -27,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Represents a lockable object (e.g. Mutex, NamedMutex, etc.)
-class Lockable {
+class MEL_API Lockable {
 public:
     /// Virtual destructor
     virtual ~Lockable() {}
@@ -40,7 +41,7 @@ public:
 };
 
 /// RAII wrapper for automatically locking and unlocking Lockables
-class Lock : NonCopyable {
+class MEL_API Lock : NonCopyable {
 public:
     /// Default contructor. The Lockable is automatically locked.
     Lock(Lockable& lockable);

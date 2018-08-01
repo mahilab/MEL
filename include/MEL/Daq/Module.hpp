@@ -46,7 +46,7 @@ enum class IoType {
 //==============================================================================
 
 /// Defines non-templated Module functions/members
-class ModuleBase : public Device {
+class MEL_API ModuleBase : public Device {
 
 public:
 

@@ -18,6 +18,7 @@
 #ifndef MEL_LIMITER_HPP
 #define MEL_LIMITER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Limiter {
+class MEL_API Limiter {
 public:
     /// Default constructor. No limits imposed.
     Limiter();

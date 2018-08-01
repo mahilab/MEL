@@ -18,6 +18,7 @@
 #ifndef MEL_FUNCMESSAGEFORMATTER_HPP
 #define MEL_FUNCMESSAGEFORMATTER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // CLASS DECLARATIOn
 //==============================================================================
 //
-class FuncMessageFormatter {
+class MEL_API FuncMessageFormatter {
 public:
     static std::string header() { return std::string(); }
 

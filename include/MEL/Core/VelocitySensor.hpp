@@ -19,6 +19,7 @@
 #ifndef MEL_VELOCITYSENSOR_HPP
 #define MEL_VELOCITYSENSOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 
 namespace mel {
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class VelocitySensor : public Device {
+class MEL_API VelocitySensor : public Device {
 public:
     /// Prefered constructor
     VelocitySensor(const std::string& name);

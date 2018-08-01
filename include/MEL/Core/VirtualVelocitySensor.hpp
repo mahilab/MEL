@@ -18,6 +18,7 @@
 #ifndef MEL_VIRTUALVELOCITYSENSOR_HPP
 #define MEL_VIRTUALVELOCITYSENSOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Math/Differentiator.hpp>
@@ -30,7 +31,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class VirtualVelocitySensor : public VelocitySensor {
+class MEL_API VirtualVelocitySensor : public VelocitySensor {
 public:
     /// Constructor
     VirtualVelocitySensor(const std::string& name,

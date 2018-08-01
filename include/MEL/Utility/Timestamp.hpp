@@ -2,11 +2,12 @@
 #define MEL_TIMESTAMP_HPP
 
 #include <string>
+#include <MEL/Config.hpp>
 
 namespace mel {
 
 /// Encapsulates a timestamp
-class Timestamp {
+class MEL_API Timestamp {
 public:
     /// Default constructor
     Timestamp();

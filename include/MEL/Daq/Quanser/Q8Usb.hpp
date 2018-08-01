@@ -35,7 +35,7 @@ namespace mel {
 //==============================================================================
 
 /// Quanser Q8 USB class
-class Q8Usb : public QuanserDaq {
+class MEL_API Q8Usb : public QuanserDaq {
 public:
     /// Default constructor
     Q8Usb(QuanserOptions options                  = QuanserOptions(),

@@ -15,8 +15,6 @@ using namespace mel;
 
 int main(int argc, char *argv[]) {
 
-    init_logger();
-
     if (argc > 1) {
         std::string id = argv[1];
         if (id == "1A") {

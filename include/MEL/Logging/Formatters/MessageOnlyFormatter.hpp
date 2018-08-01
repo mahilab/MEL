@@ -18,6 +18,7 @@
 #ifndef MEL_MESSAGEONLYFORMATTER_HPP
 #define MEL_MESSAGEONLYFORMATTER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 //
-class MessageOnlyFormatter {
+class MEL_API MessageOnlyFormatter {
 public:
     static std::string header() { return std::string(); }
 

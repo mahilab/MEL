@@ -18,6 +18,7 @@
 #ifndef MEL_SHAREDMEMORY_HPP
 #define MEL_SHAREDMEMORY_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <string>
 #include <vector>
@@ -39,7 +40,7 @@ typedef int MapHandle;
 //==============================================================================
 
 /// Encapsulates a unmanaged named memory map
-class SharedMemory : NonCopyable {
+class MEL_API SharedMemory : NonCopyable {
 public:
     /// Default constructor. Creates or opens a memory map containing size bytes
     SharedMemory(const std::string& name, std::size_t max_bytes = 256);

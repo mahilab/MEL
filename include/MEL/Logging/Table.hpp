@@ -18,12 +18,13 @@
 #ifndef MEL_TABLE_HPP
 #define MEL_TABLE_HPP
 
+#include <MEL/Config.hpp>
 #include <vector>
 #include <string>
 
 namespace mel{
 
-class Table {
+class MEL_API Table {
 public:
 	static const std::string table_id;
 
@@ -99,7 +100,7 @@ public:
 	bool empty() const;
 
 	/// Overload the << stream operator with a Table as the rhs argument
-	friend std::ostream& operator<<(std::ostream& os, const Table& table);
+	friend MEL_API std::ostream& operator<<(std::ostream& os, const Table& table);
 
 private:
 
@@ -114,6 +115,8 @@ private:
 	std::vector<std::string> col_names_;
 	std::vector<std::vector<double>> values_;
 };
+
+MEL_API std::ostream& operator<<(std::ostream& os, const Table& table);
 
 } // namespace mel
 

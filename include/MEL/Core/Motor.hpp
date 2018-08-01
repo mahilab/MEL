@@ -19,6 +19,7 @@
 #ifndef MEL_MOTOR_HPP
 #define MEL_MOTOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/Amplifier.hpp>
 
@@ -29,7 +30,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a DC Motor
-class Motor : public Actuator {
+class MEL_API Motor : public Actuator {
 public:
     /// constructor
     Motor(const std::string& name,

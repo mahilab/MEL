@@ -7,11 +7,11 @@
 namespace mel {
 
  Joint::Joint(const std::string& name,
-        Actuator& actuator,
+        Actuator* actuator,
         double actuator_transmission,
-        PositionSensor& position_sensor,
+        PositionSensor* position_sensor,
         double position_sensor_transmission,
-        VelocitySensor& velocity_sensor,
+        VelocitySensor* velocity_sensor,
         double velocity_sensor_transmission,
         std::array<double, 2> position_limits,
         double velocity_limit,
@@ -37,24 +37,24 @@ namespace mel {
 { }
 
 bool Joint::enable() {
-    if (position_sensor_.enable() && velocity_sensor_.enable() && actuator_.enable())
+    if (position_sensor_->enable() && velocity_sensor_->enable() && actuator_->enable())
         return Device::enable();
     return false;
 }
 
 bool Joint::disable() {
-    if (position_sensor_.disable() && velocity_sensor_.disable() && actuator_.disable())
+    if (position_sensor_->disable() && velocity_sensor_->disable() && actuator_->disable())
         return Device::disable();
     return false;
 }
 
 double Joint::get_position() {
-    position_ = position_sensor_transmission_ * position_sensor_.get_position();
+    position_ = position_sensor_transmission_ * position_sensor_->get_position();
     return position_;
 }
 
 double Joint::get_velocity() {
-    velocity_ = velocity_sensor_transmission_ * velocity_sensor_.get_velocity();
+    velocity_ = velocity_sensor_transmission_ * velocity_sensor_->get_velocity();
     return velocity_;
 }
 
@@ -63,7 +63,7 @@ double Joint::get_torque_command() {
 }
 
 double Joint::get_torque_sense() {
-    return actuator_.get_torque_sense() / actuator_transmission_;
+    return actuator_->get_torque_sense() / actuator_transmission_;
 }
 
 void Joint::set_torque(double new_torque) {
@@ -72,7 +72,7 @@ void Joint::set_torque(double new_torque) {
         LOG(Warning) << "Joint " << get_name() << " command torque saturated to " << torque_limit_;
         torque_ = saturate(torque_, torque_limit_);
     }
-    actuator_.set_torque(actuator_transmission_ * torque_);
+    actuator_->set_torque(actuator_transmission_ * torque_);
 }
 
 void Joint::add_torque(double additional_torque) {

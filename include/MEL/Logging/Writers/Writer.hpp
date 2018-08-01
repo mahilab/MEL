@@ -18,6 +18,7 @@
 #ifndef MEL_WRITER_HPP
 #define MEL_WRITER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class Writer {
+class MEL_API Writer {
 public:
 
     Writer(Severity max_severity = Debug) : max_severity_(max_severity) {}

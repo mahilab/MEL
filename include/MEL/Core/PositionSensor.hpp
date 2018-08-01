@@ -19,6 +19,7 @@
 #ifndef MEL_POSITIONSENSOR_HPP
 #define MEL_POSITIONSENSOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 
 namespace mel {
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class PositionSensor : public Device {
+class MEL_API PositionSensor : public Device {
 public:
     /// Prefered constructor
     PositionSensor(const std::string& name);

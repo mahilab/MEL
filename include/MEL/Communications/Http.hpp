@@ -22,6 +22,7 @@
 #ifndef MEL_HTTP_HPP
 #define MEL_HTTP_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Core/Time.hpp>
@@ -31,10 +32,10 @@
 
 namespace mel {
 /// A HTTP client
-class Http : NonCopyable {
+class MEL_API Http : NonCopyable {
 public:
     /// Define a HTTP request
-    class Request {
+    class MEL_API Request {
     public:
         /// Enumerate the available HTTP methods for a request
         enum Method {
@@ -135,7 +136,7 @@ public:
     };
 
     /// Define a HTTP response
-    class Response {
+    class MEL_API Response {
     public:
         /// Enumerate all the valid status codes for a response
         enum Status {

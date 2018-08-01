@@ -22,6 +22,7 @@
 #ifndef MEL_IPADDRESS_HPP
 #define MEL_IPADDRESS_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <istream>
@@ -35,7 +36,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates an IPv4 network address
-class IpAddress {
+class MEL_API IpAddress {
 public:
     /// Default constructor. Creates an empty (invalid) address/
     IpAddress();
@@ -110,18 +111,13 @@ public:
     /// limit is deactivated by default.
     static IpAddress get_public_address(Time timeout = Time::Zero);
 
-    static const IpAddress
-        None;  ///< Value representing an empty/invalid address
-    static const MEL_API IpAddress Any;  ///< Value representing any address (0.0.0.0)
-    static const MEL_API IpAddress LocalHost;  ///< The "localhost" address (for
-                                       ///< connecting a computer to itself
-                                       ///< locally)
-    static const MEL_API IpAddress Broadcast;  ///< The "broadcast" address (for sending
-                                       ///< UDP messages to everyone on a local
-                                       ///< network)
+    static const IpAddress None;  ///< Value representing an empty/invalid address
+    static const IpAddress Any;  ///< Value representing any address (0.0.0.0)
+    static const IpAddress LocalHost;  ///< The "localhost" address (for connecting a computer to itself locally)
+    static const IpAddress Broadcast;  ///< The "broadcast" address (for sending UDP messages to everyone on a local network)
 
 private:
-    friend bool operator<(const IpAddress& left, const IpAddress& right);
+    friend MEL_API bool operator<(const IpAddress& left, const IpAddress& right);
 
     /// Resolves the given address string
     void resolve(const std::string& address);
@@ -135,28 +131,28 @@ private:
 //==============================================================================
 
 /// Overload of == operator to compare two IP addresses are equal
-bool operator==(const IpAddress& left, const IpAddress& right);
+MEL_API bool operator==(const IpAddress& left, const IpAddress& right);
 
 /// Overload of != operator to compare two IP addresses are not equal
-bool operator!=(const IpAddress& left, const IpAddress& right);
+MEL_API bool operator!=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of < operator to compare two IP addresses
-bool operator<(const IpAddress& left, const IpAddress& right);
+MEL_API bool operator<(const IpAddress& left, const IpAddress& right);
 
 /// Overload of > operator to compare two IP addresses
-bool operator>(const IpAddress& left, const IpAddress& right);
+MEL_API bool operator>(const IpAddress& left, const IpAddress& right);
 
 /// Overload of <= operator to compare two IP addresses
-bool operator<=(const IpAddress& left, const IpAddress& right);
+MEL_API bool operator<=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of >= operator to compare two IP addresses
-bool operator>=(const IpAddress& left, const IpAddress& right);
+MEL_API bool operator>=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of >> operator to extract an IP address from an input stream
-std::istream& operator>>(std::istream& stream, IpAddress& address);
+MEL_API std::istream& operator>>(std::istream& stream, IpAddress& address);
 
 /// Overload of << operator to print an IP address to an output stream
-std::ostream& operator<<(std::ostream& stream, const IpAddress& address);
+MEL_API std::ostream& operator<<(std::ostream& stream, const IpAddress& address);
 
 }  // namespace mel
 

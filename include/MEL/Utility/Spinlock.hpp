@@ -18,6 +18,7 @@
 #ifndef MEL_SPINLOCK_HPP
 #define MEL_SPINLOCK_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
 #include <atomic>
 
@@ -28,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple threads
-class Spinlock : public Lockable, NonCopyable {
+class MEL_API Spinlock : public Lockable, NonCopyable {
 public:
     /// Lock the Spinlock
     void lock() override;

@@ -18,6 +18,7 @@
 #ifndef MEL_TIMER_HPP
 #define MEL_TIMER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -28,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// Utility class that creates a fixed rate waitable timer.
-class Timer {
+class MEL_API Timer {
 public:
     /// The waiting mode to be used when wait() is called.
     ///

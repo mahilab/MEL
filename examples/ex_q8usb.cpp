@@ -19,9 +19,6 @@ bool handler(CtrlEvent event) {
 
 int main() {
 
-    // intialize logger
-    init_logger();
-
     // register CTRL-C handler
     register_ctrl_handler(handler);
 

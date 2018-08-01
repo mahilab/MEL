@@ -18,12 +18,13 @@
 #ifndef MEL_XBOXCONTROLLER_HPP
 #define MEL_XBOXCONTROLLER_HPP
 
+#include <MEL/Config.hpp>
 #include <memory>
 
 namespace mel {
 
 /// Encapsulates an Xbox 360 or Xbox One Controller
-class XboxController {
+class MEL_API XboxController {
 public:
     /// Represents an Xbox Controller Button
     enum Button {

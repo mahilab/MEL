@@ -68,8 +68,8 @@ public:
           velocity_sensor_("honeywell_ss49et", position_sensor_)
     {
         // create joint
-        add_joint(Joint("paddle_joint_0", motor_, 0.713 / 6.250, position_sensor_, 1.0,
-                        velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
+        add_joint(Joint("paddle_joint_0", &motor_, 0.713 / 6.250, &position_sensor_, 1.0,
+                        &velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
                         500 * DEG2RAD, 1.0));
     }
 
@@ -266,9 +266,6 @@ double pendulum(double position, double velocity, Time current_time) {
 
 int main(int argc, char* argv[]) {
 
-    // intialize logger so only Error level messages display
-    init_logger(Info, Error);
-
     // register CTRL-C handler
     register_ctrl_handler(handler);
 
@@ -336,7 +333,7 @@ int main(int argc, char* argv[]) {
 
         // update hardware
         q8.update_input();
-        hp[0].get_velocity_sensor<VirtualVelocitySensor>().update();
+        hp[0].get_velocity_sensor<VirtualVelocitySensor>()->update();
 
         // read from MELScope
         from_ms_data = from_ms.read_data();

@@ -19,7 +19,9 @@
 #ifndef MEL_DATALOG_HPP
 #define MEL_DATALOG_HPP
 
-class DataLog {
+#include <MEL/Config.hpp>
+
+class MEL_API DataLog {
 
 public:
 

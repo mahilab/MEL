@@ -33,7 +33,7 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class QuanserDO : public DigitalOutput, NonCopyable {
+class MEL_API QuanserDO : public DigitalOutput, NonCopyable {
 public:
     QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 

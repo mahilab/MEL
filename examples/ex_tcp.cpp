@@ -76,8 +76,6 @@ void client(int iterations, int bytes, const IpAddress& remote_address) {
 
 int main(int argc, char *argv[]) {
 
-    init_logger();
-
     // Setup program options
     Options options("udp.exe", "UDP Ping Test");
     options.add_options()

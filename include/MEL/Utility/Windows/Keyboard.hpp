@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <MEL/Config.hpp>
 
 namespace mel {
 
@@ -135,7 +136,7 @@ enum class Key {
     KeyCount  ///< Keep last -- the total number of keyboard keys
 };
 
-class Keyboard {
+class MEL_API Keyboard {
 public:
     /// \brief Check if a key is pressed and console window has focus
     /// \param key Key to check

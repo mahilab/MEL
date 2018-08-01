@@ -17,9 +17,6 @@ int main() {
 
     MyoBand myo("my_myo");
 
-    // initialize logger
-    init_logger();
-
 	// make MelShares
 	MelShare ms_mes("mes"); // myoelectric signal
 

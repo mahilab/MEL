@@ -18,6 +18,7 @@
 #ifndef MEL_STATEMACHINE_HPP
 #define MEL_STATEMACHINE_HPP
 
+#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
@@ -26,7 +27,7 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class EventData {
+class MEL_API EventData {
 public:
     virtual ~EventData() {}
 };
@@ -35,7 +36,7 @@ typedef EventData NoEventData;
 
 class StateMachine;
 
-class StateBase {
+class MEL_API StateBase {
 public:
     virtual void invoke_state_action(StateMachine* sm,
                                      const EventData* data) const = 0;
@@ -56,7 +57,7 @@ public:
     }
 };
 
-struct StateMapRow {
+struct MEL_API StateMapRow {
     const StateBase* const state;
 };
 
@@ -64,7 +65,7 @@ struct StateMapRow {
 // CLASS DECLARATION
 //==============================================================================
 
-class StateMachine {
+class MEL_API StateMachine {
 public:
     StateMachine(int num_states, int initial_state = 0);
 

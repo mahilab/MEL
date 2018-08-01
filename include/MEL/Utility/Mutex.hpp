@@ -18,6 +18,7 @@
 #ifndef MEL_MUTEX_HPP
 #define MEL_MUTEX_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
 #include <memory>
 
@@ -28,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple threads
-class Mutex : public Lockable, NonCopyable {
+class MEL_API Mutex : public Lockable, NonCopyable {
 public:
     /// Default constructor
     Mutex();

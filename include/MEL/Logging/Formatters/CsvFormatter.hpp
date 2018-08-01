@@ -18,6 +18,7 @@
 #ifndef MEL_CSVFORMATTER_HPP
 #define MEL_CSVFORMATTER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
 #include <iomanip>
 
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class CsvFormatter {
+class MEL_API CsvFormatter {
 public:
     static std::string header() {
         return "Date, Time, Severity, TID, Function, Message\n";

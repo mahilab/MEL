@@ -33,7 +33,7 @@ class QuanserDaq;
 //==============================================================================
 
 /// Quanser implementation of Encoder
-class QuanserEncoder : public Encoder {
+class MEL_API QuanserEncoder : public Encoder {
 public:
     QuanserEncoder(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 

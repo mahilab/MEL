@@ -28,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Utility class for creating Quanser configuration strings
-class QuanserOptions {
+class MEL_API QuanserOptions {
 public:
     enum class UpdateRate {
         Normal = 1,  ///< 1 kHz

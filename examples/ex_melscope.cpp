@@ -32,8 +32,6 @@ int main(int argc, char* argv[]) {
     // register CTRL-C handler
     register_ctrl_handler(handler);
 
-    init_logger();
-
     // make MelNet
     MelNet mn(55001, 55002, remote_address, false);
     print("MELNet: (lp:55002, rp:55001, ra:" + remote_address.to_string() +

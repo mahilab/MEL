@@ -18,6 +18,8 @@
 #ifndef MEL_NONCOPYABLE_HPP
 #define MEL_NONCOPYABLE_HPP
 
+#include <MEL/Config.hpp>
+
 namespace mel {
 
 //==============================================================================
@@ -25,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// Utility class that makes any derived class non-copyable
-class NonCopyable {
+class MEL_API NonCopyable {
 protected:
     /// Default constructor
     ///

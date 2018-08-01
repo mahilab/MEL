@@ -18,6 +18,7 @@
 #ifndef MEL_MELSHARE_HPP
 #define MEL_MELSHARE_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 #include <MEL/Utility/Types.hpp>
@@ -34,7 +35,7 @@ class Packet;
 //==============================================================================
 
 /// High-level communication class that simplifies shared memory communication
-class MelShare : NonCopyable {
+class MEL_API MelShare : NonCopyable {
 public:
     /// Default constructor.
     MelShare(const std::string& name, std::size_t max_bytes = 256);

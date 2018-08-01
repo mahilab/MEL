@@ -18,6 +18,7 @@
 #ifndef MEL_DIFFERENTIATOR_HPP
 #define MEL_DIFFERENTIATOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
 #include <MEL/Core/Time.hpp>
 
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATIONS
 //==============================================================================
 
-class Differentiator : public Process {
+class MEL_API Differentiator : public Process {
 public:
     enum Technique { BackwardDifference, CentralDifference };
 

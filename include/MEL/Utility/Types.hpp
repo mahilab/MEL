@@ -21,6 +21,7 @@
 
 #include <string>
 #include <typeinfo>
+#include <MEL/Config.hpp>
 
 namespace mel {
 

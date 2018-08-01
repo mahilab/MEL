@@ -18,6 +18,7 @@
 #ifndef MEL_LOG_HPP
 #define MEL_LOG_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
 #include <MEL/Logging/Logger.hpp>
@@ -42,10 +43,10 @@ namespace mel {
 #endif
 
 //==============================================================================
-// LOGGING INITIALIZER FUNCTIONS
+// CUSTOM LOGGING INITIALIZER FUNCTIONS
 //==============================================================================
 
-/// Initializes logger with a custom Writer (specific logger instance)
+/// Initializes a logger with a custom Writer (specific logger instance)
 template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity, Writer* writer) {
     static Logger<instance> logger(max_severity);
@@ -55,72 +56,39 @@ inline Logger<instance>& init_logger(Severity max_severity, Writer* writer) {
     return logger;
 }
 
-/// Initializes logger with a custom Writer (default logger instance)
-inline Logger<DEFAULT_LOGGER>& init_logger(Severity max_severity,
-                                           Writer* writer) {
-    return init_logger<DEFAULT_LOGGER>(max_severity, writer);
-}
-
-/// Initializes logger with RollingFileWriter with any Formatter (specific
+/// Initializes a logger with RollingFileWriter with any Formatter (specific
 /// logger instance)
 template <class Formatter, int instance>
 inline Logger<instance>& init_logger(Severity max_severity,
-                                     const char* filename,
-                                     size_t max_file_size = 0,
-                                     int max_files        = 0) {
+    const char* filename,
+    size_t max_file_size = 0,
+    int max_files = 0) {
     static RollingFileWriter<Formatter> rollingFilewriter(
         filename, max_file_size, max_files);
     return init_logger<instance>(max_severity, &rollingFilewriter);
 }
 
-/// Initializes logger with RollingFileWriter with any Formatter (default logger
-/// instance)
-template <class Formatter>
-inline Logger<DEFAULT_LOGGER>& init_logger(Severity max_severity,
-                                           const char* filename,
-                                           size_t max_file_size = 0,
-                                           int max_files        = 0) {
-    return init_logger<Formatter, DEFAULT_LOGGER>(max_severity, filename,
-                                                  max_file_size, max_files);
-}
-
-/// Initializes logger with RollingFileWriter and Txt/CsvFormatter chosen by
+/// Initializes a logger with RollingFileWriter and Txt/CsvFormatter chosen by
 /// file extension (specific logger instance)
 template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity,
-                                     const char* filename,
-                                     size_t max_file_size = 0,
-                                     int max_files        = 0) {
+    const char* filename,
+    size_t max_file_size = 0,
+    int max_files = 0) {
     const char* dot = std::strrchr(filename, '.');
     if (dot && 0 == std::strcmp(dot, ".csv"))
         return init_logger<CsvFormatter, instance>(max_severity, filename,
-                                                   max_file_size, max_files);
+            max_file_size, max_files);
     else
         return init_logger<TxtFormatter, instance>(max_severity, filename,
-                                                   max_file_size, max_files);
+            max_file_size, max_files);
 }
 
-/// Initializes logger with RollingFileWriter and Txt/CsvFormatter chosen by
-/// file extension (default logger instance)
-inline Logger<DEFAULT_LOGGER>& init_logger(Severity max_severity,
-                                           const char* filename,
-                                           size_t max_file_size = 0,
-                                           int max_files        = 0) {
-    return init_logger<DEFAULT_LOGGER>(max_severity, filename, max_file_size,
-                                       max_files);
-}
+//==============================================================================
+// DEFAULT MEL LOGGER
+//==============================================================================
 
-/// Initalizes the default MEL logger
-inline Logger<DEFAULT_LOGGER>& init_logger(
-    Severity file_max_severity    = Verbose,
-    Severity console_max_severity = Info) {
-    static ColorConsoleWriter<TxtFormatter> console_writer(
-        console_max_severity);
-    Logger<DEFAULT_LOGGER>& logger =
-        init_logger(file_max_severity, "MEL.log", 0, 0)
-            .add_writer(&console_writer);
-    return logger;
-}
+extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 
 }  // namespace mel
 
@@ -134,16 +102,11 @@ inline Logger<DEFAULT_LOGGER>& init_logger(
         !get_logger<instance>()->check_severity(severity)) { \
         ;                                                    \
     } else
-/// Log severity level checker for default logger instance
-#define IF_LOG(severity) IF_LOG_(DEFAULT_LOGGER, severity)
 
 /// Main logging macro for specific logger instance
 #define LOG_(instance, severity) \
     IF_LOG_(instance, severity)  \
-    (*get_logger<instance>()) += \
-        Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
-/// Main logging macro for default logger instance
-#define LOG(severity) LOG_(DEFAULT_LOGGER, severity)
+    (*get_logger<instance>()) += Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
 
 /// Conditional logging macro for specific logger instance
 #define LOG_IF_(instance, severity, condition) \
@@ -151,7 +114,23 @@ inline Logger<DEFAULT_LOGGER>& init_logger(
         ;                                      \
     } else                                     \
         LOG_(instance, severity)
-/// Conditional logging macro for default logger instance
-#define LOG_IF(severity, condition) LOG_IF_(DEFAULT_LOGGER, severity, condition)
+
+/// Log severity level checker for default MEL logger
+#define IF_LOG(severity)                                        \
+    if (!MEL_LOGGER || !MEL_LOGGER->check_severity(severity)) { \
+        ;                                                       \
+    } else
+
+/// Main logging macro for defaulter MEL logger
+#define LOG(severity) \
+    IF_LOG(severity)  \
+        *MEL_LOGGER += Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+
+/// Conditional logging macro for default MEL logger
+#define LOG_IF(severity, condition) \
+    if (!(condition)) {             \
+        ;                           \
+    } else                          \
+        LOG(severity)
 
 #endif  // MEL_LOG_HPP

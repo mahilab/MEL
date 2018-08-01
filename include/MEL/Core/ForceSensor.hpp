@@ -18,6 +18,7 @@
 #ifndef MEL_FORCESENSOR_HPP
 #define MEL_FORCESENSOR_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Input.hpp>
 
@@ -27,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class ForceSensor : public Device {
+class MEL_API ForceSensor : public Device {
 public:
     /// Default constructor
     ForceSensor();

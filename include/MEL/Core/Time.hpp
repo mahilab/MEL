@@ -35,14 +35,14 @@ class Frequency;
 //==============================================================================
 
 /// Represents a time value.
-class Time {
+class MEL_API Time {
 public:
     /// Default constructor. Sets time value to zero. To construct valued time
     /// objects, use mel::seconds, mel::milliseconds or mel::microseconds.
     Time();
 
     /// Overloads stream operator
-    friend std::ostream& operator<<(std::ostream& os, const Time& t);
+    friend MEL_API std::ostream& operator<<(std::ostream& os, const Time& t);
 
     /// Return the time value as a number of seconds.
     double as_seconds() const;
@@ -57,13 +57,13 @@ public:
     Frequency to_frequency() const;
 
 public:
-    static const Time MEL_API Zero;  ///< Predefined "zero" time value
-    static const Time MEL_API Inf;   ///< Predefined "infinite time value
+    static const Time Zero;  ///< Predefined "zero" time value
+    static const Time Inf;   ///< Predefined "infinite time value
 
 private:
-    friend Time seconds(double);
-    friend Time milliseconds(int32);
-    friend Time microseconds(int64);
+    friend MEL_API Time seconds(double);
+    friend MEL_API Time milliseconds(int32);
+    friend MEL_API Time microseconds(int64);
 
     /// Internal constructor from a number of microseconds.
     explicit Time(int64 microseconds);
@@ -77,93 +77,93 @@ private:
 //==============================================================================
 
 /// Construct a time value from a number of seconds
-Time seconds(double amount);
+MEL_API Time seconds(double amount);
 
 /// Construct a time value from a number of milliseconds
-Time milliseconds(int32 amount);
+MEL_API Time milliseconds(int32 amount);
 
 /// Construct a time value from a number of microseconds
-Time microseconds(int64 amount);
+MEL_API Time microseconds(int64 amount);
 
 //==============================================================================
 // OPERATOR OVERLOADS
 //==============================================================================
 
 /// Overload of << stream operator
-std::ostream& operator<<(std::ostream& os, const Time& t);
+MEL_API std::ostream& operator<<(std::ostream& os, const Time& t);
 
 /// Overload of == operator to compare if two time values are equal
-bool operator==(Time left, Time right);
+MEL_API bool operator==(Time left, Time right);
 
 /// Overload of != operator to compare if two time values are not equal
-bool operator!=(Time left, Time right);
+MEL_API bool operator!=(Time left, Time right);
 
 /// Overload of < operator to compare if left time is less than right
-bool operator<(Time left, Time right);
+MEL_API bool operator<(Time left, Time right);
 
 /// Overload of > operator to compare if right time is greater than right
-bool operator>(Time left, Time right);
+MEL_API bool operator>(Time left, Time right);
 
 /// Overload of <= operator to compare if left time is less or equal than right
-bool operator<=(Time left, Time right);
+MEL_API bool operator<=(Time left, Time right);
 
 /// Overload of >= operator to compare if left time is greater or equal than
 /// right
-bool operator>=(Time left, Time right);
+MEL_API bool operator>=(Time left, Time right);
 
 /// Overload of unary - operator to negate a time value
-Time operator-(Time right);
+MEL_API Time operator-(Time right);
 
 /// Overload of binary + operator to add two time values
-Time operator+(Time left, Time right);
+MEL_API Time operator+(Time left, Time right);
 
 /// Overload of binary += operator to add/assign two time values
-Time& operator+=(Time& left, Time right);
+MEL_API Time& operator+=(Time& left, Time right);
 
 /// Overload of binary - operator to subtract two time values
-Time operator-(Time left, Time right);
+MEL_API Time operator-(Time left, Time right);
 
 /// Overload of binary -= operator to subtract/assign two time values
-Time& operator-=(Time& left, Time right);
+MEL_API Time& operator-=(Time& left, Time right);
 
 /// Overload of binary * operator to scale a time value
-Time operator*(Time left, double right);
+MEL_API Time operator*(Time left, double right);
 
 /// Overload of binary * operator to scale a time value
-Time operator*(Time left, int64 right);
+MEL_API Time operator*(Time left, int64 right);
 
 /// Overload of binary * operator to scale a time value
-Time operator*(double left, Time right);
+MEL_API Time operator*(double left, Time right);
 
 /// Overload of binary * operator to scale a time value
-Time operator*(int64 left, Time right);
+MEL_API Time operator*(int64 left, Time right);
 
 /// Overload of binary *= operator to scale/assign a time value
-Time& operator*=(Time& left, double right);
+MEL_API Time& operator*=(Time& left, double right);
 
 /// Overload of binary *= operator to scale/assign a time value
-Time& operator*=(Time& left, int64 right);
+MEL_API Time& operator*=(Time& left, int64 right);
 
 /// Overload of binary / operator to scale a time value
-Time operator/(Time left, double right);
+MEL_API Time operator/(Time left, double right);
 
 /// Overload of binary / operator to scale a time value
-Time operator/(Time left, int64 right);
+MEL_API Time operator/(Time left, int64 right);
 
 /// Overload of binary /= operator to scale/assign a time value
-Time& operator/=(Time& left, double right);
+MEL_API Time& operator/=(Time& left, double right);
 
 /// Overload of binary /= operator to scale/assign a time value
-Time& operator/=(Time& left, int64 right);
+MEL_API Time& operator/=(Time& left, int64 right);
 
 /// Overload of binary / operator to compute the ratio of two time values
-double operator/(Time left, Time right);
+MEL_API double operator/(Time left, Time right);
 
 /// Overload of binary % operator to compute remainder of a time value
-Time operator%(Time left, Time right);
+MEL_API Time operator%(Time left, Time right);
 
 /// Overload of binary %= operator to compute/assign remainder of a time value
-Time& operator%=(Time& left, Time right);
+MEL_API Time& operator%=(Time& left, Time right);
 
 }  // namespace mel
 

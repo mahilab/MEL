@@ -18,6 +18,7 @@
 #ifndef MEL_AMPLIFIER_HPP
 #define MEL_AMPLIFIER_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/Limiter.hpp>
 #include <MEL/Daq/Input.hpp>
@@ -30,8 +31,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a current controlled servo amplifier
-class Amplifier : public Device {
-public:
+class MEL_API Amplifier : public Device {
 public:
     /// Constructor
     ///

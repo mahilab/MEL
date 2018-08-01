@@ -22,6 +22,7 @@
 #ifndef MEL_PACKET_HPP
 #define MEL_PACKET_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <string>
 #include <vector>
@@ -41,7 +42,7 @@ class MelShare;
 //==============================================================================
 
 /// Utility class to build blocks of data to transfer over the network
-class Packet {
+class MEL_API Packet {
     // A bool-like type that cannot be converted to integer or pointer types
     typedef bool (Packet::*BoolType)(std::size_t);
 

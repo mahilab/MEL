@@ -39,7 +39,7 @@ enum MyRioConnectorType : int {
 };
 
 /// National Instruments myRIO embedded system
-class MyRio : public Daq, NonCopyable {
+class MEL_API MyRio : public Daq, NonCopyable {
 
 public:
 
