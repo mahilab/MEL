@@ -26,6 +26,7 @@ Core:
   ☐ add Clock to PdController, generalize for all exos
 
 Daq:
+  ☐ move q8/q2 id to quanser daq...-1 for auto
 
 Q8 USB:
 

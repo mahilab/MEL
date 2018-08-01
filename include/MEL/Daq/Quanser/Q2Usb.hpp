@@ -40,7 +40,7 @@ public:
     /// default QOptions
     Q2Usb(QuanserOptions options = QuanserOptions(),
           bool auto_open         = true,
-          uint32 id              = next_id_);
+          uint32 id              = 0);
 
     /// Default destructor. First calls disable() if the Q2Usb is enabled
     /// then close() if the Q2Usb is open.
@@ -98,8 +98,8 @@ public:
     QuanserWatchdog watchdog;  ///< The watchdog timer of this Q2 USB
 
 private:
-    static uint32
-        next_id_;  ///< Static counter that determines the next ID# to use
+    /// Returns the next automatic ID# to use
+    static uint32 next_id();
 };
 
 }  // namespace mel

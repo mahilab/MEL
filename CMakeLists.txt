@@ -31,16 +31,20 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-option(QUANSER    "Turn ON if compiling for Quanser hardware"                  OFF) # e.g. Q8 USB, Q2 USB
-option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"      OFF) # e.g. NI myDAQ
-option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI cRIO
-option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"     OFF) # e.g. NI myRIO
-option(SENSORAY   "Turn ON if compiling for Sensoray hardware"                 OFF) # e.g. Sensoray 826
-option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"          OFF)
-option(EXAMPLES   "Turn ON to build example executable(s)"                     OFF)
-option(TESTS      "Turn ON to build test executable(s)"                        OFF)
-option(BUILD_DOC  "Turn ON to build MEL documentation"                         OFF)
-
+# hardware options
+option(QUANSER    "Turn ON if compiling for Quanser hardware"                                  ON ) # e.g. Q8 USB, Q2 USB
+option(NI_DAQ     "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
+option(NI_X64     "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
+option(NI_ARM     "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO
+option(MYO        "Turn ON if compiling for Thalmic Labs Myo Armband"                          ON )
+# general options
+option(MEL_STATIC "Turn ON to build MEL as a static library (default shared)"                  OFF)
+option(NO_LOGGER  "Turn ON to disable MEL's default console/file debug logger"                 OFF)
+option(EXAMPLES   "Turn ON to build example executable(s)"                                     ON )
+option(TESTS      "Turn ON to build test executable(s)"                                        ON )
+option(MOVE_BINS  "Turn ON to move binaries to conventional bin/lib folders are compilation"   OFF)
+option(BUILD_DOC  "Turn ON to build MEL documentation"                                         OFF)
+# third party paths
 set(QUANSER_ROOT  "/Program Files/Quanser"                    CACHE FILEPATH "Absolute path to Quanser installation directory.")
 set(NI_ROOT       "/Program Files (x86)/National Instruments" CACHE FILEPATH "Absolute path to NI installation directory.")
 set(NI_X64_ROOT   "/dev/nirlt-linux-x64"                      CACHE FILEPATH "Absolute path to NI Linux Realtime GNU toolchain (x64).")
@@ -55,6 +59,11 @@ set(MYO_ROOT      "/dev/myo-sdk-win-0.9.0"                    CACHE FILEPATH "Ab
 set(INCLUDE_DIRS include)
 set(LINK_DIRS "")
 set(LINK_LIBS "")
+
+file (GLOB SRC_BASE
+    "${CMAKE_SOURCE_DIR}/include/MEL/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/*.cpp"
+)
 
 file(GLOB SRC_COMMUNICATIONS
     "${CMAKE_SOURCE_DIR}/include/MEL/Communications/*.hpp"
@@ -129,6 +138,7 @@ file(GLOB SRC_UTILITY_WINDOWS
 )
 
 # create source groups
+source_group("\\" FILES ${SRC_BASE})
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
 source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
@@ -146,6 +156,7 @@ source_group("Utility" FILES ${SRC_UTILITY})
 source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
 
 set(SOURCE_FILES
+    ${SRC_BASE}
     ${SRC_COMMUNICATIONS}
     ${SRC_CORE}
     ${SRC_DAQ}
@@ -200,10 +211,22 @@ set(CMAKE_CXX_STANDARD 11)
 # create project
 project(MEL)
 
+# turn static compilation on/off
+if (MEL_STATIC)
+    add_definitions(-DMEL_STATIC)
+endif()
+
+# turn default logger on/off
+if (NO_LOGGER)
+    add_definitions(-DMEL_NO_LOGGER)
+endif()
+
 # set binary output locations
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+if (MOVE_BINS)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+endif()
 
 #===============================================================================
 # PLATFORM SPECIFIC SETUP
@@ -267,6 +290,7 @@ if (NI_X64)
         "${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux")
     # hardware libs
     list(APPEND LINK_LIBS dl rt)
+    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
 
 if(NI_ARM)
@@ -280,6 +304,7 @@ if(NI_ARM)
     list(APPEND LINK_LIBS dl rt)
     # MEL source
     list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
+    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
 
 if (SENSORAY)
@@ -313,10 +338,22 @@ endif()
 # CREATE MEL LIBRARY
 #===============================================================================
 
+# Enable IDE folders and set them for predefined CMake projects
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
+
 include_directories(${INCLUDE_DIRS})
-add_library(MEL STATIC ${SOURCE_FILES})
 link_directories(${LINK_DIRS})
+if (MEL_STATIC)
+    add_library(MEL STATIC ${SOURCE_FILES})
+else()
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    add_library(MEL SHARED ${SOURCE_FILES})
+endif()
 target_link_libraries(MEL ${LINK_LIBS})
+set_target_properties(MEL PROPERTIES FOLDER "MEL")
+# define MEL_EXPORTS for DLL exports
+target_compile_definitions(MEL PRIVATE -DMEL_EXPORTS)
 
 #===============================================================================
 # EXECUTABLES

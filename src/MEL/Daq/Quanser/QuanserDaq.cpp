@@ -27,9 +27,11 @@ QuanserDaq::~QuanserDaq() {
 }
 
 bool QuanserDaq::open() {
+
     if (open_)
         return false; // already open
     t_error result;
+
     // Try to open in 5 attempts
     for (int attempt = 0; attempt < 5; attempt++) {
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);

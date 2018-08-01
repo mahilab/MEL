@@ -112,11 +112,11 @@ public:
 
     static const IpAddress
         None;  ///< Value representing an empty/invalid address
-    static const IpAddress Any;  ///< Value representing any address (0.0.0.0)
-    static const IpAddress LocalHost;  ///< The "localhost" address (for
+    static const MEL_API IpAddress Any;  ///< Value representing any address (0.0.0.0)
+    static const MEL_API IpAddress LocalHost;  ///< The "localhost" address (for
                                        ///< connecting a computer to itself
                                        ///< locally)
-    static const IpAddress Broadcast;  ///< The "broadcast" address (for sending
+    static const MEL_API IpAddress Broadcast;  ///< The "broadcast" address (for sending
                                        ///< UDP messages to everyone on a local
                                        ///< network)
 

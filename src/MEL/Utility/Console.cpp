@@ -392,6 +392,10 @@ const bool STDOUT_IS_A_TTY = !!_isatty(_fileno(stdout));
 const bool STDOUT_IS_A_TTY = !!isatty(fileno(stdout));
 #endif
 
+bool is_tty() {
+    return STDOUT_IS_A_TTY;
+}
+
 void beep() {
 #ifdef _WIN32
     Beep(750, 250);

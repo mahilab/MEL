@@ -8,7 +8,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Unix Makefiles\"",
+			"shell_cmd": "cmake .. -G \"Unix Makefiles\" -DMOVE_BINS=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{
@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Ninja\"",
+			"shell_cmd": "cmake .. -G \"Ninja\" -DMOVE_BINS=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{
@@ -28,7 +28,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\"",
+			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\" -DMOVE_BINS=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{

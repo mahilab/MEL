@@ -6,10 +6,10 @@
 namespace mel {
 
 //==============================================================================
-// STATIC MEMBER VARIABLES
+// STATIC VARIABLES
 //==============================================================================
 
- uint32 Q8Usb::next_id_ = 0;
+ uint32 NEXT_Q8USB_ID = 0;
 
 //==============================================================================
 // CLASS DEFINITIONS
@@ -34,8 +34,8 @@ Q8Usb::Q8Usb(QuanserOptions options,
     velocity(*this, enc_channels),
     watchdog(*this, milliseconds(100))
 {
-    // increment next_id_
-    ++next_id_;
+    // increment NEXT_ID
+    ++NEXT_Q8USB_ID;
     // add modules
     add_module(static_cast<AnalogInput*>(&AI));
     add_module(static_cast<AnalogOutput*>(&AO));
@@ -59,8 +59,8 @@ Q8Usb::~Q8Usb() {
         set_options(QuanserOptions());
         close();
     }
-    // decrement next_id_
-    --next_id_;
+    // decrement NEXT_ID
+    --NEXT_Q8USB_ID;
 }
 
 bool Q8Usb::open() {
@@ -265,6 +265,10 @@ bool Q8Usb::sanity_check() {
 
 std::size_t Q8Usb::get_q8_usb_count() {
     return QuanserDaq::get_qdaq_count("q8_usb");
+}
+
+uint32 Q8Usb::next_id() {
+    return NEXT_Q8USB_ID;
 }
 
 } // namespace mel

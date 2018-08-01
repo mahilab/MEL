@@ -143,9 +143,9 @@ std::string stringify(T value) {
 // MISC
 //==============================================================================
 
-/// True if stdout is a character device (a terminal, console, printer, or
+/// Returns true if stdout is a character device (a terminal, console, printer, or
 /// serial port)
-extern const bool STDOUT_IS_A_TTY;
+bool is_tty();
 
 /// Causes the console to emit a beep sound
 void beep();

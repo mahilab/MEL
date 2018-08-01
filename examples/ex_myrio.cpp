@@ -3,6 +3,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Utility/Console.hpp>
+#include <MEL/Communications/MelNet.hpp>
 #include <string>
 
 using namespace mel;
@@ -10,21 +11,26 @@ using namespace std;
 
 int main(int argc, char** argv) {
     init_logger(Verbose, Verbose);
+
+    MelNet mn(55001, 55002, "10.0.0.117", false);
+
+
     MyRio myrio("myrio");
     myrio.enable();
-    Timer timer(hertz(100));
+    Timer timer(hertz(1000), Timer::Hybrid);
+    Waveform sinwave(Waveform::Sin, seconds(1), 5);
 
-    myrio.C.DIO[0].set_direction(Out);
+    std::vector<double> AB(2);
+
 
     while (timer.get_elapsed_time() < seconds(60)) {
         myrio.update_input();
 
-        if (myrio.C.DIO[1].get_value() == High)
-            print(timer.get_elapsed_ticks());
-        if (myrio.C.DIO[2].get_value() == High)
-            myrio.C.DIO[0].set_value(High);
-        else
-            myrio.C.DIO[0].set_value(Low);
+        AB[0] = myrio.C.DIO[0].get_value();
+        AB[1] = myrio.C.DIO[2].get_value();
+
+        // update MelNet
+        print(AB);
 
         myrio.update_output();
         timer.wait();

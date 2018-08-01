@@ -18,10 +18,11 @@ bool handler(CtrlEvent event) {
 int main() {
 
     // intialize logger
-    init_logger();
+    
 
     // register CTRL-C handler
     register_ctrl_handler(handler);
+
 
     //==============================================================================
     // CONSTUCT/OPEN/CONFIGURE
@@ -29,6 +30,8 @@ int main() {
 
     // create default Q28 USB object (all channels enabled)
     Q2Usb q2;
+
+
 
     //==============================================================================
     // ENABLE

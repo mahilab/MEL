@@ -57,7 +57,7 @@ std::vector<double> compute_b(std::size_t n,
                               std::vector<double> a,
                               Butterworth::Type type) {
     std::vector<double> r;
-    double w;
+    double w = 0;
     switch (type) {
         case Butterworth::Type::Lowpass:
             r = std::vector<double>(n, -1.0);

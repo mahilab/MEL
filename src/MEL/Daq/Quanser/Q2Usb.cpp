@@ -6,10 +6,10 @@
 namespace mel {
 
 //==============================================================================
-// STATIC MEMBER VARIABLES
+// STATIC VARIABLES
 //==============================================================================
 
- uint32 Q2Usb::next_id_ = 0;
+ uint32 NEXT_Q2USB_ID = 0;
 
 //==============================================================================
 // CLASS DEFINITIONS
@@ -34,7 +34,7 @@ Q2Usb::Q2Usb(QuanserOptions options, bool auto_open, uint32 id) :
     watchdog(*this, milliseconds(100))
 {
     // increment next_id_
-    ++next_id_;
+    ++NEXT_Q2USB_ID;
     // add modules
     add_module(static_cast<AnalogInput*>(&AI));
     add_module(static_cast<AnalogOutput*>(&AO));
@@ -58,7 +58,7 @@ Q2Usb::~Q2Usb() {
         close();
     }
     // decrement next_id_
-    --next_id_;
+    --NEXT_Q2USB_ID;
 }
 
 bool Q2Usb::open() {
@@ -194,6 +194,10 @@ void Q2Usb::set_led(Logic value) {
 
 std::size_t Q2Usb::get_q2_usb_count() {
     return QuanserDaq::get_qdaq_count("q2_usb");
+}
+
+uint32 Q2Usb::next_id() {
+    return NEXT_Q2USB_ID;
 }
 
 } // namespace mel

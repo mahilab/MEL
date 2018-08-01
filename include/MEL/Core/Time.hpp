@@ -22,6 +22,7 @@
 #ifndef MEL_TIME_HPP
 #define MEL_TIME_HPP
 
+#include <MEL/Config.hpp>
 #include <MEL/Utility/Types.hpp>
 #include <iostream>
 
@@ -56,8 +57,8 @@ public:
     Frequency to_frequency() const;
 
 public:
-    static const Time Zero;  ///< Predefined "zero" time value
-    static const Time Inf;   ///< Predefined "infinite time value
+    static const Time MEL_API Zero;  ///< Predefined "zero" time value
+    static const Time MEL_API Inf;   ///< Predefined "infinite time value
 
 private:
     friend Time seconds(double);

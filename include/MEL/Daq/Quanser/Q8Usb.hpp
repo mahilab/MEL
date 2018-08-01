@@ -46,7 +46,7 @@ public:
           const std::vector<uint32>& di_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
           const std::vector<uint32>& do_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
           const std::vector<uint32>& enc_channels = {0, 1, 2, 3, 4, 5, 6, 7},
-          uint32 id                               = next_id_);
+          uint32 id                               = next_id());
 
     /// Default destructor. First calls disable() if the Q8Usb is enabled
     /// then close() if the Q8Usb is open.
@@ -122,7 +122,9 @@ private:
 private:
     bool perform_sanity_check_;  ///< If true, the sanity check will be
                                  ///< performed on enable
-    static uint32     next_id_;  ///< Static counter that determines the next ID# to use
+private:
+    /// Returns the next automatic ID# to use
+    static uint32 next_id();
 };
 
 }  // namespace mel

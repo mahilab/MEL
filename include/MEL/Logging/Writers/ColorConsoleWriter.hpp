@@ -42,7 +42,7 @@ public:
 
 private:
     void setColor(Severity severity) {
-        if (STDOUT_IS_A_TTY) {
+        if (is_tty()) {
             switch (severity) {
                 case Fatal:
                     set_text_color(Color::White, Color::DarkRed);
