@@ -4,6 +4,9 @@
 #include <MEL/Core/Motor.hpp>
 #include <MEL/Core/Joint.hpp>
 #include <MEL/Core/Robot.hpp>
+#include <MEL/Core/Timer.hpp>
+#include <MEL/Core/PdController.hpp>
+#include <MEL/Math/Waveform.hpp>
 
 using namespace mel;
 
@@ -26,13 +29,30 @@ int main(int argc, char* argv[]) {
     enc0.update();                          // sync encoder 0
     int32 counts = enc0.get_value();        // get encoder counts
 
-    Amplifier amp("amc_12a8", High, do0, 1.3, ao0);            // create PWM amplifier
-    Motor motor("maxon_re30", 0.0538, amp);                    // create DC motor
+    Amplifier amp("amc_12a8", High, do0, 1.3, ao0);            // create High enabled PWM amplifier with gain 1.3
+    Motor motor("maxon_re30", 0.0538, amp);                    // create DC motor torque constant 0.0538
     PositionSensor* pos_sensor = &enc0;                        // create position sensor from encoder
     VelocitySensor* vel_sensor = &daq.velocity[0];             // create velocity sensor from DAQ encoder velocity channel
-    Joint joint("axis0", &motor, pos_sensor, vel_sensor, 20);  // create a robotic joint
+    Joint joint("axis0", &motor, pos_sensor, vel_sensor, 20);  // create a robotic joint with transmission ratio 20
     Robot robot("simple_robot");                               // create a robot
     robot.add_joint(joint);                                    // add joint to robot
+
+    PdController pd(15.0, 0.5);                         
+    Waveform trajectory(Waveform::Sin, seconds(2.0));
+    double torque, pos_act, vel_act, pos_ref, vel_ref = 0.0;
+    Timer timer(hertz(1000));
+    Time time;
+    while ((time = timer.get_elapsed_time()) < seconds(60)) {
+        daq.update_input();
+        pos_act = robot[0].get_position();
+        vel_act = robot[0].get_velocity();
+        pos_ref = trajectory.evaluate(time);                      // e
+        torque = pd.calculate(pos_act, pos_ref, vel_act, vel_ref);  // calculate PD torque
+        robot[0].set_torque(torque);
+        daq.update_output();
+        timer.wait();
+    }
+
 
     
     return 0;
