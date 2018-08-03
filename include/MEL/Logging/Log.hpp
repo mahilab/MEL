@@ -21,12 +21,16 @@
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
-#include <MEL/Logging/Logger.hpp>
 #include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
 #include <MEL/Logging/Writers/RollingFileWriter.hpp>
+#include <MEL/Logging/Writers/Writer.hpp>
+#include <MEL/Utility/Singleton.hpp>
 #include <cstring>
+#include <vector>
 
-namespace mel {
+#ifndef DEFAULT_MEL_LOGGER
+#define DEFAULT_LOGGER 0
+#endif
 
 /// Gets name of calling funcion
 #ifdef _MSC_VER
@@ -42,9 +46,63 @@ namespace mel {
 #define LOG_GET_FILE() ""
 #endif
 
+namespace mel {
+
+//==============================================================================
+// LOGGER CLASS
+//==============================================================================
+
+template <int instance>
+class Logger : public Singleton<Logger<instance> >, public Writer {
+public:
+    /// Constructs a new Logger instance with a max severity
+    Logger(Severity maxSeverity = None) : Writer(maxSeverity) {}
+
+    /// Adds a write to the Logger
+    Logger& add_writer(Writer* writer) {
+        assert(writer != this);
+        writers_.push_back(writer);
+        return *this;
+    }
+
+    Writer& get_writer(std::size_t index) {
+        return *writers_[index];
+    }
+
+    /// Writes a Record to the Logger
+    virtual void write(const Record& record) override {
+        if (check_severity(record.get_severity())) {
+            *this += record;
+        }
+    }
+
+    void operator+=(const Record& record) {
+        for (std::vector<Writer*>::iterator it = writers_.begin();
+             it != writers_.end(); ++it) {
+            if ((*it)->check_severity(record.get_severity()))
+                (*it)->write(record);
+        }
+    }
+
+    virtual void set_max_severity(Severity severity) override {
+        max_severity_ = severity;
+        for (std::size_t i = 0; i < writers_.size(); ++i)
+            writers_[i]->set_max_severity(severity);
+    }
+
+private:
+    std::vector<Writer*> writers_;  ///< writers for this Logger
+};
+
 //==============================================================================
 // CUSTOM LOGGING INITIALIZER FUNCTIONS
 //==============================================================================
+
+/// Gets a logger instance
+template <int instance>
+inline Logger<instance>* get_logger() {
+    return Logger<instance>::get_instance();
+}
 
 /// Initializes a logger with a custom Writer (specific logger instance)
 template <int instance>
@@ -88,6 +146,10 @@ inline Logger<instance>& init_logger(Severity max_severity,
 // DEFAULT MEL LOGGER
 //==============================================================================
 
+/// Built in MEL Logger. Contains two writers: (0) a RollingFileWriter with a
+/// TxtFormatter and default severity Verbose, and (1) a ColorConsoleWriter with
+/// TxtFormatter and defaultl severity Info. Can be disabled by defining
+/// MEL_DISABLE_LOG or enabling DISABLE_LOG option in CMakeLists.txt
 extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 
 }  // namespace mel

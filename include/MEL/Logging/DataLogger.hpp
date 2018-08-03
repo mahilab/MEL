@@ -160,32 +160,24 @@ private:
     void double_rows();
 
 private:
-    WriterType
-        writer_type_;       ///< stores whether writer is Immeadiate or Buffered
+    WriterType writer_type_;///< stores whether writer is Immeadiate or Buffered
     Mutex mutex_;           ///< handles multi-threading
     File file_;             ///< File to which data will be written
     off_t file_size_;       ///< size of file_ since last open or write
     std::string file_ext_;  ///< file extension
     std::string filename_no_ext_;  ///< filename without extension
     bool file_opened_;             ///< true when file_ is open
-    std::vector<std::vector<double>>
-        data_buffer_;  ///< storage container for log data
-    bool autosave_;    ///< when true automatically saves the data log to a file
-                       ///< upon destruction
+    std::vector<std::vector<double>>  data_buffer_;  ///< storage container for log data
+    bool autosave_;    ///< when true automatically saves the data log to a file upon destruction
 
-    bool
-        log_saved_;  ///< whether or not data log was successfully saved to file
-    bool saving_;    ///< true when data is currently being saved to file
+    bool log_saved_;  ///< whether or not data log was successfully saved to file
+    bool saving_;     ///< true when data is currently being saved to file
     std::vector<std::string> header_;  ///< vector of column names
-
-    std::size_t max_rows_;  ///< number of rows reserved in the data buffer
-    std::size_t
-        row_count_;  ///< number of rows currently written to the data logger
+    std::size_t max_rows_;   ///< number of rows reserved in the data buffer
+    std::size_t row_count_;  ///< number of rows currently written to the data logger
     std::size_t col_count_;  ///< number of columns in the header
-    DataFormat format_;  ///< the floating point number format the DataLog will
-                         ///< be saved with
-    std::size_t precision_;  ///< the floating point number precision the
-                             ///< DataLog will be saved with
+    DataFormat  format_;     ///< the floating point number format the DataLog will be saved with
+    std::size_t precision_;  ///< the floating point number precision the DataLog will be saved with
 };
 
 }  // namespace mel

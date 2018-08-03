@@ -54,6 +54,8 @@ private:
                     set_text_color(Color::Yellow);
                     break;
                 case Verbose:
+                    set_text_color(Color::Green);
+                    break;
                 case Debug:
                     set_text_color(Color::Cyan);
                     break;

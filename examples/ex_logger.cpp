@@ -48,16 +48,20 @@ public:
 };
 
 int main() {
-    // This intializes the default MEL Logger. Severity levels Verbose and above
-    // will be written to a rolling log file MEL.log, and severity levels
-    // Info and above will be written to the console with color formatting.
-    
+
+    /// Build in logger demonstration (only available if DISABLE_LOG is OFF)
     LOG(Debug) << "This is a Debug log";      // goes nowhere by default
     LOG(Verbose) << "This is a Verbose log";  // goes to MEL.log only
     LOG(Info) << "This is an Info log";       // goes to MEL.log and console
     LOG(Warning) << "This is a Warning log";  // goes to MEL.log and console
     LOG(Error) << "This is an Error log";     // goes to MEL.log and console
     LOG(Fatal) << "This is a Fatal log";      // goes to MEL.log and console
+
+    /// You can change the max severiy of the default logger
+    MEL_LOGGER->set_max_severity(Debug);
+
+    LOG(Debug) << "This is another Debug log";      // goes to MEL.log and console
+    LOG(Verbose) << "This is another Verbose log";  // goes to MEL.log and console
 
     // You can create your own loggers too. First you need to choose a
     // Formatter. A Formatter is responsible for taking a log record and turning
@@ -83,12 +87,12 @@ int main() {
     // note we could have done this at the beginning like so:
     // init_logger<MyLogger>(Verbose, &file_writer).>add_writer(&my_writer);
 
-    LOG_(MyLogger, Debug) << "This is a Debug log";
-    LOG_(MyLogger, Verbose) << "This is a Verbose log";
-    LOG_(MyLogger, Info) << "This is an Info log";
-    LOG_(MyLogger, Warning) << "This is a Warning log";
-    LOG_(MyLogger, Error) << "This is an Error log";
-    LOG_(MyLogger, Fatal) << "This is a Fatal log";
+    LOG_(MyLogger, Debug) << "This is a custom Debug log";
+    LOG_(MyLogger, Verbose) << "This is a custom Verbose log";
+    LOG_(MyLogger, Info) << "This is an custom Info log";
+    LOG_(MyLogger, Warning) << "This is a custom Warning log";
+    LOG_(MyLogger, Error) << "This is an custom Error log";
+    LOG_(MyLogger, Fatal) << "This is a custom Fatal log";
 
     return 0;
 }

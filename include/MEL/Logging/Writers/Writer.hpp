@@ -38,7 +38,7 @@ public:
 
     Severity get_max_severity() const { return max_severity_; }
 
-    void set_max_severity(Severity severity) { max_severity_ = severity; }
+    virtual void set_max_severity(Severity severity) { max_severity_ = severity; }
 
     bool check_severity(Severity severity) const {
         return severity <= max_severity_;

@@ -11,7 +11,7 @@ import shutil
 keep = ['bin/sftp-config.json',
         'bin/NiFpga_quadrature.lvbitx',
         'bin/Release/myo32.dll',
-        'bin/Release/myo64.dll'
+        'bin/Release/myo64.dll',
         'lib/sftp-config.json']
 
 folders = ['build',
