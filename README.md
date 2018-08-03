@@ -7,6 +7,7 @@
 
 - **[Evan Pezent](http://evanpezent.com)** (epezent@rice.edu)
 - **[Craig McDonald](http://craiggmcdonald.com/)** (craig.g.mcdonald@gmail.com)
+- **[Mechatronics and Haptic Interfaces Lab](http://mahilab.rice.edu/)
 
 ## Overview
 
@@ -53,7 +54,7 @@ Robot robot("simple_robot");                               // create a robot
 robot.add_joint(joint);                                    // add joint to robot
 ```
 
-### Control and Synchronization
+### Hardware Control
 
 Once hardware is defined, MEL gives you the basics needed to create precisely timed loops and controller functionality:
 
