@@ -36,6 +36,34 @@ namespace mel {
     has_velocity_limit_(true)
 { }
 
+ Joint::Joint(const std::string& name,
+     Actuator* actuator,
+     PositionSensor* position_sensor,
+     VelocitySensor* velocity_sensor,
+     double transmission,
+     std::array<double, 2> position_limits = { -INF, INF },
+     double velocity_limit = INF,
+     double torque_limit = INF,
+     bool saturate = true) :
+     Device("Joint::" + name),
+     actuator_(actuator),
+     position_sensor_(position_sensor),
+     velocity_sensor_(velocity_sensor),
+     actuator_transmission_(transmission),
+     position_sensor_transmission_(transmission),
+     velocity_sensor_transmission_(transmission),
+     torque_(0.0),
+     position_(0.0),
+     velocity_(0.0),
+     saturate_(saturate),
+     torque_limit_(torque_limit),
+     position_limits_(position_limits),
+     velocity_limit_(velocity_limit),
+     has_torque_limit_(true),
+     has_position_limits_(true),
+     has_velocity_limit_(true)
+ { }
+
 bool Joint::enable() {
     if (position_sensor_->enable() && velocity_sensor_->enable() && actuator_->enable())
         return Device::enable();

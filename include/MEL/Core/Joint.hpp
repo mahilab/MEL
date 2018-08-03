@@ -24,6 +24,7 @@
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
+#include <MEL/Math/Constants.hpp>
 #include <array>
 #include <memory>
 
@@ -43,10 +44,21 @@ public:
           double position_sensor_transmission,
           VelocitySensor* velocity_sensor,
           double velocity_sensor_transmission,
-          std::array<double, 2> position_limits,
-          double velocity_limit,
-          double torque_limit,
+          std::array<double, 2> position_limits = { -INF, INF },
+          double velocity_limit = INF,
+          double torque_limit = INF,
           bool saturate = true);
+
+    /// Constructor
+    Joint(const std::string& name,
+        Actuator* actuator,
+        PositionSensor* position_sensor,
+        VelocitySensor* velocity_sensor,
+        double transmission,
+        std::array<double, 2> position_limits = { -INF, INF },
+        double velocity_limit = INF,
+        double torque_limit = INF,
+        bool saturate = true);
 
     /// Enables the joint's position sensor, velocity sensor, and actuator
     bool enable() override;
