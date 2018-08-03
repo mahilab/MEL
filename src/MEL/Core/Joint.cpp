@@ -41,10 +41,10 @@ namespace mel {
      PositionSensor* position_sensor,
      VelocitySensor* velocity_sensor,
      double transmission,
-     std::array<double, 2> position_limits = { -INF, INF },
-     double velocity_limit = INF,
-     double torque_limit = INF,
-     bool saturate = true) :
+     std::array<double, 2> position_limits,
+     double velocity_limit,
+     double torque_limit,
+     bool saturate) :
      Device("Joint::" + name),
      actuator_(actuator),
      position_sensor_(position_sensor),
