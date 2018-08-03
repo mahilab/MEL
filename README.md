@@ -7,7 +7,7 @@
 
 - **[Evan Pezent](http://evanpezent.com)** (epezent@rice.edu)
 - **[Craig McDonald](http://craiggmcdonald.com/)** (craig.g.mcdonald@gmail.com)
-- **[Mechatronics and Haptic Interfaces Lab](http://mahilab.rice.edu/)
+- **[Mechatronics and Haptic Interfaces Lab]**(http://mahilab.rice.edu/)
 
 ## Overview
 
