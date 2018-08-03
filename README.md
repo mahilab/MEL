@@ -25,7 +25,7 @@ daq.AO[0].set_value(voltage);         // set voltage of analog output channel 0
 daq.update_output();                  // sync DAQ outputs with real-world
 ```
 
-Each DAQ may have multiple channels of different signal types, from analog and digital I/O to encoder counters. Individual channels can be retrieved, used independently, and pass around as needed:
+Each DAQ may have multiple channels of different signal types, from analog and digital I/O to encoder counters. Individual channels can be retrieved, used independently, and passed around as needed:
 
 ```cpp
 DigitalOutput::Channel do0 = daq.DO[0]; // get digital output channel 0
@@ -39,13 +39,13 @@ enc0.update();                          // sync encoder 0
 int32 counts = enc0.get_value();        // get encoder counts
 ```
 
-### Mechatronic Primitives
+### Mechatronics Primitives
 
 MEL provides several mechatronics primitive classes to create abstract interfaces for real world hardware. Usually, these objects will be bound to a particular DAQ input or output depending on its functionality.
 
 ```cpp
 Amplifier amp("amc_12a8", High, do0, 1.3, ao0);            // create High enabled PWM amplifier with gain 1.3
-Motor motor("maxon_re30", 0.0538, amp);                    // create DC motor torque constant 0.0538
+Motor motor("maxon_re30", 0.0538, amp);                    // create DC motor with torque constant 0.0538
 PositionSensor* pos_sensor = &enc0;                        // create position sensor from encoder
 VelocitySensor* vel_sensor = &daq.velocity[0];             // create velocity sensor from DAQ encoder velocity channel
 Joint joint("axis0", &motor, pos_sensor, vel_sensor, 20);  // create a robotic joint with transmission ratio 20
@@ -55,14 +55,14 @@ robot.add_joint(joint);                                    // add joint to robot
 
 ### Control and Synchronization
 
-Once hardware is defined, MEL gives you everything you need to create precisely timed loops and basic controller functionality:
+Once hardware is defined, MEL gives you the basics needed to create precisely timed loops and controller functionality:
 
 ```cpp
-PdController pd(15.0, 0.5);                                     // create PD control with Kp 14 and Kd 0.5
+PdController pd(15.0, 0.5);                                     // create PD control with gains Kp 14 and Kd 0.5
 Waveform trajectory(Waveform::Sin, seconds(2.0));               // create sinwave trajectory
-double torque, pos_act, vel_act, pos_ref, vel_ref = 0.0;        // declare contrl variables
+double torque, pos_act, vel_act, pos_ref, vel_ref = 0.0;        // control variables
 Timer timer(hertz(1000));                                       // create 1000 Hz control loop timer
-Time time;                                                      // declare current time
+Time time;                                                      // current time
 while ((time = timer.get_elapsed_time()) < seconds(60)) {       // loop for 1 minute
     daq.update_input();                                         // sync DAQ inputs with real-world
     pos_act = robot[0].get_position();                          // get robot joint position
@@ -80,15 +80,15 @@ while ((time = timer.get_elapsed_time()) < seconds(60)) {       // loop for 1 mi
 In addition to it's core functionality, MEL comes packed with other features that mechatronics designers will find useful, including:
 - basic math functions and classes
 - error and data logging
-- basic signal processing, high/low pass filters
+- basic signal processing such high/low pass filters
 - communication over UDP, TCP, and shared memory
 - console interactivity
 - keyboard and joystick support
 
 ## Getting Started
 
-To get started using MEL, visit the [GitHub Wiki](https://github.com/epezent/MEL/wiki) page. This guide will run you through process of setting up MEL for your target platform and hardware, building MEL, and creating your own projects.
+To get started using MEL, visit the [GitHub Wiki](https://github.com/epezent/MEL/wiki) page. This guide will run you through process of setting up MEL for your target platform and hardware, building the library, and creating your own MEL driven projects.
 
 ## Examples
 
-Several examples can be found in [examples](https://github.com/epezent/MEL/tree/master/examples). The Haptic Paddle example demonstrates a very good use case for new users. To see how MEL is being used for actual research hardware, consider checking out the [OpenWrist](https://github.com/epezent/OpenWrist) and [MAHI Exo-II](https://github.com/craigmc707/MEII) repositories.
+Several [examples](https://github.com/epezent/MEL/tree/master/examples) are provided. The [Haptic Paddle example](https://github.com/epezent/MEL/blob/master/examples/ex_haptic_paddle.cpp) demonstrates a very good use case for new users. To see how MEL is being used for actual research hardware, consider checking out the [OpenWrist](https://github.com/epezent/OpenWrist) and [MAHI Exo-II](https://github.com/craigmc707/MEII) repositories.
