@@ -31,13 +31,10 @@ Each DAQ may have multiple channels of different signal types, from analog and d
 ```cpp
 DigitalOutput::Channel do0 = daq.DO[0]; // get digital output channel 0
 AnalogOutput::Channel ao0 = daq.AO[0];  // get analog output channel 0
-Encoder::Channel enc0 = daq.encoder[0]; // get encode channel 0
 do0.set_value(High);                    // set DO0 to High TTL
 ao0.set_value(5.0);                     // set AO0 to 5V
 do0.update();                           // sync DO0
 ao0.update();                           // sync AO0
-enc0.update();                          // sync encoder 0
-int32 counts = enc0.get_value();        // get encoder counts
 ```
 
 ### Mechatronics Primitives
@@ -45,13 +42,13 @@ int32 counts = enc0.get_value();        // get encoder counts
 MEL provides several mechatronics primitive classes to create abstract interfaces for real world hardware. Usually, these objects will be bound to a particular DAQ input or output depending on its functionality.
 
 ```cpp
-Amplifier amp("amc_12a8", High, do0, 1.3, ao0);            // create High enabled PWM amplifier with gain 1.3
-Motor motor("maxon_re30", 0.0538, amp);                    // create DC motor with torque constant 0.0538
-PositionSensor* pos_sensor = &enc0;                        // create position sensor from encoder
-VelocitySensor* vel_sensor = &daq.velocity[0];             // create velocity sensor from DAQ encoder velocity channel
-Joint joint("axis0", &motor, pos_sensor, vel_sensor, 20);  // create a robotic joint with transmission ratio 20
-Robot robot("simple_robot");                               // create a robot
-robot.add_joint(joint);                                    // add joint to robot
+Encoder::Channel enc0 = daq.encoder[0];          // get encoder channel 0
+Velocity::Channel vel0 = daq.velocity[0];        // get encoder veloicty channel 0
+Amplifier amp("amc_12a8", High, do0, 1.3, ao0);  // create High enabled PWM amplifier with gain 1.3
+Motor motor("maxon_re30", 0.0538, amp);          // create DC motor torque constant 0.0538
+Joint joint("axis0", &motor, &enc0, &vel0, 20);  // create a robotic joint with transmission ratio 20
+Robot robot("simple_robot");                     // create a robot
+robot.add_joint(joint);                          // add joint to robot
 ```
 
 ### Hardware Control

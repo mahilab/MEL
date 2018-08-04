@@ -28,7 +28,7 @@ int main() {
 	bool stop = false;
 
 	// prompt the user for input
-	print("Open MelScope to view Myo signals.");
+	print("Open MelScope with MelShare \"mes\" to view Myo signals.");
 	print("Press 'Escape' to exit.");
 
     // enable hardware
@@ -42,10 +42,10 @@ int main() {
         // write to MelShares
         ms_mes.write_data(myo.get_values());
 
-        // check for exit key
-        // if (Keyboard::is_key_pressed(Key::Escape)) {
-        //     stop = true;
-        // }
+        check for exit key
+        if (Keyboard::is_key_pressed(Key::Escape)) {
+            stop = true;
+        }
 
         // wait for remainder of sample period
         timer.wait();

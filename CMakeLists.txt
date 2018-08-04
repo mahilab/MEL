@@ -41,7 +41,7 @@ option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"          
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
 option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
-option(TESTS       "Turn ON to build test executable(s)"                                        OFF)
+option(TESTS       "Turn ON to build test executable(s)"                                        ON )
 option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders are compilation"   OFF)
 option(BUILD_DOC   "Turn ON to build MEL documentation"                                         OFF)
 # third party paths
