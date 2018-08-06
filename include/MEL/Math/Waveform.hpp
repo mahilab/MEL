@@ -40,13 +40,16 @@ public:
     };
 
 public:
-    // Default constructor
+    /// Default constructor
     Waveform(Type type,
              Time period,
              double amplitude = 1.0,
              double offset    = 0.0);
 
-    // Evaluates the Waform at Time t
+    /// Evaluates the Waveform at Time t
+    double operator()(Time t);
+
+    /// Evaluates the Waform at Time t
     double evaluate(Time t);
 
 public:

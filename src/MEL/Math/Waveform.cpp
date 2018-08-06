@@ -48,6 +48,10 @@ double Waveform::evaluate(Time t) {
     return value;
 }
 
+double Waveform::operator()(Time t) {
+    return evaluate(t);
+}
+
 } // namespace mel
 
 

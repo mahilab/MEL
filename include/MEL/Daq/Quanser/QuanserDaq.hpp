@@ -18,7 +18,7 @@
 #ifndef MEL_QUANSER_DAQ_HPP
 #define MEL_QUANSER_DAQ_HPP
 
-#include <MEL/Daq/Daq.hpp>
+#include <MEL/Daq/DaqBase.hpp>
 #include <MEL/Daq/Quanser/QuanserOptions.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
@@ -52,7 +52,7 @@ typedef t_card QuanserHandle;
 //==============================================================================
 
 /// Encapsulates a generic Quanser DAQ
-class MEL_API QuanserDaq : public Daq, NonCopyable {
+class MEL_API QuanserDaq : public DaqBase, NonCopyable {
 public:
     /// Default constructor
     QuanserDaq(const std::string& card_type,

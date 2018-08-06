@@ -34,9 +34,7 @@ public:
     class Channel;
 
     /// Default constructor
-    Input(const std::string& name, const std::vector<uint32>& channel_numbers) :
-        Module<T>(name, IoType::InputOnly, channel_numbers)
-    {}
+    Input() {}
 
     /// Default destructor
     virtual ~Input() {}
@@ -78,6 +76,9 @@ public:
         /// Creates a valid channel.
         Channel(Input* module, uint32 channel_number)
             : ChannelBase<T>(module, channel_number) {}
+
+        /// Inherit assignment operator for setting
+        using ChannelBase<T>::operator=;
     };
 };
 
@@ -86,7 +87,7 @@ public:
 //==============================================================================
 
 typedef Input<Voltage> AnalogInput;
-typedef Input<Logic> DigitalInput;
+typedef Input<Logic>   DigitalInput;
 
 }  // namespace mel
 

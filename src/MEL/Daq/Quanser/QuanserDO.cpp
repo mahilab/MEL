@@ -9,12 +9,11 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDO::QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
-        Module(daq.get_name() + "_digital_oputput", IoType::OutputOnly, channel_numbers),
-        DigitalOutput(daq.get_name() + "_digital_oputput", channel_numbers),
+    QuanserDO::QuanserDO(QuanserDaq& daq) :
         daq_(daq),
-        quanser_values_(channel_count_, char(0))
+        quanser_values_(this)
     {
+        set_name(daq.get_name() + "_DO");
     }
 
     QuanserDO::~QuanserDO() {
@@ -24,7 +23,7 @@ namespace mel {
     bool QuanserDO::enable() {
         if (is_enabled())
             return Device::enable();
-        set_values(enable_values_);
+        set_values(enable_values_.get());
         if (update()) {
             LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
             return Device::enable();
@@ -38,7 +37,7 @@ namespace mel {
     bool QuanserDO::disable() {
         if (!is_enabled())
             return Device::disable();
-        set_values(disable_values_);
+        set_values(disable_values_.get());
         if (update()) {
             LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
             return Device::disable();
@@ -56,10 +55,10 @@ namespace mel {
             return false;
         }
         // convert MEL Logic to Quanser t_boolean (aka char)
-        for (std::size_t i = 0; i < channel_count_; ++i)
-            quanser_values_[i] = static_cast<char>(values_[i]);
+        for (auto const& ch : get_channel_numbers())
+            quanser_values_[ch] = static_cast<char>(values_[ch]);
         t_error result;
-        result = hil_write_digital(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &quanser_values_[0]);
+        result = hil_write_digital(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &quanser_values_.get()[0]);
         if (result == 0)
             return true;
         else {
@@ -76,9 +75,9 @@ namespace mel {
             return false;
         }
         // convert MEL Logic to Quanser t_boolean (aka char)
-        quanser_values_[channel_map_.at(channel_number)] = static_cast<char>(values_[channel_map_.at(channel_number)]);
+        quanser_values_[channel_number] = static_cast<char>(values_[channel_number]);
         t_error result;
-        result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_map_.at(channel_number)]);
+        result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_number]);
         if (result == 0)
             return true;
         else {
@@ -90,7 +89,7 @@ namespace mel {
 
 
     std::vector<char>& QuanserDO::get_quanser_values() {
-        return quanser_values_;
+        return quanser_values_.get();
     }
 
     bool QuanserDO::set_expire_values(const std::vector<Logic>& expire_values) {
@@ -110,7 +109,7 @@ namespace mel {
                 converted_expire_values.push_back(DIGITAL_STATE_LOW);
         }
         t_error result;
-        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_expire_values[0]);
+        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &converted_expire_values[0]);
         if (result == 0) {
             LOG(Verbose) << "Set " << get_name() << " expire values to " << expire_values_;
             return true;

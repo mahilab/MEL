@@ -24,7 +24,6 @@
 #include <MEL/Daq/Quanser/QuanserDIO.hpp>
 #include <MEL/Daq/Quanser/QuanserEncoder.hpp>
 #include <MEL/Daq/Quanser/QuanserOptions.hpp>
-#include <MEL/Daq/Quanser/QuanserVelocity.hpp>
 #include <MEL/Daq/Quanser/QuanserWatchdog.hpp>
 
 namespace mel {

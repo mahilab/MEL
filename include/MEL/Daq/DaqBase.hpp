@@ -15,8 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_DAQ_HPP
-#define MEL_DAQ_HPP
+#ifndef MEL_DAQ_BASE_HPP
+#define MEL_DAQ_BASE_HPP
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
@@ -30,13 +30,13 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Daq : public Device {
+class MEL_API DaqBase : public Device {
 public:
     /// The default constructor
-    Daq(const std::string& name);
+    DaqBase(const std::string& name);
 
     /// The default destructor
-    virtual ~Daq();
+    virtual ~DaqBase();
 
     /// This function should open communication with the DAQ, either through
     /// an API, socket communication, etc. It should not perform any other task
@@ -87,4 +87,4 @@ protected:
 
 }  // namespace mel
 
-#endif  // MEL_DAQ_HPP
+#endif  // MEL_DAQ_BASE_HPP

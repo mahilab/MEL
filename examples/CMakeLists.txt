@@ -34,6 +34,7 @@ if(QUANSER)
     mel_example(q2usb)
     mel_example(q8usb)
     mel_example(haptic_paddle)
+    mel_example(overview)
 endif()
 
 if(NI_ARM)

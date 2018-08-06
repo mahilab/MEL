@@ -6,7 +6,7 @@ namespace mel {
 VirtualVelocitySensor::VirtualVelocitySensor(const std::string& name, 
     PositionSensor& position_sensor, 
     const Differentiator& diff) :
-    VelocitySensor("VirtualVelocitySensor::" + name),
+    VelocitySensor(name),
     position_sensor_(position_sensor),
     diff_(diff)
 {

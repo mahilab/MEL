@@ -64,7 +64,7 @@ enum Direction {
 
 /// Represents encoder quadrature factors
 enum QuadFactor {
-    X0   = 0,  ///< no quadrature
+    X0   = 0,  ///< no quadrature factor
     X1   = 1,  ///< 1X counts per revolution
     X2   = 2,  ///< 2X counts per revolution
     X4   = 4,  ///< 4X counts per revolution

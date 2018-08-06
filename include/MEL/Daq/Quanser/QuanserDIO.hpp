@@ -35,9 +35,7 @@ class QuanserDaq;
 
 class MEL_API QuanserDIO : public DigitalInputOutput, NonCopyable {
 public:
-    QuanserDIO(QuanserDaq& daq,
-                        const std::vector<uint32>& channel_numbers,
-                        const std::vector<Direction>& directions);
+    QuanserDIO(QuanserDaq& daq);
 
     ~QuanserDIO();
 

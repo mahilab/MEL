@@ -101,6 +101,7 @@
 	{
 		"ecc_common_flags":
 		[
+			"-DMEL_EXPORTS",
 			"-I$project_base_path/include",
 			"-I/Program Files/Quanser/QUARC/include"
 		],

@@ -17,7 +17,7 @@ namespace mel {
         double velocity_limit,
         double torque_limit,
         bool saturate) :
-    Device("Joint::" + name),
+    Device(name),
     actuator_(actuator),
     position_sensor_(position_sensor),
     velocity_sensor_(velocity_sensor),

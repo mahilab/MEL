@@ -3,7 +3,7 @@
 namespace mel {
 
 Actuator::Actuator(const std::string& name) :
-    Device("Actuator::" + name),
+    Device(name),
     torque_command_(0.0)
 { }
 

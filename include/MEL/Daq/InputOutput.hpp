@@ -32,18 +32,11 @@ template <typename T>
 class InputOutput : public Input<T>, public Output<T> {
 public:
 
-
     class Channel;
 
     /// Default constructor
-    InputOutput(const std::string& name, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions) :
-        Module<T>(name, IoType::InputOutput, channel_numbers),
-        Input<T>(name, channel_numbers),
-        Output<T>(name, channel_numbers),
-        directions_(directions),
-        enable_values_(Module<T>::channel_count_),
-        disable_values_(Module<T>::channel_count_),
-        expire_values_(Module<T>::channel_count_)
+    InputOutput() :
+        directions_(this)
     {
         sort_input_output_channel_numbers();
     }
@@ -53,18 +46,15 @@ public:
 
     /// Sets the directions of all channels
     virtual bool set_directions(const std::vector<Direction>& directions) {
-        if (this->validate_channel_count(directions.size())) {
-            directions_ = directions;
-            sort_input_output_channel_numbers();
-            return true;
-        }
-        return false;
+        directions_.set(directions);
+        sort_input_output_channel_numbers();
+        return true;
     }
 
     /// Sets the direction of a single channel
     virtual bool set_direction(uint32 channel_number, Direction direction) {
         if (this->validate_channel_number(channel_number)) {
-            directions_[Module<T>::channel_map_.at(channel_number)] = direction;
+            directions_[channel_number] = direction;
             sort_input_output_channel_numbers();
             return true;
         }
@@ -106,21 +96,18 @@ protected:
     void sort_input_output_channel_numbers() {
         input_channel_numbers_.clear();
         output_channel_numbers_.clear();
-        for (std::size_t i = 0; i < this->channel_numbers_.size(); ++i) {
-            if (directions_[i] == In)
-                input_channel_numbers_.push_back(this->channel_numbers_[i]);
-            else if (directions_[i] == Out)
-                output_channel_numbers_.push_back(this->channel_numbers_[i]);
+        for (std::size_t i = 0; i < get_channel_count(); ++i) {
+            if (directions_.get()[i] == In)
+                input_channel_numbers_.push_back(get_channel_numbers()[i]);
+            else if (directions_.get()[i] == Out)
+                output_channel_numbers_.push_back(get_channel_numbers()[i]);
         }
     }
 
 protected:
-    std::vector<Direction> directions_;           ///< The I/O directions of each channel
+    ValueContainer<Direction> directions_;        ///< The I/O directions of each channel
     std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
     std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
-    std::vector<T>  enable_values_;               ///< The initial values set when the Module is enabled
-    std::vector<T> disable_values_;               ///< The final values set when the Module is disabled
-    std::vector<T> expire_values_;                ///< The expire values when the Module expires
 
 public:
 
@@ -134,11 +121,13 @@ public:
         Channel(InputOutput* module, uint32 channel_number)
             : ChannelBase<T>(module, channel_number) {}
 
+        /// Inherit assignment operator for setting
+        using ChannelBase<T>::operator=;
+
         /// Sets the direction of the channel
         void set_direction(Direction direction) {
            dynamic_cast<InputOutput<T>*>(this->module_)->set_direction(this->channel_number_, direction);
         }
-
     };
 };
 

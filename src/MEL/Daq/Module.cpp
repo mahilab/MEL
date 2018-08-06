@@ -1,15 +1,34 @@
 #include <MEL/Daq/Module.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <algorithm>
 
 namespace mel {
 
-ModuleBase::ModuleBase(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
-    Device("Module::" + name),
-    type_(type),
-    channel_numbers_(sort_and_reduce_channels(channel_numbers)),
-    channel_count_(channel_numbers_.size()),
-    channel_map_(make_channel_map(channel_numbers_))
-{ }
+//==============================================================================
+// HELPER FUNCTIONS
+//==============================================================================
+
+std::vector<uint32> sort_and_reduce_channels(const std::vector<uint32>& channels) {
+    std::vector<uint32> sorted_channels = channels;
+    std::sort(sorted_channels.begin(), sorted_channels.end());
+    sorted_channels.erase(std::unique(sorted_channels.begin(), sorted_channels.end()), sorted_channels.end());
+    if (sorted_channels != channels)
+        LOG(Warning) << "Specifed channels " << channels << " sorted and reduced to " << sorted_channels;
+    return sorted_channels;
+}
+
+std::map<uint32, std::size_t> make_channel_map(const std::vector<uint32>& channel_numbers) {
+    std::map<uint32, std::size_t> channel_map;
+    for (std::size_t i = 0; i < channel_numbers.size(); ++i)
+        channel_map[channel_numbers[i]] = i;
+    return channel_map;
+}
+
+//==============================================================================
+// CLASS DEFINITIONS
+//==============================================================================
+
+ModuleBase::ModuleBase() { }
 
 bool ModuleBase::update() {
     bool success = true;
@@ -20,46 +39,43 @@ bool ModuleBase::update() {
     return success;
 }
 
+void ModuleBase::set_channel_numbers(const std::vector<uint32>& channel_numbers) {
+    channel_numbers_ = sort_and_reduce_channels(channel_numbers);
+    channel_map_ = make_channel_map(channel_numbers_);
+    for (std::size_t i = 0; i < containers_.size(); i++)
+        containers_[i]->resize(channel_numbers_.size());
+}
+
 const std::vector<uint32>& ModuleBase::get_channel_numbers() const {
     return channel_numbers_;
 }
 
 std::size_t ModuleBase::get_channel_count() const {
-    return channel_count_;
+    return channel_numbers_.size();
 }
 
-IoType ModuleBase::get_type() const {
-    return type_;
+std::size_t ModuleBase::index(uint32 channel_number) const {
+    return channel_map_.at(channel_number);
 }
 
 bool ModuleBase::validate_channel_number(uint32 channel_number) const {
     if (channel_map_.count(channel_number) > 0)
         return true;
     LOG(Error) << "Invalid channel number " << channel_number
-        << " not declared in channel numbers";
+               << " not declared in channel numbers";
     return false;
 }
 
 bool ModuleBase::validate_channel_count(std::size_t size) const {
-    if (channel_count_ == size)
+    if (channel_numbers_.size() == size)
         return true;
     LOG(Error) << "Invalid number of elements (" << size
-        << ") not equal to channel count of " << channel_count_;
+               << ") not equal to channel count of " << channel_numbers_.size();
     return false;
 }
 
-std::vector<uint32> ModuleBase::sort_and_reduce_channels(const std::vector<uint32>& channels) {
-    std::vector<uint32> sorted_channels = channels;
-    std::sort(sorted_channels.begin(), sorted_channels.end());
-    sorted_channels.erase(std::unique(sorted_channels.begin(), sorted_channels.end()), sorted_channels.end());
-    return sorted_channels;
-}
-
-std::map<uint32, std::size_t> ModuleBase::make_channel_map(const std::vector<uint32>& channel_numbers) {
-    std::map<uint32, std::size_t> channel_map;
-    for (std::size_t i = 0; i < channel_numbers.size(); ++i)
-        channel_map[channel_numbers[i]] = i;
-    return channel_map;
+void ModuleBase::add_container(ValueContainerBase* container) {
+    containers_.push_back(container);
 }
 
 } // namespace mel

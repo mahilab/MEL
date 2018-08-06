@@ -25,7 +25,6 @@
 #include <MEL/Daq/Quanser/QuanserDO.hpp>
 #include <MEL/Daq/Quanser/QuanserEncoder.hpp>
 #include <MEL/Daq/Quanser/QuanserOptions.hpp>
-#include <MEL/Daq/Quanser/QuanserVelocity.hpp>
 #include <MEL/Daq/Quanser/QuanserWatchdog.hpp>
 
 namespace mel {
@@ -41,11 +40,6 @@ public:
     Q8Usb(QuanserOptions options                  = QuanserOptions(),
           bool auto_open                          = true,
           bool perform_sanity_check               = true,
-          const std::vector<uint32>& ai_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
-          const std::vector<uint32>& ao_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
-          const std::vector<uint32>& di_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
-          const std::vector<uint32>& do_channels  = {0, 1, 2, 3, 4, 5, 6, 7},
-          const std::vector<uint32>& enc_channels = {0, 1, 2, 3, 4, 5, 6, 7},
           uint32 id                               = next_id());
 
     /// Default destructor. First calls disable() if the Q8Usb is enabled
@@ -108,7 +102,6 @@ public:
     QuanserDI      DI;         ///< The digital input Module
     QuanserDO      DO;         ///< The digital output Module
     QuanserEncoder  encoder;   ///< The encoder Module
-    QuanserVelocity velocity;  ///< The encoder velocity Module
     QuanserWatchdog watchdog;  ///< The watchdog timer of this Q8 USB
 
 private:

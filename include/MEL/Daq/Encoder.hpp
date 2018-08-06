@@ -20,6 +20,7 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/PositionSensor.hpp>
+#include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Daq/Module.hpp>
 
@@ -35,27 +36,24 @@ public:
     class Channel;
 
     /// Default constructor
-    Encoder(const std::string& name,
-            const std::vector<uint32>& channel_numbers);
+    Encoder();
 
     /// Default destructor
     virtual ~Encoder();
 
     /// This function should call the DAQ's API to set all encoder counters
-    virtual bool reset_counts(const std::vector<int32>& counts) = 0;
+    virtual bool reset_counts(const std::vector<int32>& counts);
 
     /// This function should call the DAQ's API to set a single encoder counter
-    virtual bool reset_count(uint32 channel_number, int32 count) = 0;
+    virtual bool reset_count(uint32 channel_number, int32 count);
 
     /// This function should call the DAQ's API to set the quadrature factor on
     /// all encoder channels
-    virtual bool set_quadrature_factors(
-        const std::vector<QuadFactor>& factors) = 0;
+    virtual bool set_quadrature_factors(const std::vector<QuadFactor>& factors);
 
     /// This function should call the DAQ's API to set the quadrature factor on
     /// a single channel
-    virtual bool set_quadrature_factor(uint32 channel_number,
-                                       QuadFactor factor) = 0;
+    virtual bool set_quadrature_factor(uint32 channel_number, QuadFactor factor);
 
     /// Zeros all encoder channels
     bool zero();
@@ -75,6 +73,18 @@ public:
     /// Performs conversion to position using #factors_ and #counts_per_unit
     double get_position(uint32 channel_number);
 
+    /// Performs conversion to positions using #factors_ and #counts_per_unit
+    std::vector<double>& get_values_per_sec();
+
+    /// Performs conversion to position using #factors_ and #counts_per_unit
+    double get_value_per_sec(uint32 channel_number);
+
+    /// Performs conversion to positions using #factors_ and #counts_per_unit
+    const std::vector<double>& get_velocities();
+
+    /// Performs conversion to position using #factors_ and #counts_per_unit
+    double get_velocity(uint32 channel_number);
+
     /// Returns a Encoder::Channel
     Channel get_channel(uint32 channel_number);
 
@@ -88,29 +98,35 @@ public:
     /// Returns multiple Encoder::Channels
     std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
 
+    /// Set whether the Encoder enables velocity estimation
+    void has_velocity(bool has_velocity);
+
 private:
-    /// Precomputes position conversion sclars (i.e. #units_per_count_ /
-    /// #factors_)
+    /// Precomputes position conversion sclars (i.e. #units_per_count_ / #factors_)
     void compute_conversions();
 
 protected:
-    std::vector<QuadFactor> factors_;      ///< The encoder quadrature factors
-    std::vector<double> units_per_count_;  ///< The number of counts per unit of
-                                           ///< travel of the Encoder
-    std::vector<double>
-        positions_;  ///< The calculated positions of the Encoder channels
-    std::vector<double>
-        conversions_;  ///< Conversion scalars used to conver to positions
+    bool has_velocity_;                       ///< True if Encoder module has velocity estimation
+
+    ValueContainer<QuadFactor> factors_;      ///< The encoder quadrature factors
+    ValueContainer<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
+    ValueContainer<double> positions_;        ///< The calculated positions of the Encoder channels
+    ValueContainer<double> conversions_;      ///< Conversion scalars used to convert to positions
+    ValueContainer<double> values_per_sec_;   ///< Counts per second if Encoder has velocity
+    ValueContainer<double> velocities_;       ///< The calculated velocities of the Encoder channels
 
 public:
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
-    class MEL_API Channel : public ChannelBase<int32>, public PositionSensor {
+    class MEL_API Channel : public ChannelBase<int32>, public PositionSensor, public VelocitySensor {
     public:
         /// Default constructor. Creates invalid channel
         Channel();
 
         /// Creates a valid channel.
         Channel(Encoder* module, uint32 channel_number);
+
+        /// Inherit assignment operator for setting
+        using ChannelBase<int32>::operator=;
 
         /// Enables the encoder
         bool enable() override;
@@ -120,6 +136,12 @@ public:
 
         /// Gets the encoder position
         double get_position() override;
+
+        /// Gets the encoder counts per second if available
+        double get_value_per_sec();
+
+        /// Gets the encoder velocity if available
+        double get_velocity() override;
 
         /// Zeros the encoder count
         bool zero();

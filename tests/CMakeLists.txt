@@ -1,2 +1,2 @@
-add_executable(testing0 testing0.cpp)
-target_link_libraries(testing0 MEL)
+add_executable(test_daq test_daq.cpp)
+target_link_libraries(test_daq MEL)

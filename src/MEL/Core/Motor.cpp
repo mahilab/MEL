@@ -9,7 +9,7 @@ Motor::Motor(const std::string& name,
              double kt,
              Amplifier amplifier,
              Limiter current_limiter) :
-    Actuator("Motor::" + name),
+    Actuator(name),
     kt_(kt),
     amplifier_(amplifier),
     current_limiter_(current_limiter)

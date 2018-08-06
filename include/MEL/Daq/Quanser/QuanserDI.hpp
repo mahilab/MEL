@@ -35,7 +35,7 @@ class QuanserDaq;
 
 class MEL_API QuanserDI : public DigitalInput, NonCopyable {
 public:
-    QuanserDI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserDI(QuanserDaq& daq);
 
     ~QuanserDI();
 
@@ -51,7 +51,7 @@ public:
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq
-    std::vector<char> quanser_values_;
+    ValueContainer<char> quanser_values_;
 };
 
 }  // namespace mel

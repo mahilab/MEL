@@ -1,4 +1,5 @@
 #include <MEL/Daq/Encoder.hpp>
+#include <MEL/Logging/Log.hpp>
 
 namespace mel {
 
@@ -6,12 +7,14 @@ namespace mel {
 // MODULE DEFINITIONS
 //==============================================================================
 
-Encoder::Encoder(const std::string& name, const std::vector<uint32>& channel_numbers) :
-    Module<int32>(name, IoType::InputOnly, channel_numbers),
-    factors_(channel_count_, QuadFactor::X4),
-    units_per_count_(channel_count_, 1.0),
-    positions_(channel_count_, 0.0),
-    conversions_(channel_count_,0.0)
+Encoder::Encoder() :
+    has_velocity_(false),
+    factors_(this),
+    units_per_count_(this),
+    positions_(this),
+    conversions_(this),
+    values_per_sec_(this),
+    velocities_(this)
 {
     compute_conversions();
 }
@@ -21,16 +24,13 @@ Encoder::~Encoder() {
 }
 
 bool Encoder::reset_counts(const std::vector<int32>& counts) {
-    if (validate_channel_count(counts.size())) {
-        values_ = counts;
-        return true;
-    }
-    return false;
+    values_.set(counts);
+    return true;
 }
 
 bool Encoder::reset_count(uint32 channel_number, int32 count) {
     if (validate_channel_number(channel_number)) {
-        values_[channel_map_.at(channel_number)] = count;
+        values_[channel_number] = count;
         return true;
     }
     return false;
@@ -38,17 +38,14 @@ bool Encoder::reset_count(uint32 channel_number, int32 count) {
 
 
 bool Encoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
-    if (validate_channel_count(factors.size())) {
-        factors_ = factors;
-        compute_conversions();
-        return true;
-    }
-    return false;
+    factors_.set(factors);
+    compute_conversions();
+    return true;
 }
 
 bool Encoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
     if (validate_channel_number(channel_number)) {
-        factors_[channel_map_.at(channel_number)] = factor;
+        factors_[channel_number] = factor;
         compute_conversions();
         return true;
     }
@@ -56,7 +53,7 @@ bool Encoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
 }
 
 bool Encoder::zero() {
-    std::vector<int32> zero(channel_count_, 0);
+    std::vector<int32> zero(get_channel_count(), 0);
     return reset_counts(zero);
 }
 
@@ -66,32 +63,66 @@ bool Encoder::zero_channel(uint32 channel_number) {
 }
 
 void Encoder::set_units_per_count(const std::vector<double>& units_per_count) {
-    if (validate_channel_count(units_per_count.size())) {
-        units_per_count_ = units_per_count;
-        compute_conversions();
-    }
+    units_per_count_.set(units_per_count);
+    compute_conversions();
 }
 
 void Encoder::set_units_per_count(uint32 channel_number, double units_per_count) {
     if (validate_channel_number(channel_number)) {
-        units_per_count_[channel_map_.at(channel_number)] = units_per_count;
+        units_per_count_[channel_number] = units_per_count;
         compute_conversions();
     }
 }
 
 const std::vector<double>& Encoder::get_positions() {
-    for (std::size_t i = 0; i < channel_count_; ++i)
-        positions_[i] = values_[i] * conversions_[i];
-    return positions_;
+    for (auto const& ch : get_channel_numbers())
+        positions_[ch] = values_[ch] * conversions_[ch];
+    return positions_.get();
 }
 
 double Encoder::get_position(uint32 channel_number) {
     if (validate_channel_number(channel_number)) {
-        std::size_t i = channel_map_.at(channel_number);
-        return values_[i] * conversions_[i];
+        return values_[channel_number] * conversions_[channel_number];
     }
     else
         return double();
+}
+
+std::vector<double>& Encoder::get_values_per_sec() {
+    if (!has_velocity_)
+        LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    return values_per_sec_.get();
+}
+
+double Encoder::get_value_per_sec(uint32 channel_number) {
+    if (!has_velocity_)
+        LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    if (validate_channel_number(channel_number))
+        return values_per_sec_[channel_number];
+    else
+        return double();
+}
+
+const std::vector<double>& Encoder::get_velocities() {
+    if (!has_velocity_)
+        LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    for (auto const& ch : get_channel_numbers())
+        velocities_[ch] = values_per_sec_[ch] * conversions_[ch];
+    return velocities_.get();
+}
+
+double Encoder::get_velocity(uint32 channel_number) {
+    if (!has_velocity_)
+        LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    if (validate_channel_number(channel_number)) {
+        return values_per_sec_[channel_number] * conversions_[channel_number];
+    }
+    else
+        return double();
+}
+
+void Encoder::has_velocity(bool has_velocity) {
+    has_velocity_ = has_velocity;
 }
 
 Encoder::Channel Encoder::get_channel(uint32 channel_number) {
@@ -117,8 +148,10 @@ std::vector<Encoder::Channel> Encoder::operator[](const std::vector<uint32>& cha
 }
 
 void Encoder::compute_conversions() {
-    for (std::size_t i = 0; i < channel_count_; ++i)
-        conversions_[i] = units_per_count_[i] / static_cast<double>(factors_[i]);
+    for (std::size_t i = 0; i < get_channel_count(); ++i) {
+        uint32 ch = get_channel_numbers()[i];
+        conversions_[ch] = units_per_count_[ch] / static_cast<double>(factors_[ch]);
+    }
 }
 
 //==============================================================================
@@ -127,12 +160,14 @@ void Encoder::compute_conversions() {
 
 Encoder::Channel::Channel() :
     ChannelBase(),
-    PositionSensor("invalid_encoder")
+    PositionSensor("invalid_encoder"),
+    VelocitySensor("invalid_encoder")
 { }
 
 Encoder::Channel::Channel(Encoder* module, uint32 channel_number) :
     ChannelBase(module, channel_number),
-    PositionSensor(module->get_name() + "[" + std::to_string(channel_number) + "]")
+    PositionSensor(module->get_name() + "[" + std::to_string(channel_number) + "]"),
+    VelocitySensor(module->get_name() + "[" + std::to_string(channel_number) + "]")
 { }
 
 bool Encoder::Channel::enable() {
@@ -146,6 +181,15 @@ bool Encoder::Channel::disable() {
 double Encoder::Channel::get_position() {
     position_ = static_cast<Encoder*>(module_)->get_position(channel_number_);
     return position_;
+}
+
+double Encoder::Channel::get_value_per_sec() {
+    return static_cast<Encoder*>(module_)->get_value_per_sec(channel_number_);
+}
+
+double Encoder::Channel::get_velocity() {
+    velocity_ = static_cast<Encoder*>(module_)->get_velocity(channel_number_);
+    return velocity_;
 }
 
 bool Encoder::Channel::zero() {

@@ -52,15 +52,13 @@ int main() {
     //==============================================================================
 
     // ask for user input
-    prompt(
-        "Connect an encoder to channel 0 then press ENTER to Encoder start "
-        "test.");
+    prompt("Connect an encoder to channel 0 then press ENTER to Encoder start test.");
     // create 10 Hz Timer
     Timer timer(milliseconds(100));
     // start encoder loop
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.encoder.get_value(0));
+        print(q8.encoder[0].get_value());
         timer.wait();
     }
     stop = false;
@@ -79,7 +77,7 @@ int main() {
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.AI.get_value(0));
-        double voltage = wave.evaluate(timer.get_elapsed_time_actual());
+        double voltage = wave(timer.get_elapsed_time_actual());
         q8.AO.set_value(0, voltage);
         q8.update_output();
         timer.wait();

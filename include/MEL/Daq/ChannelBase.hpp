@@ -15,8 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CHANNELBASE_HPP
-#define MEL_CHANNELBASE_HPP
+#ifndef MEL_CHANNEL_HPP
+#define MEL_CHANNEL_HPP
 
 #include <MEL/Utility/Types.hpp>
 #include <MEL/Daq/Module.hpp>
@@ -46,14 +46,18 @@ public:
     /// Returns the current value of the channel
     T get_value() const { return module_->get_value(channel_number_); }
 
-    /// Returns the current value of the channel
-    T operator()() const { return get_value(); }
-
     /// Sets the current value of the channel
     void set_value(T value) { module_->set_value(channel_number_, value); }
 
-    /// Sets the current value of the channel
-    void operator()(T value) { set_value(value); }
+    /// Overload assignment operator for setting
+    void operator= (const T& value) {
+        set_value(value);
+    }
+
+    /// Overload cast opoerator for getting
+    operator T() const {
+        return get_value();
+    }
 
     /// Gets the channel number
     uint32 get_channel_number() const { return channel_number_; }
@@ -72,6 +76,7 @@ protected:
     uint32 channel_number_;  ///< The channel number of this channel
 };
 
+
 }  // namespace mel
 
-#endif  // MEL_CHANNELBASE_HPP
+#endif  // MEL_CHANNEL_HPP

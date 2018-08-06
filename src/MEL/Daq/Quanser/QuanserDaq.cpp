@@ -15,7 +15,7 @@ namespace mel {
 //==============================================================================
 
 QuanserDaq::QuanserDaq(const std::string& card_type, uint32 id, QuanserOptions options) :
-    Daq("QDaq::" + card_type + "_" + std::to_string(id)),
+    DaqBase(card_type + "_" + std::to_string(id)),
     card_type_(card_type),
     id_(id),
     options_(options)
@@ -38,7 +38,7 @@ bool QuanserDaq::open() {
         sleep(milliseconds(10));
         if (result == 0) {
             // successful open
-            Daq::open();
+            DaqBase::open();
             LOG(Verbose) << "Opened " << get_name() << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
                 close();
@@ -66,7 +66,7 @@ bool QuanserDaq::close() {
     sleep(milliseconds(10));
     if (result == 0) {
         LOG(Verbose) << "Closed " << get_name();
-        return Daq::close();
+        return DaqBase::close();
     }
     else {
         LOG(Verbose) << "Failed to close " << get_name() << " "

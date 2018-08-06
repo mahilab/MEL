@@ -18,31 +18,32 @@ namespace mel {
 Q8Usb::Q8Usb(QuanserOptions options,
              bool auto_open,
              bool perform_sanity_check,
-             const std::vector<uint32>& ai_channels,
-             const std::vector<uint32>& ao_channels,
-             const std::vector<uint32>& di_channels,
-             const std::vector<uint32>& do_channels,
-             const std::vector<uint32>& enc_channels,
              uint32 id) :
     QuanserDaq("q8_usb", id, options),
     perform_sanity_check_(perform_sanity_check),
-    AI(*this, ai_channels),
-    AO(*this, ao_channels),
-    DI(*this, di_channels),
-    DO(*this, do_channels),
-    encoder(*this, enc_channels),
-    velocity(*this, enc_channels),
+    AI(*this),
+    AO(*this),
+    DI(*this),
+    DO(*this),
+    encoder(*this),
     watchdog(*this, milliseconds(100))
 {
     // increment NEXT_ID
     ++NEXT_Q8USB_ID;
+    // set channel numbers
+    AI.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
+    AO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
+    DI.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
+    DO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
+    encoder.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
+    // enable velocity estimation
+    encoder.has_velocity(true);
     // add modules
     add_module(static_cast<AnalogInput*>(&AI));
     add_module(static_cast<AnalogOutput*>(&AO));
     add_module(static_cast<DigitalInput*>(&DI));
     add_module(static_cast<DigitalOutput*>(&DO));
     add_module(static_cast<Encoder*>(&encoder));
-    add_module(static_cast<Velocity*>(&velocity));
     // if open true, open automatically
     if (auto_open)
         open();
@@ -120,8 +121,6 @@ bool Q8Usb::enable() {
         return false;
     if (!encoder.enable())
         return false;
-    if (!velocity.enable())
-        return false;
     // allow changes to take effect
     sleep(milliseconds(10));
     return Device::enable();
@@ -144,8 +143,6 @@ bool Q8Usb::disable() {
         return false;
     if (!encoder.disable())
         return false;
-    if (!velocity.disable())
-        return false;
     // allow changes to take effect
     sleep(milliseconds(10));
     return Device::disable();
@@ -165,12 +162,12 @@ bool Q8Usb::update_input() {
         static_cast<uint32>(encoder.get_channel_count()),
         DI.get_channel_count() > 0 ? &(DI.get_channel_numbers())[0] : NULL,
         static_cast<uint32>(DI.get_channel_count()),
-        velocity.get_channel_count() > 0 ? &(velocity.get_converted_channel_numbers())[0] : NULL,
-        static_cast<uint32>(velocity.get_channel_count()),
+        encoder.get_channel_count() > 0 ? &(encoder.get_quanser_velocity_channels())[0] : NULL,
+        static_cast<uint32>(encoder.get_channel_count()),
         AI.get_channel_count() > 0 ? &(AI.get_values())[0] : NULL,
         encoder.get_channel_count() > 0 ? &(encoder.get_values())[0] : NULL,
         DI.get_channel_count() > 0 ? &(DI.get_quanser_values())[0] : NULL,
-        velocity.get_channel_count() > 0 ? &(velocity.get_values())[0] : NULL);
+        encoder.get_channel_count() > 0 ? &(encoder.get_values_per_sec())[0] : NULL);
     for (std::size_t i = 0; i < DI.get_channel_count(); ++i)
         DI.get_values()[i] = static_cast<Logic>(DI.get_quanser_values()[i]);
     if (result == 0)
@@ -248,9 +245,9 @@ int Q8Usb::identify() {
 }
 
 bool Q8Usb::sanity_check() {
-    velocity.update();
+    encoder.update();
     bool sane = true;
-    std::vector<double> velocities = velocity.get_values();
+    std::vector<double> velocities = encoder.get_values_per_sec();
     for (auto it = velocities.begin(); it != velocities.end(); ++it) {
         if (*it != 0.0) {
             sane = false;

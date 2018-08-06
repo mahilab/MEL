@@ -9,11 +9,10 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDIO::QuanserDIO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers, const std::vector<Direction>& directions) :
-        Module(daq.get_name() + "_digital_input", IoType::InputOutput, channel_numbers),
-        InputOutput(daq.get_name() + "_digital_input", channel_numbers, directions),
+    QuanserDIO::QuanserDIO(QuanserDaq& daq) :
         daq_(daq)
     {
+        set_name(daq_.get_name() + "_DIO");
     }
 
     QuanserDIO::~QuanserDIO() {
@@ -23,7 +22,7 @@ namespace mel {
     bool QuanserDIO::enable() {
         if (is_enabled())
             return Device::enable();
-        set_values(enable_values_);
+        set_values(enable_values_.get());
         if (update()) {
             LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
             return Device::enable();
@@ -37,7 +36,7 @@ namespace mel {
     bool QuanserDIO::disable() {
         if (!is_enabled())
             return Device::disable();
-        set_values(disable_values_);
+        set_values(disable_values_.get());
         if (update()) {
             LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
             return Device::disable();
@@ -58,14 +57,14 @@ namespace mel {
         std::vector<char> read_buffer(input_channel_numbers_.size());
         std::vector<char> write_buffer(output_channel_numbers_.size());
         for (std::size_t i = 0; i < output_channel_numbers_.size(); ++i)
-            write_buffer[i] = static_cast<char>(values_[channel_map_.at(output_channel_numbers_[i])]);
+            write_buffer[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
         t_error result;
         result = hil_read_digital_write_digital(daq_.handle_,
             &input_channel_numbers_[0], static_cast<uint32>(input_channel_numbers_.size()),
             &output_channel_numbers_[0], static_cast<uint32>(output_channel_numbers_.size()),
             &read_buffer[0], &write_buffer[0]);
         for (std::size_t i = 0; i < input_channel_numbers_.size(); ++i)
-            values_[channel_map_.at(input_channel_numbers_[i])] = static_cast<Logic>(read_buffer[i]);
+            values_[input_channel_numbers_[i]] = static_cast<Logic>(read_buffer[i]);
         if (result == 0)
             return true;
         else {
@@ -83,12 +82,12 @@ namespace mel {
         }
         char buffer;
         t_error result;
-        if (directions_[channel_map_.at(channel_number)] == In) {
+        if (directions_[channel_number] == In) {
             result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
-            values_[channel_map_.at(channel_number)] = static_cast<Logic>(buffer);
+            values_[channel_number] = static_cast<Logic>(buffer);
         }
         else {
-            buffer = static_cast<char>(values_[channel_map_.at(channel_number)]);
+            buffer = static_cast<char>(values_[channel_number]);
             result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
         }
         if (result == 0)
@@ -126,7 +125,7 @@ namespace mel {
     bool QuanserDIO::set_direction(uint32 channel_number, Direction direction) {
         if (!InputOutput::set_direction(channel_number, direction))
             return false;
-        return set_directions(directions_);
+        return set_directions(directions_.get());
     }
 
     bool QuanserDIO::set_expire_values(const std::vector<Logic>& expire_values) {
@@ -146,7 +145,7 @@ namespace mel {
                 converted_expire_values.push_back(DIGITAL_STATE_LOW);
         }
         t_error result;
-        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &converted_expire_values[0]);
+        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &converted_expire_values[0]);
         if (result == 0) {
             LOG(Verbose) << "Set " << get_name() << " expire values to " << expire_values_;
             return true;

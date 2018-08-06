@@ -19,27 +19,14 @@
 #define MEL_MODULE_HPP
 
 #include <MEL/Core/Device.hpp>
-#include <MEL/Utility/Types.hpp>
-#include <algorithm>
+#include <MEL/Daq/ValueContainer.hpp>
 #include <map>
-#include <vector>
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4589 )
 #endif
 
 namespace mel {
-
-//==============================================================================
-// TYPES
-//==============================================================================
-
-/// The Module/Channel type
-enum class IoType {
-    InputOnly,   ///< Module that reads in real-world values
-    OutputOnly,  ///< Module that writes out real-world values
-    InputOutput  ///< Module that reads or writes real-world values
-};
 
 //==============================================================================
 // BASE DECLARATION
@@ -50,14 +37,18 @@ class MEL_API ModuleBase : public Device {
 
 public:
 
-    /// Constructor
-    ModuleBase(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers);
+    /// Default Constructor
+    ModuleBase();
 
     /// Calls the Modules's API to update a single channel with the real-world.
     virtual bool update_channel(uint32 channel_number) = 0;
 
     /// Calls the Modules's API to update all channels with the real-world.
+    /// By default, iteratively calls update_channel() on all channel numbers.
     virtual bool update();
+
+    /// Sets the vector of channel numbers this Module maintains
+    void set_channel_numbers(const std::vector<uint32>& channel_numbers);
 
     /// Gets the vector of channel numbers this Module maintains
     const std::vector<uint32>& get_channel_numbers() const;
@@ -65,29 +56,27 @@ public:
     /// Returns the number of channels on this Module
     std::size_t get_channel_count() const;
 
-    /// Returns the IoType of this Module
-    IoType get_type() const;
-
     /// Checks if a channel number is a number defined on this Module
     bool validate_channel_number(uint32 channel_number) const;
 
     /// Checks if the size of a vector equals the number of channels
     bool validate_channel_count(std::size_t size) const;
 
-protected:
+private:
 
-    /// Sorts and removes duplicates from a vector of channel numbers
-    static std::vector<uint32> sort_and_reduce_channels(const std::vector<uint32>& channels);
+    friend class ValueContainerBase;
 
-    /// Makes an associative channel map mapping channel number to vector index
-    static std::map<uint32, std::size_t> make_channel_map(const std::vector<uint32>& channel_numbers);
+    /// Adds a value container to this Module
+    void add_container(ValueContainerBase* container);
 
-protected:
+    /// Returns vector index associated with channel number
+    std::size_t index(uint32 channel_number) const;
 
-    const IoType type_ ;                               ///< The IoType of this ModuleBase
-    const std::vector<uint32> channel_numbers_;        ///< The channel numbers used by this ModuleNase
-    const std::size_t channel_count_;                  ///< The total number of channels used by this ModuleBase
-    const std::map<uint32, std::size_t> channel_map_;  ///< Associates a channel number with a vector index position
+private:
+
+    std::vector<uint32> channel_numbers_;         ///< The channel numbers used by this ModuleBase
+    std::map<uint32, std::size_t> channel_map_;   ///< Maps a channel number with a vector index position
+    std::vector<ValueContainerBase*> containers_; ///< Containers managed by this Module
 
 };
 
@@ -101,33 +90,27 @@ class Module : public ModuleBase {
 
 public:
 
-    /// Constructor
-    Module(const std::string& name, IoType type, const std::vector<uint32>& channel_numbers) :
-        ModuleBase(name, type, channel_numbers),
-        values_(channel_count_),
-        min_values_(channel_count_),
-        max_values_(channel_count_)
-    {
-    }
+    Module() :
+        values_(this),
+        min_values_(this),
+        max_values_(this)
+    {}
 
     /// Destructor
     virtual ~Module() { }
 
     /// Sets the min and max possible values of each channel
     virtual bool set_ranges(const std::vector<T>& min_values, const std::vector<T>& max_values) {
-        if (validate_channel_count(min_values.size()) && validate_channel_count(max_values.size())) {
-            min_values_ = min_values;
-            max_values_ = max_values;
-            return true;
-        }
-        return false;
+        min_values_.set(min_values);
+        max_values_.set(max_values);
+        return true;
     }
 
     /// Sets the min and max possible value of a single channel
     virtual bool set_range(uint32 channel_number, T min_value, T max_value) {
         if (validate_channel_number(channel_number)) {
-            min_values_[channel_map_.at(channel_number)] = min_value;
-            max_values_[channel_map_.at(channel_number)] = max_value;
+            min_values_[channel_number] = min_value;
+            max_values_[channel_number] = max_value;
             return true;
         }
         return false;
@@ -137,36 +120,32 @@ public:
 
     /// Gets non-const reference to the current channel values of this Module
     std::vector<T>& get_values() {
-        return values_;
+        return values_.get();
     }
 
     /// Gets the current value of a a single channel. If an invalid channel number
     /// is passed, the default value of the underlying channel type is returned.
     T get_value(uint32 channel_number) const {
-        if(validate_channel_number(channel_number))
-            return values_[channel_map_.at(channel_number)];
-        return T();
+        return values_[channel_number];
     }
 
     /// Sets the current channel values of this Module. If the incorrect number
     /// of values is pass, no values are set.
     void set_values(const std::vector<T>& values) {
-        if (validate_channel_count(values.size()))
-            values_ = values;
+        values_.set(values);
     }
 
     /// Sets the current value of a single channel. If an invalid channel number
     /// is passed, non value is set
     void set_value(uint32 channel_number, T value) {
-        if (validate_channel_number(channel_number))
-            values_[channel_map_.at(channel_number)] = value;
+        values_[channel_number] = value;
     }
 
 protected:
 
-    std::vector<T> values_;          ///< The real-world values of the channels in this Module
-    std::vector<T> min_values_;      ///< The minimum possible values of each channel
-    std::vector<T> max_values_;      ///< The maximum possible values of each channel
+    ValueContainer<T> values_;      ///< The real-world values of the channels in this Module
+    ValueContainer<T> min_values_;  ///< The minimum possible values of each channel
+    ValueContainer<T> max_values_;  ///< The maximum possible values of each channel
 
 };
 

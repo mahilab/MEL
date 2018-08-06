@@ -1,4 +1,4 @@
-#include <MEL/Daq/Daq.hpp>
+#include <MEL/Daq/DaqBase.hpp>
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Core/Time.hpp>
 
@@ -8,27 +8,27 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Daq::Daq(const std::string& name) :
-    Device("Daq::" + name),
+DaqBase::DaqBase(const std::string& name) :
+    Device(name),
     open_(false)
 {
 }
 
-Daq::~Daq() {
+DaqBase::~DaqBase() {
 
 }
 
-bool Daq::open() {
+bool DaqBase::open() {
     open_ = true;
     return true;
 }
 
-bool Daq::close() {
+bool DaqBase::close() {
     open_ = false;
     return true;
 }
 
-bool Daq::is_open() const {
+bool DaqBase::is_open() const {
     return open_;
 }
 

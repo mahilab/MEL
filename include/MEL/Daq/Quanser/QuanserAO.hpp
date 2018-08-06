@@ -35,7 +35,7 @@ class QuanserDaq;
 
 class MEL_API QuanserAO : public AnalogOutput, NonCopyable {
 public:
-    QuanserAO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserAO(QuanserDaq& daq);
 
     ~QuanserAO();
 

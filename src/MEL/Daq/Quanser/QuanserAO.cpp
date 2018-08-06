@@ -9,11 +9,10 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserAO::QuanserAO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
-    Module(daq.get_name() + "_analog_output", IoType::OutputOnly, channel_numbers),
-    AnalogOutput(daq.get_name() + "_analog_output", channel_numbers),
+QuanserAO::QuanserAO(QuanserDaq& daq) :
     daq_(daq)
 {
+    set_name(daq.get_name() + "_AO");
 }
 
 QuanserAO::~QuanserAO() {
@@ -23,7 +22,7 @@ QuanserAO::~QuanserAO() {
 bool QuanserAO::enable() {
     if (is_enabled())
         return Device::enable();
-    set_values(enable_values_);
+    set_values(enable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
         return Device::enable();
@@ -37,7 +36,7 @@ bool QuanserAO::enable() {
 bool QuanserAO::disable() {
     if (!is_enabled())
         return Device::disable();
-    set_values(disable_values_);
+    set_values(disable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
         return Device::disable();
@@ -55,7 +54,7 @@ bool QuanserAO::update() {
         return false;
     }
     t_error result;
-    result = hil_write_analog(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &values_[0]);
+    result = hil_write_analog(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);
     if (result == 0)
         return true;
     else {
@@ -72,7 +71,7 @@ bool QuanserAO::update_channel(uint32 channel_number) {
         return false;
     }
     t_error result;
-    result = hil_write_analog(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_map_.at(channel_number)]);
+    result = hil_write_analog(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
     if (result == 0)
         return true;
     else {
@@ -91,7 +90,7 @@ bool QuanserAO::set_ranges(const std::vector<Voltage>& min_values, const std::ve
         return false;
     }
     t_error result;
-    result = hil_set_analog_output_ranges(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &min_values_[0], &max_values_[0]);
+    result = hil_set_analog_output_ranges(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &min_values_.get()[0], &max_values_.get()[0]);
     if (result == 0) {
         LOG(Verbose) << "Set " << get_name() << " ranges to min=" << min_values << ", max=" << max_values;
         return true;
@@ -112,7 +111,7 @@ bool QuanserAO::set_range(uint32 channel_number, Voltage min_value, Voltage max_
         return false;
     }
     t_error result;
-    result = hil_set_analog_output_ranges(daq_.handle_, &channel_number, static_cast<uint32>(1), &min_values_[channel_map_.at(channel_number)], &max_values_[channel_map_.at(channel_number)]);
+    result = hil_set_analog_output_ranges(daq_.handle_, &channel_number, static_cast<uint32>(1), &min_values_[channel_number], &max_values_[channel_number]);
     if (result == 0) {
         LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " range to min=" << min_value << ", max=" << max_value;
         return true;
@@ -133,7 +132,7 @@ bool QuanserAO::set_expire_values(const std::vector<Voltage>& expire_values) {
         return false;
     }
     t_error result;
-    result = hil_watchdog_set_analog_expiration_state(daq_.handle_, &channel_numbers_[0], static_cast<uint32>(channel_count_), &expire_values_[0]);
+    result = hil_watchdog_set_analog_expiration_state(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &expire_values_.get()[0]);
     if (result == 0) {
         LOG(Verbose) << "Set " << get_name() << " expire values to " << expire_values_;
         return true;
@@ -154,7 +153,7 @@ bool QuanserAO::set_expire_value(uint32 channel_number, Voltage expire_value) {
         return false;
     }
     t_error result;
-    result = hil_watchdog_set_analog_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &expire_values_[channel_map_.at(channel_number)]);
+    result = hil_watchdog_set_analog_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &expire_values_[channel_number]);
     if (result == 0) {
         LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " expire value to " << expire_value;
         return true;
