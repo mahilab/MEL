@@ -30,11 +30,6 @@ bool QuanserEncoder::disable() {
 }
 
 bool QuanserEncoder::update() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_read_encoder(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);
     // velocity
@@ -52,11 +47,6 @@ bool QuanserEncoder::update() {
 }
 
 bool QuanserEncoder::update_channel(uint32 channel_number) {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_read_encoder(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
     if (has_velocity_)
@@ -76,11 +66,6 @@ bool QuanserEncoder::update_channel(uint32 channel_number) {
 bool QuanserEncoder::reset_counts(const std::vector<int32>& counts) {
     if (!Encoder::reset_counts(counts))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_set_encoder_counts(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &counts[0]);
     sleep(milliseconds(10));
@@ -98,11 +83,6 @@ bool QuanserEncoder::reset_counts(const std::vector<int32>& counts) {
 bool QuanserEncoder::reset_count(uint32 channel_number, int32 count) {
     if (!Encoder::reset_count(channel_number, count))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_set_encoder_counts(daq_.handle_, &channel_number, static_cast<uint32>(1), &count);
     sleep(milliseconds(10));
@@ -121,11 +101,6 @@ bool QuanserEncoder::reset_count(uint32 channel_number, int32 count) {
 bool QuanserEncoder::set_quadrature_factors(const std::vector<QuadFactor>& factors) {
     if (!Encoder::set_quadrature_factors(factors))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     // convert MEL QuadFactor to Quanser t_encoder_quadratue_mode
     std::vector<t_encoder_quadrature_mode> converted_factors;
     for (auto it = factors.begin(); it != factors.end(); ++it) {
@@ -159,11 +134,6 @@ bool QuanserEncoder::set_quadrature_factors(const std::vector<QuadFactor>& facto
 bool QuanserEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
     if (!Encoder::set_quadrature_factor(channel_number, factor))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     // convert MEL QuadFactor to Quanser t_encoder_quadratue_mode
     t_encoder_quadrature_mode converted_factor;
     if (factor == QuadFactor::X0)

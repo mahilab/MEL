@@ -9,8 +9,8 @@ namespace mel {
 
 Encoder::Encoder() :
     has_velocity_(false),
-    factors_(this),
-    units_per_count_(this),
+    factors_(this, X4),
+    units_per_count_(this, 1.0),
     positions_(this),
     conversions_(this),
     values_per_sec_(this),

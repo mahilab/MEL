@@ -26,8 +26,7 @@ int main() {
 
     // create default Q28 USB object (all channels enabled)
     Q2Usb q2;
-
-
+    q2.open();
 
     //==============================================================================
     // ENABLE

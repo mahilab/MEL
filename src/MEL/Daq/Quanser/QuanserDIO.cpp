@@ -48,11 +48,6 @@ namespace mel {
     }
 
     bool QuanserDIO::update() {
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // create intermediate buffers
         std::vector<char> read_buffer(input_channel_numbers_.size());
         std::vector<char> write_buffer(output_channel_numbers_.size());
@@ -75,11 +70,6 @@ namespace mel {
     }
 
     bool QuanserDIO::update_channel(uint32 channel_number) {
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         char buffer;
         t_error result;
         if (directions_[channel_number] == In) {
@@ -102,11 +92,6 @@ namespace mel {
     bool QuanserDIO::set_directions(const std::vector<Direction>& directions) {
         if (!InputOutput::set_directions(directions))
             return false;
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         t_error result;
         result = hil_set_digital_directions(daq_.handle_,
             &input_channel_numbers_[0], static_cast<uint32>(input_channel_numbers_.size()),
@@ -131,11 +116,6 @@ namespace mel {
     bool QuanserDIO::set_expire_values(const std::vector<Logic>& expire_values) {
         if (!InputOutput::set_expire_values(expire_values))
             return false;
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
         std::vector<t_digital_state> converted_expire_values;
         for (auto it = expire_values.begin(); it != expire_values.end(); ++it) {
@@ -160,11 +140,6 @@ namespace mel {
     bool QuanserDIO::set_expire_value(uint32 channel_number, Logic expire_value) {
         if (!InputOutput::set_expire_value(channel_number, expire_value))
             return false;
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
         t_digital_state converted_expire_value;
         if (expire_value == High)

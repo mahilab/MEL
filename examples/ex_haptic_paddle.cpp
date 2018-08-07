@@ -295,12 +295,10 @@ int main(int argc, char* argv[]) {
 
     // create Q8 USB
     Q8Usb q8;
+    q8.open();
 
     // create Haptic Paddle
-    HapticPaddle hp(q8.DO[7],
-                       q8.AO[0],
-                       q8.AI[2]);
-
+    HapticPaddle hp(q8.DO[7],q8.AO[0],q8.AI[2]);
     // enable Q8 Usb
     q8.enable();
 

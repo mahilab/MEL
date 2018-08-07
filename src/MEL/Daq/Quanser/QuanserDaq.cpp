@@ -22,29 +22,19 @@ QuanserDaq::QuanserDaq(const std::string& card_type, uint32 id, QuanserOptions o
 {
 }
 
-QuanserDaq::~QuanserDaq() {
-
-}
-
-bool QuanserDaq::open() {
-
-    if (open_)
-        return false; // already open
+bool QuanserDaq::on_open() {
     t_error result;
-
     // Try to open in 5 attempts
     for (int attempt = 0; attempt < 5; attempt++) {
         result = hil_open(card_type_.c_str(), std::to_string(id_).c_str(), &handle_);
         sleep(milliseconds(10));
         if (result == 0) {
             // successful open
-            DaqBase::open();
-            LOG(Verbose) << "Opened " << get_name() << " (Attempt " << attempt + 1 << "/" << 5 << ")";
             if (!set_options(options_)) {
-                close();
+                // options didn't take so close
+                on_close();
                 return false;
             }
-
             return true;
         }
         else {
@@ -54,33 +44,24 @@ bool QuanserDaq::open() {
         }
     }
     // all attempts to open were unsuccessful
-    LOG(Fatal) << "Exhausted all attempts to open " << get_name() << ", exiting application";
-    exit(1);
+    LOG(Error) << "Exhausted all attempts to open " << get_name();
+    return false;
 }
 
-bool QuanserDaq::close() {
-    if (!open_)
-        return false;
+bool QuanserDaq::on_close() {
     t_error result;
     result = hil_close(handle_);
     sleep(milliseconds(10));
     if (result == 0) {
-        LOG(Verbose) << "Closed " << get_name();
-        return DaqBase::close();
+        return true;
     }
     else {
-        LOG(Verbose) << "Failed to close " << get_name() << " "
-                  << get_quanser_error_message(result);
+        LOG(Error) << get_quanser_error_message(result);
         return false;
     }
 }
 
 bool QuanserDaq::set_options(const QuanserOptions& options) {
-    if (!open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << get_name() << " is not open";
-        return false;
-    }
     options_ = options;
     char options_str[4096];
     std::strcpy(options_str, options_.get_string().c_str());

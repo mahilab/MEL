@@ -38,20 +38,12 @@ class MEL_API Q8Usb : public QuanserDaq {
 public:
     /// Default constructor
     Q8Usb(QuanserOptions options                  = QuanserOptions(),
-          bool auto_open                          = true,
           bool perform_sanity_check               = true,
           uint32 id                               = next_id());
 
     /// Default destructor. First calls disable() if the Q8Usb is enabled
     /// then close() if the Q8Usb is open.
     ~Q8Usb();
-
-    /// Opens the Q8Usb and sets options and default expiration states (0.0 V, 0
-    /// V TTL)
-    bool open() override;
-
-    /// Closes the Q8Usb and clears the watchdog
-    bool close() override;
 
     /// Enables the Q8Usb by sequentially calling the enable() function
     /// on all I/O modules. Consult the documentation for each module for
@@ -105,6 +97,10 @@ public:
     QuanserWatchdog watchdog;  ///< The watchdog timer of this Q8 USB
 
 private:
+
+    bool on_open() override;
+    bool on_close() override;
+
     /// Quarc can sometimes fail to properly intialize a Q8 USB even if it says
     /// otherwise. In these cases, velocity readings are wildly incorrect and
     /// can result in catstrophic behavior. This function performs a sanity

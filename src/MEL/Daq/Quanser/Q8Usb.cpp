@@ -16,7 +16,6 @@ namespace mel {
 //==============================================================================
 
 Q8Usb::Q8Usb(QuanserOptions options,
-             bool auto_open,
              bool perform_sanity_check,
              uint32 id) :
     QuanserDaq("q8_usb", id, options),
@@ -38,24 +37,14 @@ Q8Usb::Q8Usb(QuanserOptions options,
     encoder.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
     // enable velocity estimation
     encoder.has_velocity(true);
-    // add modules
-    add_module(static_cast<AnalogInput*>(&AI));
-    add_module(static_cast<AnalogOutput*>(&AO));
-    add_module(static_cast<DigitalInput*>(&DI));
-    add_module(static_cast<DigitalOutput*>(&DO));
-    add_module(static_cast<Encoder*>(&encoder));
-    // if open true, open automatically
-    if (auto_open)
-        open();
 }
 
 Q8Usb::~Q8Usb() {
-
     // if enabled, disable
     if (is_enabled())
         disable();
     // if open, close
-    if (open_) {
+    if (is_open()) {
         // set default options on program end
         set_options(QuanserOptions());
         close();
@@ -64,9 +53,9 @@ Q8Usb::~Q8Usb() {
     --NEXT_Q8USB_ID;
 }
 
-bool Q8Usb::open() {
+bool Q8Usb::on_open() {
     // open as QDaq
-    if (!QuanserDaq::open())
+    if (!QuanserDaq::on_open())
         return false;
     // clear watchdog (precautionary, ok if fails)
     watchdog.stop();
@@ -75,8 +64,8 @@ bool Q8Usb::open() {
     // sanity check
     if (perform_sanity_check_) {
         if (!sanity_check()) {
-            close();
-            return open();
+            on_close();
+            return on_open();
         }
     }
     // set default expire values (digital = LOW, analog = 0.0V)
@@ -93,7 +82,7 @@ bool Q8Usb::open() {
     return true;
 }
 
-bool Q8Usb::close() {
+bool Q8Usb::on_close() {
     // stop watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
@@ -101,13 +90,12 @@ bool Q8Usb::close() {
     // allow changes to take effect
     sleep(milliseconds(10));
     // close as QDaq
-    return QuanserDaq::close();
+    return QuanserDaq::on_close();
 }
 
 bool Q8Usb::enable() {
-    if (!open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+    if (!is_open()) {
+        LOG(Error) << "Cannot enable " << get_name() << " because it is not open";
         return false;
     }
     // enable each module
@@ -127,9 +115,8 @@ bool Q8Usb::enable() {
 }
 
 bool Q8Usb::disable() {
-    if (!open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+    if (!is_open()) {
+        LOG(Error) << "Cannot disable " << get_name() << " because it is not open";
         return false;
     }
     // disable each module
@@ -149,9 +136,8 @@ bool Q8Usb::disable() {
 }
 
 bool Q8Usb::update_input() {
-    if (!open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+    if (!is_enabled()) {
+        LOG(Error) << "Unable to update " << get_name() << " input because it is disabled";
         return false;
     }
     t_error result;
@@ -180,9 +166,8 @@ bool Q8Usb::update_input() {
 }
 
 bool Q8Usb::update_output() {
-    if (!open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+    if (!is_enabled()) {
+        LOG(Error) << "Unable to update " << get_name() << " output because it is disabled";
         return false;
     }
     // convert digitals
@@ -210,7 +195,7 @@ bool Q8Usb::update_output() {
 }
 
 bool Q8Usb::identify(uint32 channel_number) {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;

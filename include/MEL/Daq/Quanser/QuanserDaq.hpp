@@ -55,19 +55,11 @@ typedef t_card QuanserHandle;
 class MEL_API QuanserDaq : public DaqBase, NonCopyable {
 public:
     /// Default constructor
-    QuanserDaq(const std::string& card_type,
-         uint32 id,
-         QuanserOptions options = QuanserOptions());
-
-    /// Default destructor
-    virtual ~QuanserDaq();
+    QuanserDaq(const std::string& card_type, 
+               uint32 id,               
+               QuanserOptions options = QuanserOptions());
 
 public:
-    /// Opens the QDaq and sets Options
-    virtual bool open() override;
-
-    /// Closes the QDaq
-    virtual bool close() override;
 
     /// Overloaded version of set_options() that allows passing in new options
     bool set_options(const QuanserOptions& options);
@@ -76,14 +68,19 @@ public:
     QuanserOptions get_options();
 
 public:
-    /// Determines how many of a specifc QDaq are currently connected to the
-    /// host
+    /// Determines how many of a specifc QDaq are currently connected to the host
     static std::size_t get_qdaq_count(const std::string& card_type);
 
     /// Gets the string message corresponding to a Quanser error number
     static std::string get_quanser_error_message(int error, bool format = true);
 
 protected:
+
+    virtual bool on_open() override;
+    virtual bool on_close() override;
+
+protected:
+
     friend class QuanserWatchdog;
     friend class QuanserAI;
     friend class QuanserAO;
@@ -96,7 +93,7 @@ protected:
     std::string card_type_;  ///< The card type string, per Quarc API
     uint32 id_;              ///< The ID# of this Q8 USB
     QuanserHandle handle_;   ///< Internal handle to the Quanser device
-    QuanserOptions options_;       ///< The board specific options of this Q8 USB
+    QuanserOptions options_; ///< The board specific options of this Q8 USB
 };
 
 }  // namespace mel

@@ -15,7 +15,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Q2Usb::Q2Usb(QuanserOptions options, bool auto_open, uint32 id) :
+Q2Usb::Q2Usb(QuanserOptions options, uint32 id) :
     QuanserDaq("q2_usb", id, options),
     AI(*this),
     AO(*this),
@@ -30,14 +30,6 @@ Q2Usb::Q2Usb(QuanserOptions options, bool auto_open, uint32 id) :
     AO.set_channel_numbers({ 0,1 });
     DIO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7, 8 });
     DIO.set_directions({ In,In,In,In,In,In,In,In,Out });
-    // add modules
-    add_module(static_cast<AnalogInput*>(&AI));
-    add_module(static_cast<AnalogOutput*>(&AO));
-    add_module(static_cast<DigitalInputOutput*>(&DIO));
-    add_module(static_cast<Encoder*>(&encoder));
-    // if open true, open automatically
-    if (auto_open)
-        open();
 }
 
 
@@ -47,7 +39,7 @@ Q2Usb::~Q2Usb() {
     if (is_enabled())
         disable();
     // if open, close
-    if (open_) {
+    if (is_open()) {
         // set default options on program end
         set_options(QuanserOptions());
         close();
@@ -56,9 +48,9 @@ Q2Usb::~Q2Usb() {
     --NEXT_Q2USB_ID;
 }
 
-bool Q2Usb::open() {
+bool Q2Usb::on_open() {
     // open as QDaq
-    if (!QuanserDaq::open())
+    if (!QuanserDaq::on_open())
         return false;
     // clear watchdog (precautionary, ok if fails)
     watchdog.stop();
@@ -78,7 +70,7 @@ bool Q2Usb::open() {
     return true;
 }
 
-bool Q2Usb::close() {
+bool Q2Usb::on_close() {
     // stop watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
@@ -86,11 +78,11 @@ bool Q2Usb::close() {
     // allow changes to take effect
     sleep(milliseconds(10));
     // close as QDaq
-    return QuanserDaq::close();
+    return QuanserDaq::on_close();
 }
 
 bool Q2Usb::enable() {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;
@@ -110,7 +102,7 @@ bool Q2Usb::enable() {
 }
 
 bool Q2Usb::disable() {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;
@@ -134,7 +126,7 @@ bool Q2Usb::disable() {
 }
 
 bool Q2Usb::update_input() {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;
@@ -147,7 +139,7 @@ bool Q2Usb::update_input() {
 }
 
 bool Q2Usb::update_output() {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;
@@ -159,7 +151,7 @@ bool Q2Usb::update_output() {
 }
 
 bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;

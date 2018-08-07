@@ -60,7 +60,10 @@ class ValueContainer : public ValueContainerBase {
 public:
 
     /// Constructor
-    ValueContainer(ModuleBase* module) : ValueContainerBase(module) {
+    ValueContainer(ModuleBase* module, T default_value = T()) :
+        ValueContainerBase(module),
+        default_value_(default_value)
+    {
         resize(module_->get_channel_count());
     }
 
@@ -90,6 +93,11 @@ public:
             values_ = values;
     }
 
+    /// Sets the default value new values should be instantied with
+    void set_default_value(T default_value) {
+        default_value_ = default_value;
+    }
+
     /// Overload stream operator
     template <typename U>
     friend std::ostream& operator<<(std::ostream& os, const ValueContainer<U>& container);
@@ -98,9 +106,10 @@ private:
 
     /// Called by ModuleBase when channel numbers change
     void resize(std::size_t channel_count) override {
-        values_.assign(channel_count, T());
+        values_.assign(channel_count, default_value_);
     }
 
+    T default_value_;        ///< default value
     std::vector<T> values_;  ///< raw values
 };
 

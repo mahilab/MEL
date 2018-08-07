@@ -49,11 +49,6 @@ namespace mel {
     }
 
     bool QuanserDO::update() {
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // convert MEL Logic to Quanser t_boolean (aka char)
         for (auto const& ch : get_channel_numbers())
             quanser_values_[ch] = static_cast<char>(values_[ch]);
@@ -69,11 +64,6 @@ namespace mel {
     }
 
     bool QuanserDO::update_channel(uint32 channel_number) {
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // convert MEL Logic to Quanser t_boolean (aka char)
         quanser_values_[channel_number] = static_cast<char>(values_[channel_number]);
         t_error result;
@@ -95,11 +85,6 @@ namespace mel {
     bool QuanserDO::set_expire_values(const std::vector<Logic>& expire_values) {
         if (!Output::set_expire_values(expire_values))
             return false;
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
         std::vector<t_digital_state> converted_expire_values;
         for (auto it = expire_values.begin(); it != expire_values.end(); ++it) {
@@ -124,11 +109,6 @@ namespace mel {
     bool QuanserDO::set_expire_value(uint32 channel_number, Logic expire_value) {
         if (!Output::set_expire_value(channel_number, expire_value))
             return false;
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         // convert MEL logic to Quanser t_encoder_quadratue_mode
         t_digital_state converted_expire_value;
         if (expire_value == High)

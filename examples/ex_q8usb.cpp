@@ -29,6 +29,7 @@ int main() {
     // create default Q8 USB object
     // (all channels enabled, auto open on, sanity check on)
     Q8Usb q8;
+    q8.open();
 
     // override default enable/disable/expiration states
     q8.DO.set_enable_values(std::vector<Logic>(8, High));  // default is LOW
@@ -62,7 +63,6 @@ int main() {
         timer.wait();
     }
     stop = false;
-
 
     //==============================================================================
     // ANALOG INPUT/OUTPUT

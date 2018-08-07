@@ -29,11 +29,6 @@ namespace mel {
     }
 
     bool QuanserDI::update() {
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         t_error result;
         result = hil_read_digital(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &quanser_values_.get()[0]);
         if (result == 0) {
@@ -50,11 +45,6 @@ namespace mel {
     }
 
     bool QuanserDI::update_channel(uint32 channel_number) {
-        if (!daq_.open_) {
-            LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                       << daq_.get_name() << " is not open";
-            return false;
-        }
         t_error result;
         result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_number]);
         if (result == 0) {

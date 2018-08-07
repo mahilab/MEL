@@ -7,6 +7,7 @@ using namespace mel;
 int main(int argc, char* argv[]) {
 
     Q8Usb daq;                            // instantiate Quanser Q8-USB DAQ
+    daq.open();                           // open communication with DAQ
     daq.enable();                         // enable DAQ
     daq.update_input();                   // sync DAQ inputs with real-world
     double voltage = daq.AI.get_value(0); // get voltage of analog input channel 0

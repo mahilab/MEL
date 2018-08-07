@@ -48,11 +48,6 @@ bool QuanserAO::disable() {
 }
 
 bool QuanserAO::update() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_write_analog(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);
     if (result == 0)
@@ -65,11 +60,6 @@ bool QuanserAO::update() {
 }
 
 bool QuanserAO::update_channel(uint32 channel_number) {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_write_analog(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
     if (result == 0)
@@ -84,11 +74,6 @@ bool QuanserAO::update_channel(uint32 channel_number) {
 bool QuanserAO::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
     if (!Module::set_ranges(min_values, max_values))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_set_analog_output_ranges(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &min_values_.get()[0], &max_values_.get()[0]);
     if (result == 0) {
@@ -105,11 +90,6 @@ bool QuanserAO::set_ranges(const std::vector<Voltage>& min_values, const std::ve
 bool QuanserAO::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
     if (!Module::set_range(channel_number, min_value, max_value))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_set_analog_output_ranges(daq_.handle_, &channel_number, static_cast<uint32>(1), &min_values_[channel_number], &max_values_[channel_number]);
     if (result == 0) {
@@ -126,11 +106,6 @@ bool QuanserAO::set_range(uint32 channel_number, Voltage min_value, Voltage max_
 bool QuanserAO::set_expire_values(const std::vector<Voltage>& expire_values) {
     if (!Output::set_expire_values(expire_values))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_set_analog_expiration_state(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &expire_values_.get()[0]);
     if (result == 0) {
@@ -147,11 +122,6 @@ bool QuanserAO::set_expire_values(const std::vector<Voltage>& expire_values) {
 bool QuanserAO::set_expire_value(uint32 channel_number, Voltage expire_value) {
     if (!Output::set_expire_value(channel_number, expire_value))
         return false;
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_set_analog_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &expire_values_[channel_number]);
     if (result == 0) {

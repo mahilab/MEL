@@ -28,11 +28,6 @@ bool QuanserAI::disable() {
 }
 
 bool QuanserAI::update() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_read_analog(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);
     if (result == 0)
@@ -44,11 +39,6 @@ bool QuanserAI::update() {
 }
 
 bool QuanserAI::update_channel(uint32 channel_number) {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_read_analog(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
     if (result == 0)
@@ -61,11 +51,6 @@ bool QuanserAI::update_channel(uint32 channel_number) {
 }
 
 bool QuanserAI::set_ranges(const std::vector<Voltage>& min_values, const std::vector<Voltage>& max_values) {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     if (!Module::set_ranges(min_values, max_values))
         return false;
     t_error result;
@@ -82,11 +67,6 @@ bool QuanserAI::set_ranges(const std::vector<Voltage>& min_values, const std::ve
 }
 
 bool QuanserAI::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     if (!Module::set_range(channel_number, min_value, max_value))
         return false;
     t_error result;

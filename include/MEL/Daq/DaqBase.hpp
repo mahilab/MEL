@@ -32,57 +32,54 @@ namespace mel {
 
 class MEL_API DaqBase : public Device {
 public:
-    /// The default constructor
+
+    /// Constructor
     DaqBase(const std::string& name);
 
-    /// The default destructor
+    /// Destructor. By default, this closes the DAQ.
     virtual ~DaqBase();
 
-    /// This function should open communication with the DAQ, either through
-    /// an API, socket communication, etc. It should not perform any other task
-    /// than opening the communication channel; start up procedures should be
-    /// implemented in enable(). This function should return true if the open
-    /// was successful, false otherwise, and set #open_ accordingly
-    virtual bool open() = 0;
+    /// Opens communication with DAQ.
+    ///
+    /// \return TRUE if open successful, FALSE otherwise
+    bool open();
 
-    /// This function should close communication with the device. It should
-    /// return true if successful, false otherwise, and set #open_ accordingly
-    virtual bool close() = 0;
+    /// Closes communication with DAQ.
+    ///
+    /// \return TRUE if open successful, FALSE otherwise
+    bool close();
 
-    /// This function should call the update function on all Input Modules
-    /// contained on this DAQ. Alternatively, this function may call an API
-    /// function that updates all input values simultaneously, but care should
-    /// be taken in making sure each Input module's values get updated as well.
-    /// It should return true if successful, false otherwise.
-    virtual bool update_input() = 0;
+    /// Updates all Input modules contained on the DAQ
+    ///
+    /// \return TRUE if successful, FALSE otherwise
+    virtual bool update_input();
 
-    /// This function should call the update function on all Output Modules
-    /// contained on this DAQ. Alternatively, this function may call an API
-    /// function that updates all input values simultaneously, but care should
-    /// be taken in making sure each Input module's values get updated as well.
-    /// It should return true if successful, false otherwise.
-    virtual bool update_output() = 0;
+    /// Updates all Output modules contained on the DAQ
+    ///
+    /// \return TRUE if successful, FALSE otherwise
+    virtual bool update_output();
 
-    /// Returns true if communication with the device is open, false if closed.
+    /// Returns whether the DAQ is open or closed
+    ///
+    /// \return TRUE if open, FALSE if closed
     bool is_open() const;
 
-    /// Gets a Module from the Daq
-    template <class T>
-    T& get_module() {
-        return *static_cast<T*>(modules_[std::type_index(typeid(T))]);
-    }
-
 protected:
-    /// Adds a a Module to the Daq
-    template <class T>
-    void add_module(T* module) {
-        modules_[std::type_index(typeid(T))] = module;
-    }
 
-protected:
-    bool open_;  ///< The Daq open status
-    std::unordered_map<std::type_index, ModuleBase*>
-        modules_;  ///< The modules on the Daq
+    /// Implement this function to open communication with your DAQ
+    /// 
+    /// \return TRUE if open successful, FALSE otherwise
+    virtual bool on_open() = 0;
+
+    /// Implement this function to close communication with your DAQ
+    ///
+    /// \return TRUE of close successful, FALSE otherwise
+    virtual bool on_close() = 0;
+
+private:
+
+    bool open_;  ///< TRUE if open, FALSE if closed
+
 };
 
 }  // namespace mel

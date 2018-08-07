@@ -19,11 +19,6 @@ QuanserWatchdog::~QuanserWatchdog() {
 }
 
 bool QuanserWatchdog::start() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_start(daq_.handle_, timeout_.as_seconds());
     if (result == 0) {
@@ -39,11 +34,6 @@ bool QuanserWatchdog::start() {
 }
 
 bool QuanserWatchdog::kick() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_reload(daq_.handle_);
     if (result == 1) {
@@ -62,11 +52,6 @@ bool QuanserWatchdog::kick() {
 }
 
 bool QuanserWatchdog::stop() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_stop(daq_.handle_);
     if (result == 0) {
@@ -82,11 +67,6 @@ bool QuanserWatchdog::stop() {
 }
 
 bool QuanserWatchdog::is_expired() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_is_expired(daq_.handle_);
     if (result == 1) {
@@ -105,11 +85,6 @@ bool QuanserWatchdog::is_expired() {
 }
 
 bool QuanserWatchdog::clear() {
-    if (!daq_.open_) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << daq_.get_name() << " is not open";
-        return false;
-    }
     t_error result;
     result = hil_watchdog_clear(daq_.handle_);
     if (result == 0) {
