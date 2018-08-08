@@ -1,3 +1,4 @@
+
 ![MEL Logo](https://raw.githubusercontent.com/epezent/MEL/master/logo.png)
 
 # MEL - Mechatronics Engine & Library
@@ -7,7 +8,6 @@
 - **[Evan Pezent](http://evanpezent.com)**
 - **[Craig McDonald](http://craiggmcdonald.com/)**
 - **[Nathan Dunkelberger](http://mahilab.rice.edu/users/nathan-dunkelberger)**
-
 - **[Mechatronics and Haptic Interfaces Lab](http://mahilab.rice.edu/)**
 
 ## Overview
