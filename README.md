@@ -8,11 +8,12 @@
 - **[Evan Pezent](http://evanpezent.com)**
 - **[Craig McDonald](http://craiggmcdonald.com/)**
 - **[Nathan Dunkelberger](http://mahilab.rice.edu/users/nathan-dunkelberger)**
-- **[Mechatronics and Haptic Interfaces Lab](http://mahilab.rice.edu/)**
 
 ## Overview
 
 MEL is an object-oriented mechatronics and robotics library built from the ground up to make developing and controlling real, custom hardware as simple as possible, without sacrificing user freedom. It is geared toward academics and small teams where speed of development is paramount and learning a large framework such as ROS may be infeasible, but the need for creating robust, safe, and sustainable systems is also required. MEL is also intended for developers who have found high-level or graphical languages such as Simulink and LabVIEW to be limiting, but don't want to dive straight into low-level C API's. MEL is not and will never be a library for robot motion planning, simulation, or artificial intelligence - it is strictly hardware focused.
+
+MEL is actively maintained by the [Mechatronics and Haptic Interfaces Lab](http://mahilab.rice.edu/) at Rice University, where it powers exoskeleton hardware such as the [OpenWrist](https://www.youtube.com/watch?v=CfdejS77hO8&t) and [MAHI Exo-II](https://www.youtube.com/watch?v=Q6znZVT0L1o), [wearable haptic devices](https://www.youtube.com/watch?v=NkcyAI6h9dQ&t=73s), [teaching hardware](http://mahilab.rice.edu/content/hands-haptics-haptic-paddle), and a variety of [student projects](https://www.youtube.com/watch?v=xUzqJCcLZRo).
 
 ### DAQ Interfaces
 
