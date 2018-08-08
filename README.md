@@ -1,12 +1,13 @@
-
 ![MEL Logo](https://raw.githubusercontent.com/epezent/MEL/master/logo.png)
 
 # MEL - Mechatronics Engine & Library
 
 ## Developers
 
-- **[Evan Pezent](http://evanpezent.com)** (epezent@rice.edu)
-- **[Craig McDonald](http://craiggmcdonald.com/)** (craig.g.mcdonald@gmail.com)
+- **[Evan Pezent](http://evanpezent.com)**
+- **[Craig McDonald](http://craiggmcdonald.com/)**
+- **[Nathan Dunkelberger](http://mahilab.rice.edu/users/nathan-dunkelberger)**
+
 - **[Mechatronics and Haptic Interfaces Lab](http://mahilab.rice.edu/)**
 
 ## Overview
@@ -19,6 +20,7 @@ One of the primary benefits of using MEL is that it provide a common DAQ interfa
 
 ```cpp
 Q8Usb daq;                            // instantiate Quanser Q8-USB DAQ
+daq.open();                           // open communication with DAQ
 daq.enable();                         // enable DAQ
 daq.update_input();                   // sync DAQ inputs with real-world
 double voltage = daq.AI.get_value(0); // get voltage of analog input channel 0
@@ -43,10 +45,9 @@ MEL provides several mechatronics primitive classes to create abstract interface
 
 ```cpp
 Encoder::Channel enc0 = daq.encoder[0];          // get encoder channel 0
-Velocity::Channel vel0 = daq.velocity[0];        // get encoder veloicty channel 0
 Amplifier amp("amc_12a8", High, do0, 1.3, ao0);  // create High enabled PWM amplifier with gain 1.3
 Motor motor("maxon_re30", 0.0538, amp);          // create DC motor torque constant 0.0538
-Joint joint("axis0", &motor, &enc0, &vel0, 20);  // create a robotic joint with transmission ratio 20
+Joint joint("axis0", &motor, &enc0, &enc0, 20);  // create a robotic joint with transmission ratio 20
 Robot robot("simple_robot");                     // create a robot
 robot.add_joint(joint);                          // add joint to robot
 ```
@@ -56,16 +57,16 @@ robot.add_joint(joint);                          // add joint to robot
 Once hardware is defined, MEL gives you the basics needed to create precisely timed loops and controller functionality:
 
 ```cpp
-PdController pd(15.0, 0.5);                                     // create PD control with gains Kp 14 and Kd 0.5
+PdController pd(15.0, 0.5);                                     // create PD control with gains Kp 15 and Kd 0.5
 Waveform trajectory(Waveform::Sin, seconds(2.0));               // create sinwave trajectory
 double torque, pos_act, vel_act, pos_ref, vel_ref = 0.0;        // control variables
 Timer timer(hertz(1000));                                       // create 1000 Hz control loop timer
-Time time;                                                      // current time
-while ((time = timer.get_elapsed_time()) < seconds(60)) {       // loop for 1 minute
+Time t;                                                         // current time
+while ((t = timer.get_elapsed_time()) < seconds(60)) {          // loop for 1 minute
     daq.update_input();                                         // sync DAQ inputs with real-world
     pos_act = robot[0].get_position();                          // get robot joint position
     vel_act = robot[0].get_velocity();                          // get robot joint velocity
-    pos_ref = trajectory.evaluate(time);                        // evaluate trajectory
+    pos_ref = trajectory(t);                                    // evaluate trajectory
     torque = pd.calculate(pos_act, pos_ref, vel_act, vel_ref);  // calculate PD torque
     robot[0].set_torque(torque);                                // set robot joint torque
     daq.update_output();                                        // sync DAQ outputs with real-world

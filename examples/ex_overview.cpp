@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     Robot robot("simple_robot");                     // create a robot
     robot.add_joint(joint);                          // add joint to robot
 
-    PdController pd(15.0, 0.5);                                     // create PD control with gains Kp 14 and Kd 0.5
+    PdController pd(15.0, 0.5);                                     // create PD control with gains Kp 15 and Kd 0.5
     Waveform trajectory(Waveform::Sin, seconds(2.0));               // create sinwave trajectory
     double torque, pos_act, vel_act, pos_ref, vel_ref = 0.0;        // control variables
     Timer timer(hertz(1000));                                       // create 1000 Hz control loop timer
