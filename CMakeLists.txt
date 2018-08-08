@@ -32,7 +32,7 @@ cmake_minimum_required(VERSION 3.7)
 #===============================================================================
 
 # hardware options
-option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  OFF) # e.g. Q8 USB, Q2 USB
+option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  ON ) # e.g. Q8 USB, Q2 USB
 option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
 option(NI_X64      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
 option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO
@@ -40,7 +40,7 @@ option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"          
 # general options
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
-option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
+option(EXAMPLES    "Turn ON to build example executable(s)"                                     ON )
 option(TESTS       "Turn ON to build test executable(s)"                                        OFF)
 option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders are compilation"   OFF)
 option(BUILD_DOC   "Turn ON to build MEL documentation"                                         OFF)
@@ -259,13 +259,26 @@ set(default_build_type "Release") # set default configurationi to Release
 #===============================================================================
 
 if (QUANSER)
-    # hardware includes
-    list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
-    # hardware libs
-    if (MEL_64BIT)
-        list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/win64")
+    # for users with full QUARC installation
+    if (EXISTS "${QUANSER_ROOT}/QUARC/")
+        # hardware includes
+        list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
+        # hardware libs
+        if (MEL_64BIT)
+            list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/win64")
+        else()
+            list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/windows")
+        endif()
+    # for users with HIL SDK standalone
     else()
-        list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/windows")
+        # hardware includes
+        list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/HIL SDK/include")
+        # hardware libs
+        if (MEL_64BIT)
+            list(APPEND LINK_DIRS "${QUANSER_ROOT}/HIL SDK/lib/win64")
+        else()
+            list(APPEND LINK_DIRS "${QUANSER_ROOT}/HIL SDK/lib/windows")
+        endif()
     endif()
     list(APPEND LINK_LIBS hil quanser_communications quanser_runtime quanser_common bufferoverflowU legacy_stdio_definitions)
     # MEL source
