@@ -24,6 +24,7 @@ mel_example(math)
 mel_example(shared_memory)
 mel_example(melshare)
 mel_example(chat)
+mel_example(comms_server)
 
 if(WIN32)
     mel_example(limiter)

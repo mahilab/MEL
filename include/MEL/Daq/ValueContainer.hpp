@@ -63,9 +63,7 @@ public:
     ValueContainer(ModuleBase* module, T default_value = T()) :
         ValueContainerBase(module),
         default_value_(default_value)
-    {
-        resize(module_->get_channel_count());
-    }
+    { }
 
     /// Read access
     const T& operator[](uint32 channel_number) const {
@@ -89,7 +87,7 @@ public:
 
     /// Sets raw values array
     void set(const std::vector<T>& values) {
-        if (module_->validate_channel_count(values.size()))
+        if (values_.size() == values.size())
             values_ = values;
     }
 

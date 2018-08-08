@@ -30,6 +30,7 @@ int main(int argc, char* argv[]) {
     std::vector<double> q8_vel_data(8);
 
     Q8Usb q8;
+    q8.open();
 
     // create waveforms for looping
     Waveform sinwave(Waveform::Sin, seconds(1));
@@ -66,7 +67,7 @@ int main(int argc, char* argv[]) {
         q8_di.write_data(q8_di_data);
         q8_enc.write_data(q8_enc_data);
         q8_vel.write_data(q8_vel_data);
-       
+
         // set AO
         q8.AO[0] = sinwave(t);
         q8.AO[1] = coswave(t);

@@ -29,11 +29,12 @@ static const std::vector<std::vector<double>> OFFSETS({
 });
 
 MyRioAI::MyRioAI(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-  Module(daq.get_name() + "_AI", IoType::InputOnly, channel_numbers),
-  AnalogInput(daq.get_name() + "_AI", channel_numbers),
   daq_(daq),
   type_(type)
-{}
+{
+    set_name(daq.get_name() + "_AI");
+    set_channel_numbers(channel_numbers);
+}
 
 bool MyRioAI::update_channel(uint32 channel_number) {
     if (!daq_.is_open()) {
@@ -50,9 +51,9 @@ bool MyRioAI::update_channel(uint32 channel_number) {
     }
     else {
         if (type_ == MyRioConnectorType::MspC)
-            values_[channel_map_.at(channel_number)] = (int16_t)value * WEIGHTS[type_][channel_number] + OFFSETS[type_][channel_number];
+            values_[channel_number] = (int16_t)value * WEIGHTS[type_][channel_number] + OFFSETS[type_][channel_number];
         else
-            values_[channel_map_.at(channel_number)] = value * WEIGHTS[type_][channel_number] + OFFSETS[type_][channel_number];
+            values_[channel_number] = value * WEIGHTS[type_][channel_number] + OFFSETS[type_][channel_number];
         return true;
     }
 }

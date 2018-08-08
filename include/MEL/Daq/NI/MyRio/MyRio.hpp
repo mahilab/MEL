@@ -18,7 +18,7 @@
 #ifndef MEL_MYRIO_HPP
 #define MEL_MYRIO_HPP
 
-#include <MEL/Daq/Daq.hpp>
+#include <MEL/Daq/DaqBase.hpp>
 #include <MEL/Utility/NonCopyable.hpp>
 
 #include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
@@ -39,21 +39,15 @@ enum MyRioConnectorType : int {
 };
 
 /// National Instruments myRIO embedded system
-class MEL_API MyRio : public Daq, NonCopyable {
+class MEL_API MyRio : public DaqBase, NonCopyable {
 
 public:
 
     /// Constructor
-    MyRio(const std::string& name, bool auto_open = true);
+    MyRio(const std::string& name);
 
     /// Default Destructor
     ~MyRio();
-
-    /// Opens the myRIO
-    virtual bool open() override;
-
-    /// Closes the myRIO
-    virtual bool close() override;
 
     /// Enables the myRIO by sequentially calling the enable() function
     /// on all I/O modules. Consult the documentation for each module for
@@ -76,6 +70,9 @@ public:
     bool update_output() override;
 
 private:
+
+    bool on_open() override;
+    bool on_close() override;
 
     /// Represents a myRIO connector
     struct Connector : public Device {

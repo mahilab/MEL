@@ -29,16 +29,17 @@ static const std::vector<std::vector<double>> OFFSETS({
 
 
 MyRioAO::MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-  Module(daq.get_name() + "_AO", IoType::OutputOnly, channel_numbers),
-  AnalogOutput(daq.get_name() + "_AO", channel_numbers),
   daq_(daq),
   type_(type)
-{}
+{
+    set_name(daq.get_name() + "_AO");
+    set_channel_numbers(channel_numbers);
+}
 
 bool MyRioAO::enable() {
     if (is_enabled())
         return Device::enable();
-    set_values(enable_values_);
+    set_values(enable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
         return Device::enable();
@@ -52,7 +53,7 @@ bool MyRioAO::enable() {
 bool MyRioAO::disable() {
     if (!is_enabled())
         return Device::disable();
-    set_values(disable_values_);
+    set_values(disable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
         return Device::disable();
@@ -72,7 +73,7 @@ bool MyRioAO::update_channel(uint32 channel_number) {
 
     NiFpga_Status status;
     uint16_t valueScaled;
-    double value = values_[channel_map_.at(channel_number)];
+    double value = values_[channel_number];
 
     if (type_ == MyRioConnectorType::MspC)
     {

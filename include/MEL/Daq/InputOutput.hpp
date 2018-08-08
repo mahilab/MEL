@@ -96,11 +96,11 @@ protected:
     void sort_input_output_channel_numbers() {
         input_channel_numbers_.clear();
         output_channel_numbers_.clear();
-        for (std::size_t i = 0; i < get_channel_count(); ++i) {
+        for (std::size_t i = 0; i < this->get_channel_count(); ++i) {
             if (directions_.get()[i] == In)
-                input_channel_numbers_.push_back(get_channel_numbers()[i]);
+                input_channel_numbers_.push_back(this->get_channel_numbers()[i]);
             else if (directions_.get()[i] == Out)
-                output_channel_numbers_.push_back(get_channel_numbers()[i]);
+                output_channel_numbers_.push_back(this->get_channel_numbers()[i]);
         }
     }
 

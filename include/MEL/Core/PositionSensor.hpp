@@ -28,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API PositionSensor : public Device {
+class MEL_API PositionSensor : virtual public Device {
 public:
     /// Prefered constructor
     PositionSensor(const std::string& name);

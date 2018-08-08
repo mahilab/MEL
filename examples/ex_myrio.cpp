@@ -5,30 +5,35 @@
 #include <MEL/Utility/Console.hpp>
 #include <MEL/Communications/MelNet.hpp>
 #include <string>
+#include <MEL/Logging/Log.hpp>
 
 using namespace mel;
 using namespace std;
 
 int main(int argc, char** argv) {
-    MelNet mn(55001, 55002, "10.0.0.117", false);
 
+    MEL_LOGGER->set_max_severity(Verbose);
+
+    MelNet mn(55002, 55001, "10.0.0.117");
 
     MyRio myrio("myrio");
+    myrio.open();
     myrio.enable();
-    Timer timer(hertz(1000), Timer::Hybrid);
     Waveform sinwave(Waveform::Sin, seconds(1), 5);
 
-    std::vector<double> AB(2);
+    std::vector<double> data(2);
 
-
-    while (timer.get_elapsed_time() < seconds(60)) {
+    Timer timer(hertz(1000), Timer::Hybrid);
+    Time t;
+    while ((t = timer.get_elapsed_time()) < seconds(60)) {
         myrio.update_input();
 
-        AB[0] = myrio.C.DIO[0].get_value();
-        AB[1] = myrio.C.DIO[2].get_value();
+        data[0] = sinwave(t);
+        myrio.C.AO[0].set_value(data[0]);
+        data[1] = myrio.C.AI[0];
 
-        // update MelNet
-        print(AB);
+        // send data
+        mn.send_data(data);
 
         myrio.update_output();
         timer.wait();

@@ -45,14 +45,13 @@ bool MyRio::Connector::update_output() {
 // MYRIO
 //==============================================================================
 
-MyRio::MyRio(const std::string& name, bool auto_open) :
-    Daq(name),
+MyRio::MyRio(const std::string& name) :
+    DaqBase(name),
     A(*this, MyRioConnectorType::MxpA, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}),
     B(*this, MyRioConnectorType::MxpB, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}),
     C(*this, MyRioConnectorType::MspC, {0,1},     {0,1}, {0,1,2,3,4,5,6,7})
- {
-    if (auto_open)
-        open();
+{
+
 }
 
 MyRio::~MyRio() {
@@ -62,24 +61,20 @@ MyRio::~MyRio() {
         close();
 }
 
-bool MyRio::open() {
+bool MyRio::on_open() {
     NiFpga_Status status = MyRio_Open();
     if (MyRio_IsNotSuccess(status)) {
-        LOG(Error) << "Failed to open myRIO " << get_name();
         return false;
     }
-    LOG(Verbose) << "Opened myRIO " << get_name();
-    return Daq::open();
+    return true;
 }
 
-bool MyRio::close() {
+bool MyRio::on_close() {
     NiFpga_Status status = MyRio_Close();
     if (MyRio_IsNotSuccess(status)) {
-        LOG(Error) << "Failed to close myRIO " << get_name();
         return false;
     }
-    LOG(Verbose) << "Closed myRIO " << get_name();
-    return Daq::close();
+    return true;
 }
 
 bool MyRio::enable() {
@@ -98,7 +93,7 @@ bool MyRio::enable() {
 }
 
 bool MyRio::disable() {
-    if (!open_) {
+    if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
         return false;

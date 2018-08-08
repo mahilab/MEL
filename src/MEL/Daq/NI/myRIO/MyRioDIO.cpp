@@ -41,17 +41,17 @@ static const std::vector<std::vector<uint8_t>> BITS({
 });
 
 MyRioDIO::MyRioDIO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-    Module(daq.get_name() + "_DIO", IoType::InputOutput, channel_numbers),
-    InputOutput(daq.get_name() + "_DIO", channel_numbers, std::vector<Direction>(channel_numbers.size(), In)),
     daq_(daq),
     type_(type)
 {
+    set_name(daq.get_name() + "_DIO");
+    set_channel_numbers(channel_numbers);
 }
 
 bool MyRioDIO::enable() {
     if (is_enabled())
         return Device::enable();
-    set_values(enable_values_);
+    set_values(enable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " enable values to "
                      << enable_values_;
@@ -66,7 +66,7 @@ bool MyRioDIO::enable() {
 bool MyRioDIO::disable() {
     if (!is_enabled())
         return Device::disable();
-    set_values(disable_values_);
+    set_values(disable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " disable values to "
                      << disable_values_;
@@ -81,7 +81,7 @@ bool MyRioDIO::disable() {
 bool MyRioDIO::update_channel(uint32 channel_number) {
     NiFpga_Status status;
     uint8_t dirValue;
-    if (directions_[channel_map_.at(channel_number)] == In) {
+    if (directions_[channel_number] == In) {
         // read value
         uint8_t inValue;
         uint8_t dirMask;
@@ -100,12 +100,12 @@ bool MyRioDIO::update_channel(uint32 channel_number) {
             return false;
         }
         inValue = inValue & (1 << BITS[type_][channel_number]);
-        values_[channel_map_.at(channel_number)] = (inValue > 0) ? High : Low;
+        values_[channel_number] = (inValue > 0) ? High : Low;
     }
     else {
         // write value
         uint8_t outValue;
-        NiFpga_Bool value = static_cast<NiFpga_Bool>(values_[channel_map_.at(channel_number)]);
+        NiFpga_Bool value = static_cast<NiFpga_Bool>(values_[channel_number]);
         status = NiFpga_ReadU8(myrio_session, OUTS[type_][channel_number], &outValue);
         NiFpga_MergeStatus(&status,  NiFpga_ReadU8(myrio_session, DIRS[type_][channel_number], &dirValue));
         if (status < 0) {
