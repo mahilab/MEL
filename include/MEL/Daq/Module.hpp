@@ -67,7 +67,7 @@ private:
     friend class BufferBase;
 
     /// Adds a value container to this Module
-    void add_container(BufferBase* container);
+    void add_buffer(BufferBase* container);
 
     /// Returns vector index associated with channel number
     std::size_t index(uint32 channel_number) const;
@@ -76,7 +76,7 @@ private:
 
     std::vector<uint32> channel_numbers_;         ///< The channel numbers used by this ModuleBase
     std::map<uint32, std::size_t> channel_map_;   ///< Maps a channel number with a vector index position
-    std::vector<BufferBase*> containers_; ///< Containers managed by this Module
+    std::vector<BufferBase*> containers_;         ///< Buffers needed by this Module
 
 };
 
@@ -90,6 +90,7 @@ class Module : public ModuleBase {
 
 public:
 
+    /// Default Constructorr
     Module() :
         values_(this),
         min_values_(this),

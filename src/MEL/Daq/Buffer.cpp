@@ -6,7 +6,7 @@ namespace mel {
     BufferBase::BufferBase(ModuleBase* module) :
         module_(module) 
     {
-        module_->add_container(this);
+        module_->add_buffer(this);
     }
 
     std::size_t BufferBase::index(uint32 channel_number) const {
