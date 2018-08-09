@@ -74,7 +74,7 @@ bool ModuleBase::validate_channel_count(std::size_t size) const {
     return false;
 }
 
-void ModuleBase::add_container(ValueContainerBase* container) {
+void ModuleBase::add_container(BufferBase* container) {
     containers_.push_back(container);
 }
 

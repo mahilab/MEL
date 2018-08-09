@@ -19,7 +19,7 @@
 #define MEL_MODULE_HPP
 
 #include <MEL/Core/Device.hpp>
-#include <MEL/Daq/ValueContainer.hpp>
+#include <MEL/Daq/Buffer.hpp>
 #include <map>
 
 #ifdef _MSC_VER
@@ -64,10 +64,10 @@ public:
 
 private:
 
-    friend class ValueContainerBase;
+    friend class BufferBase;
 
     /// Adds a value container to this Module
-    void add_container(ValueContainerBase* container);
+    void add_container(BufferBase* container);
 
     /// Returns vector index associated with channel number
     std::size_t index(uint32 channel_number) const;
@@ -76,7 +76,7 @@ private:
 
     std::vector<uint32> channel_numbers_;         ///< The channel numbers used by this ModuleBase
     std::map<uint32, std::size_t> channel_map_;   ///< Maps a channel number with a vector index position
-    std::vector<ValueContainerBase*> containers_; ///< Containers managed by this Module
+    std::vector<BufferBase*> containers_; ///< Containers managed by this Module
 
 };
 
@@ -143,9 +143,9 @@ public:
 
 protected:
 
-    ValueContainer<T> values_;      ///< The real-world values of the channels in this Module
-    ValueContainer<T> min_values_;  ///< The minimum possible values of each channel
-    ValueContainer<T> max_values_;  ///< The maximum possible values of each channel
+    Buffer<T> values_;      ///< The real-world values of the channels in this Module
+    Buffer<T> min_values_;  ///< The minimum possible values of each channel
+    Buffer<T> max_values_;  ///< The maximum possible values of each channel
 
 };
 

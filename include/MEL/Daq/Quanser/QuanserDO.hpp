@@ -55,7 +55,7 @@ public:
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq
-    ValueContainer<char> quanser_values_;
+    Buffer<char> quanser_values_;
 };
 
 }  // namespace mel

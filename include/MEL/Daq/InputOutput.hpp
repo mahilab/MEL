@@ -105,7 +105,7 @@ protected:
     }
 
 protected:
-    ValueContainer<Direction> directions_;        ///< The I/O directions of each channel
+    Buffer<Direction> directions_;        ///< The I/O directions of each channel
     std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
     std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
 
