@@ -42,7 +42,7 @@ int main() {
         // write to MelShares
         ms_mes.write_data(myo.get_values());
 
-        check for exit key
+        // check for exit key
         if (Keyboard::is_key_pressed(Key::Escape)) {
             stop = true;
         }
