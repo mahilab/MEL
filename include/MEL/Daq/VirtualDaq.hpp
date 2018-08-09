@@ -65,10 +65,11 @@ public:
     VirtualDaq(const std::string& name);
     bool enable() override;
     bool disable() override;
-    bool open() override;
-    bool close() override;
     bool update_input() override;
     bool update_output() override;
+protected:
+    bool on_open() override;
+    bool on_close() override;
 public:
     VirtualAI AI;
     VirtualAO AO;

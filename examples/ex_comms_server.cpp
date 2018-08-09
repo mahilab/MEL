@@ -31,14 +31,17 @@
  * MelShare, e.g. over MelScope or through another C++, C#, or Python
  * application using the MelShare classes.
  *
- * The server can be demoed on host single PC by launching two consoles, and
- * executing the following commands:
+ * The server can be demoed by executing the following commands:
  *
- *  Server Console > comms_server.exe -l PORT_A -r PORT_B -m MELSHARE
- *  Demo Console   > comms_server.exe -l PORT_B -r PORT_A -d
+ *  Server > comms_server.exe -l PORT_A -r PORT_B -i DEMO_IP -m MELSHARE
+ *  Demo   > comms_server.exe -l PORT_B -r PORT_A -i SERVER_IP -d
  *
- *  where PORT_A and PORT_B are valid port numbers (e.g. 55001 and 55002), and
+ *  where PORT_A and PORT_B are valid port numbers (e.g. 55001 and 55002),
+ *  DEMO_IP and SERVER_IP are the IP addresses of the server and demo, and
  *  MELSHARE is the desired MelShare string name. Open the MelShare in MelScope.
+ *
+ *  Note: The demo can be run on a single PC by using two consoles and
+ *  leaving the -i option unspecied (it will default to the local host IP).
  */
 
 using namespace mel;

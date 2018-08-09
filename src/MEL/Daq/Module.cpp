@@ -40,10 +40,11 @@ bool ModuleBase::update() {
 }
 
 void ModuleBase::set_channel_numbers(const std::vector<uint32>& channel_numbers) {
+    auto old_map = channel_map_;
     channel_numbers_ = sort_and_reduce_channels(channel_numbers);
     channel_map_ = make_channel_map(channel_numbers_);
     for (std::size_t i = 0; i < containers_.size(); i++)
-        containers_[i]->resize(channel_numbers_.size());
+        containers_[i]->change_channel_numbers(old_map, channel_map_);
 }
 
 const std::vector<uint32>& ModuleBase::get_channel_numbers() const {
@@ -74,7 +75,7 @@ bool ModuleBase::validate_channel_count(std::size_t size) const {
     return false;
 }
 
-void ModuleBase::add_container(ValueContainerBase* container) {
+void ModuleBase::add_buffer(BufferBase* container) {
     containers_.push_back(container);
 }
 

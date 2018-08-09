@@ -22,6 +22,7 @@
 #include <MEL/Utility/Types.hpp>
 #include <vector>
 #include <iostream>
+#include <map>
 
 namespace mel {
 
@@ -31,51 +32,54 @@ class ModuleBase;
 // BASE DECLARATION
 //==============================================================================
 
-class MEL_API ValueContainerBase {
+/// Base class for Buffer
+class MEL_API BufferBase {
 public:
     /// Constructor
-    ValueContainerBase(ModuleBase* module);
+    BufferBase(ModuleBase* module);
 
 protected:
 
     friend class ModuleBase;
 
     /// Called by ModuleBase when channel numbers change
-    virtual void resize(std::size_t channel_count) = 0;
+    virtual void change_channel_numbers(const std::map<uint32, std::size_t>& old_map, 
+                                        const std::map<uint32, std::size_t>& new_map) = 0;
 
     /// Returns vector index associated with channel number
     std::size_t index(uint32 channel_number) const;
 
 protected:
 
-    ModuleBase* module_; ///< pointer to module
+    ModuleBase* module_; ///< pointer to parent module
 };
 
 //==============================================================================
 // CLASS DECLARATION
 //==============================================================================
 
+/// A Buffer of generic values stored on a Module, indexible by channel number
 template <typename T>
-class ValueContainer : public ValueContainerBase {
+class Buffer : public BufferBase {
 public:
 
     /// Constructor
-    ValueContainer(ModuleBase* module, T default_value = T()) :
-        ValueContainerBase(module),
+    Buffer(ModuleBase* module, T default_value = T()) :
+        BufferBase(module),
         default_value_(default_value)
     { }
 
-    /// Read access
+    /// Read access indexed by channel number
     const T& operator[](uint32 channel_number) const {
         return values_[index(channel_number)];
     }
 
-    /// Write access
+    /// Write access indexed by channel number
     T& operator[](uint32 channel_number) {
         return values_[index(channel_number)];
     }
 
-    /// Gets size of container
+    /// Gets size of buffer
     std::size_t size() const {
         return values_.size();
     }
@@ -91,20 +95,27 @@ public:
             values_ = values;
     }
 
-    /// Sets the default value new values should be instantied with
+    /// Sets the default value subsequent new values should be instantied with
     void set_default_value(T default_value) {
         default_value_ = default_value;
     }
 
     /// Overload stream operator
     template <typename U>
-    friend std::ostream& operator<<(std::ostream& os, const ValueContainer<U>& container);
+    friend std::ostream& operator<<(std::ostream& os, const Buffer<U>& container);
 
 private:
 
     /// Called by ModuleBase when channel numbers change
-    void resize(std::size_t channel_count) override {
-        values_.assign(channel_count, default_value_);
+    void change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
+                                const std::map<uint32, std::size_t>& new_map) override 
+    {
+        std::vector<T> new_values(new_map.size(), default_value_);
+        for (auto it = old_map.begin(); it != old_map.end(); ++it) {
+            if (new_map.count(it->first))
+                new_values[new_map.at(it->first)] = values_[old_map.at(it->first)];
+        }
+        values_ = new_values;
     }
 
     T default_value_;        ///< default value
@@ -112,20 +123,20 @@ private:
 };
 
 //==============================================================================
-// FUNCTIOINS
+// FUNCTIONS
 //==============================================================================
 
 /// Overload stream operator
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const ValueContainer<T>& container) {
+std::ostream& operator<<(std::ostream& os, const Buffer<T>& container) {
     if (container.size() > 0) {
         os << "{";
         for (std::size_t i = 0; i < container.size() - 1; i++) {
             uint32 ch = container.module_->get_channel_numbers()[i];
-            os << "CH[" << ch << "]:" << container[ch] << ", ";
+            os << "[" << ch << "]:" << container[ch] << ", ";
         }
         uint32 ch = container.module_->get_channel_numbers()[container.size() - 1];
-        os << "CH[" << ch << "]:" << container[ch] << "}";
+        os << "[" << ch << "]:" << container[ch] << "}";
     }
     else {
         os << "{}";

@@ -61,7 +61,7 @@ public:
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq
-    ValueContainer<uint32> velocity_channel_numbes_;  ///< Converted channel numbers
+    Buffer<uint32> velocity_channel_numbes_;  ///< Converted channel numbers
 
 };
 
