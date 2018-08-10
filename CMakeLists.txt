@@ -280,7 +280,7 @@ if (QUANSER)
             list(APPEND LINK_DIRS "${QUANSER_ROOT}/HIL SDK/lib/windows")
         endif()
     endif()
-    list(APPEND LINK_LIBS hil quanser_communications quanser_runtime quanser_common bufferoverflowU legacy_stdio_definitions)
+    list(APPEND LINK_LIBS hil quanser_runtime quanser_common bufferoverflowU legacy_stdio_definitions)
     # MEL source
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
