@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 
 #===============================================================================
-# CROSS COMPILER (uncomment or remove as needed)
+# SETUP CROSS COMPILER (uncomment or remove as needed)
 #===============================================================================
 
 # NI X64 CROSS COMPILER
@@ -42,17 +42,23 @@ set(CMAKE_CXX_STANDARD 11)
 # create project
 project(MyProject)
 
-# set binary output location (optional, but recommended)
+# set binary output location to conventional "bin" (optional, but recommended)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
-# include directories (your includes and MEL's)
-include_directories("include" "../../../MEL/include")
+# include directories
+include_directories(
+    "include"              # your include directory
+    "../../../MEL/include" # MEL's include directory
+)
 
 # indicate where MEL.lib is
 link_directories("../../../MEL/lib")
 
 # create application
-add_executable(my_app include/MyClass.hpp src/MyClass.cpp ... src/main.cpp)
+add_executable(my_app
+               include/MyClass.hpp
+               src/MyClass.cpp
+               src/main.cpp)
 
 # link MEL
 target_link_libraries(my_app MEL)
