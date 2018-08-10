@@ -89,14 +89,16 @@ double Encoder::get_position(uint32 channel_number) {
 }
 
 std::vector<double>& Encoder::get_values_per_sec() {
-    if (!has_velocity_)
+    if (!has_velocity_) {
         LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    }
     return values_per_sec_.get();
 }
 
 double Encoder::get_value_per_sec(uint32 channel_number) {
-    if (!has_velocity_)
+    if (!has_velocity_) {
         LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    }
     if (validate_channel_number(channel_number))
         return values_per_sec_[channel_number];
     else
@@ -104,16 +106,18 @@ double Encoder::get_value_per_sec(uint32 channel_number) {
 }
 
 const std::vector<double>& Encoder::get_velocities() {
-    if (!has_velocity_)
+    if (!has_velocity_) {
         LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    }
     for (auto const& ch : get_channel_numbers())
         velocities_[ch] = values_per_sec_[ch] * conversions_[ch];
     return velocities_.get();
 }
 
 double Encoder::get_velocity(uint32 channel_number) {
-    if (!has_velocity_)
+    if (!has_velocity_) {
         LOG(Warning) << "Encoder module " << get_name() << " has no velocity estimation";
+    }
     if (validate_channel_number(channel_number)) {
         return values_per_sec_[channel_number] * conversions_[channel_number];
     }

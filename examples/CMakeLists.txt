@@ -25,6 +25,7 @@ mel_example(shared_memory)
 mel_example(melshare)
 mel_example(chat)
 mel_example(comms_server)
+mel_example(virtual_daq)
 
 if(WIN32)
     mel_example(limiter)

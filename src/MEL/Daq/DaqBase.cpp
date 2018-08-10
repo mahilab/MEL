@@ -17,17 +17,15 @@ DaqBase::DaqBase(const std::string& name) :
 }
 
 DaqBase::~DaqBase() {
-    if (is_enabled())
-        disable();
-    if (is_open()) 
-        close();
+    // this once call disable/close, but calling virtual functions in ctor/dtor
+    // is considered dangerous!
 }
 
 bool DaqBase::open() {
     if (open_) {
         LOG(Warning) << "DAQ " << get_name() << " already open";
         return false;
-    } 
+    }
     if (on_open()) {
         LOG(Info) << "Opened DAQ " << get_name();
         open_ = true;
@@ -58,12 +56,12 @@ bool DaqBase::close() {
 }
 
 bool DaqBase::update_input() {
-    // TODO
+    // TODO?
     return true;
 }
 
 bool DaqBase::update_output() {
-    // TODO
+    // TODO?
     return true;
 }
 

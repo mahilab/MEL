@@ -101,7 +101,6 @@ public:
     /// Set whether the Encoder enables velocity estimation
     void has_velocity(bool has_velocity);
 
-private:
     /// Precomputes position conversion sclars (i.e. #units_per_count_ / #factors_)
     void compute_conversions();
 

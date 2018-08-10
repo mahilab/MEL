@@ -24,60 +24,108 @@
 #include <MEL/Daq/InputOutput.hpp>
 #include <MEL/Daq/Encoder.hpp>
 #include <MEL/Core/Clock.hpp>
+#include <functional>
 
 namespace mel {
 
 class VirtualDaq;
 
-class VirtualAI : public AnalogInput {
+//==============================================================================
+// VIRTUAL AI
+//==============================================================================
+
+class MEL_API VirtualAI : public AnalogInput {
 public:
+    VirtualAI(VirtualDaq& daq);
     bool update_channel(uint32 channel_number) override;
+public:
+    Buffer<std::function<Voltage(Time)>> sources;
+private:
+    VirtualDaq& daq_;
 };
 
-class VirtualAO : public AnalogOutput {
+//==============================================================================
+// VIRTUAL AO
+//==============================================================================
+
+class MEL_API VirtualAO : public AnalogOutput {
 public:
+    VirtualAO(VirtualDaq& daq);
     bool update_channel(uint32 channel_number) override;
+private:
+    VirtualDaq& daq_;
 };
 
-class VirtualDI : public DigitalInput {
+//==============================================================================
+// VIRTUAL DI
+//==============================================================================
+
+class MEL_API VirtualDI : public DigitalInput {
 public:
+    VirtualDI(VirtualDaq& daq);
     bool update_channel(uint32 channel_number) override;
+public:
+    Buffer<std::function<Logic(Time)>> sources;
+private:
+    VirtualDaq& daq_;
 };
 
-class VirtualDO : public DigitalOutput {
+//==============================================================================
+// VIRTUAL DO
+//==============================================================================
+
+class MEL_API VirtualDO : public DigitalOutput {
 public:
+    VirtualDO(VirtualDaq& daq);
     bool update_channel(uint32 channel_number) override;
+private:
+    VirtualDaq& daq_;
 };
 
-class VirtualDIO : public DigitalInputOutput {
+//==============================================================================
+// VIRTUAL ENCODER
+//==============================================================================
+
+class MEL_API VirtualEncoder : public Encoder {
 public:
+    VirtualEncoder(VirtualDaq& daq);
     bool update_channel(uint32 channel_number) override;
+public:
+    Buffer<std::function<int32(Time)>> sources;
+private:
+    VirtualDaq& daq_;
 };
 
-class VirtualEncoder : public Encoder {
-public:
-    bool update_channel(uint32 channel_number) override;
-};
+//==============================================================================
+// VIRTUAL DAQ
+//==============================================================================
 
 /// Virtual DAQ for testing/prototyping the absence of actual hardware
-class VirtualDaq : public DaqBase {
+class MEL_API VirtualDaq : public DaqBase {
 public:
     VirtualDaq(const std::string& name);
+    ~VirtualDaq();
     bool enable() override;
     bool disable() override;
     bool update_input() override;
     bool update_output() override;
-protected:
-    bool on_open() override;
-    bool on_close() override;
 public:
     VirtualAI AI;
     VirtualAO AO;
     VirtualDI DI;
     VirtualDO DO;
-    VirtualDIO DIO;
     VirtualEncoder encoder;
-private:
+
+protected:
+    bool on_open() override;
+    bool on_close() override;
+
+protected:
+    friend class VirtualAI;
+    friend class VirtualAO;
+    friend class VirtualDI;
+    friend class VirtualDO;
+    friend class VirtualEncoder;
     Clock clock_;
 };
 
