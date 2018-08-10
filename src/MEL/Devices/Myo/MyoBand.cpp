@@ -78,11 +78,10 @@ namespace mel {
 
 
     MyoBand::MyoBand(const std::string& name) :
-        Module<Voltage>(name, IoType::InputOnly, { 0,1,2,3,4,5,6,7 }),
-        Input<Voltage>(name, { 0,1,2,3,4,5,6,7 }),
         impl_(new MyoBand::Impl)
     {
-
+		set_channel_numbers( { 0,1,2,3,4,5,6,7 } );
+		set_name(name);
     }
 
     MyoBand::~MyoBand() {
