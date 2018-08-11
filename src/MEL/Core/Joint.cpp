@@ -64,15 +64,15 @@ namespace mel {
      has_velocity_limit_(true)
  { }
 
-bool Joint::enable() {
+bool Joint::on_enable() {
     if (position_sensor_->enable() && velocity_sensor_->enable() && actuator_->enable())
-        return Device::enable();
+        return true;
     return false;
 }
 
-bool Joint::disable() {
+bool Joint::on_disable() {
     if (position_sensor_->disable() && velocity_sensor_->disable() && actuator_->disable())
-        return Device::disable();
+        return true;
     return false;
 }
 

@@ -67,13 +67,13 @@ public:
 protected:
 
     /// Implement this function to open communication with your DAQ
-    /// 
+    ///
     /// \return TRUE if open successful, FALSE otherwise
     virtual bool on_open() = 0;
 
     /// Implement this function to close communication with your DAQ
     ///
-    /// \return TRUE of close successful, FALSE otherwise
+    /// \return TRUE if close successful, FALSE otherwise
     virtual bool on_close() = 0;
 
 private:

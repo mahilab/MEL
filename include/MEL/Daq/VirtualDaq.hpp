@@ -105,8 +105,7 @@ class MEL_API VirtualDaq : public DaqBase {
 public:
     VirtualDaq(const std::string& name);
     ~VirtualDaq();
-    bool enable() override;
-    bool disable() override;
+
     bool update_input() override;
     bool update_output() override;
 public:
@@ -117,6 +116,8 @@ public:
     VirtualEncoder encoder;
 
 protected:
+    bool on_enable() override;
+    bool on_disable() override;
     bool on_open() override;
     bool on_close() override;
 

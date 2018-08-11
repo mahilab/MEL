@@ -41,12 +41,6 @@ public:
     /// Destructor
     virtual ~Robot() {}
 
-    /// Virtual function to enable all robot members.
-    virtual bool enable() override;
-
-    /// Virtual function to disable all robot members.
-    virtual bool disable() override;
-
 public:
     /// Adds a new joint to the robot
     void add_joint(const Joint& joint);
@@ -81,6 +75,14 @@ public:
     /// Checks position, velocity, and torque limits of all joints and returns
     /// true if any exceeded, false otherwise
     bool any_limit_exceeded();
+
+protected:
+
+    /// Virtual function to enable all robot members.
+    bool on_enable() override;
+
+    /// Virtual function to disable all robot members.
+    bool on_disable() override;
 
 protected:
     std::vector<Joint> joints_;  ///< Vector of Joints.

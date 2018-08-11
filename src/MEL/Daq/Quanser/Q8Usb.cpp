@@ -93,46 +93,48 @@ bool Q8Usb::on_close() {
     return QuanserDaq::on_close();
 }
 
-bool Q8Usb::enable() {
+bool Q8Usb::on_enable() {
     if (!is_open()) {
-        LOG(Error) << "Cannot enable " << get_name() << " because it is not open";
+        LOG(Error) << "Unable to disable Q8-USB " << get_name() << " because it is not open";
         return false;
     }
+    bool success = true;
     // enable each module
     if (!AI.enable())
-        return false;
+        success = false;
     if (!AO.enable())
-        return false;
+        success = false;
     if (!DI.enable())
-        return false;
+        success = false;
     if (!DO.enable())
-        return false;
+        success = false;
     if (!encoder.enable())
-        return false;
+        success = false;
     // allow changes to take effect
     sleep(milliseconds(10));
-    return Device::enable();
+    return success;
 }
 
-bool Q8Usb::disable() {
+bool Q8Usb::on_disable() {
     if (!is_open()) {
-        LOG(Error) << "Cannot disable " << get_name() << " because it is not open";
+        LOG(Error) << "Unable to disable Q8-USB " << get_name() << " because it is not open";
         return false;
     }
+    bool success = true;
     // disable each module
     if (!AI.disable())
-        return false;
+        success = false;
     if (!AO.disable())
-        return false;
+        success = false;
     if (!DI.disable())
-        return false;
+        success = false;
     if (!DO.disable())
-        return false;
+        success = false;
     if (!encoder.disable())
-        return false;
+        success = false;
     // allow changes to take effect
     sleep(milliseconds(10));
-    return Device::disable();
+    return success;
 }
 
 bool Q8Usb::update_input() {

@@ -19,16 +19,16 @@ MyRio::Connector::Connector(MyRio& myrio,
     DIO(myrio, type, dio_channels)
 {}
 
-bool MyRio::Connector::enable() {
+bool MyRio::Connector::on_enable() {
     if (AI.enable() && AO.enable() && DIO.enable())
-        return Device::enable();
+        return true;
     else
         return false;
 }
 
-bool MyRio::Connector::disable() {
+bool MyRio::Connector::on_disable() {
     if (AI.disable() && AO.disable() && DIO.disable())
-        return Device::disable();
+        return true;
     else
         return false;
 }
@@ -77,35 +77,32 @@ bool MyRio::on_close() {
     return true;
 }
 
-bool MyRio::enable() {
+bool MyRio::on_enable() {
     if (!is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+        LOG(Error) << "Unable to enable myRIO " << get_name() << " because it is not open";
         return false;
     }
     // enable each connector
     if (A.enable() && B.enable() && C.enable()) {
         sleep(milliseconds(10));
-        return Device::enable();
+        return true;
     }
     else
         return false;
 }
 
-bool MyRio::disable() {
+bool MyRio::on_disable() {
     if (!is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+        LOG(Error) << "Unable to disable myRIO " << get_name() << " because it is not open";
         return false;
     }
     // disable each connect
     if (A.disable() && B.disable() && C.disable()) {
         sleep(milliseconds(10));
-        return Device::disable();
+        return true;
     }
-    // allow changes to take effect
-    sleep(milliseconds(10));
-    return Device::disable();
+    else
+        return false;
 }
 
 bool MyRio::update_input() {

@@ -62,6 +62,14 @@ public:
     /// Checks if the size of a vector equals the number of channels
     bool validate_channel_count(std::size_t size) const;
 
+protected:
+
+    /// Default implementation of on_enable (always returns true)
+    virtual bool on_enable();
+
+    /// Default implementation of on_disable (always returns true)
+    virtual bool on_disable();
+
 private:
 
     friend class BufferBase;

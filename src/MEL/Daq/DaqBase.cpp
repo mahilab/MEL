@@ -24,7 +24,7 @@ DaqBase::~DaqBase() {
 bool DaqBase::open() {
     if (open_) {
         LOG(Warning) << "DAQ " << get_name() << " already open";
-        return false;
+        return true;
     }
     if (on_open()) {
         LOG(Info) << "Opened DAQ " << get_name();
@@ -41,7 +41,7 @@ bool DaqBase::open() {
 bool DaqBase::close() {
     if (!open_) {
         LOG(Warning) << "DAQ " << get_name() << " already closed";
-        return false;
+        return true;
     }
     if (on_close()) {
         LOG(Info) << "Closed DAQ " << get_name();

@@ -38,12 +38,6 @@ public:
           Amplifier amplifier,
           Limiter current_limiter = Limiter());
 
-    /// Enables the Motor using the associated digital output channel
-    bool enable() override;
-
-    /// Disables the Motor using using the associated digital output channel and
-    /// writes zero to the associated analog output channel
-    bool disable() override;
 
     /// Sets the desired torque to be generated at the Motor, converts from
     /// torque to current, and calls set_current()
@@ -61,6 +55,15 @@ public:
 
     /// Returns the amplifier on the Motor
     Amplifier& get_amplifier();
+
+protected:
+
+    /// Enables the Motor using the associated digital output channel
+    bool on_enable() override;
+
+    /// Disables the Motor using using the associated digital output channel and
+    /// writes zero to the associated analog output channel
+    bool on_disable() override;
 
 protected:
     double kt_;            ///< torque constant of the Motor [torque/current]

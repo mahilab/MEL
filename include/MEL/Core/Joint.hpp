@@ -60,12 +60,6 @@ public:
         double torque_limit = INF,
         bool saturate = true);
 
-    /// Enables the joint's position sensor, velocity sensor, and actuator
-    bool enable() override;
-
-    /// Disables the joint's position sensor, velocity sensor, and actuator
-    bool disable() override;
-
     /// Converts PositionSensor position to Joint position
     double get_position();
 
@@ -119,34 +113,37 @@ public:
     }
 
 protected:
-    Actuator* actuator_;  ///< reference to the Actuator of this Joint
-    PositionSensor*
-        position_sensor_;  ///< reference to the PositionSensor of this Joint
-    VelocitySensor*
-        velocity_sensor_;  ///< reference to the VelocitySensor of this Joint
 
-    double
-        actuator_transmission_;  ///< transmission ratio describing the
-                                 ///< multiplicative gain in torque from Joint
-                                 ///< space to Actuator space, actuator torque =
-                                 ///< actuator transmission * joint torque
-    double
-        position_sensor_transmission_;  ///< transmission ratio describing the
-                                        ///< multiplicative gain in position
-                                        ///< from PositionSensor space to Joint
-                                        ///< space, joint position = position
-                                        ///< sensor transmission * sensed
-                                        ///< position
-    double
-        velocity_sensor_transmission_;  ///< transmission ratio describing the
-                                        ///< multiplicative gain in velocity
-                                        ///< from VelocitySensor space to Joint
-                                        ///< space, joint velocity = velocity
-                                        ///< sensor transmission * sensed
-                                        ///< velocity
+    /// Enables the joint's position sensor, velocity sensor, and actuator
+    bool on_enable() override;
 
-    double torque_;  ///< the stored torque of the Joint since the last call to
-                     ///< set_torque() or add_torque()
+    /// Disables the joint's position sensor, velocity sensor, and actuator
+    bool on_disable() override;
+
+protected:
+    Actuator* actuator_;               ///< pointer to the Actuator of this Joint
+    PositionSensor* position_sensor_;  ///< pointer to the PositionSensor of this Joint
+    VelocitySensor* velocity_sensor_;  ///< pointer to the VelocitySensor of this Joint
+
+    double actuator_transmission_;          ///< transmission ratio describing the
+                                            ///< multiplicative gain in torque from Joint
+                                            ///< space to Actuator space, actuator torque =
+                                            ///< actuator transmission * joint torque
+    double  position_sensor_transmission_;  ///< transmission ratio describing the
+                                            ///< multiplicative gain in position
+                                            ///< from PositionSensor space to Joint
+                                            ///< space, joint position = position
+                                            ///< sensor transmission * sensed
+                                            ///< position
+    double velocity_sensor_transmission_;   ///< transmission ratio describing the
+                                            ///< multiplicative gain in velocity
+                                            ///< from VelocitySensor space to Joint
+                                            ///< space, joint velocity = velocity
+                                            ///< sensor transmission * sensed
+                                            ///< velocity
+
+    double torque_;    ///< the stored torque of the Joint since the last call to
+                       ///< set_torque() or add_torque()
     double position_;  ///< the stored position of the Joint since the last call
                        ///< to get_position()
     double velocity_;  ///< the stored velocity of the Joint since the last call

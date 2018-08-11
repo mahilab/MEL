@@ -12,8 +12,9 @@ std::vector<uint32> sort_and_reduce_channels(const std::vector<uint32>& channels
     std::vector<uint32> sorted_channels = channels;
     std::sort(sorted_channels.begin(), sorted_channels.end());
     sorted_channels.erase(std::unique(sorted_channels.begin(), sorted_channels.end()), sorted_channels.end());
-    if (sorted_channels != channels)
+    if (sorted_channels != channels) {
         LOG(Warning) << "Specifed channels " << channels << " sorted and reduced to " << sorted_channels;
+    }
     return sorted_channels;
 }
 
@@ -29,6 +30,14 @@ std::map<uint32, std::size_t> make_channel_map(const std::vector<uint32>& channe
 //==============================================================================
 
 ModuleBase::ModuleBase() { }
+
+bool ModuleBase::on_enable() {
+    return true;
+}
+
+bool ModuleBase::on_disable() {
+    return true;
+}
 
 bool ModuleBase::update() {
     bool success = true;
@@ -55,10 +64,6 @@ std::size_t ModuleBase::get_channel_count() const {
     return channel_numbers_.size();
 }
 
-std::size_t ModuleBase::index(uint32 channel_number) const {
-    return channel_map_.at(channel_number);
-}
-
 bool ModuleBase::validate_channel_number(uint32 channel_number) const {
     if (channel_map_.count(channel_number) > 0)
         return true;
@@ -77,6 +82,10 @@ bool ModuleBase::validate_channel_count(std::size_t size) const {
 
 void ModuleBase::add_buffer(BufferBase* container) {
     containers_.push_back(container);
+}
+
+std::size_t ModuleBase::index(uint32 channel_number) const {
+    return channel_map_.at(channel_number);
 }
 
 } // namespace mel

@@ -39,10 +39,6 @@ public:
 
     ~QuanserAO();
 
-    bool enable() override;
-
-    bool disable() override;
-
     bool update() override;
 
     bool update_channel(uint32 channel_number) override;

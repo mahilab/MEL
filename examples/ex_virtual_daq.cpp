@@ -42,6 +42,8 @@ int main(int argc, char* argv[]) {
     daq.AI.sources[0] = my_ai_source;                           // from function
     daq.AI.sources[1] = [](Time t){ return random(-1.0,1.0); }; // from lambda
 
+    daq.enable();
+
     Timer timer(hertz(1000));
     while(true) {
         daq.update_input();

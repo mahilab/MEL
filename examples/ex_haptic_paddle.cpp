@@ -55,6 +55,11 @@ public:
         return position_;
     }
 
+private:
+
+    bool on_enable() override { return true; }
+    bool on_disable() override { return true; }
+
 public:
     AnalogInput::Channel ai_;  ///< voltage read from hall effect sensor
     double gain_;              ///< calibration gain   [rad/V]
@@ -90,27 +95,6 @@ public:
                         500 * DEG2RAD, 1.0));
     }
 
-    /// Overrides the default Robot::enable function with some custom logic
-    bool enable() override {
-        // load calibration
-        std::ifstream file;
-        file.open("calibration.txt");
-        if (file.is_open()) {
-            // read in previous calibration
-            double gain, offset;
-            file >> gain >> offset;
-            position_sensor_.offset_ = offset * DEG2RAD;
-            position_sensor_.gain_ = gain * DEG2RAD;
-            LOG(Info) << "Imported Haptic Paddle hall effect sensor calibration";
-            file.close();
-        }
-        else {
-            file.close();
-            calibrate();
-        }
-        return Robot::enable();
-    }
-
     /// Interactively calibrates the hall effect sensor in the console
     void calibrate() {
         std::ofstream file;
@@ -134,6 +118,29 @@ public:
         file << mb[1] << "\n";
         LOG(Info) << "Calibrated Haptic Paddle hall effect sensor";
         file.close();
+    }
+
+private:
+
+    /// Overrides the default Robot::enable function with some custom logic
+    bool on_enable() override {
+        // load calibration
+        std::ifstream file;
+        file.open("calibration.txt");
+        if (file.is_open()) {
+            // read in previous calibration
+            double gain, offset;
+            file >> gain >> offset;
+            position_sensor_.offset_ = offset * DEG2RAD;
+            position_sensor_.gain_ = gain * DEG2RAD;
+            LOG(Info) << "Imported Haptic Paddle hall effect sensor calibration";
+            file.close();
+        }
+        else {
+            file.close();
+            calibrate();
+        }
+        return Robot::enable();
     }
 
 private:

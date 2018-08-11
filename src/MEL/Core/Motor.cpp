@@ -15,16 +15,16 @@ Motor::Motor(const std::string& name,
     current_limiter_(current_limiter)
 { }
 
-bool Motor::enable() {
+bool Motor::on_enable() {
     if (amplifier_.enable())
-        return Device::enable();
+        return true;
     else
         return false;
 }
 
-bool Motor::disable() {
+bool Motor::on_disable() {
     if (amplifier_.disable())
-        return Device::disable();
+        return true;
     else
         return false;
 }

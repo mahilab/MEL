@@ -109,7 +109,6 @@ VirtualDaq::VirtualDaq(const std::string& name)
     DI.set_channel_numbers({0,1,2,3,4,5,6,7,8});
     DO.set_channel_numbers({0,1,2,3,4,5,6,7,8});
     encoder.set_channel_numbers({0,1,2,3,4,5,6,7,8});
-    encoder.compute_conversions();
 }
 
 VirtualDaq::~VirtualDaq() {
@@ -119,12 +118,22 @@ VirtualDaq::~VirtualDaq() {
         this->close();
 }
 
-bool VirtualDaq::enable() {
-    return Device::enable();
+bool VirtualDaq::on_enable() {
+    AI.enable();
+    AO.enable();
+    DI.enable();
+    DO.enable();
+    encoder.enable();
+    return true;
 }
 
-bool VirtualDaq::disable() {
-    return Device::disable();
+bool VirtualDaq::on_disable() {
+    AI.disable();
+    AO.disable();
+    DI.disable();
+    DO.disable();
+    encoder.disable();
+    return true;
 }
 
 bool VirtualDaq::update_input() {

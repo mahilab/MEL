@@ -16,7 +16,6 @@ All:
 Communication:
   ✔ Write Linux implementation of SharedMemory @done (18-05-13 18:54)
   ✔ Add methods for vector to Packet (just use underlying in loop?) @done (18-05-13 18:54)
-  ☐ Make MelNet not use packets (for string at least)
   ☐ BTP? http://ieeexplore.ieee.org/document/5089429/
   ☐ make MelShare use [] operators and templetize to one type
   ☐ melshare uses packets but sting<->packet don't work
@@ -27,6 +26,7 @@ Core:
 
 Daq:
   ☐ move q8/q2 id to quanser daq...-1 for auto
+  ☐ DIO enable/disable
 
 Q8 USB:
 

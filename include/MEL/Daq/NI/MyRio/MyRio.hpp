@@ -49,16 +49,6 @@ public:
     /// Default Destructor
     ~MyRio();
 
-    /// Enables the myRIO by sequentially calling the enable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do.
-    bool enable() override;
-
-    /// Disables the myRIO by sequentially calling the disable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do.
-    bool disable() override;
-
     /// Updates all Input Modules simultaneously. It is generally more
     /// efficient to call this once per loop, than to call the update()
     /// function on each module separately.
@@ -74,19 +64,32 @@ private:
     bool on_open() override;
     bool on_close() override;
 
+    /// Enables the myRIO by sequentially calling the enable() function
+    /// on all I/O modules. Consult the documentation for each module for
+    /// details on what the enable functions do.
+    bool on_enable() override;
+
+    /// Disables the myRIO by sequentially calling the disable() function
+    /// on all I/O modules. Consult the documentation for each module for
+    /// details on what the enable functions do.
+    bool on_disable() override;
+
     /// Represents a myRIO connector
-    struct Connector : public Device {
+    class Connector : public Device {
+    public:
         Connector(MyRio& myrio, MyRioConnectorType type,
             const std::vector<uint32>& ai_channels,
             const std::vector<uint32>& ao_channels,
             const std::vector<uint32>& dio_channels);
-        bool enable() override;
-        bool disable() override;
         bool update_input();
         bool update_output();
+    public:
         MyRioAI AI;
         MyRioAO AO;
         MyRioDIO DIO;
+    private:
+        bool on_enable() override;
+        bool on_disable() override;
     };
 
 public:

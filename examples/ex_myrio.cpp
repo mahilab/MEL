@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 
     std::vector<double> data(2);
 
-    Timer timer(hertz(1000), Timer::Hybrid);
+    Timer timer(hertz(1000));
     Time t;
     while ((t = timer.get_elapsed_time()) < seconds(60)) {
         myrio.update_input();

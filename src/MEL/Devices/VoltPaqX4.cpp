@@ -19,16 +19,22 @@ VoltPaqX4::VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,
     }
 }
 
-bool VoltPaqX4::enable() {
-    for (std::size_t i = 0; i < amplifiers.size(); ++i)
-        amplifiers[i].enable();
-    return Device::enable();
+bool VoltPaqX4::on_enable() {
+    bool success = true;
+    for (std::size_t i = 0; i < amplifiers.size(); ++i) {
+        if(!amplifiers[i].enable())
+            success = false;
+    }
+    return success;
 }
 
-bool VoltPaqX4::disable() {
-    for (std::size_t i = 0; i < amplifiers.size(); ++i)
-        amplifiers[i].disable();
-    return Device::enable();
+bool VoltPaqX4::on_disable() {
+    bool success = true;
+    for (std::size_t i = 0; i < amplifiers.size(); ++i) {
+        if(!amplifiers[i].disable())
+            success = false;
+    }
+    return success;
 }
 
 } // namespace mel

@@ -9,37 +9,48 @@ namespace mel {
 
 Device::Device() :
     enabled_(false),
-    name_("UNNAMED_DEVICE")
+    name_("UNNAMED")
 { }
 
 Device::Device(const std::string& name) :
     enabled_(false),
     name_(name)
-{
-}
+{ }
 
-Device::~Device() {
-
-}
+Device::~Device() { }
 
 bool Device::enable() {
     if (enabled_) {
-        LOG(Warning) << "Ignored attempt to enable " << name_ << " since it is already enabled";
+        LOG(Warning) << get_name() << " already enabled";
         return true;
     }
-    LOG(Verbose) << "Enabled " << name_;
-    enabled_ = true;
-    return true;
+    if (on_enable()) {
+        LOG(Verbose) << "Enabled " << get_name();
+        enabled_ = true;
+        return true;
+    }
+    else {
+        LOG(Error) << "Failed to enabled " << get_name();
+        enabled_ = false;
+        return false;
+    }
 }
 
 bool Device::disable() {
     if (!enabled_) {
-        LOG(Warning) << "Ignored attempt to disable " << name_ << " since it is already disabled";
+        LOG(Warning) << get_name() << " already disabled";
         return true;
     }
-    LOG(Verbose) << "Disabled " << name_;
-    enabled_ = false;
-    return true;
+    if (on_disable()) {
+        LOG(Verbose) << "Disabled " << get_name();
+        enabled_ = false;
+        return true;
+    }
+    else {
+        LOG(Error) << "Failed to disable " << get_name();
+        enabled_ = true;
+        return false;
+    }
 }
 
 bool Device::is_enabled() const {

@@ -116,6 +116,20 @@ public:
     }
 
 protected:
+
+    /// Sets values to enable values and updates
+    virtual bool on_enable() {
+        this->set_values(enable_values_.get());
+        return this->update();
+    }
+
+    /// Sets values to disable values and updates
+    virtual bool on_disable() {
+        this->set_values(disable_values_.get());
+        return this->update();
+    }
+
+protected:
     Buffer<T> enable_values_;   ///< The initial values set when the Module is enabled
     Buffer<T> disable_values_;  ///< The final values set when the Module is disabled
     Buffer<T> expire_values_;   ///< The expire values when the Module expires

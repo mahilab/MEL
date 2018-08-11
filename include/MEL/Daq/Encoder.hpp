@@ -105,6 +105,11 @@ public:
     void compute_conversions();
 
 protected:
+
+    /// Override to call compute_conversions
+    virtual bool on_enable() override;
+
+protected:
     bool has_velocity_;                       ///< True if Encoder module has velocity estimation
 
     Buffer<QuadFactor> factors_;      ///< The encoder quadrature factors
@@ -127,12 +132,6 @@ public:
         /// Inherit assignment operator for setting
         using ChannelBase<int32>::operator=;
 
-        /// Enables the encoder
-        bool enable() override;
-
-        /// Disables the encoder
-        bool disable() override;
-
         /// Gets the encoder position
         double get_position() override;
 
@@ -153,6 +152,15 @@ public:
 
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);
+
+    protected:
+
+        /// Enables the encoder
+        bool on_enable() override;
+
+        /// Disables the encoder
+        bool on_disable() override;
+
     };
 };
 

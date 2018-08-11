@@ -1,3 +1,8 @@
+#ifdef _MSC_VER
+#pragma warning( disable : 4100 )
+#pragma warning( disable : 4297 )
+#endif
+
 #include <MEL/Devices/Myo/MyoBand.hpp>
 #include <array>
 #include <iostream>
@@ -88,15 +93,15 @@ namespace mel {
         delete impl_;
     }
 
-    bool MyoBand::enable() {
+    bool MyoBand::on_enable() {
         if (impl_->start())
-            return Device::enable();
+            return true;
         else
             return false;
     }
 
-    bool MyoBand::disable() {
-        return Device::disable();
+    bool MyoBand::on_disable() {
+        return true;
     }
 
     bool MyoBand::update() {

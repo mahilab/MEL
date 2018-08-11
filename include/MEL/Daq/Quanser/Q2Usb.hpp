@@ -44,18 +44,7 @@ public:
     /// then close() if the Q2Usb is open.
     ~Q2Usb();
 
-    /// Enables the Q2Usb by sequentially calling the enable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do. This function also stops
-    /// and clears the watchdog if it is running or expired, and will open
-    /// the Q2Usb if it is not currently open.
-    bool enable() override;
 
-    /// Disables the Q2Usb by sequentially calling the disable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do. This function also stops
-    /// and clears the watchdog if it is running or expired.
-    bool disable() override;
 
     /// Updates all Input Modules simultaneously. It is generally more
     /// efficient to call this once per loop, than to call the update()
@@ -92,6 +81,19 @@ private:
 
     bool on_open() override;
     bool on_close() override;
+
+    /// Enables the Q2Usb by sequentially calling the enable() function
+    /// on all I/O modules. Consult the documentation for each module for
+    /// details on what the enable functions do. This function also stops
+    /// and clears the watchdog if it is running or expired, and will open
+    /// the Q2Usb if it is not currently open.
+    bool on_enable() override;
+
+    /// Disables the Q2Usb by sequentially calling the disable() function
+    /// on all I/O modules. Consult the documentation for each module for
+    /// details on what the enable functions do. This function also stops
+    /// and clears the watchdog if it is running or expired.
+    bool on_disable() override;
 
     /// Returns the next automatic ID# to use
     static uint32 next_id();

@@ -1,10 +1,10 @@
-#include <MEL/Core/VirtualVelocitySensor.hpp> 
+#include <MEL/Core/VirtualVelocitySensor.hpp>
 #include <MEL/Utility/Console.hpp>
 
 namespace mel {
 
-VirtualVelocitySensor::VirtualVelocitySensor(const std::string& name, 
-    PositionSensor& position_sensor, 
+VirtualVelocitySensor::VirtualVelocitySensor(const std::string& name,
+    PositionSensor& position_sensor,
     const Differentiator& diff) :
     VelocitySensor(name),
     position_sensor_(position_sensor),
@@ -12,16 +12,16 @@ VirtualVelocitySensor::VirtualVelocitySensor(const std::string& name,
 {
 }
 
-bool VirtualVelocitySensor::enable() {
+bool VirtualVelocitySensor::on_enable() {
     diff_.reset();
     clock_.restart();
-    return VelocitySensor::enable();
+    return true;
 }
 
-bool VirtualVelocitySensor::disable() {
+bool VirtualVelocitySensor::on_disable() {
     diff_.reset();
     clock_.restart();
-    return VelocitySensor::disable();
+    return true;
 }
 
 void VirtualVelocitySensor::update() {

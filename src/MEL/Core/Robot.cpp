@@ -7,18 +7,22 @@ Robot::Robot(const std::string& name) :
     Device(name)
 {}
 
-bool Robot::enable() {
+bool Robot::on_enable() {
+    bool success = true;
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-        it->enable();
+        if (!it->enable())
+            success = false;
     }
-    return Device::enable();
+    return success;
 }
 
-bool Robot::disable() {
+bool Robot::on_disable() {
+    bool success = true;
     for (auto it = joints_.begin(); it != joints_.end(); ++it) {
-        it->disable();
+        if(!it->disable())
+            success = false;
     }
-    return Device::disable();
+    return success;
 }
 
 void Robot::add_joint(const Joint& joint) {

@@ -39,10 +39,6 @@ public:
 
     ~QuanserDIO();
 
-    bool enable() override;
-
-    bool disable() override;
-
     bool update() override;
 
     bool update_channel(uint32 channel_number) override;
@@ -54,6 +50,12 @@ public:
     bool set_expire_values(const std::vector<Logic>& expire_values) override;
 
     bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+
+private:
+
+    bool on_enable() override;
+
+    bool on_disable() override;
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq

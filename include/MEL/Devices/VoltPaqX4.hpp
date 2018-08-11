@@ -38,13 +38,15 @@ public:
               const std::vector<DigitalInput::Channel>& fault_channels,
               const std::vector<AnalogInput::Channel>& sense_channels);
 
+    std::vector<Amplifier> amplifiers;  ///< the individual amplifiers
+
+private:
     /// Enables all VoltPAQ-X4 amplifiers
-    bool enable() override;
+    bool on_enable() override;
 
     /// Disables all VoltPAQ-X4 amplifiers
-    bool disable() override;
+    bool on_disable() override;
 
-    std::vector<Amplifier> amplifiers;  ///< the individual amplifiers
 };
 
 }  // namespace mel

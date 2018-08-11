@@ -20,14 +20,6 @@ namespace mel {
 
     }
 
-    bool QuanserDI::enable() {
-        return Device::enable();
-    }
-
-    bool QuanserDI::disable() {
-        return Device::disable();
-    }
-
     bool QuanserDI::update() {
         t_error result;
         result = hil_read_digital(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &quanser_values_.get()[0]);

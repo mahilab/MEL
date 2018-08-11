@@ -31,38 +31,55 @@ namespace mel {
 /// Abstract base class from which all physical devices should derive.
 class MEL_API Device {
 public:
-    /// Default constructor
+    /// Default constructor (unnamed device)
     Device();
 
-    /// Prefered constructor. Every device in MEL should have a unique name.
+    /// Named device donstructor
     Device(const std::string& name);
 
     /// Default destructor.
     virtual ~Device();
 
-    /// The function should enable the device, performing start up and
-    /// initialization procedures. It should return true if successful,
-    /// false otherwise, and set #enabled_ accordingly
-    virtual bool enable();
+    /// Enables the Device
+    ///
+    /// \return TRUE if successful, FALSE otherwise
+    bool enable();
 
-    /// The function should disable the device, performing necessary shutdown
-    /// procedures. It should  return true if successful, false otherwise,
-    /// and set #enabled_ accordingly
-    virtual bool disable();
+    /// Disables the Device
+    ///
+    /// \return TRUE if successful, FALSE otherwise
+    bool disable();
 
-public:
-    /// Returns true if the device is enabled, false if disabled.
+    /// Returns whether the Device is enabled or disabled
+    ///
+    /// \return TRUE if enabled, FALSE if disabled
     bool is_enabled() const;
 
-    /// Returns the Device's name
+    /// Gets the Device's name
+    ///
+    /// \return string name of device
     const std::string& get_name() const;
-    
-    /// Sets the Device's string name
+
+    /// Sets the Device's name
+    ///
+    /// \param name desired string name of the device
     void set_name(const std::string& name);
 
+protected:
+
+    /// Implement this function with code that should be called when enabled
+    ///
+    /// \return TRUE if successful, FALSE otherwise
+    virtual bool on_enable() = 0;
+
+    /// Implement this function with code that should be called when disabled
+    ///
+    /// \return TRUE if successful, FALSE otherwise
+    virtual bool on_disable() = 0;
+
 private:
-    bool enabled_;           ///< The Device enabled status
-    std::string name_;       ///< The Device short name
+    bool enabled_;      ///< The Device enabled status
+    std::string name_;  ///< The Device name
 };
 
 }  // namespace mel

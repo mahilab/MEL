@@ -23,6 +23,11 @@ Encoder::~Encoder() {
 
 }
 
+bool Encoder::on_enable() {
+    compute_conversions();
+    return true;
+}
+
 bool Encoder::reset_counts(const std::vector<int32>& counts) {
     values_.set(counts);
     return true;
@@ -174,12 +179,12 @@ Encoder::Channel::Channel(Encoder* module, uint32 channel_number) :
     VelocitySensor(module->get_name() + "[" + std::to_string(channel_number) + "]")
 { }
 
-bool Encoder::Channel::enable() {
-    return Device::enable();
+bool Encoder::Channel::on_enable() {
+    return true;
 }
 
-bool Encoder::Channel::disable() {
-    return Device::disable();
+bool Encoder::Channel::on_disable() {
+    return true;
 }
 
 double Encoder::Channel::get_position() {

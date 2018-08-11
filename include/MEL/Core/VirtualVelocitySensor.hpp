@@ -19,11 +19,11 @@
 #define MEL_VIRTUALVELOCITYSENSOR_HPP
 
 #include <MEL/Config.hpp>
+#include <MEL/Core/Clock.hpp>
 #include <MEL/Core/PositionSensor.hpp>
 #include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
-#include <MEL/Core/Clock.hpp>
 
 namespace mel {
 
@@ -39,11 +39,7 @@ public:
                           const Differentiator& diff = Differentiator(
                               Differentiator::CentralDifference));
 
-    /// Enables the VirtualVelocitySensor
-    bool enable() override;
 
-    /// Disables the VirtualVelocitySensor
-    bool disable() override;
 
     /// Updates the velocity value of the VirtualVelocitySensor by updating the
     /// differentiator
@@ -51,6 +47,14 @@ public:
 
     /// Returns the differentiated velocity
     double get_velocity() override;
+
+protected:
+
+  /// Enables the VirtualVelocitySensor
+  bool on_enable() override;
+
+  /// Disables the VirtualVelocitySensor
+  bool on_disable() override;
 
 private:
     PositionSensor& position_sensor_;  ///< the position sensor from which

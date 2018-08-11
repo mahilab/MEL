@@ -81,48 +81,48 @@ bool Q2Usb::on_close() {
     return QuanserDaq::on_close();
 }
 
-bool Q2Usb::enable() {
+bool Q2Usb::on_enable() {
     if (!is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+        LOG(Error) << "Unable to enable Q2-USB " << get_name() << " because it is not open";
         return false;
     }
+    bool success = true;
     // enable each module
     if (!AI.enable())
-        return false;
+        success = false;
     if (!AO.enable())
-        return false;
+        success = false;
     if (!DIO.enable())
-        return false;
+        success = false;
     if (!encoder.enable())
-        return false;
+        success = false;
     // allow changes to take effect
     sleep(milliseconds(10));
-    return Device::enable();
+    return success;
 }
 
-bool Q2Usb::disable() {
+bool Q2Usb::on_disable() {
     if (!is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+        LOG(Error) << "Unable to disable Q2-USB " << get_name() << " because it is not open";
         return false;
     }
+    bool success = true;
     // disable each module
     if (!AI.disable())
-        return false;
+        success = false;
     if (!AO.disable())
-        return false;
+        success = false;
     if (!DIO.disable())
-        return false;
+        success = false;
     if (!encoder.disable())
-        return false;
+        success = false;
     // stop watchdog (precautionary, ok if fails)
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
     // allow changes to take effect
     sleep(milliseconds(10));
-    return Device::disable();
+    return success;
 }
 
 bool Q2Usb::update_input() {

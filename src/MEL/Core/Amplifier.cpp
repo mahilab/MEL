@@ -29,24 +29,24 @@ Amplifier::Amplifier(const std::string& name,
       current_command_(0.0),
       current_limiter_(current_limiter) {}
 
-bool Amplifier::enable() {
+bool Amplifier::on_enable() {
   current_limiter_.reset();
   command_channel_.set_value(0.0);
   enable_channel_.set_value(enable_level_);
   if (enable_channel_.update())
-    return Device::enable();
+    return true;
   else
     return false;
 }
 
-bool Amplifier::disable() {
+bool Amplifier::on_disable() {
   command_channel_.set_value(0.0);
   if (enable_level_ == High)
     enable_channel_.set_value(Low);
   else if (enable_level_ == Low)
     enable_channel_.set_value(High);
   if (enable_channel_.update())
-    return Device::disable();
+    return true;
   else
     return false;
 }

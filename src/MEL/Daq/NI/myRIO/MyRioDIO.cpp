@@ -48,14 +48,12 @@ MyRioDIO::MyRioDIO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32
     set_channel_numbers(channel_numbers);
 }
 
-bool MyRioDIO::enable() {
-    if (is_enabled())
-        return Device::enable();
+bool MyRioDIO::on_enable() {
     set_values(enable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " enable values to "
                      << enable_values_;
-        return Device::enable();
+        return true;
     } else {
         LOG(Error) << "Failed to set " << get_name() << " enable values to "
                    << enable_values_;
@@ -63,14 +61,12 @@ bool MyRioDIO::enable() {
     }
 }
 
-bool MyRioDIO::disable() {
-    if (!is_enabled())
-        return Device::disable();
+bool MyRioDIO::on_disable() {
     set_values(disable_values_.get());
     if (update()) {
         LOG(Verbose) << "Set " << get_name() << " disable values to "
                      << disable_values_;
-        return Device::disable();
+        return true;
     } else {
         LOG(Error) << "Failed to set " << get_name() << " disable values to "
                    << disable_values_;

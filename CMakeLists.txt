@@ -32,7 +32,7 @@ cmake_minimum_required(VERSION 3.7)
 #===============================================================================
 
 # hardware options
-option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  OFF) # e.g. Q8 USB, Q2 USB
+option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  ON ) # e.g. Q8 USB, Q2 USB
 option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
 option(NI_X64      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
 option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO

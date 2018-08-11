@@ -19,13 +19,11 @@ namespace mel {
 
     }
 
-    bool QuanserDIO::enable() {
-        if (is_enabled())
-            return Device::enable();
+    bool QuanserDIO::on_enable() {
         set_values(enable_values_.get());
         if (update()) {
             LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
-            return Device::enable();
+            return true;
         }
         else {
             LOG(Error) << "Failed to set " << get_name() << " enable values to " << enable_values_;
@@ -33,13 +31,11 @@ namespace mel {
         }
     }
 
-    bool QuanserDIO::disable() {
-        if (!is_enabled())
-            return Device::disable();
+    bool QuanserDIO::on_disable() {
         set_values(disable_values_.get());
         if (update()) {
             LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
-            return Device::disable();
+            return true;
         }
         else {
             LOG(Error) << "Failed to set " << get_name() << " disable values to " << disable_values_;

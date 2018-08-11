@@ -19,14 +19,6 @@ QuanserAI::~QuanserAI() {
 
 }
 
-bool QuanserAI::enable() {
-    return Device::enable();
-}
-
-bool QuanserAI::disable() {
-    return Device::disable();
-}
-
 bool QuanserAI::update() {
     t_error result;
     result = hil_read_analog(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);

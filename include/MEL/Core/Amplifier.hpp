@@ -35,16 +35,16 @@ class MEL_API Amplifier : public Device {
 public:
     /// Constructor
     ///
-    /// @param name the name of the amplifier
-    /// @param enable_level TTL level required to enable device
-    /// @param enable_channel the DO channel which enables the Amplifier
-    /// @param command_gain the command gain in [A/V]
-    /// @param command_channel the AO channel which commands current
-    /// @param current_limiter Limiter protected Amplifier
-    /// @param fault_level TTL level expected when the Amplifier faults
-    /// @param fault_channel the DI channel which reads in a fault
-    /// @param sense_gain the sense gain in [V/V]
-    /// @param sense_channel the AI channel which reads in sensed current
+    /// \param name the name of the amplifier
+    /// \param enable_level TTL level required to enable device
+    /// \param enable_channel the DO channel which enables the Amplifier
+    /// \param command_gain the command gain in [A/V]
+    /// \param command_channel the AO channel which commands current
+    /// \param current_limiter Limiter protected Amplifier
+    /// \param fault_level TTL level expected when the Amplifier faults
+    /// \param fault_channel the DI channel which reads in a fault
+    /// \param sense_gain the sense gain in [V/V]
+    /// \param sense_channel the AI channel which reads in sensed current
     Amplifier(const std::string& name,
               Logic enable_level,
               DigitalOutput::Channel enable_channel,
@@ -56,43 +56,45 @@ public:
               double sense_gain                   = 1.0,
               AnalogInput::Channel sense_channel  = AnalogInput::Channel());
 
-    /// Enables the Amplifier using the DO enable channel
-    ///
-    /// @return true if successful, false otherwise
-    bool enable() override;
-
-    /// Disables the Amplifier using the DO enable channel
-    ///
-    /// @return true if successful, false otherwise
-    bool disable() override;
-
     /// Sets the desired current to be produced by the Amplifier
     ///
-    /// @param current the current to be set [A]
+    /// \param current the current to be set [A]
     void set_current(double current);
 
     /// Returns the last current value commanded
     ///
-    /// @return the last current value commanded [A]
+    /// \return the last current value commanded [A]
     double get_current_command() const;
 
     /// Returns the limited version of the last current value commanded
     ///
-    /// @return the last limited version of the last current value commanded [A]
+    /// \return the last limited version of the last current value commanded [A]
     double get_current_limited() const;
 
     /// Gets the actual current measured by the amplifier
     ///
-    /// @return the actual current measured by the amplifier [A]
+    /// \return the actual current measured by the amplifier [A]
     double get_current_sense() const;
 
     /// Returns true if the Amplifier is in a faulted state
     ///
-    /// @param force_update if true, fault_channel will be explicitly updated
-    /// @return true if the Amplifier is faulted, false otherwise
+    /// \param force_update if true, fault_channel will be explicitly updated
+    /// \return true if the Amplifier is faulted, false otherwise
     bool is_faulted(bool force_update = false);
 
-private:
+protected:
+
+    /// Enables the Amplifier using the DO enable channel
+    ///
+    /// \return true if successful, false otherwise
+    bool on_enable() override;
+
+    /// Disables the Amplifier using the DO enable channel
+    ///
+    /// \return true if successful, false otherwise
+    bool on_disable() override;
+
+protected:
     Logic enable_level_;  ///< TTL enable level
     Logic fault_level_;   ///< TTL fault level
 

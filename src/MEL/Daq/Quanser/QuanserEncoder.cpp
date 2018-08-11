@@ -21,14 +21,6 @@ QuanserEncoder::~QuanserEncoder() {
 
 }
 
-bool QuanserEncoder::enable() {
-    return Device::enable();
-}
-
-bool QuanserEncoder::disable() {
-    return Device::disable();
-}
-
 bool QuanserEncoder::update() {
     t_error result;
     result = hil_read_encoder(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);

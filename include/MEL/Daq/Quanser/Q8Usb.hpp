@@ -45,15 +45,6 @@ public:
     /// then close() if the Q8Usb is open.
     ~Q8Usb();
 
-    /// Enables the Q8Usb by sequentially calling the enable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do.
-    bool enable() override;
-
-    /// Disables the Q8Usb by sequentially calling the disable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do.
-    bool disable() override;
 
     /// Updates all Input Modules simultaneously. It is generally more
     /// efficient to call this once per loop, than to call the update()
@@ -100,6 +91,17 @@ private:
 
     bool on_open() override;
     bool on_close() override;
+
+
+    /// Enables the Q8Usb by sequentially calling the enable() function
+    /// on all I/O modules. Consult the documentation for each module for
+    /// details on what the enable functions do.
+    bool on_enable() override;
+
+    /// Disables the Q8Usb by sequentially calling the disable() function
+    /// on all I/O modules. Consult the documentation for each module for
+    /// details on what the enable functions do.
+    bool on_disable() override;
 
     /// Quarc can sometimes fail to properly intialize a Q8 USB even if it says
     /// otherwise. In these cases, velocity readings are wildly incorrect and
