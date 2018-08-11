@@ -334,7 +334,7 @@ private:
 
 #endif  // MEL_HTTP_HPP
 
-/// \class sf::Http
+/// \class mel::Http
 /// \ingroup network
 ///
 /// mel::Http is a very simple HTTP client that allows you
