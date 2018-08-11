@@ -20,8 +20,8 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
-#include <MEL/Core/PositionSensor.hpp>
-#include <MEL/Core/VelocitySensor.hpp>
+#include <MEL/Mechatronics/PositionSensor.hpp>
+#include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
 

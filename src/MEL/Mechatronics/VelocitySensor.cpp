@@ -1,4 +1,4 @@
-#include <MEL/Core/VelocitySensor.hpp>
+#include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <iostream>
 #include <string>
 

@@ -1,4 +1,4 @@
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <cstdlib>
 #include <memory>
 #ifdef __GNUG__

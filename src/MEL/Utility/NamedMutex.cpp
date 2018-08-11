@@ -1,5 +1,5 @@
 #include <MEL/Logging/Log.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/NamedMutex.hpp>
 
 #ifdef _WIN32

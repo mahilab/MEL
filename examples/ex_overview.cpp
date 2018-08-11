@@ -16,6 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
+#include <MEL/Mechatronics.hpp>
 #include <MEL/Core.hpp>
 #include <MEL/Math.hpp>
 

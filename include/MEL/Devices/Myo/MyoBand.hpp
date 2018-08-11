@@ -2,7 +2,7 @@
 #define MEL_MYO_HPP
 
 #include <MEL/Daq/Input.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 
 namespace mel {
 

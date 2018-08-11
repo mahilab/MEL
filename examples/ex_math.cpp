@@ -19,7 +19,7 @@
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Math/Integrator.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Logging/DataLogger.hpp>
 

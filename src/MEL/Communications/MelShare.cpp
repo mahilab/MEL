@@ -1,5 +1,5 @@
 #include <MEL/Communications/MelShare.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <MEL/Communications/Packet.hpp>
 
 namespace mel {

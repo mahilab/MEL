@@ -19,7 +19,7 @@
 #define MEL_QUANSER_DO_HPP
 
 #include <MEL/Daq/Output.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 
 namespace mel {
 

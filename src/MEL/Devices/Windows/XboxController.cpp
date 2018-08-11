@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include <Xinput.h>
-#include <MEL/Utility/Windows/XboxController.hpp>
+#include <MEL/Devices/Windows/XboxController.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <array>
 

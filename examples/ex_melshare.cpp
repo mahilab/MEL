@@ -17,7 +17,7 @@
 //
 #include <MEL/Communications/MelShare.hpp>
 #include <MEL/Logging/Log.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <vector>
 

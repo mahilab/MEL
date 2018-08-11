@@ -19,7 +19,7 @@
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Waveform.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Communications/MelNet.hpp>
 #include <string>
 #include <MEL/Logging/Log.hpp>

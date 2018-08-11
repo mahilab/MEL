@@ -1,5 +1,5 @@
 #include <MEL/Math/Random.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <cassert>
 #include <ctime>
 #include <random>

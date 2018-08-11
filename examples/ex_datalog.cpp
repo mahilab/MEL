@@ -19,7 +19,7 @@
 #include <MEL/Logging/DataLogger.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/System.hpp>
 
 using namespace mel;

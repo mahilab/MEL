@@ -1,4 +1,4 @@
-#include <MEL/Core/ForceSensor.hpp>
+#include <MEL/Mechatronics/ForceSensor.hpp>
 
 namespace mel {
 

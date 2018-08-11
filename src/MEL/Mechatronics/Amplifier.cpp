@@ -1,4 +1,4 @@
-#include <MEL/Core/Amplifier.hpp>
+#include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Logging/Log.hpp>
 
 namespace mel {

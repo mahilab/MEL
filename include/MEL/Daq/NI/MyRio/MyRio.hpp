@@ -19,7 +19,7 @@
 #define MEL_MYRIO_HPP
 
 #include <MEL/Daq/DaqBase.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 
 #include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioAO.hpp>

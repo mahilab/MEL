@@ -1,5 +1,5 @@
-#include <MEL/Core/Motor.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Mechatronics/Motor.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Core/Clock.hpp>
 

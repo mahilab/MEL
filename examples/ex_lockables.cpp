@@ -15,7 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/Mutex.hpp>
 #include <MEL/Utility/Spinlock.hpp>
 #include <MEL/Utility/System.hpp>

@@ -15,8 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#include <MEL/Utility/Windows/Keyboard.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Devices/Windows/Keyboard.hpp>
+#include <MEL/Core/Console.hpp>
 
 using namespace mel;
 

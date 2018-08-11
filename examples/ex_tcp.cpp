@@ -18,7 +18,7 @@
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Communications/TcpListener.hpp>
 #include <MEL/Communications/Packet.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>

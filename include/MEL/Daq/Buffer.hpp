@@ -19,7 +19,7 @@
 #define MEL_VALUE_CONTAINER_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <vector>
 #include <iostream>
 #include <map>
@@ -43,7 +43,7 @@ protected:
     friend class ModuleBase;
 
     /// Called by ModuleBase when channel numbers change
-    virtual void change_channel_numbers(const std::map<uint32, std::size_t>& old_map, 
+    virtual void change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
                                         const std::map<uint32, std::size_t>& new_map) = 0;
 
     /// Returns vector index associated with channel number
@@ -108,7 +108,7 @@ private:
 
     /// Called by ModuleBase when channel numbers change
     void change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
-                                const std::map<uint32, std::size_t>& new_map) override 
+                                const std::map<uint32, std::size_t>& new_map) override
     {
         std::vector<T> new_values(new_map.size(), default_value_);
         for (auto it = old_map.begin(); it != old_map.end(); ++it) {

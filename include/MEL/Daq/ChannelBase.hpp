@@ -18,7 +18,7 @@
 #ifndef MEL_CHANNEL_HPP
 #define MEL_CHANNEL_HPP
 
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <MEL/Daq/Module.hpp>
 
 namespace mel {

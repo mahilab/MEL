@@ -19,7 +19,7 @@
 #define MEL_SHAREDMEMORY_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 #include <string>
 #include <vector>
 

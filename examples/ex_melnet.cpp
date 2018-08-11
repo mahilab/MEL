@@ -18,7 +18,7 @@
 #include <MEL/Communications/MelNet.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/System.hpp>
 #include <string>
 #include <vector>

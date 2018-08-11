@@ -23,7 +23,7 @@
 #define MEL_TIME_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <iostream>
 
 namespace mel {

@@ -1,5 +1,5 @@
 #include <MEL/Daq/DaqBase.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Core/Time.hpp>
 #include <MEL/Logging/Log.hpp>
 

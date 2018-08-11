@@ -20,8 +20,8 @@
 #define MEL_MOTOR_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Core/Actuator.hpp>
-#include <MEL/Core/Amplifier.hpp>
+#include <MEL/Mechatronics/Actuator.hpp>
+#include <MEL/Mechatronics/Amplifier.hpp>
 
 namespace mel {
 

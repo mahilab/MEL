@@ -1,4 +1,4 @@
-#include <MEL/Core/PdController.hpp>
+#include <MEL/Mechatronics/PdController.hpp>
 #include <MEL/Math/Functions.hpp>
 
 namespace mel {

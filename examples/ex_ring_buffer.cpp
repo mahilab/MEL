@@ -15,7 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/RingBuffer.hpp>
 
 using namespace mel;

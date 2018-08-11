@@ -1,7 +1,7 @@
-#include <MEL/Core/Limiter.hpp>
+#include <MEL/Mechatronics/Limiter.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Math/Constants.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 
 namespace mel {
 

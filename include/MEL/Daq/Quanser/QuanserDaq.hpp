@@ -20,7 +20,7 @@
 
 #include <MEL/Daq/DaqBase.hpp>
 #include <MEL/Daq/Quanser/QuanserOptions.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 
 //==============================================================================
 // FORWARD DECLARATIONS
@@ -55,8 +55,8 @@ typedef t_card QuanserHandle;
 class MEL_API QuanserDaq : public DaqBase, NonCopyable {
 public:
     /// Default constructor
-    QuanserDaq(const std::string& card_type, 
-               uint32 id,               
+    QuanserDaq(const std::string& card_type,
+               uint32 id,
                QuanserOptions options = QuanserOptions());
 
 public:

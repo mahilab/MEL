@@ -1,5 +1,5 @@
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <numeric>

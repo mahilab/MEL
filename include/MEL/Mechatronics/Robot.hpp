@@ -20,11 +20,11 @@
 #define MEL_ROBOT_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Core/Actuator.hpp>
+#include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
-#include <MEL/Core/Joint.hpp>
-#include <MEL/Core/PositionSensor.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Mechatronics/Joint.hpp>
+#include <MEL/Mechatronics/PositionSensor.hpp>
+#include <MEL/Core/Types.hpp>
 #include <vector>
 
 namespace mel {

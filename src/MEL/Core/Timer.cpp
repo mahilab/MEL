@@ -1,6 +1,6 @@
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Logging/Log.hpp>
 
 namespace mel {

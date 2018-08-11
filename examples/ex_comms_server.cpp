@@ -18,7 +18,7 @@
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Communications/MelShare.hpp>
 #include <MEL/Communications/MelNet.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Math.hpp>

@@ -20,7 +20,7 @@
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Filter.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/System.hpp>
 
 using namespace mel;

@@ -16,9 +16,9 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #include <MEL/Communications/MelShare.hpp>
-#include <MEL/Utility/Windows/Keyboard.hpp>
+#include <MEL/Devices/Windows/Keyboard.hpp>
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Core/Limiter.hpp>
+#include <MEL/Mechatronics/Limiter.hpp>
 
 using namespace mel;
 

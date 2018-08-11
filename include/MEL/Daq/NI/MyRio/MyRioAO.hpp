@@ -19,7 +19,7 @@
 #define MEL_MYRIOAO_HPP
 
 #include <MEL/Daq/Output.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 
 //==============================================================================
 // FORWARD DECLARATIONS

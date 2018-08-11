@@ -20,7 +20,7 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
-#include <MEL/Core/Limiter.hpp>
+#include <MEL/Mechatronics/Limiter.hpp>
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Daq/Output.hpp>
 

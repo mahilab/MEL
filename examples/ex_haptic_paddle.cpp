@@ -16,19 +16,19 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #include <MEL/Communications/MelShare.hpp>
-#include <MEL/Core/Motor.hpp>
-#include <MEL/Core/Robot.hpp>
-#include <MEL/Core/VirtualVelocitySensor.hpp>
+#include <MEL/Mechatronics/Motor.hpp>
+#include <MEL/Mechatronics/Robot.hpp>
+#include <MEL/Mechatronics/VirtualVelocitySensor.hpp>
 #include <MEL/Daq/Quanser/Q8Usb.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Differentiator.hpp>
 #include <MEL/Math/Filter.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Core/PdController.hpp>
+#include <MEL/Mechatronics/PdController.hpp>
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Math/Integrator.hpp>

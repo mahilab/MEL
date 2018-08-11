@@ -18,9 +18,9 @@
 #include <MEL/Devices/Myo/MyoBand.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Logging/Log.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Communications/MelShare.hpp>
-#include <MEL/Utility/Windows/Keyboard.hpp>
+#include <MEL/Devices/Windows/Keyboard.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Timer.hpp>
 

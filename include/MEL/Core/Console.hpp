@@ -21,7 +21,7 @@
 
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/StlStreams.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <atomic>
 #include <sstream>
 

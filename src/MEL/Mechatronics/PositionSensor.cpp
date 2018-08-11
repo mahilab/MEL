@@ -1,4 +1,4 @@
-#include <MEL/Core/PositionSensor.hpp>
+#include <MEL/Mechatronics/PositionSensor.hpp>
 #include <iostream>
 #include <string>
 

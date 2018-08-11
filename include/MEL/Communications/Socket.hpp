@@ -23,8 +23,8 @@
 #define MEL_SOCKET_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Core/Types.hpp>
 #include <vector>
 
 #ifdef _WIN32

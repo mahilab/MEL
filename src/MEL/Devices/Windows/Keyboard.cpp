@@ -1,4 +1,4 @@
-#include <MEL/Utility/Windows/Keyboard.hpp>
+#include <MEL/Devices/Windows/Keyboard.hpp>
 #include <MEL/Utility/System.hpp>
 #include <windows.h>
 #include <csignal>

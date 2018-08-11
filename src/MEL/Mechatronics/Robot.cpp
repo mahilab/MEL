@@ -1,5 +1,5 @@
-#include <MEL/Core/Robot.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Mechatronics/Robot.hpp>
+#include <MEL/Core/Console.hpp>
 
 namespace mel {
 

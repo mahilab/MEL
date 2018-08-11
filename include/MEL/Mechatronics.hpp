@@ -1,6 +1,6 @@
 // MIT License
 //
-// MEL - Mechatronics Engine & Library
+// MEL - Mechatronics Engine and Library
 // Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -15,17 +15,19 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CORE_HPP
-#define MEL_CORE_HPP
+#ifndef MEL_MECHATRONICS_HPP
+#define MEL_MECHATRONICS_HPP
 
-#include <MEL/Core/Clock.hpp>
-#include <MEL/Core/Console.hpp>
-#include <MEL/Core/Device.hpp>
-#include <MEL/Core/Frequency.hpp>
-#include <MEL/Core/NonCopyable.hpp>
-#include <MEL/Core/Time.hpp>
-#include <MEL/Core/Timer.hpp>
-#include <MEL/Core/Timestamp.hpp>
-#include <MEL/Core/Types.hpp>
+#include <MEL/Mechatronics/Actuator.hpp>
+#include <MEL/Mechatronics/Amplifier.hpp>
+#include <MEL/Mechatronics/ForceSensor.hpp>
+#include <MEL/Mechatronics/Joint.hpp>
+#include <MEL/Mechatronics/Limiter.hpp>
+#include <MEL/Mechatronics/Motor.hpp>
+#include <MEL/Mechatronics/PdController.hpp>
+#include <MEL/Mechatronics/PositionSensor.hpp>
+#include <MEL/Mechatronics/Robot.hpp>
+#include <MEL/Mechatronics/VelocitySensor.hpp>
+#include <MEL/Mechatronics/VirtualVelocitySensor.hpp>
 
-#endif // MEL_CORE_HPP
+#endif // MEL_MECHATRONICS_HPP

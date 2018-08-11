@@ -36,11 +36,11 @@ option(QUANSER     "Turn ON if compiling for Quanser hardware"                  
 option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
 option(NI_X64      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
 option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO
-option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                          OFF)
+option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                          ON )
 # general options
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
-option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
+option(EXAMPLES    "Turn ON to build example executable(s)"                                     ON )
 option(TESTS       "Turn ON to build test executable(s)"                                        OFF)
 option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders are compilation"   OFF)
 option(BUILD_DOC   "Turn ON to build MEL documentation"                                         OFF)
@@ -102,9 +102,14 @@ file(GLOB SRC_DEVICES
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/*.cpp"
 )
 
-file(GLOB SRC_MYO
+file(GLOB SRC_DEVICES_MYO
     "${CMAKE_SOURCE_DIR}/include/MEL/Devices/Myo/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Myo/*.cpp"
+)
+
+file(GLOB SRC_DEVICES_WINDOWS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Devices/Windows/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Windows/*.cpp"
 )
 
 file(GLOB SRC_LOGGING
@@ -127,6 +132,11 @@ file(GLOB SRC_MATH
     "${CMAKE_SOURCE_DIR}/src/MEL/Math/*.cpp"
 )
 
+file(GLOB SRC_MECHATRONICS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Mechatronics/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Mechatronics/*.cpp"
+)
+
 file(GLOB SRC_UTILITY
     "${CMAKE_SOURCE_DIR}/include/MEL/Utility/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Utility/*.cpp"
@@ -146,11 +156,13 @@ source_group("Daq\\NI" FILES ${SRC_NI_MYRIO})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Daq\\Sensoray" FILES ${SRC_SENSORAY})
 source_group("Devices" FILES ${SRC_DEVICES})
-source_group("Devices\\Myo" FILES ${SRC_MYO})
+source_group("Devices\\Myo" FILES ${SRC_DEVICES_MYO})
+source_group("Devices\\Windows" FILES ${SRC_DEVICES_WINDOWS})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
 source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
 source_group("Logging\\Writers" FILES ${SRC_LOGGING_WRITERS})
+source_group("Mechatronics" FILES ${SRC_MECHATRONICS})
 source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
 source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
@@ -165,6 +177,7 @@ set(SOURCE_FILES
     ${SRC_LOGGING_FORMATTERS}
     ${SRC_LOGGING_WRITERS}
     ${SRC_MATH}
+    ${SRC_MECHATRONICS}
     ${SRC_UTILITY}
 )
 
@@ -238,7 +251,7 @@ endif()
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
     list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi XInput)
-    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS})
+    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS} ${SRC_DEVICES_WINDOWS})
 endif()
 
 #===============================================================================
@@ -343,7 +356,7 @@ if (MYO)
         list(APPEND LINK_LIBS myo32)
     endif()
     # MEL source
-    list(APPEND SOURCE_FILES ${SRC_MYO})
+    list(APPEND SOURCE_FILES ${SRC_DEVICES_MYO})
 endif()
 
 #===============================================================================

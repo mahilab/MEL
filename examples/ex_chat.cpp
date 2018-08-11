@@ -21,7 +21,7 @@
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Logging/Log.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/Mutex.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <map>

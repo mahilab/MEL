@@ -16,7 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #include <MEL/Communications/SharedMemory.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <vector>

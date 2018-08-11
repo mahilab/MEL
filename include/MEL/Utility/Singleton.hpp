@@ -18,7 +18,7 @@
 #ifndef MEL_SINGLETON_HPP
 #define MEL_SINGLETON_HPP
 
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 #include <cassert>
 
 namespace mel {

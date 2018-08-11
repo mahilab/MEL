@@ -24,7 +24,7 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <istream>
 #include <ostream>
 #include <string>

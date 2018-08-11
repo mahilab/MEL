@@ -21,7 +21,7 @@
 #include <MEL/Config.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 #include <string>
 #include <vector>
 

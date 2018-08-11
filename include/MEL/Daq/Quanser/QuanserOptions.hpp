@@ -18,7 +18,7 @@
 #ifndef MEL_QUANSER_OPTIONS_HPP
 #define MEL_QUANSER_OPTIONS_HPP
 
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <string>
 
 namespace mel {

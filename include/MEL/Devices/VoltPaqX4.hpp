@@ -18,7 +18,7 @@
 #ifndef MEL_VOLTPAQX4_HPP
 #define MEL_VOLTPAQX4_HPP
 
-#include <MEL/Core/Amplifier.hpp>
+#include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Daq/Output.hpp>

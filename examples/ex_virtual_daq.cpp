@@ -16,7 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #include <MEL/Daq/VirtualDaq.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Communications/MelShare.hpp>
 #include <MEL/Math/Waveform.hpp>

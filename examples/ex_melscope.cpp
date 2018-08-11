@@ -19,7 +19,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Core/Clock.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/Options.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Core/Timer.hpp>

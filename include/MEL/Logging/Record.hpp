@@ -21,9 +21,9 @@
 #include <MEL/Config.hpp>
 #include <sys/stat.h>
 #include <MEL/Logging/Severity.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Utility/Timestamp.hpp>
+#include <MEL/Core/Timestamp.hpp>
 #include <sstream>
 
 namespace mel {

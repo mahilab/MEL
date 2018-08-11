@@ -20,7 +20,7 @@
 #define MEL_FUNCTIONS_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/Types.hpp>
 #include <complex>
 #include <vector>
 

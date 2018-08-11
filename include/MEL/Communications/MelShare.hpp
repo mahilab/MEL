@@ -20,8 +20,8 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Communications/SharedMemory.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
-#include <MEL/Utility/Types.hpp>
+#include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Core/Types.hpp>
 #include <MEL/Utility/NamedMutex.hpp>
 #include <string>
 #include <vector>

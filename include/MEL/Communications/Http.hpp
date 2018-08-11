@@ -26,7 +26,7 @@
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Core/Time.hpp>
-#include <MEL/Utility/NonCopyable.hpp>
+#include <MEL/Core/NonCopyable.hpp>
 #include <map>
 #include <string>
 

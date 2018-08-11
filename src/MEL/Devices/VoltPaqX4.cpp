@@ -1,5 +1,5 @@
 #include <MEL/Devices/VoltPaqX4.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Logging/Log.hpp>
 
 namespace mel {

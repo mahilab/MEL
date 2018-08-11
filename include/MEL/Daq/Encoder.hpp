@@ -19,8 +19,8 @@
 #define MEL_ENCODER_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Core/PositionSensor.hpp>
-#include <MEL/Core/VelocitySensor.hpp>
+#include <MEL/Mechatronics/PositionSensor.hpp>
+#include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <MEL/Daq/ChannelBase.hpp>
 #include <MEL/Daq/Module.hpp>
 

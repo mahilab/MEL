@@ -1,6 +1,6 @@
-#include <MEL/Core/Joint.hpp>
+#include <MEL/Mechatronics/Joint.hpp>
 #include <MEL/Math/Functions.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <iostream>
 

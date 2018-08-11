@@ -1,5 +1,5 @@
-#include <MEL/Core/VirtualVelocitySensor.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Mechatronics/VirtualVelocitySensor.hpp>
+#include <MEL/Core/Console.hpp>
 
 namespace mel {
 

@@ -20,11 +20,11 @@
 #define MEL_JOINT_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Core/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
-#include <MEL/Core/PositionSensor.hpp>
-#include <MEL/Core/VelocitySensor.hpp>
 #include <MEL/Math/Constants.hpp>
+#include <MEL/Mechatronics/Actuator.hpp>
+#include <MEL/Mechatronics/PositionSensor.hpp>
+#include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <array>
 #include <memory>
 

@@ -18,8 +18,8 @@
 #include <MEL/Daq/Quanser/Q2Usb.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Math/Waveform.hpp>
-#include <MEL/Utility/Windows/Keyboard.hpp>
-#include <MEL/Utility/Console.hpp>
+#include <MEL/Devices/Windows/Keyboard.hpp>
+#include <MEL/Core/Console.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
 
