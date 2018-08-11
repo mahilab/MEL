@@ -55,7 +55,7 @@ public:
     /// Writes a string message to the MelShare
     void write_message(const std::string& message);
 
-    ///  Reads a string message from the MelShare
+    /// Reads a string message from the MelShare
     std::string read_message();
 
 private:

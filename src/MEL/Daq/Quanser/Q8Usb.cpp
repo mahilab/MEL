@@ -95,7 +95,7 @@ bool Q8Usb::on_close() {
 
 bool Q8Usb::on_enable() {
     if (!is_open()) {
-        LOG(Error) << "Unable to disable Q8-USB " << get_name() << " because it is not open";
+        LOG(Error) << "Unable to enable Q8-USB " << get_name() << " because it is not open";
         return false;
     }
     bool success = true;

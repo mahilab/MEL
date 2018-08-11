@@ -33,101 +33,49 @@ public:
 
     class Channel;
 
-    /// Constructor
-    Output() :
-          enable_values_(this),
-          disable_values_(this),
-          expire_values_(this)
-    {
-    }
+    /// Default constructor
+    Output();
 
-    /// Default destructor
-    virtual ~Output() {}
+    /// Destructor
+    virtual ~Output();
 
-    /// This function should call the DAQ's API to set watchdog expire values if
-    /// the functionality exists. The vector of expire values must correspond to
-    /// the enabled channel numbers in acending order. The base implementation
-    /// below should be called in the derived implementation.
-    virtual bool set_expire_values(const std::vector<T>& expire_values) {
-        expire_values_.set(expire_values);
-        return true;
-    }
+    /// Override to set watchdog expiration state
+    virtual bool set_expire_values(const std::vector<T>& expire_values);
 
-    /// Sets the expire value of a single channel
-    virtual bool set_expire_value(uint32 channel_number, T expire_value) {
-        if (Module<T>::validate_channel_number(channel_number)) {
-            expire_values_[channel_number] = expire_value;
-            return true;
-        }
-        return false;
-    }
+    /// Override to set watchdog expiration state of a single channel
+    virtual bool set_expire_value(uint32 channel_number, T expire_value);
 
-public:
     /// Sets the initial values to be written on enable
-    void set_enable_values(const std::vector<T>& enable_values) {
-        if (validate_channel_count(enable_values.size()))
-            enable_values_.set(enable_values);
-    }
+    void set_enable_values(const std::vector<T>& enable_values);
 
     /// Sets the intial value of a single channel to be written on enable
-    void set_enable_value(uint32 channel_number, T enable_value) {
-        if (Module<T>::validate_channel_number(channel_number))
-            enable_values_[channel_number] = enable_value;
-    }
+    void set_enable_value(uint32 channel_number, T enable_value);
 
     /// Sets the final values to be written on disable
-    void set_disable_values(const std::vector<T>& disable_values) {
-        if (validate_channel_count(disable_values.size()))
-            disable_values_.set(disable_values);
-    }
+    void set_disable_values(const std::vector<T>& disable_values);
 
     /// Sets the final value of a single channel to be written on disable
-    void set_disable_value(uint32 channel_number, T disable_value) {
-        if (Module<T>::validate_channel_number(channel_number))
-            disable_values_[channel_number] = disable_value;
-    }
+    void set_disable_value(uint32 channel_number, T disable_value);
 
     /// Gets a handle to a channel on this module
-    Channel get_channel(uint32 channel_number) {
-        if (Module<T>::validate_channel_number(channel_number))
-            return Channel(this, channel_number);
-        else
-            return Channel();
-    }
+    Channel get_channel(uint32 channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> get_channels(
-        const std::vector<uint32>& channel_numbers) {
-        std::vector<Channel> channels;
-        for (std::size_t i = 0; i < channel_numbers.size(); ++i)
-            channels.push_back(get_channel(channel_numbers[i]));
-        return channels;
-    }
+    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
 
     /// Gets a handle to a channel on this module
-    Channel operator[](uint32 channel_number) {
-        return get_channel(channel_number);
-    }
+    Channel operator[](uint32 channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> operator[](
-        const std::vector<uint32>& channel_numbers) {
-        return get_channels(channel_numbers);
-    }
+    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
 
 protected:
 
     /// Sets values to enable values and updates
-    virtual bool on_enable() {
-        this->set_values(enable_values_.get());
-        return this->update();
-    }
+    virtual bool on_enable();
 
     /// Sets values to disable values and updates
-    virtual bool on_disable() {
-        this->set_values(disable_values_.get());
-        return this->update();
-    }
+    virtual bool on_disable();
 
 protected:
     Buffer<T> enable_values_;   ///< The initial values set when the Module is enabled
@@ -139,31 +87,22 @@ public:
     class Channel : virtual public ChannelBase<T> {
     public:
         /// Default constructor. Creates invalid channel
-        Channel() : ChannelBase<T>() {}
+        Channel();
 
         /// Creates a valid channel.
-        Channel(Output* module, uint32 channel_number)
-            : ChannelBase<T>(module, channel_number) {}
+        Channel(Output* module, uint32 channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<T>::operator=;
 
         /// Sets the enable value of the channel
-        void set_enable_value(T enable_value) {
-            dynamic_cast<Output<T>*>(this->module_)->set_enable_value(this->channel_number_, enable_value);
-        }
+        void set_enable_value(T enable_value);
 
         /// Sets the disable value of the channel
-        void set_disable_value(T disable_value) {
-            dynamic_cast<Output<T>*>(this->module_)->set_disable_value(this->channel_number_, disable_value);
-        }
+        void set_disable_value(T disable_value);
 
         /// Sets the expiration value of the channel
-        bool set_expire_value(T expire_value) {
-            return dynamic_cast<Output<T>*>(this->module_)->set_expire_value(this->channel_number_, expire_value);
-        }
-
-
+        bool set_expire_value(T expire_value);
     };
 };
 
@@ -175,5 +114,7 @@ typedef Output<Voltage> AnalogOutput;
 typedef Output<Logic> DigitalOutput;
 
 }  // namespace mel
+
+#include <MEL/Daq/Detail/Output.inl>
 
 #endif  // MEL_OUTPUT_HPP

@@ -49,11 +49,11 @@ bool ModuleBase::update() {
 }
 
 void ModuleBase::set_channel_numbers(const std::vector<uint32>& channel_numbers) {
-    auto old_map = channel_map_;
+    std::map<uint32, std::size_t> old_map = channel_map_;
     channel_numbers_ = sort_and_reduce_channels(channel_numbers);
     channel_map_ = make_channel_map(channel_numbers_);
-    for (std::size_t i = 0; i < containers_.size(); i++)
-        containers_[i]->change_channel_numbers(old_map, channel_map_);
+    for (std::size_t i = 0; i < buffers_.size(); i++)
+        buffers_[i]->change_channel_numbers(old_map, channel_map_);
 }
 
 const std::vector<uint32>& ModuleBase::get_channel_numbers() const {
@@ -81,7 +81,7 @@ bool ModuleBase::validate_channel_count(std::size_t size) const {
 }
 
 void ModuleBase::add_buffer(BufferBase* container) {
-    containers_.push_back(container);
+    buffers_.push_back(container);
 }
 
 std::size_t ModuleBase::index(uint32 channel_number) const {

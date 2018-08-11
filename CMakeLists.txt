@@ -80,6 +80,10 @@ file(GLOB SRC_DAQ
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/*.cpp"
 )
 
+file(GLOB SRC_DAQ_DETAIL
+    "${CMAKE_SOURCE_DIR}/include/MEL/Daq/Detail/*.inl"
+)
+
 file(GLOB SRC_NI_MYRIO
     "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/*.cpp"
@@ -152,6 +156,7 @@ source_group("\\" FILES ${SRC_BASE})
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
 source_group("Core" FILES ${SRC_CORE})
 source_group("Daq" FILES ${SRC_DAQ})
+source_group("Daq\\Detail" FILES ${SRC_DAQ_DETAIL})
 source_group("Daq\\NI" FILES ${SRC_NI_MYRIO})
 source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Daq\\Sensoray" FILES ${SRC_SENSORAY})
@@ -172,6 +177,7 @@ set(SOURCE_FILES
     ${SRC_COMMUNICATIONS}
     ${SRC_CORE}
     ${SRC_DAQ}
+    ${SRC_DAQ_DETAIL}
     ${SRC_DEVICES}
     ${SRC_LOGGING}
     ${SRC_LOGGING_FORMATTERS}

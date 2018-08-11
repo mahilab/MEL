@@ -31,52 +31,42 @@ template <typename T>
 class ChannelBase {
 public:
     /// Default constructor. Creates invalid channel
-    ChannelBase() : module_(nullptr), channel_number_(0) {}
+    ChannelBase();
 
     /// Creates a valid channel.
-    ChannelBase(Module<T>* module, uint32 channel_number)
-        : module_(module), channel_number_(channel_number) {}
+    ChannelBase(Module<T>* module, uint32 channel_number);
 
     /// Destructor
-    virtual ~ChannelBase() {}
+    virtual ~ChannelBase();
 
     /// Synchronizes the channel with the real-world
-    bool update() { return module_->update_channel(channel_number_); }
+    bool update();
 
     /// Returns the current value of the channel
-    T get_value() const { return module_->get_value(channel_number_); }
+    T get_value() const;
 
     /// Sets the current value of the channel
-    void set_value(T value) { module_->set_value(channel_number_, value); }
+    void set_value(T value);
 
     /// Overload assignment operator for setting
-    void operator= (const T& value) {
-        set_value(value);
-    }
+    void operator= (const T& value);
 
     /// Overload cast opoerator for getting
-    operator T() const {
-        return get_value();
-    }
+    operator T() const;
 
     /// Gets the channel number
-    uint32 get_channel_number() const { return channel_number_; }
+    uint32 get_channel_number() const;
 
     /// Returns true if the Channel is valid
-    bool is_valid() const {
-        if (module_ == nullptr)
-            return false;
-        if (!module_->validate_channel_number(channel_number_))
-            return false;
-        return true;
-    }
+    bool is_valid() const;
 
 protected:
     Module<T>* module_;      ///< Pointer to the module this channel is on
     uint32 channel_number_;  ///< The channel number of this channel
 };
 
-
 }  // namespace mel
+
+#include <MEL/Daq/Detail/ChannelBase.inl>
 
 #endif  // MEL_CHANNEL_HPP

@@ -15,8 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_VALUE_CONTAINER_HPP
-#define MEL_VALUE_CONTAINER_HPP
+#ifndef MEL_BUFFER_HPP
+#define MEL_BUFFER_HPP
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
@@ -64,41 +64,25 @@ class Buffer : public BufferBase {
 public:
 
     /// Constructor
-    Buffer(ModuleBase* module, T default_value = T()) :
-        BufferBase(module),
-        default_value_(default_value)
-    { }
+    Buffer(ModuleBase* module, T default_value = T());
 
     /// Read access indexed by channel number
-    const T& operator[](uint32 channel_number) const {
-        return values_[index(channel_number)];
-    }
+    const T& operator[](uint32 channel_number) const;
 
     /// Write access indexed by channel number
-    T& operator[](uint32 channel_number) {
-        return values_[index(channel_number)];
-    }
+    T& operator[](uint32 channel_number);
 
     /// Gets size of buffer
-    std::size_t size() const {
-        return values_.size();
-    }
+    std::size_t size() const;
 
     /// Gets reference to raw values array
-    std::vector<T>& get() {
-        return values_;
-    }
+    std::vector<T>& get();
 
     /// Sets raw values array
-    void set(const std::vector<T>& values) {
-        if (values_.size() == values.size())
-            values_ = values;
-    }
+    void set(const std::vector<T>& values);
 
     /// Sets the default value subsequent new values should be instantied with
-    void set_default_value(T default_value) {
-        default_value_ = default_value;
-    }
+    void set_default_value(T default_value);
 
     /// Overload stream operator
     template <typename U>
@@ -108,42 +92,16 @@ private:
 
     /// Called by ModuleBase when channel numbers change
     void change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
-                                const std::map<uint32, std::size_t>& new_map) override
-    {
-        std::vector<T> new_values(new_map.size(), default_value_);
-        for (auto it = old_map.begin(); it != old_map.end(); ++it) {
-            if (new_map.count(it->first))
-                new_values[new_map.at(it->first)] = values_[old_map.at(it->first)];
-        }
-        values_ = new_values;
-    }
+                                const std::map<uint32, std::size_t>& new_map) override;
+
+private:
 
     T default_value_;        ///< default value
     std::vector<T> values_;  ///< raw values
 };
 
-//==============================================================================
-// FUNCTIONS
-//==============================================================================
+} // namespace mel
 
-/// Overload stream operator
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const Buffer<T>& container) {
-    if (container.size() > 0) {
-        os << "{";
-        for (std::size_t i = 0; i < container.size() - 1; i++) {
-            uint32 ch = container.module_->get_channel_numbers()[i];
-            os << "[" << ch << "]:" << container[ch] << ", ";
-        }
-        uint32 ch = container.module_->get_channel_numbers()[container.size() - 1];
-        os << "[" << ch << "]:" << container[ch] << "}";
-    }
-    else {
-        os << "{}";
-    }
-    return os;
-}
+#include <MEL/Daq/Detail/Buffer.inl>
 
-}
-
-#endif // MEL_VALUE_CONTAINER_HPP
+#endif // MEL_BUFFER_HPP

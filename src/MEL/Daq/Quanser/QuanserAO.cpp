@@ -19,34 +19,6 @@ QuanserAO::~QuanserAO() {
 
 }
 
-//bool QuanserAO::enable() {
-//    if (is_enabled())
-//        return Device::enable();
-//    set_values(enable_values_.get());
-//    if (update()) {
-//        LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
-//        return Device::enable();
-//    }
-//    else {
-//        LOG(Error) << "Failed to set " << get_name() << " enable values to " << enable_values_;
-//        return false;
-//    }
-//}
-//
-//bool QuanserAO::disable() {
-//    if (!is_enabled())
-//        return Device::disable();
-//    set_values(disable_values_.get());
-//    if (update()) {
-//        LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
-//        return Device::disable();
-//    }
-//    else {
-//        LOG(Error) << "Failed to set " << get_name() << " disable values to " << disable_values_;
-//        return false;
-//    }
-//}
-
 bool QuanserAO::update() {
     t_error result;
     result = hil_write_analog(daq_.handle_, &get_channel_numbers()[0], static_cast<uint32>(get_channel_count()), &values_.get()[0]);

@@ -34,48 +34,31 @@ public:
     class Channel;
 
     /// Default constructor
-    Input() {}
+    Input();
 
     /// Default destructor
-    virtual ~Input() {}
+    virtual ~Input();
 
     /// Gets a handle to a channel on this module
-    Channel get_channel(uint32 channel_number) {
-        if (Module<T>::validate_channel_number(channel_number))
-            return Channel(this, channel_number);
-        else
-            return Channel();
-    }
+    Channel get_channel(uint32 channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> get_channels(
-        const std::vector<uint32>& channel_numbers) {
-        std::vector<Channel> channels;
-        for (std::size_t i = 0; i < channel_numbers.size(); ++i)
-            channels.push_back(get_channel(channel_numbers[i]));
-        return channels;
-    }
+    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
 
     /// Gets a handle to a channel on this module
-    Channel operator[](uint32 channel_number) {
-        return get_channel(channel_number);
-    }
+    Channel operator[](uint32 channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> operator[](
-        const std::vector<uint32>& channel_numbers) {
-        return get_channels(channel_numbers);
-    }
+    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
 
     /// Encapsulates a Module channel
     class Channel : virtual public ChannelBase<T> {
     public:
         /// Default constructor. Creates invalid channel
-        Channel() : ChannelBase<T>() {}
+        Channel();
 
         /// Creates a valid channel.
-        Channel(Input* module, uint32 channel_number)
-            : ChannelBase<T>(module, channel_number) {}
+        Channel(Input* module, uint32 channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<T>::operator=;
@@ -90,5 +73,7 @@ typedef Input<Voltage> AnalogInput;
 typedef Input<Logic>   DigitalInput;
 
 }  // namespace mel
+
+#include <MEL/Daq/Detail/Input.inl>
 
 #endif  // MEL_INPUT_HPP

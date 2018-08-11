@@ -20,34 +20,6 @@ namespace mel {
 
     }
 
-    //bool QuanserDO::enable() {
-    //    if (is_enabled())
-    //        return Device::enable();
-    //    set_values(enable_values_.get());
-    //    if (update()) {
-    //        LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
-    //        return Device::enable();
-    //    }
-    //    else {
-    //        LOG(Error) << "Failed to set " << get_name() << " enable values to " << enable_values_;
-    //        return false;
-    //    }
-    //}
-
-    //bool QuanserDO::disable() {
-    //    if (!is_enabled())
-    //        return Device::disable();
-    //    set_values(disable_values_.get());
-    //    if (update()) {
-    //        LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
-    //        return Device::disable();
-    //    }
-    //    else {
-    //        LOG(Error) << "Failed to set " << get_name() << " disable values to " << disable_values_;
-    //        return false;
-    //    }
-    //}
-
     bool QuanserDO::update() {
         // convert MEL Logic to Quanser t_boolean (aka char)
         for (auto const& ch : get_channel_numbers())

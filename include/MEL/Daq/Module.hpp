@@ -84,7 +84,7 @@ private:
 
     std::vector<uint32> channel_numbers_;         ///< The channel numbers used by this ModuleBase
     std::map<uint32, std::size_t> channel_map_;   ///< Maps a channel number with a vector index position
-    std::vector<BufferBase*> containers_;         ///< Buffers needed by this Module
+    std::vector<BufferBase*> buffers_;            ///< Buffers needed by this Module
 
 };
 
@@ -95,60 +95,34 @@ private:
 /// Defines templated Module functions/members
 template <typename T>
 class Module : public ModuleBase {
-
 public:
 
     /// Default Constructorr
-    Module() :
-        values_(this),
-        min_values_(this),
-        max_values_(this)
-    {}
+    Module();
 
     /// Destructor
-    virtual ~Module() { }
+    virtual ~Module();
 
     /// Sets the min and max possible values of each channel
-    virtual bool set_ranges(const std::vector<T>& min_values, const std::vector<T>& max_values) {
-        min_values_.set(min_values);
-        max_values_.set(max_values);
-        return true;
-    }
+    virtual bool set_ranges(const std::vector<T>& min_values, const std::vector<T>& max_values);
 
     /// Sets the min and max possible value of a single channel
-    virtual bool set_range(uint32 channel_number, T min_value, T max_value) {
-        if (validate_channel_number(channel_number)) {
-            min_values_[channel_number] = min_value;
-            max_values_[channel_number] = max_value;
-            return true;
-        }
-        return false;
-    }
-
-public:
+    virtual bool set_range(uint32 channel_number, T min_value, T max_value);
 
     /// Gets non-const reference to the current channel values of this Module
-    std::vector<T>& get_values() {
-        return values_.get();
-    }
+    std::vector<T>& get_values();
 
     /// Gets the current value of a a single channel. If an invalid channel number
     /// is passed, the default value of the underlying channel type is returned.
-    T get_value(uint32 channel_number) const {
-        return values_[channel_number];
-    }
+    T get_value(uint32 channel_number) const;
 
     /// Sets the current channel values of this Module. If the incorrect number
     /// of values is pass, no values are set.
-    void set_values(const std::vector<T>& values) {
-        values_.set(values);
-    }
+    void set_values(const std::vector<T>& values);
 
     /// Sets the current value of a single channel. If an invalid channel number
     /// is passed, non value is set
-    void set_value(uint32 channel_number, T value) {
-        values_[channel_number] = value;
-    }
+    void set_value(uint32 channel_number, T value);
 
 protected:
 
@@ -160,8 +134,6 @@ protected:
 
 } // namespace mel
 
-#endif // MEL_MODULE_HPP
+#include <MEL/Daq/Detail/Module.inl>
 
-//==============================================================================
-// CLASS DOCUMENTATION
-//==============================================================================
+#endif // MEL_MODULE_HPP

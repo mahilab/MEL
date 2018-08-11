@@ -35,74 +35,34 @@ public:
     class Channel;
 
     /// Default constructor
-    InputOutput() :
-        directions_(this)
-    {
-        sort_input_output_channel_numbers();
-    }
+    InputOutput();
 
     /// Default destructor
-    virtual ~InputOutput() {}
+    virtual ~InputOutput();
 
     /// Sets the directions of all channels
-    virtual bool set_directions(const std::vector<Direction>& directions) {
-        directions_.set(directions);
-        sort_input_output_channel_numbers();
-        return true;
-    }
+    virtual bool set_directions(const std::vector<Direction>& directions);
 
     /// Sets the direction of a single channel
-    virtual bool set_direction(uint32 channel_number, Direction direction) {
-        if (this->validate_channel_number(channel_number)) {
-            directions_[channel_number] = direction;
-            sort_input_output_channel_numbers();
-            return true;
-        }
-        return false;
-    }
+    virtual bool set_direction(uint32 channel_number, Direction direction);
 
 public:
 
     /// Gets a handle to a channel on this module
-    Channel get_channel(uint32 channel_number) {
-        if (Module<T>::validate_channel_number(channel_number))
-            return Channel(this, channel_number);
-        else
-            return Channel();
-    }
+    Channel get_channel(uint32 channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> get_channels(
-        const std::vector<uint32>& channel_numbers) {
-        std::vector<Channel> channels;
-        for (std::size_t i = 0; i < channel_numbers.size(); ++i)
-            channels.push_back(get_channel(channel_numbers[i]));
-        return channels;
-    }
+    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
 
     /// Gets a handle to a channel on this module
-    Channel operator[](uint32 channel_number) {
-        return get_channel(channel_number);
-    }
+    Channel operator[](uint32 channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> operator[](
-        const std::vector<uint32>& channel_numbers) {
-        return get_channels(channel_numbers);
-    }
+    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
 
 protected:
     /// Sorts channel numbers associated with inputs and outputs
-    void sort_input_output_channel_numbers() {
-        input_channel_numbers_.clear();
-        output_channel_numbers_.clear();
-        for (std::size_t i = 0; i < this->get_channel_count(); ++i) {
-            if (directions_.get()[i] == In)
-                input_channel_numbers_.push_back(this->get_channel_numbers()[i]);
-            else if (directions_.get()[i] == Out)
-                output_channel_numbers_.push_back(this->get_channel_numbers()[i]);
-        }
-    }
+    void sort_input_output_channel_numbers();
 
 protected:
     Buffer<Direction> directions_;        ///< The I/O directions of each channel
@@ -115,19 +75,16 @@ public:
     class Channel : public Input<T>::Channel, public Output<T>::Channel {
     public:
         /// Default constructor. Creates invalid channel
-        Channel() : ChannelBase<T>() {}
+        Channel();
 
         /// Creates a valid channel.
-        Channel(InputOutput* module, uint32 channel_number)
-            : ChannelBase<T>(module, channel_number) {}
+        Channel(InputOutput* module, uint32 channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<T>::operator=;
 
         /// Sets the direction of the channel
-        void set_direction(Direction direction) {
-           dynamic_cast<InputOutput<T>*>(this->module_)->set_direction(this->channel_number_, direction);
-        }
+        void set_direction(Direction direction);
     };
 };
 
@@ -138,5 +95,7 @@ public:
 typedef InputOutput<Logic> DigitalInputOutput;
 
 }  // namespace mel
+
+#include <MEL/Daq/Detail/InputOutput.inl>
 
 #endif  // MEL_INPUTOUTPUT_HPP
