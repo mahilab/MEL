@@ -34,8 +34,10 @@ public:
     /// Sets proportional and derivative control gains
     void set_gains(double kp, double kd);
 
-    /// Calculates the control effort given the current state and desired
-    /// reference
+    /// Calculates the control effort given the current state and desired reference
+    double operator()(double x_ref, double x, double xdot_ref, double xdot);
+
+    /// Calculates the control effort given the current state and desired reference
     double calculate(double x_ref, double x, double xdot_ref, double xdot);
 
     /// Computes the control effort to move to a desired location #x_ref with a

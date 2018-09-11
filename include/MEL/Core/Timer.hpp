@@ -28,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-/// Utility class that creates a fixed rate waitable timer.
+/// CPU based fixed rate waitable timer.
 class MEL_API Timer {
 public:
     /// The waiting mode to be used when wait() is called.
@@ -44,8 +44,7 @@ public:
     enum WaitMode {
         Busy,     ///< Waits 100% remaining time using a busy while loop
         Sleep,    ///< Waits 100% remaining time by sleeping the thread
-        Hybrid,   ///< Waits 90% remaining time using Sleep, then 10% using Busy
-        Hardware  ///< Waits according to user defined hardware implementation
+        Hybrid    ///< Waits 90% remaining time using Sleep, then 10% using Busy
     };
 
 public:
@@ -55,18 +54,21 @@ public:
     /// Constructs Timer from wait period. Starts the Timer on construction.
     Timer(Time period, WaitMode mode = WaitMode::Busy);
 
+    /// Destructor
+    ~Timer();
+
     /// Restarts the Timer and returns the elapsed time
-    Time restart();
+    virtual Time restart();
 
-    /// Waits the Timer and returns the elapsed time after the wait complete
-    Time wait();
-
-    /// Gets the actual elapsed time since construction or last call to restart().
-    Time get_elapsed_time_actual();
+    /// Waits the Timer and returns the ideal elapsed time after the wait completes
+    virtual Time wait();
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period
     Time get_elapsed_time();
+
+    /// Gets the actual elapsed time since construction or last call to restart().
+    Time get_elapsed_time_actual();
 
     /// Gets the elapsed number of ticks since construction or the last call to
     /// restart().
@@ -79,16 +81,6 @@ public:
     Time get_period();
 
 protected:
-    virtual void wait_hardware(const Time& duration);
-
-private:
-    /// Implements Busy wait mode
-    void wait_busy(const Time& duration);
-
-    /// Implements Sleep wait mode
-    void wait_sleep(const Time& duration);
-
-private:
     WaitMode mode_;   ///< The Timer's waiting mode
     Clock clock_;     ///< The Timer's internal clock
     Time period_;     ///< The Timer's waiting period
@@ -137,9 +129,5 @@ private:
 ///     my_timer.wait();
 /// }
 /// \endcode
-///
-/// Timer can also be used as a base class to wrap hardware clocks (i.e. cRIO)
-/// by using WaitMode::Hardware and implementing the virtual wait_hardware()
-/// function. For more information, see mel::cRIO.
 
 /// \see mel::Clock, mel::Time

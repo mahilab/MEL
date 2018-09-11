@@ -130,9 +130,9 @@ inline Logger<instance>& init_logger(Severity max_severity,
 /// file extension (specific logger instance)
 template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity,
-    const char* filename,
-    size_t max_file_size = 0,
-    int max_files = 0) {
+                         const char* filename,
+                         size_t max_file_size = 0,
+                         int max_files = 0) {
     const char* dot = std::strrchr(filename, '.');
     if (dot && 0 == std::strcmp(dot, ".csv"))
         return init_logger<CsvFormatter, instance>(max_severity, filename,

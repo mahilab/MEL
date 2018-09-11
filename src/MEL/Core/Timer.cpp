@@ -5,11 +5,21 @@
 
 namespace mel {
 
+static void wait_busy(const Time& duration) {
+    Clock temp_clock;
+    while (temp_clock.get_elapsed_time() < duration) {
+        // do nothing
+    }
+}
+
+static void wait_sleep(const Time& duration) {
+    sleep(duration);
+}
+
 Timer::Timer(Frequency frequency, WaitMode mode) :
     Timer(frequency.to_time(), mode)
 {
 }
-
 
 Timer::Timer(Time period, WaitMode mode) :
     mode_(mode),
@@ -19,6 +29,8 @@ Timer::Timer(Time period, WaitMode mode) :
     prev_time_(Clock::get_current_time())
 {
 }
+
+Timer::~Timer() { }
 
 Time Timer::restart() {
     ticks_ = 0;
@@ -44,7 +56,7 @@ Time Timer::wait() {
     }
     prev_time_ = Clock::get_current_time();
     ticks_ += 1;
-    return clock_.get_elapsed_time();
+    return get_elapsed_time();
 }
 
 Time Timer::get_elapsed_time_actual() {
@@ -67,18 +79,6 @@ Time Timer::get_period() {
     return period_;
 }
 
-void Timer::wait_hardware(const Time& duration) {
-    wait_busy(duration);
-}
 
-void Timer::wait_busy(const Time& duration) {
-    Time start = Clock::get_current_time();
-    while ((Clock::get_current_time() - start) < duration) {
-    }
-}
-
-void Timer::wait_sleep(const Time& duration) {
-    sleep(duration);
-}
 
 } // namespace mel

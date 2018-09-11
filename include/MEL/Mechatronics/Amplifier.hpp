@@ -30,7 +30,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-/// Encapsulates a current controlled servo amplifier
+/// Encapsulates a servo current amplifier
 class MEL_API Amplifier : public Device {
 public:
     /// Constructor

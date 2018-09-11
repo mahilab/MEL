@@ -16,6 +16,10 @@ void PdController::set_gains(double kp, double kd) {
     kd_ = kd;
 }
 
+double PdController::operator()(double x_ref, double x, double xdot_ref, double xdot) {
+    return calculate(x_ref, x, xdot_ref, xdot);
+}
+
 double PdController::calculate(double x_ref, double x, double xdot_ref, double xdot) {
     return kp_ * (x_ref - x) + kd_ * (xdot_ref - xdot);
 }
