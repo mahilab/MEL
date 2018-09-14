@@ -54,6 +54,9 @@ include_directories(
 # indicate where MEL.lib is
 link_directories("../../../MEL/lib")
 
+# remove or uncomment if linking MEL statically
+# add_definitions(-DMEL_STATIC)
+
 # create application
 add_executable(my_app
                include/MyClass.hpp
