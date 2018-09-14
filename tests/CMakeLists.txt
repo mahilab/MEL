@@ -5,4 +5,4 @@ macro(mel_test MEL_TEST_NAME)
     set_target_properties(${MEL_TEST_NAME} PROPERTIES FOLDER "Tests")
 endmacro()
 
-mel_test(none)
+mel_test(default)

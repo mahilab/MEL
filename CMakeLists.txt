@@ -1,7 +1,7 @@
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
-# Updated: 8/2018
+# Updated: 9/2018
 
 #===============================================================================
 # HOW TO USE THIS FILE TO BUILD MEL
@@ -37,6 +37,7 @@ option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"      
 option(NI_X64      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
 option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO
 option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                          OFF)
+option(XINPUT      "Turn ON if compiling for Xbox 360 / One controllers (Windows only)"         OFF)
 # general options
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
@@ -111,9 +112,14 @@ file(GLOB SRC_DEVICES_MYO
     "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Myo/*.cpp"
 )
 
-file(GLOB SRC_DEVICES_WINDOWS
-    "${CMAKE_SOURCE_DIR}/include/MEL/Devices/Windows/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Windows/*.cpp"
+set(SRC_KEYBOARD_WINDOWS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Devices/Windows/Keyboard.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Windows/Keyboard.cpp"
+)
+
+set(SRC_XINPUT_WINDOWS
+    "${CMAKE_SOURCE_DIR}/include/MEL/Devices/Windows/XboxController.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Devices/Windows/XboxController.cpp"
 )
 
 file(GLOB SRC_LOGGING
@@ -162,7 +168,7 @@ source_group("Daq\\Quanser" FILES ${SRC_QUANSER})
 source_group("Daq\\Sensoray" FILES ${SRC_SENSORAY})
 source_group("Devices" FILES ${SRC_DEVICES})
 source_group("Devices\\Myo" FILES ${SRC_DEVICES_MYO})
-source_group("Devices\\Windows" FILES ${SRC_DEVICES_WINDOWS})
+source_group("Devices\\Windows" FILES ${SRC_KEYBOARD_WINDOWS} ${SRC_XINPUT_WINDOWS})
 source_group("Legacy" FILES ${SRC_LEGACY})
 source_group("Logging" FILES ${SRC_LOGGING})
 source_group("Logging\\Formatters" FILES ${SRC_LOGGING_FORMATTERS})
@@ -256,8 +262,13 @@ endif()
 
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
-    list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi XInput)
-    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS} ${SRC_DEVICES_WINDOWS})
+    list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi)
+    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS} ${SRC_KEYBOARD_WINDOWS})
+    # XInput for Xbox controllers
+    if (XINPUT)
+        list(APPEND LINK_LIBS XInput)
+        list(APPEND SOURCE_FILES ${SRC_XINPUT_WINDOWS})
+    endif()
 endif()
 
 #===============================================================================
