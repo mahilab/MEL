@@ -140,7 +140,7 @@ private:
             file.close();
             calibrate();
         }
-        return Robot::enable();
+        return true;
     }
 
 private:
