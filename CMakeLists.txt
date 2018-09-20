@@ -3,28 +3,6 @@
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
 # Updated: 9/2018
 
-#===============================================================================
-# HOW TO USE THIS FILE TO BUILD MEL
-#===============================================================================
-
-# OPTION 1: SUBLIME TEXT
-# 1) Open the MEL Sublime project file (util/MEL.sublime-project) with Sublime
-#
-# 2) Run the "Clean" build system (CTRL+SHIFT+B -> Clean) to remove existing
-#    build files and/or generate the necessary folders
-#
-# 3) Turn on the desired build options below by changing "OFF" to "ON"
-#
-# 4) Run one of the provided CMake (...) build systems to generate build files
-#    for the desired build toolchain:
-#
-#    a) CMake (MSVC) for Quanser, NI DAQ, or Sensoray hardware
-#    b) CMake (Make) or CMake (Ninja) for embedded NI cRIO, NI myRIO
-#
-# 5) Run the matching Build (...) build system to compile MEL
-#
-# 6) If you decide to change options, run the Reset Cache build system first
-
 cmake_minimum_required(VERSION 3.7)
 
 #===============================================================================
@@ -32,12 +10,12 @@ cmake_minimum_required(VERSION 3.7)
 #===============================================================================
 
 # hardware options
-option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  OFF) # e.g. Q8 USB, Q2 USB
+option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  ON ) # e.g. Q8 USB, Q2 USB
 option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
 option(NI_X64      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
 option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO
 option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                          OFF)
-option(XINPUT      "Turn ON if compiling for Xbox 360 / One controllers (Windows only)"         OFF)
+option(XINPUT      "Turn ON if compiling for Xbox 360 / One controllers (Windows only)"         ON )
 # general options
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)

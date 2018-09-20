@@ -1,15 +1,7 @@
 
-![MEL Logo](https://raw.githubusercontent.com/epezent/MEL/master/logo.png)
+![MEL Logo](https://raw.githubusercontent.com/mahilab/MEL/master/util/logo.png)
 
 # MEL - Mechatronics Engine & Library
-
-## Developers
-
-- **[Evan Pezent](http://evanpezent.com)**
-- **[Craig McDonald](http://craiggmcdonald.com/)**
-- **[Nathan Dunkelberger](http://mahilab.rice.edu/users/nathan-dunkelberger)**
-
-## Overview
 
 MEL is an object-oriented mechatronics and robotics library built from the ground up to make developing and controlling real, custom hardware as simple as possible, without sacrificing user freedom. It is geared toward academics and small teams where speed of development is paramount and learning a large framework such as ROS may be infeasible, but the need for creating robust, safe, and sustainable systems is also required. MEL is also intended for developers who have found high-level or graphical languages such as Simulink and LabVIEW to be limiting, but don't want to dive straight into low-level C API's. MEL is not and will never be a library for robot motion planning, simulation, or artificial intelligence - it is strictly hardware focused.
 
@@ -88,8 +80,8 @@ In addition to it's core functionality, MEL comes packed with other features tha
 
 ## Getting Started
 
-To get started using MEL, visit the [GitHub Wiki](https://github.com/epezent/MEL/wiki) page. This guide will run you through process of setting up MEL for your target platform and hardware, building the library, and creating your own MEL driven projects.
+To get started using MEL, visit the [GitHub Wiki](https://github.com/mahilab/MEL/wiki) page. This guide will run you through process of setting up MEL for your target platform and hardware, building the library, and creating your own MEL driven projects.
 
 ## Examples
 
-Several [examples](https://github.com/epezent/MEL/tree/master/examples) are provided. The [Haptic Paddle example](https://github.com/epezent/MEL/blob/master/examples/ex_haptic_paddle.cpp) demonstrates a very good use case for new users. To see how MEL is being used for actual research hardware, consider checking out the [OpenWrist](https://github.com/epezent/OpenWrist) and [MAHI Exo-II](https://github.com/craigmc707/MEII) repositories.
+Several [examples](https://github.com/mahilab/MEL/tree/master/examples) are provided. The [Haptic Paddle repository](https://github.com/mahilab/HapticPaddle) demonstrates a very good use case for new users. To see how MEL is being used for actual research hardware, consider checking out the [OpenWrist](https://github.com/mahilab/OpenWrist) and [MAHI Exo-II](https://github.com/mahilab/MEII) repositories.

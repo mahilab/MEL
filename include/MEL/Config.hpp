@@ -64,7 +64,7 @@
 #endif
 
 // Version of the library
-#define MEL_VERSION_MAJOR 0
-#define MEL_VERSION_MINOR 3
+#define MEL_VERSION_MAJOR 1
+#define MEL_VERSION_MINOR 0
 
 #endif // MEL_CONFIG_HPP
