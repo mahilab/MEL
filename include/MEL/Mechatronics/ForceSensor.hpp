@@ -14,13 +14,14 @@
 // all copies or substantial portions of the Software.
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
+//            Evan Pezent (epezent@rice.edu)
 
 #ifndef MEL_FORCESENSOR_HPP
 #define MEL_FORCESENSOR_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Core/Device.hpp>
-#include <MEL/Daq/Input.hpp>
+#include <MEL/Core/Types.hpp>
+#include <vector>
 
 namespace mel {
 
@@ -28,32 +29,22 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API ForceSensor : public Device {
+class MEL_API ForceSensor {
 public:
+
     /// Default constructor
     ForceSensor();
 
-    /// Prefferred constructor, giving it a unique name and assigning the
-    /// associated DAQ channel
-    ForceSensor(std::string name,
-                std::vector<Input<Voltage>::Channel> ai_channels);
+    /// Returns force along speficied axis
+    virtual double get_force(Axis axis) = 0;
 
-    /// This function should return the forces of the FroceSensor
-    virtual std::vector<double> get_forces() = 0;
+    /// Returns forces along X, Z, and Z axes
+    virtual std::vector<double> get_forces();
 
 protected:
-    /// Reads the voltages from the associated DAQ channels and returns them
-    std::vector<double> get_voltages();
 
-protected:
-    std::vector<Input<Voltage>::Channel>
-        ai_channels_;   ///< the DAQ analog input channels bound to this sensor
-    int num_channels_;  ///< number of DAQ analog input channels bound to this
-                        ///< sensor
     std::vector<double> forces_;  ///< stores all the forces read by the sensor
-                                  ///< at one sample time
-    std::vector<double> voltages_;  ///< stores all the voltages read by the
-                                    ///< sensor at one sample time
+
 };
 
 }  // namespace mel
