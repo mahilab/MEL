@@ -35,15 +35,18 @@ public:
     /// Default constructor
     ForceSensor();
 
+    /// Destructor
+    virtual ~ForceSensor();
+
     /// Returns force along speficied axis
     virtual double get_force(Axis axis) = 0;
 
     /// Returns forces along X, Z, and Z axes
-    virtual std::vector<double> get_forces();
+    virtual std::vector<double> get_forces() = 0;
 
 protected:
 
-    std::vector<double> forces_;  ///< stores all the forces read by the sensor
+    std::vector<double> forces_; ///< measured forces
 
 };
 

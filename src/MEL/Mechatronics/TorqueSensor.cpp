@@ -2,12 +2,14 @@
 
 namespace mel {
 
-    TorqueSensor::TorqueSensor() :
-        torques_(3)
-    { }
+TorqueSensor::TorqueSensor() :
+    torques_(3, 0.0)
+{   
+}
 
-    std::vector<double> TorqueSensor::get_torques() {
-        return torques_;
-    }
+TorqueSensor::~TorqueSensor() {
+
+}
+
 
 } // namespace mel

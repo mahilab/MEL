@@ -24,27 +24,30 @@
 
 namespace mel {
 
-    //==============================================================================
-    // CLASS DECLARATION
-    //==============================================================================
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
 
-    class MEL_API TorqueSensor {
-    public:
+class MEL_API TorqueSensor {
+public:
 
-        /// Default constructor
-        TorqueSensor();
+    /// Constructor
+    TorqueSensor();
 
-        /// Returns force along speficied axis
-        virtual double get_torque(Axis axis) = 0;
+    /// Destructor
+    virtual ~TorqueSensor();
 
-        /// Returns forces along X, Z, and Z axes
-        virtual std::vector<double> get_torques();
+    /// Returns torque along speficied axis
+    virtual double get_torque(Axis axis) = 0;
 
-    protected:
+    /// Returns torques along X, Z, and Z axes
+    virtual std::vector<double> get_torques() = 0;
 
-        std::vector<double> torques_;  ///< stores all the forces read by the sensor
+protected:
 
-    };
+    std::vector<double> torques_; ///< measured torques
+
+};
 
 }  // namespace mel
 

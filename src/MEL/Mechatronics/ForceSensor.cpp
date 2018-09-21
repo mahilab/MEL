@@ -3,11 +3,12 @@
 namespace mel {
 
 ForceSensor::ForceSensor() :
-    forces_(3)
+    forces_(3, 0.0)
 { }
 
-std::vector<double> ForceSensor::get_forces() {
-    return forces_;
+ForceSensor::~ForceSensor() {
+
 }
+
 
 } // namespace mel
