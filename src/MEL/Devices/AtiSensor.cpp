@@ -38,7 +38,7 @@ void AtiSensor::set_calibration(Calibration calibration_matrix) {
     calibration_ = calibration_matrix;
 }
 
-void AtiSensor::offset() {
+void AtiSensor::zero() {
     bias_[0] = channels_[0].get_value();
     bias_[1] = channels_[1].get_value();
     bias_[2] = channels_[2].get_value();

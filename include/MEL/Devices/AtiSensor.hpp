@@ -56,11 +56,12 @@ public:
     /// Sets the voltages channels associated with this ATI sensor
     void set_channels(std::vector<Input<Voltage>::Channel> channels);
 
-    /// Load sensor calibration from explicit calibration matrix
+    /// Load sensor calibration from calibration matrix
     void set_calibration(Calibration calibration);
 
-    /// Sets the bias vector for offset correction from current voltages
-    void offset();
+    /// Sets the bias vector for offset correction from current voltages on inputs, 
+    /// effectively zeroing the sensor at the current preload
+    void zero();
 
     /// Returns force along speficied axis
     double get_force(Axis axis) override;
