@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.7)
 #===============================================================================
 
 # hardware options
-option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  ON ) # e.g. Q8 USB, Q2 USB
+option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  OFF) # e.g. Q8 USB, Q2 USB
 option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
 option(NI_X64      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI cRIO
 option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"                     OFF) # e.g. NI myRIO
@@ -19,7 +19,7 @@ option(XINPUT      "Turn ON if compiling for Xbox 360 / One controllers (Windows
 # general options
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
-option(EXAMPLES    "Turn ON to build example executable(s)"                                     ON )
+option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
 option(TESTS       "Turn ON to build test executable(s)"                                        OFF)
 option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders are compilation"   OFF)
 option(BUILD_DOC   "Turn ON to build MEL documentation"                                         OFF)

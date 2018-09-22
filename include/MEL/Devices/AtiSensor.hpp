@@ -59,7 +59,7 @@ public:
     /// Load sensor calibration from calibration matrix
     void set_calibration(Calibration calibration);
 
-    /// Sets the bias vector for offset correction from current voltages on inputs, 
+    /// Sets the bias vector for offset correction from current voltages on inputs,
     /// effectively zeroing the sensor at the current preload
     void zero();
 
@@ -69,11 +69,11 @@ public:
     /// Returns forces along X, Z, and Z axes
     std::vector<double> get_forces() override;
 
-    /// Returns force along speficied axis
+    /// Returns torque along speficied axis
     double get_torque(Axis axis) override;
 
-    /// Returns forces along X, Z, and Z axes
-    std::vector<double> get_torques() override;    
+    /// Returns torque along X, Z, and Z axes
+    std::vector<double> get_torques() override;
 
 private:
 
