@@ -28,10 +28,13 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API VelocitySensor : virtual public Device {
+class MEL_API VelocitySensor {
 public:
-    /// Prefered constructor
-    VelocitySensor(const std::string& name);
+    /// Constructor
+    VelocitySensor();
+
+    /// Destructor
+    virtual ~VelocitySensor();
 
     /// This function should return the velocity of the VelocitySensor
     virtual double get_velocity() = 0;

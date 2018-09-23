@@ -43,22 +43,16 @@ using namespace mel;
 class HallEffectSensor : public PositionSensor {
 public:
     /// Constructor
-    HallEffectSensor(const std::string& name,
-                     AnalogInput::Channel ai,
+    HallEffectSensor(AnalogInput::Channel ai,
                      double gain = 0.0,
                      double offset = 0.0)
-        : PositionSensor(name), ai_(ai), gain_(gain), offset_(offset) { }
+        : ai_(ai), gain_(gain), offset_(offset) { }
 
     /// Gets the position of the hall effect sensor in [rad]
     double get_position() override {
         position_ = ai_.get_value() * gain_ + offset_;
         return position_;
     }
-
-private:
-
-    bool on_enable() override { return true; }
-    bool on_disable() override { return true; }
 
 public:
     AnalogInput::Channel ai_;  ///< voltage read from hall effect sensor
@@ -85,7 +79,7 @@ public:
           // init motor
           motor_("pitman_9434", 0.0229, amp_, Limiter(1.8821, 12.0, seconds(1))),
           // init position sensor
-          position_sensor_("honeywell_ss49et", ai),
+          position_sensor_(ai),
           // init virtual velocity sensor
           velocity_sensor_("honeywell_ss49et", position_sensor_)
     {

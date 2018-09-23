@@ -153,14 +153,6 @@ public:
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);
 
-    protected:
-
-        /// Enables the encoder
-        bool on_enable() override;
-
-        /// Disables the encoder
-        bool on_disable() override;
-
     };
 };
 

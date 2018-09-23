@@ -31,7 +31,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API VirtualVelocitySensor : public VelocitySensor {
+class MEL_API VirtualVelocitySensor : public VelocitySensor, public Device {
 public:
     /// Constructor
     VirtualVelocitySensor(const std::string& name,

@@ -28,10 +28,13 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API PositionSensor : virtual public Device {
+class MEL_API PositionSensor {
 public:
-    /// Prefered constructor
-    PositionSensor(const std::string& name);
+    /// Constructor
+    PositionSensor();
+
+    /// Destructor
+    virtual ~PositionSensor();
 
     /// This function should return the position of the PositionSensor
     virtual double get_position() = 0;

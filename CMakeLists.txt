@@ -17,8 +17,8 @@ option(NI_ARM      "Turn ON if compiling for NI Intel x64 embeded hardware"     
 option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                          OFF)
 option(XINPUT      "Turn ON if compiling for Xbox 360 / One controllers (Windows only)"         OFF)
 # general options
-option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
-option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
+option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  ON )
+option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 ON )
 option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
 option(TESTS       "Turn ON to build test executable(s)"                                        OFF)
 option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders are compilation"   OFF)
