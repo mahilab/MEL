@@ -47,21 +47,23 @@ public:
 
 public:
 
-    /// Constructor
+    /// Constucts AtiSensor with unspecified channels and no calibration
     AtiSensor();
 
-    /// Constructor
+    /// Constructs AtiSensor with specified channels and loads calibration from filename
+    AtiSensor(std::vector <Input<Voltage>::Channel> channels, const std::string& filename);
+
+    /// Constructs AtiSensor from specified channels and manual calibration
     AtiSensor(std::vector<Input<Voltage>::Channel> channels, Calibration calibration);
 
     /// Sets the voltages channels associated with this ATI sensor
     void set_channels(std::vector<Input<Voltage>::Channel> channels);
 
-    /// Load sensor calibration from calibration matrix
-    void set_calibration(Calibration calibration);
+    /// Loads calibration from ATI calibration file (e.g. "FTXXXXX.cal")
+    bool load_calibration(const std::string& filename);
 
-    /// Sets the bias vector for offset correction from current voltages on inputs,
-    /// effectively zeroing the sensor at the current preload
-    void zero();
+    /// Allows for manually setting calibration
+    void set_calibration(Calibration calibration);
 
     /// Returns force along speficied axis
     double get_force(Axis axis) override;
@@ -74,6 +76,9 @@ public:
 
     /// Returns torque along X, Z, and Z axes
     std::vector<double> get_torques() override;
+
+    /// Zeros all forces and torques at current preload
+    void zero();
 
 private:
 
