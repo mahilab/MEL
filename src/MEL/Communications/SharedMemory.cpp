@@ -23,11 +23,31 @@ namespace mel {
 // COMMON IMPLEMENTATION
 //==============================================================================
 
-SharedMemory::SharedMemory(const std::string& name, std::size_t max_bytes)
+SharedMemory::SharedMemory(const std::string& name, OpenMode mode, std::size_t max_bytes)
     : name_(name),
       max_bytes_(max_bytes),
-      map_(create_or_open(name_, max_bytes_)),
-      buffer_(map_buffer(map_, max_bytes_)) {}
+      buffer_(nullptr),
+      is_mapped_(false)
+{
+    switch (mode) {
+        case OpenOrCreate: {
+            if (open_or_create(map_, name_, max_bytes_)) {
+                buffer_ = map_buffer(map_, max_bytes_);
+                if (buffer_)
+                    is_mapped_ = true;
+            }
+            break;
+        }
+        case OpenOnly: {
+            if (open_only(map_, name_)) {
+                buffer_ = map_buffer(map_, max_bytes_);
+                if (buffer_)
+                    is_mapped_ = true;
+            }
+            break;
+        }
+    }
+}
 
 SharedMemory::~SharedMemory() {
     unmap_buffer(buffer_, max_bytes_);
@@ -52,14 +72,16 @@ bool SharedMemory::read(void* data, std::size_t size, std::size_t offset) {
     return true;
 }
 
-/// Returns a pointer to the underlying memory block
 void* SharedMemory::get_address() const {
     return buffer_;
 }
 
-/// Returns the string name of the named memory map
 std::string SharedMemory::get_name() const {
     return name_;
+}
+
+bool SharedMemory::is_mapped() const {
+    return is_mapped_;
 }
 
 #ifdef _WIN32
@@ -68,8 +90,9 @@ std::string SharedMemory::get_name() const {
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-MapHandle SharedMemory::create_or_open(const std::string& name,
-                                       std::size_t size) {
+bool SharedMemory::open_or_create(MapHandle& map, const std::string& name,
+                                       std::size_t size) 
+{
     HANDLE hMapFile;
     hMapFile = ::CreateFileMappingA(
         INVALID_HANDLE_VALUE,      // use paging file
@@ -82,9 +105,24 @@ MapHandle SharedMemory::create_or_open(const std::string& name,
     if (hMapFile == NULL) {
         LOG(Error) << "Could not create file mapping object " << name
                    << " (Windows Error #" << (int)GetLastError() << ")";
-        return INVALID_HANDLE_VALUE;
+        map = INVALID_HANDLE_VALUE;
+        return false;
     }
-    return hMapFile;
+    map = hMapFile;
+    return true;
+}
+
+bool SharedMemory::open_only(MapHandle& map, const std::string& name) {
+    HANDLE hMapFile;
+    hMapFile = ::OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, name.c_str());
+    if (hMapFile == NULL) {
+        LOG(Error) << "Could not open file mapping object " << name
+                   << " (Windows Error #" << (int)GetLastError() << ")";
+        map = INVALID_HANDLE_VALUE;
+        return false;
+    }
+    map = hMapFile;
+    return true;
 }
 
 void SharedMemory::close(const std::string& name, MapHandle map) {
@@ -101,8 +139,7 @@ void* SharedMemory::map_buffer(MapHandle map, std::size_t size) {
                            FILE_MAP_ALL_ACCESS,  // read/write permission
                            0, 0, size);
     if (pBuf == NULL) {
-        LOG(Error) << "Could not map view of file (Windows Error #"
-                   << (int)GetLastError() << ")";
+        LOG(Error) << "Could not map view of file (Windows Error #" << (int)GetLastError() << ")";
         return NULL;
     }
     return pBuf;
@@ -118,18 +155,19 @@ void SharedMemory::unmap_buffer(void* buffer, std::size_t) {
 // UNIX IMPLEMENTATION
 //==============================================================================
 
-MapHandle SharedMemory::create_or_open(const std::string& name,
+bool SharedMemory::open_or_create(MapHandle& map, const std::string& name,
                                        std::size_t size) {
-    MapHandle map;
     map = shm_open(name.c_str(), O_RDWR, 0666);
     if (map != -1) {
         LOG(Verbose) << "Opened existing file mapping object " << name;
-        return map;
+        return true;
     }
     map = shm_open(name.c_str(), O_CREAT | O_RDWR, 0666);
-    if (map == -1)
+    if (map == -1) {
         LOG(Error) << "Could not create file mapping object " << name
-                   << " (Error # " << errno << " - " << strerror(errno) << ")";
+            << " (Error # " << errno << " - " << strerror(errno) << ")";
+        return false;
+    }
     else {
         int r = ftruncate(map, size);
         if (r != 0) {
@@ -137,9 +175,9 @@ MapHandle SharedMemory::create_or_open(const std::string& name,
                        << " (Error # " << errno << " - " << strerror(errno)
                        << ")";
         }
+        return false;
         // https://stackoverflow.com/questions/25502229/ftruncate-not-working-on-posix-shared-memory-in-mac-os-x
     }
-    return map;
 }
 
 void SharedMemory::close(const std::string& name, MapHandle map) {

@@ -20,6 +20,7 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
+
 #include <memory>
 #include <string>
 
@@ -32,14 +33,9 @@ namespace mel {
 /// Blocks concurrent access to shared resources from multiple processes
 class MEL_API NamedMutex : public Lockable, NonCopyable {
 public:
-    /// The mode by which a mutex is constructed
-    enum Mode {
-        OpenOrCreate,  ///< create the named mutex if it does not exit
-        OpenOnly       ///< only attempt to open an existing named mutex
-    };
 
     /// Defaut constructor
-    NamedMutex(std::string name, Mode mode = OpenOrCreate);
+    NamedMutex(std::string name, OpenMode mode = OpenOrCreate);
 
     /// Default destructor. Releases mutex if it is currently open.
     ~NamedMutex();

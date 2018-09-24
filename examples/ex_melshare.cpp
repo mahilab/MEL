@@ -33,18 +33,26 @@ int main(int argc, char* argv[]) {
     static ColorConsoleWriter<TxtFormatter> consoleAppender;
 
     if (argc > 1) {
-        MelShare ms("melshare");
+        // example with data and messages
         std::string id = argv[1];
         if (id == "1A") {
+            MelShare ms("melshare", OpenOrCreate);
             ms.write_message("Hello from C++! Please send me some data.");
             prompt("Press Enter after running 1B ...");
             print(ms.read_data());
         }
         else if (id == "1B") {
-            print(ms.read_message());
-            ms.write_data({1.0, 2.0, 3.0});
+            MelShare ms("melshare", OpenOnly);
+            if (ms.is_mapped()) {
+                print(ms.read_message());
+                ms.write_data({ 1.0, 2.0, 3.0 });
+            }
+            else
+                print("You must run 1A first!");
         }
+        // exmple with Packet
         else if (id == "2A") {
+            MelShare ms("melshare", OpenOrCreate);
             Packet packet;
             packet << 3.0f << "evan";
             ms.write(packet);
@@ -52,16 +60,21 @@ int main(int argc, char* argv[]) {
             print(ms.read_data());
         }
         else if (id == "2B") {
-            Packet packet;
-            float three;
-            std::string evan;
-            ms.read(packet);
-            packet >> three >> evan;
-            print(three);
-            print(evan);
-            packet.clear();
-            packet << 1.0 << 2.0 << 3.0 << 4.0 << 5.0;
-            ms.write(packet);
+            MelShare ms("melshare", OpenOnly);
+            if (ms.is_mapped()) {
+                Packet packet;
+                float three;
+                std::string evan;
+                ms.read(packet);
+                packet >> three >> evan;
+                print(three);
+                print(evan);
+                packet.clear();
+                packet << 1.0 << 2.0 << 3.0 << 4.0 << 5.0;
+                ms.write(packet);
+            }
+            else
+                print("You must run 2A first!");
         }
 
     }

@@ -38,7 +38,7 @@ class Packet;
 class MEL_API MelShare : NonCopyable {
 public:
     /// Default constructor.
-    MelShare(const std::string& name, std::size_t max_bytes = 256);
+    MelShare(const std::string& name, OpenMode mode = OpenOrCreate, std::size_t max_bytes = 256);
 
     /// Writes a Packet to the MelShare
     void write(Packet& packet);
@@ -57,6 +57,9 @@ public:
 
     /// Reads a string message from the MelShare
     std::string read_message();
+
+    /// Returns TRUE if the MelShare was successfully mapped on creation
+    bool is_mapped() const;
 
 private:
     /// Gets the number of bytes currently stored in the MelShare
