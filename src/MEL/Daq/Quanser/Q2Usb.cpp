@@ -29,7 +29,6 @@ Q2Usb::Q2Usb(QuanserOptions options, uint32 id) :
     AI.set_channel_numbers({ 0,1 });
     AO.set_channel_numbers({ 0,1 });
     DIO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7, 8 });
-    DIO.set_directions({ In,In,In,In,In,In,In,In,Out });
 }
 
 
@@ -56,6 +55,8 @@ bool Q2Usb::on_open() {
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
+    // set DIO directions (all DIO In, LED Out)
+    DIO.set_directions({ In,In,In,In,In,In,In,In,Out });
     // set default expire values (digital = LOW, analog = 0.0V)
     if (!AO.set_expire_values(std::vector<Voltage>(2, 0.0))) {
         close();
