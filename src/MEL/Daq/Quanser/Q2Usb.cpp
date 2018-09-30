@@ -29,6 +29,8 @@ Q2Usb::Q2Usb(QuanserOptions options, uint32 id) :
     AI.set_channel_numbers({ 0,1 });
     AO.set_channel_numbers({ 0,1 });
     DIO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7, 8 });
+    encoder.set_channel_numbers({ 0, 1 });
+    encoder.has_velocity(false);
 }
 
 
