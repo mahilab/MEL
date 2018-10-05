@@ -24,7 +24,7 @@
 #include <MEL/Utility/System.hpp>
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Communications/MelShare.hpp>
-
+#include <MEL/Math/Chirp.hpp>
 
 // To see this example in action, start this exectable then run MelScope.pyw
 // and open the provided example.scope file.
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     print("MELShare: \"melscope\"");
 
     // create data buffers so we don't have to make them in each loop iteration
-    std::vector<double> data_ms(2);
+    std::vector<double> data_ms(4);
     std::vector<double> data_mn(2);
 
     // create waveforms
@@ -67,17 +67,22 @@ int main(int argc, char* argv[]) {
     Waveform sqr_wave(Waveform::Square, seconds(2));
     Waveform tri_wave(Waveform::Triangle, seconds(2));
     Waveform saw_wave(Waveform::Sawtooth, seconds(2));
+    Chirp    chirp1(hertz(0.1), hertz(1), seconds(60));
+    Chirp    chirp2(hertz(0.1), hertz(1), seconds(60));
 
     print("Running MEL Scope Example ... ");
 
     Timer timer(milliseconds(1), Timer::Hybrid);
     while (!stop) {
         // evaluate waveforms
-        data_ms[0] = sin_wave.evaluate(timer.get_elapsed_time_actual());
-        data_ms[1] = sqr_wave.evaluate(timer.get_elapsed_time_actual());
+        Time t = timer.get_elapsed_time();
+        data_ms[0] = sin_wave(t);
+        data_ms[1] = sqr_wave(t);
+        data_ms[2] = chirp1(t);
+        data_ms[3] = chirp2(t);
 
-        data_mn[0] = tri_wave.evaluate(timer.get_elapsed_time_actual());
-        data_mn[1] = saw_wave.evaluate(timer.get_elapsed_time_actual());
+        data_mn[0] = tri_wave(t);
+        data_mn[1] = saw_wave(t);
 
         // update MelNet
         if (mn.check_request())

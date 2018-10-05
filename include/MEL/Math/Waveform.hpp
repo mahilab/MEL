@@ -52,7 +52,7 @@ public:
 public:
     Type type;         ///< The waveform Type
     Time period;       ///< The waveform period
-    double amplitude;  ///< The waveform amplitude
+    double amplitude;  ///< The waveform peak amplitude
     double offset;     ///< The waveform offset from zero
 };
 

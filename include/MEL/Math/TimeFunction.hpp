@@ -24,7 +24,7 @@
 namespace mel {
 
 /// Base class for functions which are evaluated in the time domain
-class TimeFunction {
+class MEL_API TimeFunction {
 public:
 
     /// Pure virtual function which must be implemented
@@ -34,7 +34,7 @@ public:
     double operator()(Time t);
 };
 
+} // namespace mel
 
 #endif // MEL_TIME_FUNCTION_HPP
 
-} // namespace mel
