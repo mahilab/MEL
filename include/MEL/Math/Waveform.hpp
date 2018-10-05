@@ -19,7 +19,7 @@
 #define MEL_WAVEFORM_HPP
 
 #include <MEL/Config.hpp>
-#include <MEL/Core/Time.hpp>
+#include <MEL/Math/TimeFunction.hpp>
 
 namespace mel {
 
@@ -28,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a cyclic waveform with amplitude and offset in the time domain
-class MEL_API Waveform {
+class MEL_API Waveform : public TimeFunction {
 public:
     /// The Type of Waveform
     enum Type {
@@ -47,16 +47,13 @@ public:
              double offset    = 0.0);
 
     /// Evaluates the Waveform at Time t
-    double operator()(Time t);
-
-    /// Evaluates the Waform at Time t
-    double evaluate(Time t);
+    double evaluate(Time t) override;
 
 public:
-    Type type_;         ///< The waveform Type
-    Time period_;       ///< The waveform period
-    double amplitude_;  ///< The waveform amplitude
-    double offset_;     ///< The waveform offset from zero
+    Type type;         ///< The waveform Type
+    Time period;       ///< The waveform period
+    double amplitude;  ///< The waveform amplitude
+    double offset;     ///< The waveform offset from zero
 };
 
 }  // namespace mel
