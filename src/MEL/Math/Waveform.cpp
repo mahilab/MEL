@@ -16,6 +16,15 @@ Waveform::Waveform(Type _type, Time _period, double _amplitude, double _offset) 
 {
 }
 
+Waveform::Waveform(Type _type, Frequency _frequency, double _amplitude, double _offset) :
+    type(_type),
+    period(_frequency.to_time()),
+    amplitude(_amplitude),
+    offset(_offset)
+{
+
+}
+
 double Waveform::evaluate(Time t) {
     double seconds = t.as_seconds();
     double frequency = 1.0 / period.as_seconds();

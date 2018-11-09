@@ -34,6 +34,18 @@ public:
     /// Sets proportional and derivative control gains
     void set_gains(double kp, double kd);
 
+    /// Sets the proportional control gain
+    void set_kp(double kp);
+
+    /// Sets the derivative control gain
+    void set_kd(double kd);
+
+    /// Gets the proportional control gian
+    double get_kp() const;
+
+    /// Gets the derivative control gain
+    double get_kd() const;
+
     /// Calculates the control effort given the current state and desired reference
     double operator()(double x_ref, double x, double xdot_ref, double xdot);
 

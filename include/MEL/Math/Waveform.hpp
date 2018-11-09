@@ -20,6 +20,7 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/TimeFunction.hpp>
+#include <MEL/Core/Frequency.hpp>
 
 namespace mel {
 
@@ -40,9 +41,14 @@ public:
     };
 
 public:
-    /// Default constructor
+    /// Constructs waveform a period Time
     Waveform(Type type,
              Time period,
+             double amplitude = 1.0,
+             double offset    = 0.0);
+
+    Waveform(Type type,
+             Frequency frequency,
              double amplitude = 1.0,
              double offset    = 0.0);
 
