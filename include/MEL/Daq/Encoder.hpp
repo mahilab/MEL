@@ -89,8 +89,7 @@ public:
     Channel get_channel(uint32 channel_number);
 
     /// Returns multiple Encoder::Channels
-    std::vector<Channel> get_channels(
-        const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
 
     /// Returns a Encoder::Channel
     Channel operator[](uint32 channel_number);
@@ -110,8 +109,8 @@ protected:
     virtual bool on_enable() override;
 
 protected:
-    bool has_velocity_;                       ///< True if Encoder module has velocity estimation
 
+    bool has_velocity_;               ///< True if Encoder module has velocity estimation
     Buffer<QuadFactor> factors_;      ///< The encoder quadrature factors
     Buffer<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
     Buffer<double> positions_;        ///< The calculated positions of the Encoder channels
