@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,18 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-/// Encapsulates a DC Motor
+/// Encapsulates a brushed or brushless DC Motor
 class MEL_API Motor : public Actuator {
 public:
-    /// constructor
+
+    /// Default Constructor
+    Motor();
+
+    /// Constructor
     Motor(const std::string& name,
           double kt,
           Amplifier amplifier,
           Limiter current_limiter = Limiter());
-
 
     /// Sets the desired torque to be generated at the Motor, converts from
     /// torque to current, and calls set_current()

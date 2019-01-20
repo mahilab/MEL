@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 
     // create ATI sensor
     AtiSensor ati;
-    ati.set_channels(q8.AI[{0, 1, 2, 3, 4, 5}]); 
-    ati.load_calibration("FT12345.cal");     
+    ati.set_channels(q8.AI[{0, 1, 2, 3, 4, 5}]);
+    ati.load_calibration("FT12345.cal");
 
     // alternatively, the calibration can set explicitly
     // AtiSensor::Calibration cal;
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     // make MelShares for scoping
     MelShare ms_volts("ati_volts");
     MelShare ms_force("ati_force");
-    MelShare ms_torque("ati_torque");    
+    MelShare ms_torque("ati_torque");
 
     // enable Q8Usb
     q8.enable();

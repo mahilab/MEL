@@ -19,8 +19,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_HTTP_HPP
-#define MEL_HTTP_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Communications/IpAddress.hpp>
@@ -331,8 +330,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_HTTP_HPP
 
 /// \class mel::Http
 /// \ingroup network

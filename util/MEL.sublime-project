@@ -99,6 +99,7 @@
 	],
 	"settings":
 	{
+		"ecc_verbose":true,
 		"ecc_common_flags":
 		[
 			"-DMEL_EXPORTS",

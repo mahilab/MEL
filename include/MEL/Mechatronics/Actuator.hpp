@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,10 @@ namespace mel {
 
 class MEL_API Actuator : public Device {
 public:
+
+    /// Default Constructor
+    Actuator();
+
     /// Constructor for actuator without torque limits
     Actuator(const std::string& name);
 

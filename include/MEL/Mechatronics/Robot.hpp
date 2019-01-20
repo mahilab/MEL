@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -76,23 +76,21 @@ public:
     /// true if any exceeded, false otherwise
     bool any_limit_exceeded();
 
+private:
+
+    /// Virtual function to enable all robot joints.
+    bool on_enable() final;
+
+    /// Virtual function to disable all robot joints.
+    bool on_disable() final;
+
 protected:
 
-    /// Virtual function to enable all robot members.
-    bool on_enable() override;
-
-    /// Virtual function to disable all robot members.
-    bool on_disable() override;
-
-protected:
-    std::vector<Joint> joints_;  ///< Vector of Joints.
-
-    std::vector<double>
-        joint_positions_;  ///< Stores the robot joint positions since the last
-                           ///< call of get_joint_positions().
-    std::vector<double>
-        joint_velocities_;  ///< Stores the robot joint velocities since the
-                            ///< last call of get_joint_velocities().
+    std::vector<Joint> joints_;             ///< Vector of Joints.
+    std::vector<double> joint_positions_;   ///< Stores the robot joint positions since the last
+                                            ///< call of get_joint_positions().
+    std::vector<double> joint_velocities_;  ///< Stores the robot joint velocities since the
+                                            ///< last call of get_joint_velocities().
 };
 
 }  // namespace mel

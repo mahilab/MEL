@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
             (double)daq.encoder[0].get_value(),
             daq.encoder[0].get_position(),
             rob[0].get_position(),
-            
+
             });
         daq.update_output();
         timer.wait();

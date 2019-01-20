@@ -9,22 +9,26 @@ Differentiator::Differentiator(Technique technique)
       last_x_(0),
       last_last_t_(Time::Zero),
       last_t_(Time::Zero),
-      derivative_(0.0) {}
+      derivative_(0.0)
+{}
 
-double Differentiator::update(const double x, const Time& t) {
+void Differentiator::set_technique(Technique technique) {
+    technique_ = technique;
+    reset();
+}
+
+double Differentiator::update(double x, const Time& t) {
     switch (technique_) {
         case BackwardDifference:
             if (step_count_ > 0) {
-                derivative_ =
-                    (x - last_x_) / (t.as_seconds() - last_t_.as_seconds());
+                derivative_ = (x - last_x_) / (t.as_seconds() - last_t_.as_seconds());
             }
         case CentralDifference:
             if (step_count_ > 1) {
-                derivative_ = (x - last_last_x_) /
-                              (t.as_seconds() - last_last_t_.as_seconds());
-            } else if (step_count_ > 0) {
-                derivative_ =
-                    (x - last_x_) / (t.as_seconds() - last_t_.as_seconds());
+                derivative_ = (x - last_last_x_) / (t.as_seconds() - last_last_t_.as_seconds());
+            } 
+            else if (step_count_ > 0) {
+                derivative_ = (x - last_x_) / (t.as_seconds() - last_t_.as_seconds());
             }
     }
     last_last_x_ = last_x_;

@@ -15,9 +15,15 @@ Integrator::Integrator(double initial_condition,
       last_x_(0),
       last_last_t_(Time::Zero),
       last_t_(Time::Zero),
-      integral_(initial_condition) {}
+      integral_(initial_condition)
+{}
 
-double Integrator::update(const double x, const Time& t) {
+void Integrator::set_technique(Technique technique) {
+    technique_ = technique;
+    reset();
+}
+
+double Integrator::update(double x, const Time& t) {
     switch (technique_) {
         case Technique::Trapezoidal:
             if (step_count_ > 0)

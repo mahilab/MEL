@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_Q8USB_HPP
-#define MEL_Q8USB_HPP
+#pragma once
 
 #include <MEL/Daq/Quanser/QuanserDaq.hpp>
 #include <MEL/Daq/Quanser/QuanserAI.hpp>
@@ -119,7 +118,5 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_Q8USB_HPP
 
 /// http://quanser-update.azurewebsites.net/quarc/documentation/q8_usb.html
