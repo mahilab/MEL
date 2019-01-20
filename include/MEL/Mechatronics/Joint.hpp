@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_JOINT_HPP
-#define MEL_JOINT_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
@@ -167,5 +166,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_JOINT_HPP

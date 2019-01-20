@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TORQUESENSOR_HPP
-#define MEL_TORQUESENSOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
@@ -50,5 +49,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_TORQUESENSOR_HPP

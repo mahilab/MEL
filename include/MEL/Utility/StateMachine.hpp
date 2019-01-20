@@ -15,8 +15,7 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_STATEMACHINE_HPP
-#define MEL_STATEMACHINE_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <string>
@@ -96,8 +95,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_STATEMACHINE_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

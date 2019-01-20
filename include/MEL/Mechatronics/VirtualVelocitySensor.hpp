@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_VIRTUALVELOCITYSENSOR_HPP
-#define MEL_VIRTUALVELOCITYSENSOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
@@ -64,5 +63,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_VIRTUALVELOCITYSENSOR_HPP

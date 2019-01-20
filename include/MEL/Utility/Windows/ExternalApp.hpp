@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_EXTERNALAPP_HPP
-#define MEL_EXTERNALAPP_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <string>
@@ -40,5 +39,3 @@ public:
 };
 
 }  // namespace mel
-
-#endif  // MEL_EXTERNALAPP_HPP

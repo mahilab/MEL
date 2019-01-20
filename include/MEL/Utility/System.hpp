@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_SYSTEM_HPP
-#define MEL_SYSTEM_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
@@ -92,5 +91,3 @@ uint64 MEL_API ram_used_total();
 uint64 MEL_API ram_used_process();
 
 }  // namespace mel
-
-#endif  // MEL_SYSTEM_HPP

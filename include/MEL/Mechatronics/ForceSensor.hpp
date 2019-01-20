@@ -16,8 +16,7 @@
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 //            Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_FORCESENSOR_HPP
-#define MEL_FORCESENSOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
@@ -51,5 +50,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_FORCESENSOR_HPP

@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_SINGLETON_HPP
-#define MEL_SINGLETON_HPP
+#pragma once
 
 #include <MEL/Core/NonCopyable.hpp>
 #include <cassert>
@@ -50,5 +49,3 @@ template <class T>
 T* Singleton<T>::instance_ = NULL;
 
 }  // namespace mel
-
-#endif  // MEL_SINGLETON_HPP

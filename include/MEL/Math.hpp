@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MATH_HPP
-#define MEL_MATH_HPP
+#pragma once
 
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Constants.hpp>
@@ -26,5 +25,3 @@
 #include <MEL/Math/Integrator.hpp>
 #include <MEL/Math/Process.hpp>
 #include <MEL/Math/Waveform.hpp>
-
-#endif // MEL_MATH_HPP

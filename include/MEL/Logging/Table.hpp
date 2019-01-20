@@ -15,8 +15,7 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_TABLE_HPP
-#define MEL_TABLE_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <vector>
@@ -119,5 +118,3 @@ private:
 MEL_API std::ostream& operator<<(std::ostream& os, const Table& table);
 
 } // namespace mel
-
-#endif // MEL_TABLE_HPP

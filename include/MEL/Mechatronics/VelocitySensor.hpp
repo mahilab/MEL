@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_VELOCITYSENSOR_HPP
-#define MEL_VELOCITYSENSOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
@@ -45,5 +44,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_VELOCITYSENSOR_HPP

@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MESSAGEONLYFORMATTER_HPP
-#define MEL_MESSAGEONLYFORMATTER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
@@ -38,8 +37,6 @@ public:
     }
 };
 }  // namespace mel
-
-#endif  // MEL_MESSAGEONLYFORMATTER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

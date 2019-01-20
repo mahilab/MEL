@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_MOTOR_HPP
-#define MEL_MOTOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Mechatronics/Actuator.hpp>
@@ -75,5 +74,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_MOTOR_HPP

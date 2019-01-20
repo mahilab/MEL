@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_FUNCMESSAGEFORMATTER_HPP
-#define MEL_FUNCMESSAGEFORMATTER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
@@ -40,8 +39,6 @@ public:
     }
 };
 }  // namespace mel
-
-#endif  // MEL_FUNCMESSAGEFORMATTER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

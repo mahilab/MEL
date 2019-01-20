@@ -17,8 +17,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //==============================================================================
 
-#ifndef MEL_AMPLIFIER_HPP
-#define MEL_AMPLIFIER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
@@ -171,5 +170,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_AMPLIFIER_HPP

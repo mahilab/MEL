@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CONSOLEWRITER_HPP
-#define MEL_CONSOLEWRITER_HPP
+#pragma once
 
 #include <MEL/Logging/Writers/Writer.hpp>
 #include <MEL/Utility/Mutex.hpp>
@@ -47,8 +46,6 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_CONSOLEWRITER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

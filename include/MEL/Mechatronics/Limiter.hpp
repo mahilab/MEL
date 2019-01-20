@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_LIMITER_HPP
-#define MEL_LIMITER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
@@ -87,5 +86,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_LIMITER_HPP

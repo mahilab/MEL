@@ -15,8 +15,7 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_DATALOGGER_HPP
-#define MEL_DATALOGGER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/File.hpp>
@@ -181,5 +180,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_DATALOGGER_HPP

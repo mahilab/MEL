@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_ACTUATOR_HPP
-#define MEL_ACTUATOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
@@ -58,5 +57,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_ACTUATOR_HPP

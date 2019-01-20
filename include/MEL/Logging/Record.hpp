@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_RECORD_HPP
-#define MEL_RECORD_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <sys/stat.h>
@@ -156,8 +155,6 @@ private:
 inline MEL_API std::string process_function_name(const char* func);
 
 }  // namespace mel
-
-#endif  // MEL_RECORD_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

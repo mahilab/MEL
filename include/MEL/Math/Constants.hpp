@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_CONSTANTS_HPP
-#define MEL_CONSTANTS_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 
@@ -44,5 +43,3 @@ extern const double MEL_API INCH2METER;  ///< multiply inches by this value to c
 extern const double MEL_API METER2INCH;  ///< multiply meters by this value to convert to inches
 
 }  // namespace mel
-
-#endif  // MEL_CONSTANTS_HPP

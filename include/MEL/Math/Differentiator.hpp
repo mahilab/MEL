@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_DIFFERENTIATOR_HPP
-#define MEL_DIFFERENTIATOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
@@ -56,5 +55,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_DIFFERENTIATOR_HPP

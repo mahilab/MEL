@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MUTEX_HPP
-#define MEL_MUTEX_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
@@ -49,8 +48,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_MUTEX_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

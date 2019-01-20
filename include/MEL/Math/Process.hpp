@@ -15,8 +15,7 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_PROCESS_HPP
-#define MEL_PROCESS_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
@@ -48,5 +47,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_PROCESS_HPP

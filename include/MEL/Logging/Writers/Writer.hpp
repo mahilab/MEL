@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_WRITER_HPP
-#define MEL_WRITER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
@@ -49,8 +48,6 @@ protected:
     Severity max_severity_;
 };
 }  // namespace mel
-
-#endif  // MEL_WRITER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

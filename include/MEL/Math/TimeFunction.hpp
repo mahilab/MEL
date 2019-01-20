@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TIME_FUNCTION_HPP
-#define MEL_TIME_FUNCTION_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
@@ -35,6 +34,3 @@ public:
 };
 
 } // namespace mel
-
-#endif // MEL_TIME_FUNCTION_HPP
-

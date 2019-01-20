@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CONFIG_HPP
-#define MEL_CONFIG_HPP
+#pragma once
 
 //==============================================================================
 // IDENTIFY OPERATING SYSTEM
@@ -66,5 +65,3 @@
 // Version of the library
 #define MEL_VERSION_MAJOR 1
 #define MEL_VERSION_MINOR 0
-
-#endif // MEL_CONFIG_HPP

@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_RINGBUFFER_HPP
-#define MEL_RINGBUFFER_HPP
+#pragma once
 
 #include <vector>
 
@@ -151,8 +150,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_RINGBUFFER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

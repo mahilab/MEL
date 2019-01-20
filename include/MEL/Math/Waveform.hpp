@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_WAVEFORM_HPP
-#define MEL_WAVEFORM_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/TimeFunction.hpp>
@@ -63,5 +62,3 @@ public:
 };
 
 }  // namespace mel
-
-#endif  // MEL_WAVEFORM_HPP

@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_SEVERITY_HPP
-#define MEL_SEVERITY_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 
@@ -63,5 +62,3 @@ inline MEL_API Severity string_to_severity(const char* str) {
     return None;
 }
 }  // namespace mel
-
-#endif  // MEL_SEVERITY_HPP

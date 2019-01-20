@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_COLORCONSOLEWRITER_HPP
-#define MEL_COLORCONSOLEWRITER_HPP
+#pragma once
 
 #include <MEL/Logging/Writers/ConsoleWriter.hpp>
 
@@ -67,8 +66,6 @@ private:
 
 };
 }  // namespace mel
-
-#endif  // MEL_COLORCONSOLEWRITER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATIOn

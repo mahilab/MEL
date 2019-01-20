@@ -15,8 +15,7 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_FILTER_HPP
-#define MEL_FILTER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
@@ -77,5 +76,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_FILTER_HPP

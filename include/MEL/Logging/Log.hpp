@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_LOG_HPP
-#define MEL_LOG_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Formatters/CsvFormatter.hpp>
@@ -195,4 +194,3 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
     } else                          \
         LOG(severity)
 
-#endif  // MEL_LOG_HPP

@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_LOCK_HPP
-#define MEL_LOCK_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/NonCopyable.hpp>
@@ -54,8 +53,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_LOCK_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

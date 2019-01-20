@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_FUNCTIONS_HPP
-#define MEL_FUNCTIONS_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
@@ -144,5 +143,3 @@ extern MEL_API void gauss_mlt_params(
     std::vector<std::vector<double>>& sample_cov);
 
 }  // namespace mel
-
-#endif  // MEL_FUNCTIONS_HPP

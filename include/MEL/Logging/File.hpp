@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_FILE_HPP
-#define MEL_FILE_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/NonCopyable.hpp>
@@ -67,5 +66,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_FILE_HPP

@@ -15,6 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
+#pragma once
+
 #include <MEL/Config.hpp>
 
 namespace mel {

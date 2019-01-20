@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TXTFORMATTER_HPP
-#define MEL_TXTFORMATTER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
@@ -43,8 +42,6 @@ public:
     }
 };
 }  // namespace mel
-
-#endif  // MEL_TXTFORMATTER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

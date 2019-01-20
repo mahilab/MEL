@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef COMMUNICATIONS_HPP
-#define COMMUNICATIONS_HPP
+#pragma once
 
 #include <MEL/Communications/Http.hpp>
 #include <MEL/Communications/IpAddress.hpp>
@@ -29,5 +28,3 @@
 #include <MEL/Communications/TcpListener.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
-
-#endif // COMMUNICATIONS_HPP

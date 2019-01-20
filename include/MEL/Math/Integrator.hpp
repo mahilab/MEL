@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_INTEGRATOR_HPP
-#define MEL_INTEGRATOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
@@ -59,5 +58,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_INTEGRATOR_HPP

@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CHIRP_HPP
-#define MEL_CHIRP_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/TimeFunction.hpp>
@@ -54,5 +53,3 @@ namespace mel {
     };
 
 }  // namespace mel
-
-#endif  // MEL_CHIRP_HPP

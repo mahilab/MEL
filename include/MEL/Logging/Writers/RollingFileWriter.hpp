@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_ROLLINGFILEWRITER_HPP
-#define MEL_ROLLINGFILEWRITER_HPP
+#pragma once
 
 #include <MEL/Logging/File.hpp>
 #include <MEL/Logging/Writers/Writer.hpp>
@@ -126,8 +125,6 @@ private:
     bool first_write_;
 };
 }  // namespace mel
-
-#endif // MEL_ROLLINGFILEWRITER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

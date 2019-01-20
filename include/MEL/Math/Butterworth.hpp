@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_BUTTERWORTH_HPP
-#define MEL_BUTTERWORTH_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/Filter.hpp>
@@ -54,5 +53,3 @@ public:
 };
 
 };  // namespace mel
-
-#endif  // MEL_BUTTERWORTH_HPP

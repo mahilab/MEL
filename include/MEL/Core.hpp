@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CORE_HPP
-#define MEL_CORE_HPP
+#pragma once
 
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Console.hpp>
@@ -27,5 +26,3 @@
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Core/Timestamp.hpp>
 #include <MEL/Core/Types.hpp>
-
-#endif // MEL_CORE_HPP

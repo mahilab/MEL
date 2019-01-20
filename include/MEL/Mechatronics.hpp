@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MECHATRONICS_HPP
-#define MEL_MECHATRONICS_HPP
+#pragma once
 
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Mechatronics/Amplifier.hpp>
@@ -29,5 +28,3 @@
 #include <MEL/Mechatronics/Robot.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <MEL/Mechatronics/VirtualVelocitySensor.hpp>
-
-#endif // MEL_MECHATRONICS_HPP

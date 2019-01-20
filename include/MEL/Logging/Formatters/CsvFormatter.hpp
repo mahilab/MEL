@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CSVFORMATTER_HPP
-#define MEL_CSVFORMATTER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Logging/Record.hpp>
@@ -65,8 +64,6 @@ public:
     static const size_t kMaxMessageSize = 32000;
 };
 }  // namespace  mel
-
-#endif  // MEL_CSVFORMATTER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION
