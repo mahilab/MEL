@@ -22,7 +22,7 @@ namespace mel {
 
 class NamedMutex::Impl : NonCopyable {
 public:
-    Impl(const std::string& name, NamedMutex::Mode mode);
+    Impl(const std::string& name, OpenMode mode);
     ~Impl();
     void lock();
     void unlock();
@@ -43,7 +43,7 @@ private:
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode) :
+NamedMutex::Impl::Impl(const std::string& name, OpenMode mode) :
     name_(name)
 {
     switch (mode) {
@@ -209,7 +209,7 @@ void NamedMutex::Impl::unlock() {
 // CLASS DECLARATIONS
 //==============================================================================
 
-NamedMutex::NamedMutex(std::string name, NamedMutex::Mode mode)
+NamedMutex::NamedMutex(std::string name, OpenMode mode)
     : impl_(new NamedMutex::Impl(name, mode)), name_(name) {}
 
 NamedMutex::~NamedMutex() {}

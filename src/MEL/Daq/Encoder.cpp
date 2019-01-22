@@ -168,24 +168,12 @@ void Encoder::compute_conversions() {
 //==============================================================================
 
 Encoder::Channel::Channel() :
-    ChannelBase(),
-    PositionSensor("invalid_encoder"),
-    VelocitySensor("invalid_encoder")
+    ChannelBase()
 { }
 
 Encoder::Channel::Channel(Encoder* module, uint32 channel_number) :
-    ChannelBase(module, channel_number),
-    PositionSensor(module->get_name() + "[" + std::to_string(channel_number) + "]"),
-    VelocitySensor(module->get_name() + "[" + std::to_string(channel_number) + "]")
+    ChannelBase(module, channel_number)
 { }
-
-bool Encoder::Channel::on_enable() {
-    return true;
-}
-
-bool Encoder::Channel::on_disable() {
-    return true;
-}
 
 double Encoder::Channel::get_position() {
     position_ = static_cast<Encoder*>(module_)->get_position(channel_number_);

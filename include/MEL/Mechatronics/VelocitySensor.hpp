@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_VELOCITYSENSOR_HPP
-#define MEL_VELOCITYSENSOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
@@ -28,10 +27,13 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API VelocitySensor : virtual public Device {
+class MEL_API VelocitySensor {
 public:
-    /// Prefered constructor
-    VelocitySensor(const std::string& name);
+    /// Constructor
+    VelocitySensor();
+
+    /// Destructor
+    virtual ~VelocitySensor();
 
     /// This function should return the velocity of the VelocitySensor
     virtual double get_velocity() = 0;
@@ -42,5 +44,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_VELOCITYSENSOR_HPP

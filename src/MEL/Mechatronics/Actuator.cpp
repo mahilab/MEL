@@ -2,6 +2,12 @@
 
 namespace mel {
 
+Actuator::Actuator() : 
+    Device("UNAMED_ACTUATOR"),
+    torque_command_(0.0)
+{
+}
+
 Actuator::Actuator(const std::string& name) :
     Device(name),
     torque_command_(0.0)

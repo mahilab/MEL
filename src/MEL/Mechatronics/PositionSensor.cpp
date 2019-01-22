@@ -8,10 +8,13 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-PositionSensor::PositionSensor(const std::string& name) :
-    Device(name),
+PositionSensor::PositionSensor() :
     position_(0.0)
 { }
+
+PositionSensor::~PositionSensor() {
+
+}
 
 double PositionSensor::get_position() {
     return position_;

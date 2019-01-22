@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_PACKET_HPP
-#define MEL_PACKET_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
@@ -43,7 +42,7 @@ class MelShare;
 
 /// Utility class to build blocks of data to transfer over the network
 class MEL_API Packet {
-    // A bool-like type that cannot be converted to integer or pointer types
+    /// A bool-like type that cannot be converted to integer or pointer types
     typedef bool (Packet::*BoolType)(std::size_t);
 
 public:
@@ -71,7 +70,7 @@ public:
     const void* get_data() const;
 
     /// Get the size of the data contained in the packet. Returns the number of
-    //  bytes pointed to by what get_data returns.
+    /// bytes pointed to by what get_data returns.
     std::size_t get_data_size() const;
 
     /// Tell if the reading position has reached the end of the packet. True if
@@ -223,8 +222,6 @@ Packet& Packet::operator<<(const std::vector<T>& data) {
 }
 
 }  // namespace mel
-
-#endif  // MEL_PACKET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

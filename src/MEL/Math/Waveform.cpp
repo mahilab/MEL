@@ -8,19 +8,28 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-Waveform::Waveform(Type type, Time period, double amplitude, double offset) :
-    type_(type),
-    period_(period),
-    amplitude_(amplitude),
-    offset_(offset)
+Waveform::Waveform(Type _type, Time _period, double _amplitude, double _offset) :
+    type(_type),
+    period(_period),
+    amplitude(_amplitude),
+    offset(_offset)
 {
+}
+
+Waveform::Waveform(Type _type, Frequency _frequency, double _amplitude, double _offset) :
+    type(_type),
+    period(_frequency.to_time()),
+    amplitude(_amplitude),
+    offset(_offset)
+{
+
 }
 
 double Waveform::evaluate(Time t) {
     double seconds = t.as_seconds();
-    double frequency = 1.0 / period_.as_seconds();
+    double frequency = 1.0 / period.as_seconds();
     double value = 0.0;
-    switch(type_) {
+    switch(type) {
         case Sin:
             value = sin(2.0 * PI * frequency * seconds);
             break;
@@ -43,14 +52,12 @@ double Waveform::evaluate(Time t) {
             value = -2 / PI * atan(cos(PI * frequency * seconds) / sin(PI * frequency * seconds));
             break;
     }
-    value *= amplitude_;
-    value += offset_;
+    value *= amplitude;
+    value += offset;
     return value;
 }
 
-double Waveform::operator()(Time t) {
-    return evaluate(t);
-}
+
 
 } // namespace mel
 

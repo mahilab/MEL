@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_ENCODER_HPP
-#define MEL_ENCODER_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Mechatronics/PositionSensor.hpp>
@@ -89,8 +88,7 @@ public:
     Channel get_channel(uint32 channel_number);
 
     /// Returns multiple Encoder::Channels
-    std::vector<Channel> get_channels(
-        const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
 
     /// Returns a Encoder::Channel
     Channel operator[](uint32 channel_number);
@@ -110,8 +108,8 @@ protected:
     virtual bool on_enable() override;
 
 protected:
-    bool has_velocity_;                       ///< True if Encoder module has velocity estimation
 
+    bool has_velocity_;               ///< True if Encoder module has velocity estimation
     Buffer<QuadFactor> factors_;      ///< The encoder quadrature factors
     Buffer<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
     Buffer<double> positions_;        ///< The calculated positions of the Encoder channels
@@ -153,17 +151,7 @@ public:
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);
 
-    protected:
-
-        /// Enables the encoder
-        bool on_enable() override;
-
-        /// Disables the encoder
-        bool on_disable() override;
-
     };
 };
 
 }  // namespace mel
-
-#endif  // MEL_ENCODER_HPP

@@ -5,6 +5,15 @@
 
 namespace mel {
 
+Motor::Motor() :
+    Actuator("UNAMED_MOTOR"),
+    kt_(0.0),
+    amplifier_(),
+    current_limiter_()
+{
+
+}
+
 Motor::Motor(const std::string& name,
              double kt,
              Amplifier amplifier,

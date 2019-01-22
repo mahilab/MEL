@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
 #include <MEL/Communications/MelShare.hpp>
 #include <MEL/Math/Waveform.hpp>
 #include <MEL/Math/Random.hpp>
+#include <MEL/Mechatronics.hpp>
 
 using namespace mel;
 
@@ -44,6 +45,13 @@ int main(int argc, char* argv[]) {
 
     daq.enable();
 
+    Robot rob("rob");
+    Amplifier amp("amp", High, daq.DO[0], 2, daq.AO[0]);
+    Motor motor("motor", 5, amp);
+    Encoder::Channel p = daq.encoder[0];
+    Joint joint("joint0", &motor, &p, &p, 2);
+    rob.add_joint(joint);
+
     Timer timer(hertz(1000));
     while(true) {
         daq.update_input();
@@ -53,7 +61,10 @@ int main(int argc, char* argv[]) {
             daq.AI[2],
             (double)daq.DI[0],
             (double)daq.encoder[0].get_value(),
-            daq.encoder[0].get_position() });
+            daq.encoder[0].get_position(),
+            rob[0].get_position(),
+
+            });
         daq.update_output();
         timer.wait();
     }

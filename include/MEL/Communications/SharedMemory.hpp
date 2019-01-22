@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,11 +15,11 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_SHAREDMEMORY_HPP
-#define MEL_SHAREDMEMORY_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Core/Types.hpp>
 #include <string>
 #include <vector>
 
@@ -43,7 +43,7 @@ typedef int MapHandle;
 class MEL_API SharedMemory : NonCopyable {
 public:
     /// Default constructor. Creates or opens a memory map containing size bytes
-    SharedMemory(const std::string& name, std::size_t max_bytes = 256);
+    SharedMemory(const std::string& name, OpenMode mode, std::size_t max_bytes = 256);
 
     /// Default destructor. Closes the named memory map.
     ~SharedMemory();
@@ -60,9 +60,15 @@ public:
     /// Returns the string name of the named memory map
     std::string get_name() const;
 
+    /// Returns TRUE if the SharedMemory was successfully mapped on creation
+    bool is_mapped() const;
+
 private:
-    /// Creates or opens a memory map
-    static MapHandle create_or_open(const std::string& name, std::size_t size);
+    /// Opens or creates a memory map
+    static bool open_or_create(MapHandle& map, const std::string& name, std::size_t size);
+
+    /// Opens a memory map if it exits
+    static bool open_only(MapHandle& map, const std::string& name);
 
     /// Closes a memory map
     static void close(const std::string& name, MapHandle map);
@@ -78,11 +84,10 @@ private:
     const std::size_t max_bytes_;  ///< The size of the mapped region in bytes
     MapHandle map_;                ///< OS specfic handle to the memory map
     void* buffer_;                 ///< The memory buffer of the map
+    bool is_mapped_;               ///< true if the SharedMemory was successfully mapped
 };
 
 }  // namespace mel
-
-#endif  // MEL_SHAREDMEMORY_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

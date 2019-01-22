@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,8 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_INTEGRATOR_HPP
-#define MEL_INTEGRATOR_HPP
+#pragma once
 
 #include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
@@ -36,8 +35,11 @@ public:
     /// Constructor
     Integrator(double initial_value = 0.0, Technique technique = Trapezoidal);
 
+    /// Set technique
+    void set_technique(Technique technique);
+
     /// Integrats x with respect to time
-    double update(const double x, const Time& t) override;
+    double update(double x, const Time& t) override;
 
     /// Resets the integrators
     void reset() override;
@@ -56,5 +58,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_INTEGRATOR_HPP

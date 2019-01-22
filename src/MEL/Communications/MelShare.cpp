@@ -8,9 +8,9 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-MelShare::MelShare(const std::string& name, std::size_t max_bytes) :
-    shm_(name, max_bytes),
-    mutex_(name + "_mutex")
+MelShare::MelShare(const std::string& name, OpenMode mode, std::size_t max_bytes) :
+    shm_(name, mode, max_bytes),
+    mutex_(name + "_mutex", mode)
 {
 }
 
@@ -70,6 +70,10 @@ std::string MelShare::read_message() {
     }
     else
         return std::string();
+}
+
+bool MelShare::is_mapped() const {
+    return shm_.is_mapped();
 }
 
 uint32 MelShare::get_size() {

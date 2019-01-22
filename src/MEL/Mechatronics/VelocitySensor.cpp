@@ -8,10 +8,13 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-VelocitySensor::VelocitySensor(const std::string& name) :
-    Device(name),
+VelocitySensor::VelocitySensor() :
     velocity_(0.0)
 { }
+
+VelocitySensor::~VelocitySensor() {
+
+}
 
 double VelocitySensor::get_velocity() {
     return velocity_;

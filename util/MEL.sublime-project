@@ -99,14 +99,15 @@
 	],
 	"settings":
 	{
+		"ecc_verbose":true,
 		"ecc_common_flags":
 		[
 			"-DMEL_EXPORTS",
-			"-I$project_base_path/include",
-			"-I/Program Files/Quanser/QUARC/include"
+			//"-I$project_base_path/include",
+			//"-I/Program Files/Quanser/QUARC/include"
 		],
-		"ecc_flags_sources":
-		[
-		]
+		// "ecc_flags_sources":
+		// [
+		// ]
 	}
 }

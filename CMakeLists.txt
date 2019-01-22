@@ -47,6 +47,8 @@ file (GLOB SRC_BASE
 file(GLOB SRC_COMMUNICATIONS
     "${CMAKE_SOURCE_DIR}/include/MEL/Communications/*.hpp"
     "${CMAKE_SOURCE_DIR}/src/MEL/Communications/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Communications/Detail/*.h"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Communications/Detail/*.c"
 )
 
 file(GLOB SRC_CORE
@@ -256,7 +258,7 @@ endif()
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O3") # all warnings
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # warning level 4
+    # set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # warning level 4
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP") # multicore build
 endif()
 

@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -16,8 +16,7 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_TYPES_HPP
-#define MEL_TYPES_HPP
+#pragma once
 
 #include <string>
 #include <typeinfo>
@@ -42,6 +41,16 @@ typedef unsigned   __int64 uint64;  ///<                          0 to 18,446,74
 typedef signed   long long int64;   ///< -9,223,372,036,854,775,808 to +9,223,372,036,854,775,807
 typedef unsigned long long uint64;  ///<                          0 to 18,446,744,073,709,551,615
 #endif
+
+//==============================================================================
+// GENERIC TYPES
+//==============================================================================
+
+/// Represents mode in which process resources can be opened or created
+enum OpenMode {
+    OpenOrCreate,  ///< create the object if it does not exit
+    OpenOnly       ///< only attempt to open an existing object
+};
 
 //==============================================================================
 // DAQ TYPES
@@ -71,6 +80,17 @@ enum QuadFactor {
 };
 
 //==============================================================================
+// MECHATRONIC TYPES
+//==============================================================================
+
+/// Represents an orthoganal axis
+enum Axis {
+    AxisX = 0,
+    AxisY = 1,
+    AxisZ = 2
+};
+
+//==============================================================================
 // UTILITY FUNCTIONS
 //==============================================================================
 
@@ -82,5 +102,3 @@ std::string type(const T& t) {
 }
 
 } // namespace mel
-
-#endif // MEL_TYPES_HPP
