@@ -23,6 +23,7 @@ mel_example(melshare)
 mel_example(chat)
 mel_example(comms_server)
 mel_example(virtual_daq)
+mel_example(serial)
 
 if(WIN32)
     mel_example(limiter)

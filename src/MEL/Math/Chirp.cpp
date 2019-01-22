@@ -20,9 +20,9 @@ double Chirp::evaluate(Time t) {
     if (ts > Ts)
         return 0.0;
 
-    double f0 = start.as_hertz();
-    double f1 = final.as_hertz();
-    
+    double f0 = static_cast<double>(start.as_hertz());
+    double f1 = static_cast<double>(final.as_hertz());
+
     double k   = (f1 - f0) / Ts;
     double phi = 2 * PI * (f0 * ts + 0.5 * k * ts * ts);
 

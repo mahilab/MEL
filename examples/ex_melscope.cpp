@@ -66,8 +66,8 @@ int main(int argc, char* argv[]) {
     Waveform sqr_wave(Waveform::Square, seconds(2));
     Waveform tri_wave(Waveform::Triangle, seconds(2));
     Waveform saw_wave(Waveform::Sawtooth, seconds(2));
-    Chirp    chirp1(hertz(0.1), hertz(1), seconds(60));
-    Chirp    chirp2(hertz(0.1), hertz(1), seconds(60));
+    Chirp    chirp1(hertz(1), hertz(10), seconds(60));
+    Chirp    chirp2(hertz(1), hertz(10), seconds(60));
 
     print("Running MEL Scope Example ... ");
 
