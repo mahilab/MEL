@@ -27,8 +27,10 @@ using namespace mel;
 // create global stop variable CTRL-C handler function
 ctrl_bool stop(false);
 bool handler(CtrlEvent event) {
-    if (event == CtrlEvent::CtrlC)
+    if (event == CtrlEvent::CtrlC || event == CtrlEvent::Close) {
         stop = true;
+        print("Application Terminated");
+    }
     return true;
 }
 
@@ -46,17 +48,17 @@ int main() {
     MelShare ms("pendulum");
     // constants
     const double sense_gain = 2.20; // A/V
-    const double commd_gain = 0.5;  // A/V
+    const double commd_gain = 1.0;  // A/V
     const double kp = 5.0;          // A/rad
     const double kd = 0.5;          // A*s/rad
     const double ref = PI;          // radians
     // PD controlelr (I = 0)
-    PidController pd(kp, kd, 0);
+    PidController pd(kp, 0, kd);
     // control loop timer
     Timer timer(hertz(1000));
     // start Q8 watchdog
     q8.watchdog.start();
-    while (!stop) {
+    while (!stop || !Keyboard::is_key_pressed(Key::Escape)) {
         // get current time
         Time t = timer.get_elapsed_time_actual();
         // sync Q8 input with real world
@@ -69,13 +71,14 @@ int main() {
         // get current pendulum state
         double pos = q8.encoder[0].get_position();          // rad
         double vel = q8.encoder[0].get_velocity();          // rad/s
-        // wrap position to pi so controller behaves
-        pos = wrap_to_pi(pos);                              // rad
+        // pos = wrap_to_2pi(pos);                          // rad
         // measure actual current
         double sense_volt = q8.AI[0].get_value();           // V
         double sense_curr = sense_volt * sense_gain;        // A
         // compute PD controller command
         double commd_curr = pd.calculate(ref, pos, vel, t); // A
+        // saturate to amplifier max continous
+        commd_curr = saturate(commd_curr, 3.0);
         double commd_volt = commd_curr / commd_gain;        // V
         // set command
         q8.AO[0].set_value(commd_volt);
