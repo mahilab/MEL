@@ -31,6 +31,11 @@ double Filter::update(const double x, const Time& current_time) {
     return dir_form_ii_t(x);
 }
 
+void Filter::set_seeding(uint32 seeding) {
+    has_seeding_ = (seeding > 0);
+    seed_count_ = seeding;
+}
+
 void Filter::reset() {
     s_ = std::vector<double>(n_, 0.0);
     first_update_ = true;

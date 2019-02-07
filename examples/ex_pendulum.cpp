@@ -48,12 +48,14 @@ int main() {
     MelShare ms("pendulum");
     // constants
     const double sense_gain = 2.20; // A/V
-    const double commd_gain = 1.0;  // A/V
-    const double kp = 5.0;          // A/rad
+    const double commd_gain = 0.60; // A/V
+    const double kp = 10.0;         // A/rad
     const double kd = 0.5;          // A*s/rad
-    const double ref = PI;          // radians
+    const double ref = PI;          // radians (upright position)
     // PD controlelr (I = 0)
     PidController pd(kp, 0, kd);
+    // Configure velocity filter on controller (2nd order, 10 Hz cutoff, Lowpass)
+    pd.filter.configure(2, hertz(50), hertz(1000));
     // control loop timer
     Timer timer(hertz(1000));
     // start Q8 watchdog
@@ -70,20 +72,18 @@ int main() {
             q8.DO[0].set_value(Low);
         // get current pendulum state
         double pos = q8.encoder[0].get_position();          // rad
-        double vel = q8.encoder[0].get_velocity();          // rad/s
-        // pos = wrap_to_2pi(pos);                          // rad
         // measure actual current
         double sense_volt = q8.AI[0].get_value();           // V
         double sense_curr = sense_volt * sense_gain;        // A
         // compute PD controller command
-        double commd_curr = pd.calculate(ref, pos, vel, t); // A
+        double commd_curr = pd.calculate(ref, pos, t);      // A
         // saturate to amplifier max continous
-        commd_curr = saturate(commd_curr, 3.0);
+        commd_curr = saturate(commd_curr, 6.0);
         double commd_volt = commd_curr / commd_gain;        // V
         // set command
         q8.AO[0].set_value(commd_volt);
         // write data to melshare for scoping
-        ms.write_data({ pos, vel, sense_curr, commd_curr });
+        ms.write_data({ pos, sense_curr, commd_curr });
         // sync output w/ real world
         q8.update_output();
         // kick watchdog
