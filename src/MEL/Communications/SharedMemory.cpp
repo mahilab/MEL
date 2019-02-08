@@ -90,8 +90,7 @@ bool SharedMemory::is_mapped() const {
 // WINDOWS IMPLEMENTATION
 //==============================================================================
 
-bool SharedMemory::open_or_create(MapHandle& map, const std::string& name,
-                                       std::size_t size) 
+bool SharedMemory::open_or_create(MapHandle& map, const std::string& name, std::size_t size)
 {
     HANDLE hMapFile;
     hMapFile = ::CreateFileMappingA(
@@ -155,8 +154,7 @@ void SharedMemory::unmap_buffer(void* buffer, std::size_t) {
 // UNIX IMPLEMENTATION
 //==============================================================================
 
-bool SharedMemory::open_or_create(MapHandle& map, const std::string& name,
-                                       std::size_t size) {
+bool SharedMemory::open_or_create(MapHandle& map, const std::string& name, std::size_t size) {
     map = shm_open(name.c_str(), O_RDWR, 0666);
     if (map != -1) {
         LOG(Verbose) << "Opened existing file mapping object " << name;
@@ -165,7 +163,7 @@ bool SharedMemory::open_or_create(MapHandle& map, const std::string& name,
     map = shm_open(name.c_str(), O_CREAT | O_RDWR, 0666);
     if (map == -1) {
         LOG(Error) << "Could not create file mapping object " << name
-            << " (Error # " << errno << " - " << strerror(errno) << ")";
+                   << " (Error # " << errno << " - " << strerror(errno) << ")";
         return false;
     }
     else {
@@ -174,10 +172,21 @@ bool SharedMemory::open_or_create(MapHandle& map, const std::string& name,
             LOG(Error) << "Could not truncate file mapping object " << name
                        << " (Error # " << errno << " - " << strerror(errno)
                        << ")";
+            return false;
         }
-        return false;
+        return true;
         // https://stackoverflow.com/questions/25502229/ftruncate-not-working-on-posix-shared-memory-in-mac-os-x
     }
+}
+
+bool SharedMemory::open_only(MapHandle& map, const std::string& name) {
+    map = shm_open(name.c_str(), O_RDWR, 0666);
+    if (map != -1) {
+        LOG(Verbose) << "Opened existing file mapping object " << name;
+        return true;
+    }
+    LOG(Error) << "Failed to open file mapping object " << name;
+    return false;
 }
 
 void SharedMemory::close(const std::string& name, MapHandle map) {

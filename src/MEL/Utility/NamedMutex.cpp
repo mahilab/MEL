@@ -117,7 +117,7 @@ void NamedMutex::Impl::unlock() {
 
 // https://gist.github.com/yamnikov-oleg/abf61cf96b4867cbf72d
 
-NamedMutex::Impl::Impl(const std::string& name, NamedMutex::Mode mode)
+NamedMutex::Impl::Impl(const std::string& name, OpenMode mode)
     : name_(name), mutex_(nullptr), is_owner_(false) {
     errno = 0;
     switch (mode) {

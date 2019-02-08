@@ -1,5 +1,6 @@
 #include <MEL/Math/Chirp.hpp>
 #include <MEL/Math/Constants.hpp>
+#include <cmath>
 
 namespace mel {
 

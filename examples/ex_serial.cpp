@@ -5,8 +5,8 @@ using namespace mel;
 
 int main() {
 
-    SerialPort comm4(COM4, 9600);
-    SerialPort comm5(COM5, 9600);
+    SerialPort comm4(3, 9600);
+    SerialPort comm5(4, 9600);
 
     comm4.open();
     comm5.open();
