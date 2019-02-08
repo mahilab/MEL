@@ -42,7 +42,7 @@ int main() {
     q8.open();
     q8.enable();
     // set encoder deg/count
-    q8.encoder[0].set_units_per_count(2 * PI / 500); 
+    q8.encoder[0].set_units_per_count(2 * PI / 500);
     q8.encoder[0].zero();
     // melshare for external scoping
     MelShare ms("pendulum");
@@ -60,14 +60,14 @@ int main() {
     Timer timer(hertz(1000));
     // start Q8 watchdog
     q8.watchdog.start();
-    while (!stop || !Keyboard::is_key_pressed(Key::Escape)) {
+    while (!stop && !Keyboard::is_key_pressed(Key::Escape)) {
         // get current time
         Time t = timer.get_elapsed_time_actual();
         // sync Q8 input with real world
         q8.update_input();
         // enable/disable pendulum
         if (Keyboard::is_key_pressed(Key::Up))              // enable
-            q8.DO[0].set_value(High); 
+            q8.DO[0].set_value(High);
         else if (Keyboard::is_key_pressed(Key::Down))       // disable
             q8.DO[0].set_value(Low);
         // get current pendulum state
@@ -90,9 +90,9 @@ int main() {
         q8.watchdog.kick();
         // wait for next timestep
         timer.wait();
-    }    
+    }
     // shutdown Q8
     q8.disable();
-    q8.close();  
+    q8.close();
     return 0;
 }
