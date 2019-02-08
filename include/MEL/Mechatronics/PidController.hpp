@@ -21,6 +21,7 @@
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Math/Integrator.hpp>
 #include <MEL/Math/Differentiator.hpp>
+#include <MEL/Math/Butterworth.hpp>
 
 namespace mel {
 
@@ -51,7 +52,7 @@ public:
     double kd;  ///< the derivative control gain
     Integrator integrator; ///< PID integrator
     Differentiator differentiator; ///< PID differentiator
-
+    Butterworth filter;  ///< PID velocity filter
 };
 
 } // namespace mel

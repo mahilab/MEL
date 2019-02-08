@@ -24,6 +24,7 @@
 #include <MEL/Mechatronics/Limiter.hpp>
 #include <MEL/Mechatronics/Motor.hpp>
 #include <MEL/Mechatronics/PdController.hpp>
+#include <MEL/Mechatronics/PidController.hpp>
 #include <MEL/Mechatronics/PositionSensor.hpp>
 #include <MEL/Mechatronics/Robot.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>

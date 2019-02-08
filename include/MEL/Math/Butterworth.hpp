@@ -36,6 +36,11 @@ public:
     };
 
 public:
+
+
+    /// Default constructor (does not filter)
+    Butterworth();
+
     /// Designs an n-th order lowpass or highpass digital Butterworth filter
     /// with normalized cutoff frequency Wn
     Butterworth(std::size_t n,
@@ -50,6 +55,17 @@ public:
                 Frequency sample,
                 Type type      = Lowpass,
                 uint32 seeding = 0);
+
+    /// Configures an n-th order lowpass or highpass digital Butterworth filter
+    /// with normalized cutoff frequency Wn
+    void configure(std::size_t n, double Wn, Type type = Lowpass, uint32 seeding = 0);
+
+
+    /// Configures an n-th order lowpass or highpass digital Butterworth filter
+    /// with specified cutoff and sample frequencies
+    void configure(std::size_t n, Frequency cutoff, Frequency sample, Type type = Lowpass, uint32 seeding = 0);
+
+
 };
 
 };  // namespace mel
