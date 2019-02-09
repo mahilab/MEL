@@ -5,7 +5,7 @@
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /* Title   : VISATYPE.H                                                      */
-/* Date    : 07-22-2015                                                      */
+/* Date    : 06-08-2017                                                      */
 /* Purpose : Fundamental VISA data types and macro definitions               */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
@@ -145,14 +145,20 @@ typedef ViReal64    _VI_PTR ViPReal64;
 typedef ViReal64    _VI_PTR ViAReal64;
 
 typedef ViPByte             ViBuf;
+typedef const ViByte *      ViConstBuf;
 typedef ViPByte             ViPBuf;
 typedef ViPByte     _VI_PTR ViABuf;
 
 typedef ViPChar             ViString;
+#ifndef _VI_CONST_STRING_DEFINED
+typedef const ViChar *      ViConstString;
+#define _VI_CONST_STRING_DEFINED
+#endif
 typedef ViPChar             ViPString;
 typedef ViPChar     _VI_PTR ViAString;
 
 typedef ViString            ViRsrc;
+typedef ViConstString       ViConstRsrc;
 typedef ViString            ViPRsrc;
 typedef ViString    _VI_PTR ViARsrc;
 
@@ -177,11 +183,6 @@ typedef ViSession   _VI_PTR ViPSession;
 typedef ViSession   _VI_PTR ViASession;
 
 typedef ViUInt32             ViAttr;
-
-#ifndef _VI_CONST_STRING_DEFINED
-typedef const ViChar * ViConstString;
-#define _VI_CONST_STRING_DEFINED
-#endif
 
 /*- Completion and Error Codes ----------------------------------------------*/
 

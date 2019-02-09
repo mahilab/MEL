@@ -3,43 +3,22 @@
 	[
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Make)",
+			"name": "CMake (myRIO)",
 			"selector":
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Unix Makefiles\" -DMOVE_BINS=ON",
+			"shell_cmd": "cmake .. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON -DMOVE_BINS=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (Ninja)",
+			"name": "CMake (Quanser)",
 			"selector":
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Ninja\" -DMOVE_BINS=ON",
-			"working_dir": "$project_path/../build"
-		},
-		{
-			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
-			"name": "CMake (MSVC)",
-			"selector":
-			[
-				"source.cmake"
-			],
-			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\" -DMOVE_BINS=ON",
-			"working_dir": "$project_path/../build"
-		},
-		{
-			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Build (Make)",
-			"selector":
-			[
-				"source.c++",
-				"source.c++.11"
-			],
-			"shell_cmd": "make -j",
+			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\" -DQUANSER=ON -DXINPUT=ON -DEXAMPLES=ON -DMOVE_BINS=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{
@@ -60,11 +39,6 @@
 				"source.c++.11"
 			],
 			"shell_cmd": "cmake --build . --config Release",
-			"working_dir": "$project_path/../build"
-		},
-		{
-			"name": "Reset Cache",
-			"shell_cmd": "del CMakeCache.txt",
 			"working_dir": "$project_path/../build"
 		},
 		{

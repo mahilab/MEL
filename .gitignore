@@ -41,6 +41,9 @@ bld/
 [Bb]uild/
 cmake-build-release/
 cmake-build-debug/
+[Bb]uild-*/
+[Bb]uild_*/
+
 
 # Unity Engine
 

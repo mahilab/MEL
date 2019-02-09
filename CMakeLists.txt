@@ -326,6 +326,7 @@ if(NI_ARM)
     list(APPEND LINK_LIBS dl rt)
     # MEL source
     list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
+
     SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
 
@@ -375,6 +376,7 @@ target_link_libraries(MEL ${LINK_LIBS})
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
 # define MEL_EXPORTS for DLL exports
 target_compile_definitions(MEL PRIVATE -DMEL_EXPORTS)
+target_compile_definitions(MEL PRIVATE MyRio_1900)
 
 #===============================================================================
 # EXECUTABLES

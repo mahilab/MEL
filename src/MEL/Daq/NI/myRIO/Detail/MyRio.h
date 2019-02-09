@@ -9,8 +9,6 @@
 #ifndef MyRio_h_
 #define MyRio_h_
 
-#define MyRio_1900
-
 #if defined(MyRio_1900)
 
 #include "MyRio1900.h"
