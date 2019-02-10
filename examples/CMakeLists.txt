@@ -5,6 +5,7 @@ macro(mel_example MEL_EXAMPLE_NAME)
     set_target_properties(${MEL_EXAMPLE_NAME} PROPERTIES FOLDER "Examples")
 endmacro()
 
+mel_example(hello_world)
 mel_example(tcp)
 mel_example(udp)
 mel_example(melnet)

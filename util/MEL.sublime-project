@@ -9,7 +9,7 @@
 				"source.cmake"
 			],
 			"shell_cmd": "cmake .. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON",
-			"working_dir": "$project_path/../build"
+			"working_dir": "$project_path/../build-myrio"
 		},
 		{
 			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
@@ -23,17 +23,17 @@
 		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Build (Ninja)",
+			"name": "Build (myRIO)",
 			"selector":
 			[
 				"source.c++.11"
 			],
 			"shell_cmd": "ninja",
-			"working_dir": "$project_path/../build"
+			"working_dir": "$project_path/../build-myrio"
 		},
 		{
 			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
-			"name": "Build (MSVC)",
+			"name": "Build (Quanser)",
 			"selector":
 			[
 				"source.c++.11"
@@ -77,11 +77,10 @@
 		"ecc_common_flags":
 		[
 			"-DMEL_EXPORTS",
-			//"-I$project_base_path/include",
-			//"-I/Program Files/Quanser/QUARC/include"
+			"-I$project_base_path/include",
 		],
-		// "ecc_flags_sources":
-		// [
-		// ]
+		"ecc_flags_sources":
+		[
+		]
 	}
 }
