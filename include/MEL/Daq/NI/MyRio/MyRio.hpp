@@ -23,11 +23,9 @@
 #include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioAO.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioDIO.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioEncoder.hpp>
 
 namespace mel {
-
-class MyRioAI;
-class MyRioAO;
 
 /// myRIO Expansion Port (MXP) and Mini System Port (MSP) connector types
 enum MyRioConnectorType : int {
@@ -58,6 +56,12 @@ public:
     /// function on each module separately.
     bool update_output() override;
 
+    /// Returns true if the myRIO button is currently pressed
+    bool is_button_pressed() const;
+
+    /// Set myRIO led in range 0 to 3 on/off
+    void set_led(int led, bool on);
+
 private:
 
     bool on_open() override;
@@ -79,13 +83,15 @@ private:
         Connector(MyRio& myrio, MyRioConnectorType type,
             const std::vector<uint32>& ai_channels,
             const std::vector<uint32>& ao_channels,
-            const std::vector<uint32>& dio_channels);
+            const std::vector<uint32>& dio_channels,
+            const std::vector<uint32>& enc_channels);
         bool update_input();
         bool update_output();
     public:
         MyRioAI AI;
         MyRioAO AO;
         MyRioDIO DIO;
+        MyRioEncoder encoder;
     private:
         bool on_enable() override;
         bool on_disable() override;

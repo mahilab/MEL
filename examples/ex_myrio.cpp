@@ -29,9 +29,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    MEL_LOGGER->set_max_severity(Verbose);
-
-    MelNet mn(55002, 55001, "10.0.0.117");
+    MelNet mn(55002, 55001, "192.168.1.7");
 
     MyRio myrio("myrio");
     myrio.open();
@@ -49,10 +47,12 @@ int main(int argc, char** argv) {
         myrio.C.AO[0].set_value(data[0]);
         data[1] = myrio.C.AI[0];
 
-        // send data
-        mn.send_data(data);
+        print(myrio.C.encoder[0].get_value());
+
+
 
         myrio.update_output();
         timer.wait();
     }
+
 }

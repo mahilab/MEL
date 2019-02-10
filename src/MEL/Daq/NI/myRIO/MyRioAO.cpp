@@ -1,10 +1,12 @@
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Logging/Log.hpp>
-#include "Detail/MyRio.h"
+#include "Detail/MyRioFpga60/MyRio.h"
 
 extern NiFpga_Session myrio_session;
 
 namespace mel {
+
+namespace {
 
 // AO registers
 static const std::vector<std::vector<uint32_t>> REGISTERS({
@@ -27,6 +29,7 @@ static const std::vector<std::vector<double>> OFFSETS({
     {AOC_0OFST / 1000000000.0, AOC_1OFST / 1000000000.0}
 });
 
+} // namespace
 
 MyRioAO::MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
   daq_(daq),

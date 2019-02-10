@@ -8,7 +8,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON -DMOVE_BINS=ON",
+			"shell_cmd": "cmake .. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{
@@ -18,7 +18,7 @@
 			[
 				"source.cmake"
 			],
-			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\" -DQUANSER=ON -DXINPUT=ON -DEXAMPLES=ON -DMOVE_BINS=ON",
+			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\" -DQUANSER=ON -DXINPUT=ON -DEXAMPLES=ON",
 			"working_dir": "$project_path/../build"
 		},
 		{

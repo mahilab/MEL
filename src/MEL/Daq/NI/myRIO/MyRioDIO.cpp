@@ -1,10 +1,12 @@
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Logging/Log.hpp>
-#include "Detail/MyRio.h"
+#include "Detail/MyRioFpga60/MyRio.h"
 
 extern NiFpga_Session myrio_session;
 
 namespace mel {
+
+namespace {
 
 // direction registers
 static const std::vector<std::vector<uint32_t>> DIRS({
@@ -39,6 +41,8 @@ static const std::vector<std::vector<uint8_t>> BITS({
     {0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7},
     {0, 1, 2, 3, 4, 5, 6, 7}
 });
+
+} // namespace
 
 MyRioDIO::MyRioDIO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
     daq_(daq),
