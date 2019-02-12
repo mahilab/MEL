@@ -194,6 +194,48 @@ bool DataLogger::read_from_csv(std::vector<std::vector<double>> &data, const std
 	return true;
 }
 
+bool DataLogger::read_from_csv(std::vector<std::vector<double>>& data_out, std::size_t row_offset, std::size_t col_offset,
+                          const std::string &filename, const std::string& directory)
+{
+    std::string filename_no_ext;
+    std::string file_ext;
+    split_file_name(filename.c_str(), filename_no_ext, file_ext);
+    if (file_ext.empty()) {
+        file_ext = "csv";
+    }
+    std::string full_filename;
+    full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+    LOG(Verbose) << "Reading data from " << full_filename;
+    std::vector<std::vector<double>> output;
+    std::ifstream input(full_filename);
+    input.precision(6);
+    if (!input.is_open()) {
+        LOG(Warning) << "File " << full_filename << " not found";
+        return false;
+    }
+    data_out.clear();
+    std::size_t row_idx = 0;
+    std::string csv_line;
+    while (std::getline(input, csv_line)) {
+        if (row_idx++ < row_offset)
+            continue;
+        std::istringstream csv_stream(csv_line);
+        std::vector<double> row;
+        std::string value_str;
+        double value;
+        std::size_t col_idx = 0;
+        while (std::getline(csv_stream, value_str, ',')) {
+            if (col_idx++ < col_offset)
+                continue;
+            std::istringstream ss(value_str);
+            ss >> value;
+            row.push_back(value);
+        }
+        data_out.push_back(row);
+    }
+    return true;
+}
+
 bool DataLogger::read_from_csv(Table &data, const std::string &filename, const std::string& directory) {
 	std::string filename_no_ext;
 	std::string file_ext;

@@ -58,7 +58,10 @@ public:
 	static bool write_to_csv(const std::vector<Table> &data, const std::string &filename = "", const std::string& directory = ".", bool timestamp = true);
 
 	/// Read a vector of vectors from a file
-	static bool read_from_csv(std::vector<std::vector<double>> &data, const std::string &filename, const std::string& directory = ".");
+	static bool read_from_csv(std::vector<std::vector<double>> &data_out, const std::string &filename, const std::string& directory = ".");
+
+    /// Read a vector of vectors from a file with a row and column offset
+    static bool read_from_csv(std::vector<std::vector<double>>& data_out, std::size_t row_offset, std::size_t col_offset, const std::string &filename, const std::string& directory = ".");
 
 	/// Read a Table from a file
 	static bool read_from_csv(Table &data, const std::string &filename, const std::string& directory = ".");

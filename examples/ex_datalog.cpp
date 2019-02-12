@@ -26,7 +26,9 @@ using namespace mel;
 
 int main() {
 
-    // Basic data logging with DataLogger class
+    //=========================================================================
+    // Basic data logging
+   //=========================================================================
 
     // instantiate logger
     DataLogger logger;
@@ -38,10 +40,18 @@ int main() {
        logger.buffer(row);
     }
     // save data to C:\data
-    logger.save_data("datalogger_data.csv", "/data/");
+    logger.save_data("datalogger_data.csv", ".", false);
+    // wait for file to be saved
+    sleep(seconds(1));
+    // read back data with row and column offsets
+    std::vector<std::vector<double>> data_read;
+    DataLogger::read_from_csv(data_read, 1, 2, "datalogger_data.csv", ".");
+    for (auto& row : data_read)
+        print(row);
 
-
+    //=========================================================================
     // Advanced data logging with Tables
+    //=========================================================================
 
     std::string filename = "table_data.csv";
     Table tab("my_table", { "col 0", "col 1", "col 2" });
