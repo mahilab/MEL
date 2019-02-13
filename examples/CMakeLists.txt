@@ -41,7 +41,7 @@ if(QUANSER)
     mel_example(pendulum)
 endif()
 
-if(NI_ARM)
+if(MEL_NI_ARM)
     mel_example(myrio)
 endif()
 
