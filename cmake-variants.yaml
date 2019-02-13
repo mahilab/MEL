@@ -1,3 +1,6 @@
+# Visual Studio Code - CMake Tools Extension Vairants
+# Evan Pezent (epezent@rice.edu)
+
 buildType:
   default: release
   description: Build Type
@@ -10,6 +13,20 @@ buildType:
       short: Release
       long: Optimize the resulting binaries
       buildType: Release
+
+static:
+  default: 'off'
+  choices:
+    'on':
+      short: Static
+      long: Build MEL as static library
+      settings:
+        MEL_STATIC: ON # -DQUANSER=ON
+    'off':
+      short: Dynamic
+      long: Build MEL as dynamic library
+      settings:
+        MEL_STATIC: OFF # -DQUANSER=OFF
 
 quanser:
   default: 'off'

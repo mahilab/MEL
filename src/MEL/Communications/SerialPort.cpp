@@ -20,7 +20,7 @@ SerialPort::~SerialPort() {
 bool SerialPort::open() {
     if (is_open())
         close();
-    if (RS232_OpenComport(port_, baudrate_, mode_.c_str()) == 1)
+    if (RS232_OpenComport(static_cast<int>(port_), static_cast<int>(baudrate_), mode_.c_str()) == 1)
         return false;
     else {
         is_open_ = true;
@@ -29,25 +29,23 @@ bool SerialPort::open() {
 }
 
 bool SerialPort::send_data(unsigned char* data, std::size_t size) {
-    if (RS232_SendBuf(port_, data, (int)size) == 1)
+    if (RS232_SendBuf(static_cast<int>(port_), data, static_cast<int>(size)) == 1)
         return false;
     else
         return true;
 }
 
 int SerialPort::receive_data(unsigned char* data, std::size_t size) {
-    return RS232_PollComport(port_, data, size);
+    return RS232_PollComport(static_cast<int>(port_), data, static_cast<int>(size));
 }
 
 bool SerialPort::close() {
-    RS232_CloseComport(port_);
+    RS232_CloseComport(static_cast<int>(port_));
     return true;
 }
 
 bool SerialPort::is_open() const {
     return is_open_;
 }
-
-
 
 } // namespace mel

@@ -1,5 +1,9 @@
+# CMake toolchain file for NI Linux Real-Time (ARM)
+# Evan Pezent (epezent@rice.edu)
+
 SET(CMAKE_SYSTEM_NAME Linux)
 
+# set flag for MEL CMakeLists.txt
 set(MEL_NI_ARM ON)
 
 # root to cross compiler
