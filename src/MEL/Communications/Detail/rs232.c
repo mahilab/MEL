@@ -34,7 +34,8 @@
 #include "rs232.h"
 
 
-#if defined(__linux__) || defined(__FreeBSD__)   /* Linux & FreeBSD */
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__unix__) || \
+    defined(__unix)    || defined(__APPLE__)  /* Linux & FreeBSD */
 
 #define RS232_PORTNR  38
 
