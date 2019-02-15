@@ -12,24 +12,26 @@ namespace std {
     /// Streams an std::vector
     template <class Streamable, typename T>
     Streamable& operator<<(Streamable& s, const std::vector<T>& c) {
-        s << "[";
-        for (int i = 0; i < c.size() - 1; ++i) {
+        if (c.size() == 0)
+            return s;
+        for (std::size_t i = 0; i < c.size() - 1; ++i) {
             s << c[i];
-            s << ", ";
+            s << ",";
         }
-        s << c[c.size() - 1] << "]";
+        s << c[c.size() - 1];
         return s;
     }
 
     /// Streams an std::array
     template <class Streamable, typename T, std::size_t N>
     Streamable& operator<<(Streamable& s, const std::array<T, N>& c) {
-        s << "[";
-        for (int i = 0; i < N - 1; ++i) {
+        if (c.size() == 0)
+            return s;
+        for (std::size_t i = 0; i < N - 1; ++i) {
             s << c[i];
-            s << ", ";
+            s << ",";
         }
-        s << c[N - 1] << "]";
+        s << c[N - 1] ;
         return s;
     }
 

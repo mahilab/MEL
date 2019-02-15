@@ -23,6 +23,7 @@
 #include <MEL/Core/Types.hpp>
 #include <atomic>
 #include <sstream>
+#include <utility>
 
 namespace mel {
 
@@ -111,8 +112,7 @@ void MEL_API prompt(const std::string& message);
 /// Prints a string to the console using the fastest method the OS offers
 void MEL_API print_string(const std::string& str);
 
-/// Prints anything that works with stream operators (appends new line
-/// character)
+/// Prints anything that works with stream operators and then starts a new line
 template <typename T>
 void print(const T& value) {
     std::stringstream ss;
@@ -120,9 +120,20 @@ void print(const T& value) {
     print_string(ss.str());
 }
 
+// Prints variadic number of values with separating spaces and then starts a new line
+template <typename Arg, typename... Args>
+void print(Arg&& arg, Args&&... args) {
+    std::stringstream ss;
+    ss << std::forward<Arg>(arg);
+    using expander = int[];
+    (void)expander{0, (void(ss << ' ' << std::forward<Args>(args)), 0)...};
+    ss << "\n";
+    print_string(ss.str());
+}
+
 /// Print with color
 template <typename T>
-void print(const T& value, Color foreground, Color background = Color::None) {
+void color_print(const T& value, Color foreground, Color background = Color::None) {
     set_text_color(foreground, background);
     print(value);
     reset_text_color();

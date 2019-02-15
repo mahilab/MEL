@@ -49,8 +49,8 @@ int main(int argc, char** argv) {
         ("r,remote",   "Remote Port for MelNet",       value<unsigned short>())
         ("i,ip",       "Remote IP Address for MelNet", value<string>())
         ("h,help",     "Help");
-    auto in = options.parse(argc, argv);
-    if (in.count("help") > 0) {
+    auto user = options.parse(argc, argv);
+    if (user.count("help") > 0) {
         print(options.help());
         return 0;
     }
@@ -59,17 +59,40 @@ int main(int argc, char** argv) {
     register_ctrl_handler(handler);
 
     // see if user passed us custom ports/ip address for MelNet
-    unsigned short local_port  = in.count("l") ? in["l"].as<unsigned short>() : 55002;
-    unsigned short remote_port = in.count("r") ? in["r"].as<unsigned short>() : 55001;
-    string remote_ip_address   = in.count("i") ? in["ip"].as<string>() : "172.22.11.1";
+    unsigned short local_port  = user.count("l") ? user["l"].as<unsigned short>() : 55002;
+    unsigned short remote_port = user.count("r") ? user["r"].as<unsigned short>() : 55001;
+    string remote_ip_address   = user.count("i") ? user["ip"].as<string>() : "172.22.11.1";
 
     // create MelNet
     MelNet mn(local_port, remote_port, remote_ip_address);
 
     // create MyRio object
     MyRio myrio("myrio");
-    if (!myrio.open() || !myrio.enable())
+    if (!myrio.open())
         return 1;
+
+    myrio.mxpB.DIO.set_direction(5, Out);
+    myrio.mxpB.DIO.set_direction(6, Out);
+
+    // Print channel information
+    print("Connector MXP A");
+    print("  AO: ",myrio.mxpA.AO.get_channel_numbers());
+    print("  AI: ",myrio.mxpA.AI.get_channel_numbers());
+    print("  DI: ", myrio.mxpA.DIO.get_input_channel_numbers());
+    print("  DO: ", myrio.mxpA.DIO.get_output_channel_numbers());
+    print("  ENC:",myrio.mxpA.encoder.get_channel_numbers());
+    print("Connector MXP B");
+    print("  AO: ",myrio.mxpB.AO.get_channel_numbers());
+    print("  AI: ",myrio.mxpB.AI.get_channel_numbers());
+    print("  DI: ", myrio.mxpB.DIO.get_input_channel_numbers());
+    print("  DO: ", myrio.mxpB.DIO.get_output_channel_numbers());
+    print("  ENC:",myrio.mxpB.encoder.get_channel_numbers());
+    print("Connector MSP C");
+    print("  AO: ",myrio.mspC.AO.get_channel_numbers());
+    print("  AI: ",myrio.mspC.AI.get_channel_numbers());
+    print("  DI: ", myrio.mspC.DIO.get_input_channel_numbers());
+    print("  DO: ", myrio.mspC.DIO.get_output_channel_numbers());
+    print("  ENC:",myrio.mspC.encoder.get_channel_numbers());
 
     // set units per count on encoder
     myrio.mspC.encoder[0].set_units_per_count(2*PI/500.0f);

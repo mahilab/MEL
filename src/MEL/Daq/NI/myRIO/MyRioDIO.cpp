@@ -50,32 +50,7 @@ MyRioDIO::MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel
 {
     set_name(connector_.get_name() + "_DIO");
     set_channel_numbers(channel_numbers);
-}
-
-bool MyRioDIO::on_enable() {
-    set_values(enable_values_.get());
-    if (update()) {
-        LOG(Verbose) << "Set " << get_name() << " enable values to "
-                     << enable_values_;
-        return true;
-    } else {
-        LOG(Error) << "Failed to set " << get_name() << " enable values to "
-                   << enable_values_;
-        return false;
-    }
-}
-
-bool MyRioDIO::on_disable() {
-    set_values(disable_values_.get());
-    if (update()) {
-        LOG(Verbose) << "Set " << get_name() << " disable values to "
-                     << disable_values_;
-        return true;
-    } else {
-        LOG(Error) << "Failed to set " << get_name() << " disable values to "
-                   << disable_values_;
-        return false;
-    }
+    set_directions(std::vector<Direction>(channel_numbers.size(), Direction::In));
 }
 
 bool MyRioDIO::update_channel(uint32 channel_number) {

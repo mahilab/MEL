@@ -60,12 +60,12 @@ file(GLOB SRC_DAQ_DETAIL
 )
 
 file(GLOB SRC_NI_MYRIO
-    "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/Detail/*.hpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/Detail/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/Detail/MyRioFpga60/*.h"
-    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/myRIO/Detail/MyRioFpga60/*.c"
+    "${CMAKE_SOURCE_DIR}/include/MEL/Daq/NI/MyRio/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/MyRIO/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/MyRIO/Detail/*.hpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/MyRIO/Detail/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/MyRIO/Detail/MyRioFpga60/*.h"
+    "${CMAKE_SOURCE_DIR}/src/MEL/Daq/NI/MyRIO/Detail/MyRioFpga60/*.c"
 )
 
 file(GLOB SRC_QUANSER

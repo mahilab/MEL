@@ -38,34 +38,6 @@ MyRioAO::MyRioAO(MyRioConnector& connector, const std::vector<uint32>& channel_n
     set_channel_numbers(channel_numbers);
 }
 
-// bool MyRioAO::enable() {
-//     if (is_enabled())
-//         return Device::enable();
-//     set_values(enable_values_.get());
-//     if (update()) {
-//         LOG(Verbose) << "Set " << get_name() << " enable values to " << enable_values_;
-//         return Device::enable();
-//     }
-//     else {
-//         LOG(Error) << "Failed to set " << get_name() << " enable values to " << enable_values_;
-//         return false;
-//     }
-// }
-
-// bool MyRioAO::disable() {
-//     if (!is_enabled())
-//         return Device::disable();
-//     set_values(disable_values_.get());
-//     if (update()) {
-//         LOG(Verbose) << "Set " << get_name() << " disable values to " << disable_values_;
-//         return Device::disable();
-//     }
-//     else {
-//         LOG(Error) << "Failed to set " << get_name() << " disable values to " << disable_values_;
-//         return false;
-//     }
-// }
-
 bool MyRioAO::update_channel(uint32 channel_number) {
     NiFpga_Status status;
     uint16_t valueScaled;

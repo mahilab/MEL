@@ -2,7 +2,7 @@ namespace mel {
 
     template <typename T>
     InputOutput<T>::InputOutput() :
-        directions_(this)
+        directions_(this, Direction::In)
     {
         sort_input_output_channel_numbers();
     }
@@ -25,6 +25,26 @@ namespace mel {
             return true;
         }
         return false;
+    }
+
+    template <typename T>
+    std::size_t InputOutput<T>::get_input_channel_count() const {
+        return input_channel_numbers_.size();
+    }
+
+    template <typename T>
+    std::size_t InputOutput<T>::get_output_channel_count() const {
+        return output_channel_numbers_.size();
+    }
+
+    template <typename T>
+    const std::vector<uint32>& InputOutput<T>::get_input_channel_numbers() const {
+        return input_channel_numbers_;
+    }
+
+    template <typename T>
+    const std::vector<uint32>& InputOutput<T>::get_output_channel_numbers() const {
+        return output_channel_numbers_;
     }
 
     template <typename T>

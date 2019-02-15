@@ -47,6 +47,18 @@ public:
 
 public:
 
+    /// Returns the number of input channels on this Module
+    std::size_t get_input_channel_count() const;
+
+    /// Returns the number of output channels on this Module
+    std::size_t get_output_channel_count() const;
+    
+    /// Gets the vector of input channel numbers this Module maintains
+    const std::vector<uint32>& get_input_channel_numbers() const;
+
+    /// Gets the vector of output channel numbers this Module maintains
+    const std::vector<uint32>& get_output_channel_numbers() const;
+
     /// Gets a handle to a channel on this module
     Channel get_channel(uint32 channel_number);
 
@@ -64,11 +76,11 @@ protected:
     void sort_input_output_channel_numbers();
 
 protected:
-    Buffer<Direction> directions_;        ///< The I/O directions of each channel
+    Buffer<Direction>   directions_;              ///< The I/O directions of each channel
     std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
     std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
 
-public:
+public: 
 
     /// Encapsulates a Module channel
     class Channel : public Input<T>::Channel, public Output<T>::Channel {
