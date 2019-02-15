@@ -1,6 +1,7 @@
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioConnector.hpp>
 #include "Detail/MyRioFpga60/MyRio.h"
 
 extern NiFpga_Session myrio_session;
@@ -32,32 +33,30 @@ static const std::vector<std::vector<double>> OFFSETS({
 
 } // namespace
 
-MyRioAI::MyRioAI(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-  daq_(daq),
-  type_(type)
+MyRioAI::MyRioAI(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+    connector_(connector)
 {
-    set_name(daq.get_name() + "_AI");
+    set_name(connector_.get_name() + "_AI");
     set_channel_numbers(channel_numbers);
 }
 
 bool MyRioAI::update_channel(uint32 channel_number) {
-    if (!daq_.is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
+    if (!connector_.is_open()) {
+        LOG(Error) << "Failed to update channel because" << connector_.get_name() << " is not open";
         return false;
     }
     NiFpga_Status status;
     uint16_t value = 0;
-    status = NiFpga_ReadU16(myrio_session, REGISTERS[type_][channel_number], &value);
+    status = NiFpga_ReadU16(myrio_session, REGISTERS[connector_.type][channel_number], &value);
     if (status < 0) {
         LOG(Error) << "Failed to update " << get_name() << " channel number "  << channel_number;
         return false;
     }
     else {
-        if (type_ == MyRioConnectorType::MspC)
-            values_[channel_number] = (int16_t)value * WEIGHTS[type_][channel_number] + OFFSETS[type_][channel_number];
+        if (connector_.type == MyRioConnector::Type::MspC)
+            values_[channel_number] = (int16_t)value * WEIGHTS[connector_.type][channel_number] + OFFSETS[connector_.type][channel_number];
         else
-            values_[channel_number] = value * WEIGHTS[type_][channel_number] + OFFSETS[type_][channel_number];
+            values_[channel_number] = value * WEIGHTS[connector_.type][channel_number] + OFFSETS[connector_.type][channel_number];
         return true;
     }
 }

@@ -17,30 +17,30 @@
 
 #pragma once
 
-#include <MEL/Daq/Encoder.hpp>
 #include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Daq/Encoder.hpp>
 
 namespace mel {
 
-class MyRio;
-enum MyRioConnectorType : int;
+class MyRioConnector;
 
+/// myRIO Encoder Module
 class MEL_API MyRioEncoder : public Encoder, NonCopyable {
 public:
-    MyRioEncoder(MyRio& daq, MyRioConnectorType type,
-        const std::vector<uint32>& channel_numbers);
 
+    /// Updates a single channel
     bool update_channel(uint32 channel_number) override;
-
-protected:
-
-    virtual bool on_enable() override;
 
 private:
 
-    MyRio& daq_;
-    MyRioConnectorType type_;
+    friend class MyRioConnector;
 
+    MyRioEncoder(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+    bool on_enable() override;
+
+private:
+
+    const MyRioConnector& connector_; ///< connector this module is on
 };
 
 } //namespace mel

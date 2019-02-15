@@ -6,57 +6,12 @@
 
 namespace mel {
 
-//==============================================================================
-// CONNECTOR
-//==============================================================================
-
-MyRio::Connector::Connector(MyRio& myrio,
-                            MyRioConnectorType type,
-                            const std::vector<uint32>& ai_channels,
-                            const std::vector<uint32>& ao_channels,
-                            const std::vector<uint32>& dio_channels,
-                            const std::vector<uint32>& enc_channels) :
-    Device("myrio_connector_" + std::to_string(type)),
-    AI(myrio, type, ai_channels),
-    AO(myrio, type, ao_channels),
-    DIO(myrio, type, dio_channels),
-    encoder(myrio, type, enc_channels)
-
-{}
-
-bool MyRio::Connector::on_enable() {
-    if (AI.enable() && AO.enable() && DIO.enable() && encoder.enable())
-        return true;
-    else
-        return false;
-}
-
-bool MyRio::Connector::on_disable() {
-    if (AI.disable() && AO.disable() && DIO.disable() && encoder.disable())
-        return true;
-    else
-        return false;
-}
-
-bool MyRio::Connector::update_input() {
-    return AI.update() && DIO.update() && encoder.update();
-}
-
-bool MyRio::Connector::update_output() {
-    return AO.update() && DIO.update();
-}
-
-//==============================================================================
-// MYRIO
-//==============================================================================
-
 MyRio::MyRio(const std::string& name) :
     DaqBase(name),
-    A(*this, MyRioConnectorType::MxpA, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}, {}),
-    B(*this, MyRioConnectorType::MxpB, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}, {}),
-    C(*this, MyRioConnectorType::MspC, {0,1},     {0,1}, {1,5}, {0,1})
+    mxpA(*this, MyRioConnector::Type::MxpA, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}, {}),
+    mxpB(*this, MyRioConnector::Type::MxpB, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}, {}),
+    mspC(*this, MyRioConnector::Type::MspC, {0,1},     {0,1}, {1,5}, {0,1})
 {
-
 }
 
 MyRio::~MyRio() {
@@ -72,6 +27,9 @@ bool MyRio::on_open() {
         LOG(Error) << "Failed to open myRIO " << get_name();
         return false;
     }
+    mxpA.open();
+    mxpB.open();
+    mspC.open();
     return true;
 }
 
@@ -81,6 +39,9 @@ bool MyRio::on_close() {
         LOG(Error) << "Failed to close myRIO " << get_name();
         return false;
     }
+    mxpA.close();
+    mxpB.close();
+    mspC.close();
     return true;
 }
 
@@ -90,7 +51,7 @@ bool MyRio::on_enable() {
         return false;
     }
     // enable each connector
-    if (A.enable() && B.enable() && C.enable()) {
+    if (mxpA.enable() && mxpB.enable() && mspC.enable()) {
         sleep(milliseconds(10));
         return true;
     }
@@ -104,7 +65,7 @@ bool MyRio::on_disable() {
         return false;
     }
     // disable each connect
-    if (A.disable() && B.disable() && C.disable()) {
+    if (mxpA.disable() && mxpB.disable() && mspC.disable()) {
         sleep(milliseconds(10));
         return true;
     }
@@ -113,11 +74,11 @@ bool MyRio::on_disable() {
 }
 
 bool MyRio::update_input() {
-    return (A.update_input() && B.update_input() && C.update_input());
+    return (mxpA.update_input() && mxpB.update_input() && mspC.update_input());
 }
 
 bool MyRio::update_output() {
-    return (A.update_output() && B.update_output() && C.update_output());
+    return (mxpA.update_output() && mxpB.update_output() && mspC.update_output());
 }
 
 bool MyRio::is_button_pressed() const {
@@ -130,6 +91,5 @@ void MyRio::set_led(int led, bool on) {
     else
         clr_register_bit(DOLED30, led);
 }
-
 
 }  // namespace mel

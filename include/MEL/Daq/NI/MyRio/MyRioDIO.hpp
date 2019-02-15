@@ -17,31 +17,31 @@
 
 #pragma once
 
-#include <MEL/Daq/InputOutput.hpp>
 #include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Daq/InputOutput.hpp>
 
 namespace mel {
 
-class MyRio;
-enum MyRioConnectorType : int;
+class MyRioConnector;
 
+/// myRIO Digital Input/Output Module
 class MEL_API MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
-    MyRioDIO(MyRio& daq, MyRioConnectorType type,
-        const std::vector<uint32>& channel_numbers);
 
+    /// Updates a single channel
     bool update_channel(uint32 channel_number) override;
 
 private:
 
-    bool on_enable() override;
+    friend class MyRioConnector;
 
+    MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+    bool on_enable() override;
     bool on_disable() override;
 
 private:
 
-    MyRio& daq_;
-    MyRioConnectorType type_;
+    const MyRioConnector& connector_; ///< connector this module is on
 };
 
 }  // namespace mel

@@ -1,5 +1,6 @@
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioConnector.hpp>
 #include "Detail/MyRioFpga60/MyRio.h"
 
 extern NiFpga_Session myrio_session;
@@ -44,11 +45,10 @@ static const std::vector<std::vector<uint8_t>> BITS({
 
 } // namespace
 
-MyRioDIO::MyRioDIO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-    daq_(daq),
-    type_(type)
+MyRioDIO::MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+    connector_(connector)
 {
-    set_name(daq.get_name() + "_DIO");
+    set_name(connector_.get_name() + "_DIO");
     set_channel_numbers(channel_numbers);
 }
 
@@ -85,38 +85,38 @@ bool MyRioDIO::update_channel(uint32 channel_number) {
         // read value
         uint8_t inValue;
         uint8_t dirMask;
-        status = NiFpga_ReadU8(myrio_session, DIRS[type_][channel_number], &dirValue);
+        status = NiFpga_ReadU8(myrio_session, DIRS[connector_.type][channel_number], &dirValue);
         if (status < 0) {
             LOG(Error) << "Could not read from DIO channel direction register";
             return false;
         }
-        dirMask = 1 << BITS[type_][channel_number];
+        dirMask = 1 << BITS[connector_.type][channel_number];
         dirMask = ~dirMask;
         dirValue = dirValue & dirMask;
-        status = NiFpga_WriteU8(myrio_session, DIRS[type_][channel_number], dirValue);
-        NiFpga_MergeStatus(&status, NiFpga_ReadU8(myrio_session, INS[type_][channel_number], &inValue));
+        status = NiFpga_WriteU8(myrio_session, DIRS[connector_.type][channel_number], dirValue);
+        NiFpga_MergeStatus(&status, NiFpga_ReadU8(myrio_session, INS[connector_.type][channel_number], &inValue));
         if (status < 0) {
             LOG(Error) << "Could not write to/read from the DIO channel direction/in register";
             return false;
         }
-        inValue = inValue & (1 << BITS[type_][channel_number]);
+        inValue = inValue & (1 << BITS[connector_.type][channel_number]);
         values_[channel_number] = (inValue > 0) ? High : Low;
     }
     else {
         // write value
         uint8_t outValue;
         NiFpga_Bool value = static_cast<NiFpga_Bool>(values_[channel_number]);
-        status = NiFpga_ReadU8(myrio_session, OUTS[type_][channel_number], &outValue);
-        NiFpga_MergeStatus(&status,  NiFpga_ReadU8(myrio_session, DIRS[type_][channel_number], &dirValue));
+        status = NiFpga_ReadU8(myrio_session, OUTS[connector_.type][channel_number], &outValue);
+        NiFpga_MergeStatus(&status,  NiFpga_ReadU8(myrio_session, DIRS[connector_.type][channel_number], &dirValue));
         if (status < 0) {
             LOG(Error) << "Could not read from the DIO channel registers!";
             return false;
         }
-        dirValue = dirValue | (1 << BITS[type_][channel_number]);
-        outValue = outValue & ~(1 << BITS[type_][channel_number]);
-        outValue = outValue | (value << BITS[type_][channel_number]);
-        NiFpga_MergeStatus(&status, NiFpga_WriteU8(myrio_session, OUTS[type_][channel_number], outValue));
-        NiFpga_MergeStatus(&status, NiFpga_WriteU8(myrio_session, DIRS[type_][channel_number], dirValue));
+        dirValue = dirValue | (1 << BITS[connector_.type][channel_number]);
+        outValue = outValue & ~(1 << BITS[connector_.type][channel_number]);
+        outValue = outValue | (value << BITS[connector_.type][channel_number]);
+        NiFpga_MergeStatus(&status, NiFpga_WriteU8(myrio_session, OUTS[connector_.type][channel_number], outValue));
+        NiFpga_MergeStatus(&status, NiFpga_WriteU8(myrio_session, DIRS[connector_.type][channel_number], dirValue));
         if (status < 0) {
             LOG(Error) << "Could not write to the DIO chanel registers!";
             return false;

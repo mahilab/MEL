@@ -20,31 +20,26 @@
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
-//==============================================================================
-// FORWARD DECLARATIONS
-//==============================================================================
-
 namespace mel {
 
-class MyRio;
-enum MyRioConnectorType : int;
+class MyRioConnector;
 
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
-
+/// myRIO Analog Input Module
 class MEL_API MyRioAI : public AnalogInput, NonCopyable {
 public:
 
-    MyRioAI(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers);
-
+    /// Updates a single channel
     bool update_channel(uint32 channel_number) override;
 
 private:
 
-    MyRio& daq_;
-    MyRioConnectorType type_;
+    friend class MyRioConnector;
 
+    MyRioAI(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+
+private:
+
+    const MyRioConnector& connector_; ///< connector this module is on
 };
 
 }  // namespace mel

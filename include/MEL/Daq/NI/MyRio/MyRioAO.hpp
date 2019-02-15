@@ -17,33 +17,29 @@
 
 #pragma once
 
-#include <MEL/Daq/Output.hpp>
 #include <MEL/Core/NonCopyable.hpp>
-
-//==============================================================================
-// FORWARD DECLARATIONS
-//==============================================================================
+#include <MEL/Daq/Output.hpp>
 
 namespace mel {
 
-class MyRio;
-enum MyRioConnectorType : int;
+class MyRioConnector;
 
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
-
+/// myRIO Analog Output Module
 class MEL_API MyRioAO : public AnalogOutput, NonCopyable {
 public:
 
-    MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers);
-
+    /// Updates a single channel
     bool update_channel(uint32 channel_number) override;
 
 private:
 
-    MyRio& daq_;
-    MyRioConnectorType type_;
+    friend class MyRioConnector;
+
+    MyRioAO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+
+private:
+
+    const MyRioConnector& connector_; ///< connector this module is on
 
 };
 

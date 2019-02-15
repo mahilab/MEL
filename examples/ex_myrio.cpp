@@ -15,7 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#include <MEL/Core/Timer.hpp>
+#include <MEL/Core.hpp>
+#include <MEL/Utility/Options.hpp>
 #include <MEL/Daq/NI/MyRio/MyRio.hpp>
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Math/Waveform.hpp>
@@ -41,11 +42,29 @@ bool handler(CtrlEvent event) {
 // main
 int main(int argc, char** argv) {
 
+    // user options
+    Options options("myrio", "myRIO Example");
+    options.add_options()
+        ("l,local",    "Local Port for MelNet",        value<unsigned short>())
+        ("r,remote",   "Remote Port for MelNet",       value<unsigned short>())
+        ("i,ip",       "Remote IP Address for MelNet", value<string>())
+        ("h,help",     "Help");
+    auto in = options.parse(argc, argv);
+    if (in.count("help") > 0) {
+        print(options.help());
+        return 0;
+    }
+
     // register handler to gracefully exit program
     register_ctrl_handler(handler);
 
-    // MelNet to send data to host PC (port 55001@172.22.11.1 from local port 55002)
-    MelNet mn(55002, 55001, "172.22.11.1");
+    // see if user passed us custom ports/ip address for MelNet
+    unsigned short local_port  = in.count("l") ? in["l"].as<unsigned short>() : 55002;
+    unsigned short remote_port = in.count("r") ? in["r"].as<unsigned short>() : 55001;
+    string remote_ip_address   = in.count("i") ? in["ip"].as<string>() : "172.22.11.1";
+
+    // create MelNet
+    MelNet mn(local_port, remote_port, remote_ip_address);
 
     // create MyRio object
     MyRio myrio("myrio");
@@ -53,7 +72,7 @@ int main(int argc, char** argv) {
         return 1;
 
     // set units per count on encoder
-    myrio.C.encoder[0].set_units_per_count(2*PI/500.0f);
+    myrio.mspC.encoder[0].set_units_per_count(2*PI/500.0f);
 
     // create sinwave for loopback
     Waveform sinwave(Waveform::Sin, seconds(1), 10);
@@ -69,10 +88,10 @@ int main(int argc, char** argv) {
         myrio.update_input();
         // perform analog loopback
         double voltage_write = sinwave(t);
-        myrio.C.AO[0].set_value(voltage_write);
-        double voltage_read  = myrio.C.AI[0].get_value();
+        myrio.mspC.AO[0].set_value(voltage_write);
+        double voltage_read  = myrio.mspC.AI[0].get_value();
         // read an encoder
-        double position = myrio.C.encoder[0].get_position();
+        double position = myrio.mspC.encoder[0].get_position();
         // send myRIO encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, position});
         // update myrio outputs

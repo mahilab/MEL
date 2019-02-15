@@ -31,11 +31,10 @@ static const std::vector<std::vector<double>> OFFSETS({
 
 } // namespace
 
-MyRioAO::MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>& channel_numbers) :
-  daq_(daq),
-  type_(type)
+MyRioAO::MyRioAO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+  connector_(connector)
 {
-    set_name(daq.get_name() + "_AO");
+    set_name(connector_.get_name() + "_AO");
     set_channel_numbers(channel_numbers);
 }
 
@@ -68,19 +67,12 @@ MyRioAO::MyRioAO(MyRio& daq, MyRioConnectorType type, const std::vector<uint32>&
 // }
 
 bool MyRioAO::update_channel(uint32 channel_number) {
-    if (!daq_.is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-                   << daq_.get_name() << " is not open";
-        return false;
-    }
-
     NiFpga_Status status;
     uint16_t valueScaled;
     double value = values_[channel_number];
-
-    if (type_ == MyRioConnectorType::MspC)
+    if (connector_.type == MyRioConnector::Type::MspC)
     {
-        value = (value - OFFSETS[type_][channel_number]) / WEIGHTS[type_][channel_number];
+        value = (value - OFFSETS[connector_.type][channel_number]) / WEIGHTS[connector_.type][channel_number];
         value = (value < INT16_MIN) ? INT16_MIN : value;
         value = (value > INT16_MAX) ? INT16_MAX : value;
         value += (value < 0.0) ? -0.5 : 0.5;
@@ -88,13 +80,13 @@ bool MyRioAO::update_channel(uint32 channel_number) {
     }
     else
     {
-        value = (value - OFFSETS[type_][channel_number]) / WEIGHTS[type_][channel_number] + 0.5;
+        value = (value - OFFSETS[connector_.type][channel_number]) / WEIGHTS[connector_.type][channel_number] + 0.5;
         value = (value < 0) ? 0 : value;
         value = (value > UINT16_MAX) ? UINT16_MAX : value;
         valueScaled = (uint16_t) value;
     }
 
-    status = NiFpga_WriteU16(myrio_session, REGISTERS[type_][channel_number], valueScaled);
+    status = NiFpga_WriteU16(myrio_session, REGISTERS[connector_.type][channel_number], valueScaled);
     if (status < 0) {
         LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number;
         return false;
@@ -105,8 +97,6 @@ bool MyRioAO::update_channel(uint32 channel_number) {
         LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number;
         return false;
     }
-
-
     return true;
 }
 
