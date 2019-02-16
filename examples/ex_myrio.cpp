@@ -64,6 +64,10 @@ int main(int argc, char** argv) {
     string remote_ip_address   = user.count("i") ? user["ip"].as<string>() : "172.22.11.1";
 
     // create MelNet
+    print("Local Port:", local_port);
+    print("Remote Port:", remote_port);
+    print("Remote IP:", remote_ip_address);
+
     MelNet mn(local_port, remote_port, remote_ip_address);
 
     // create MyRio object
@@ -94,6 +98,8 @@ int main(int argc, char** argv) {
     print("  DO: ", myrio.mspC.DIO.get_output_channel_numbers());
     print("  ENC:",myrio.mspC.encoder.get_channel_numbers());
 
+    myrio.enable();
+
     // set units per count on encoder
     myrio.mspC.encoder[0].set_units_per_count(2*PI/500.0f);
 
@@ -118,6 +124,7 @@ int main(int argc, char** argv) {
         // send myRIO encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, position});
         // update myrio outputs
+        print(position);
         myrio.update_output();
         // wait timer
         timer.wait();
