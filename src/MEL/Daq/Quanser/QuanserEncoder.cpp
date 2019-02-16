@@ -10,15 +10,12 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserEncoder::QuanserEncoder(QuanserDaq& daq) :
+QuanserEncoder::QuanserEncoder(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    Encoder(channel_numbers),
     daq_(daq),
     velocity_channel_numbes_(this)
 {
     set_name(daq.get_name() + "_encoder");
-}
-
-QuanserEncoder::~QuanserEncoder() {
-
 }
 
 bool QuanserEncoder::update() {

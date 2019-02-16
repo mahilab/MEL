@@ -9,15 +9,12 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDI::QuanserDI(QuanserDaq& daq) :
+    QuanserDI::QuanserDI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+        DigitalInput(channel_numbers),
         daq_(daq),
         quanser_values_(this)
     {
         set_name(daq_.get_name() + "_DI");
-    }
-
-    QuanserDI::~QuanserDI() {
-
     }
 
     bool QuanserDI::update() {

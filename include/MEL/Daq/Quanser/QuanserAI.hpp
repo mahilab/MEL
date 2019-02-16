@@ -34,9 +34,7 @@ class QuanserDaq;
 
 class MEL_API QuanserAI : public AnalogInput, NonCopyable {
 public:
-    QuanserAI(QuanserDaq& daq);
-
-    ~QuanserAI();
+    QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
     bool update() override;
 

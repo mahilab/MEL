@@ -20,21 +20,15 @@ Q8Usb::Q8Usb(QuanserOptions options,
              uint32 id) :
     QuanserDaq("q8_usb", id, options),
     perform_sanity_check_(perform_sanity_check),
-    AI(*this),
-    AO(*this),
-    DI(*this),
-    DO(*this),
-    encoder(*this),
+    AI(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    AO(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    DI(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    DO(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    encoder(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
     watchdog(*this, milliseconds(100))
 {
     // increment NEXT_ID
     ++NEXT_Q8USB_ID;
-    // set channel numbers
-    AI.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    AO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    DI.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    DO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    encoder.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
     // enable velocity estimation
     encoder.has_velocity(true);
 }

@@ -9,14 +9,11 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserAI::QuanserAI(QuanserDaq& daq) :
+QuanserAI::QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    AnalogInput(channel_numbers),
     daq_(daq)
 {
     set_name(daq.get_name() + "_AI");
-}
-
-QuanserAI::~QuanserAI() {
-
 }
 
 bool QuanserAI::update() {

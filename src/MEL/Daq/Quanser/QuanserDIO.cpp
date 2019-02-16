@@ -9,14 +9,11 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDIO::QuanserDIO(QuanserDaq& daq) :
+    QuanserDIO::QuanserDIO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+        DigitalInputOutput(channel_numbers),
         daq_(daq)
     {
         set_name(daq_.get_name() + "_DIO");
-    }
-
-    QuanserDIO::~QuanserDIO() {
-
     }
 
     bool QuanserDIO::on_enable() {

@@ -17,19 +17,15 @@ namespace mel {
 
 Q2Usb::Q2Usb(QuanserOptions options, uint32 id) :
     QuanserDaq("q2_usb", id, options),
-    AI(*this),
-    AO(*this),
-    DIO(*this),
-    encoder(*this),
+    AI(*this,     {0,1}),
+    AO(*this,     {0,1}),
+    DIO(*this,    {0,1,2,3,4,5,6,7,8}),
+    encoder(*this,{0,1}),
     watchdog(*this, milliseconds(100))
 {
     // increment next_id_
     ++NEXT_Q2USB_ID;
-    // set channel numners
-    AI.set_channel_numbers({ 0,1 });
-    AO.set_channel_numbers({ 0,1 });
-    DIO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7, 8 });
-    encoder.set_channel_numbers({ 0, 1 });
+    // disable velocity estimation
     encoder.has_velocity(false);
 }
 

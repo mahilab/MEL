@@ -21,6 +21,7 @@
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/StlStreams.hpp>
 #include <MEL/Core/Types.hpp>
+#include <MEL/Utility/Mutex.hpp>
 #include <atomic>
 #include <sstream>
 #include <utility>
@@ -108,6 +109,9 @@ void MEL_API prompt(const std::string& message);
 //==============================================================================
 // CONSOLE OUTPUT
 //==============================================================================
+
+/// Global mutex console printing
+extern Mutex MEL_API CONSOLE_MUTEX;
 
 /// Prints a string to the console using the fastest method the OS offers
 void MEL_API print_string(const std::string& str);

@@ -46,7 +46,14 @@
 
 using namespace mel;
 
+ctrl_bool stop(false);
+bool my_handler(CtrlEvent event) {
+    return stop = true;
+}
+
 int main(int argc, char* argv[]) {
+
+    register_ctrl_handler(my_handler);
 
     // setup and parse console input options
     Options options("comms_server.exe", "MEL Communications Server");
@@ -95,21 +102,23 @@ int main(int argc, char* argv[]) {
         Waveform sinwave(Waveform::Sin, seconds(1));
         Waveform triwave(Waveform::Triangle, seconds(1));
         Timer timer(hertz(1000));
-        while (true) {
+        while (!stop) {
             Time t = timer.get_elapsed_time();
             melnet.send_data({sinwave(t),triwave(t)});
             timer.wait();
         }
+        LOG(Info) << "Stopping Demo";
     }
     // server loop
     else {
         LOG(Info) << "Starting Server";
         MelShare melshare(melshare_name);
         std::vector<double> data;
-        while (true) {
+        while (!stop) {
             data = melnet.receive_data();
             melshare.write_data(data);
         }
+        LOG(Info) << "Stopping Server";
     }
 
     return 0;

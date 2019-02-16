@@ -9,15 +9,12 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDO::QuanserDO(QuanserDaq& daq) :
+    QuanserDO::QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+        DigitalOutput(channel_numbers),
         daq_(daq),
         quanser_values_(this)
     {
         set_name(daq.get_name() + "_DO");
-    }
-
-    QuanserDO::~QuanserDO() {
-
     }
 
     bool QuanserDO::update() {

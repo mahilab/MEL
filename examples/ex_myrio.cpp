@@ -130,7 +130,6 @@ int main(int argc, char** argv) {
         myrio.update_output();
         // wait timer
         timer.wait();
-        // LOG(Verbose) << t.as_seconds();
     }
 
     print("Miss Rate:", timer.get_miss_rate());

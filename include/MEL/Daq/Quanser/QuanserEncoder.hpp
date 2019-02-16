@@ -34,9 +34,7 @@ class QuanserDaq;
 /// Quanser implementation of Encoder
 class MEL_API QuanserEncoder : public Encoder {
 public:
-    QuanserEncoder(QuanserDaq& daq);
-
-    ~QuanserEncoder();
+    QuanserEncoder(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
 
     bool update() override;
 
@@ -56,7 +54,7 @@ public:
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq
-    Buffer<uint32> velocity_channel_numbes_;  ///< Converted channel numbers
+    Registry<uint32> velocity_channel_numbes_;  ///< Converted channel numbers
 
 };
 

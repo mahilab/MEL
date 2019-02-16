@@ -9,14 +9,11 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserAO::QuanserAO(QuanserDaq& daq) :
+QuanserAO::QuanserAO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    AnalogOutput(channel_numbers),
     daq_(daq)
 {
     set_name(daq.get_name() + "_AO");
-}
-
-QuanserAO::~QuanserAO() {
-
 }
 
 bool QuanserAO::update() {

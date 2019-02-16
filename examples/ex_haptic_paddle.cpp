@@ -110,7 +110,7 @@ public:
         std::ofstream file;
         file.open("calibration.txt");
         std::vector<double> positions = { -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30 };
-        print("\nRotate to the indicated position when prompted and hold. Press ENTER to begin calibration.\n", Color::Yellow);
+        color_print("\nRotate to the indicated position when prompted and hold. Press ENTER to begin calibration.\n", Color::Yellow);
         std::vector<double> volts(positions.size());
         for (std::size_t i = 0; i < positions.size(); ++i) {
             beep();
