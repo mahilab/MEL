@@ -35,10 +35,10 @@ static const std::vector<std::vector<uint32_t>> CNTR ({
 } // namespace
 
 MyRioEncoder::MyRioEncoder(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+    Encoder(channel_numbers),
     connector_(connector)
 {
     set_name(connector_.get_name() + "_encoder");
-    set_channel_numbers(channel_numbers);
 }
 
 bool MyRioEncoder::update_channel(uint32 channel_number) {

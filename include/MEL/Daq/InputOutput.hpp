@@ -33,8 +33,11 @@ public:
 
     class Channel;
 
-    /// Default constructor
+    /// Default Constructor (creates an invlaid empty InputOutput Module)
     InputOutput();
+
+    /// Constructor with specified channel numbers
+    InputOutput(const std::vector<uint32>& channel_numbers);
 
     /// Default destructor
     virtual ~InputOutput();
@@ -76,7 +79,7 @@ protected:
     void sort_input_output_channel_numbers();
 
 protected:
-    Buffer<Direction>   directions_;              ///< The I/O directions of each channel
+    Registry<Direction>   directions_;            ///< The I/O directions of each channel
     std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
     std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
 

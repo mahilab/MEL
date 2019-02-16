@@ -34,8 +34,11 @@ class MEL_API Encoder : public Module<int32> {
 public:
     class Channel;
 
-    /// Default constructor
+    /// Default Constructor (creates an invlaid empty Encoder)
     Encoder();
+
+    /// Constructor with specified channel numbers
+    Encoder(const std::vector<uint32>& channel_numbers);
 
     /// Default destructor
     virtual ~Encoder();
@@ -109,13 +112,13 @@ protected:
 
 protected:
 
-    bool has_velocity_;               ///< True if Encoder module has velocity estimation
-    Buffer<QuadFactor> factors_;      ///< The encoder quadrature factors
-    Buffer<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
-    Buffer<double> positions_;        ///< The calculated positions of the Encoder channels
-    Buffer<double> conversions_;      ///< Conversion scalars used to convert to positions
-    Buffer<double> values_per_sec_;   ///< Counts per second if Encoder has velocity
-    Buffer<double> velocities_;       ///< The calculated velocities of the Encoder channels
+    bool has_velocity_;                 ///< True if Encoder module has velocity estimation
+    Registry<QuadFactor> factors_;      ///< The encoder quadrature factors
+    Registry<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
+    Registry<double> positions_;        ///< The calculated positions of the Encoder channels
+    Registry<double> conversions_;      ///< Conversion scalars used to convert to positions
+    Registry<double> values_per_sec_;   ///< Counts per second if Encoder has velocity
+    Registry<double> velocities_;       ///< The calculated velocities of the Encoder channels
 
 public:
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)

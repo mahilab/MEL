@@ -32,8 +32,11 @@ class Input : virtual public Module<T> {
 public:
     class Channel;
 
-    /// Default constructor
+    /// Default Constructor (creates an invlaid empty Input Module)
     Input();
+
+    /// Constructor with specified channel numbers
+    Input(const std::vector<uint32>& channel_numbers);
 
     /// Default destructor
     virtual ~Input();

@@ -34,10 +34,10 @@ static const std::vector<std::vector<double>> OFFSETS({
 } // namespace
 
 MyRioAI::MyRioAI(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+    AnalogInput(channel_numbers),
     connector_(connector)
 {
     set_name(connector_.get_name() + "_AI");
-    set_channel_numbers(channel_numbers);
 }
 
 bool MyRioAI::update_channel(uint32 channel_number) {

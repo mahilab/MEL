@@ -46,6 +46,7 @@ static const std::vector<std::vector<uint8_t>> BITS({
 } // namespace
 
 MyRioDIO::MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+    DigitalInputOutput(channel_numbers),
     connector_(connector)
 {
     set_name(connector_.get_name() + "_DIO");

@@ -1,7 +1,10 @@
 namespace mel {
 
     template<typename T>
-    Input<T>::Input() {}
+    Input<T>::Input() : Module<T>() {}
+
+    template<typename T>
+    Input<T>::Input(const std::vector<uint32>& channel_numbers) : Module<T>(channel_numbers) {}
 
     template<typename T>
     Input<T>::~Input() {}

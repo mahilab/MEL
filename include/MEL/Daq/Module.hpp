@@ -18,7 +18,7 @@
 #pragma once
 
 #include <MEL/Core/Device.hpp>
-#include <MEL/Daq/Buffer.hpp>
+#include <MEL/Daq/Registry.hpp>
 #include <map>
 
 #ifdef _MSC_VER
@@ -36,8 +36,11 @@ class MEL_API ModuleBase : public Device {
 
 public:
 
-    /// Default Constructor
+    /// Default Constructor (creates an invlaid empty Module)
     ModuleBase();
+
+    /// Constructor with specified channel numbers
+    ModuleBase(const std::vector<uint32>& channel_numbers);
 
     /// Calls the Modules's API to update a single channel with the real-world.
     virtual bool update_channel(uint32 channel_number) = 0;
@@ -45,9 +48,6 @@ public:
     /// Calls the Modules's API to update all channels with the real-world.
     /// By default, iteratively calls update_channel() on all channel numbers.
     virtual bool update();
-
-    /// Sets the vector of channel numbers this Module maintains
-    void set_channel_numbers(const std::vector<uint32>& channel_numbers);
 
     /// Gets the vector of channel numbers this Module maintains
     const std::vector<uint32>& get_channel_numbers() const;
@@ -63,18 +63,21 @@ public:
 
 protected:
 
+    /// Sets the vector of channel numbers this Module maintains
+    void set_channel_numbers(const std::vector<uint32>& channel_numbers);
+
     /// Default implementation of on_enable (always returns true)
-    virtual bool on_enable();
+    virtual bool on_enable() override;
 
     /// Default implementation of on_disable (always returns true)
-    virtual bool on_disable();
+    virtual bool on_disable() override;
 
 private:
 
-    friend class BufferBase;
+    friend class RegistryBase;
 
-    /// Adds a value container to this Module
-    void add_buffer(BufferBase* container);
+    /// Adds a Registry to this Module
+    void add_registry(RegistryBase* registry);
 
     /// Returns vector index associated with channel number
     std::size_t index(uint32 channel_number) const;
@@ -83,7 +86,7 @@ private:
 
     std::vector<uint32> channel_numbers_;         ///< The channel numbers used by this ModuleBase
     std::map<uint32, std::size_t> channel_map_;   ///< Maps a channel number with a vector index position
-    std::vector<BufferBase*> buffers_;            ///< Buffers needed by this Module
+    std::vector<RegistryBase*> registries_;       ///< Registries needed by this Module
 
 };
 
@@ -96,8 +99,11 @@ template <typename T>
 class Module : public ModuleBase {
 public:
 
-    /// Default Constructorr
+    /// Default Constructor (creates an invlaid empty Module)
     Module();
+
+    /// Constructor with specified channel numbers
+    Module(const std::vector<uint32>& channel_numbers);
 
     /// Destructor
     virtual ~Module();
@@ -125,9 +131,9 @@ public:
 
 protected:
 
-    Buffer<T> values_;      ///< The real-world values of the channels in this Module
-    Buffer<T> min_values_;  ///< The minimum possible values of each channel
-    Buffer<T> max_values_;  ///< The maximum possible values of each channel
+    Registry<T> values_;      ///< The real-world values of the channels in this Module
+    Registry<T> min_values_;  ///< The minimum possible values of each channel
+    Registry<T> max_values_;  ///< The maximum possible values of each channel
 
 };
 

@@ -32,8 +32,11 @@ public:
 
     class Channel;
 
-    /// Default constructor
+    /// Default Constructor (creates an invlaid empty Output Module)
     Output();
+
+    /// Constructor with specified channel numbers
+    Output(const std::vector<uint32>& channel_numbers);
 
     /// Destructor
     virtual ~Output();
@@ -77,9 +80,9 @@ protected:
     virtual bool on_disable();
 
 protected:
-    Buffer<T> enable_values_;   ///< The initial values set when the Module is enabled
-    Buffer<T> disable_values_;  ///< The final values set when the Module is disabled
-    Buffer<T> expire_values_;   ///< The expire values when the Module expires
+    Registry<T> enable_values_;   ///< The initial values set when the Module is enabled
+    Registry<T> disable_values_;  ///< The final values set when the Module is disabled
+    Registry<T> expire_values_;   ///< The expire values when the Module expires
 
 public:
     /// Encapsulates a Module channel

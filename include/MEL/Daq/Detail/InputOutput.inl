@@ -2,6 +2,15 @@ namespace mel {
 
     template <typename T>
     InputOutput<T>::InputOutput() :
+        Output<T>(),
+        directions_(this, Direction::In)
+    {
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    InputOutput<T>::InputOutput(const std::vector<uint32>& channel_numbers) :
+        Output<T>(channel_numbers),
         directions_(this, Direction::In)
     {
         sort_input_output_channel_numbers();

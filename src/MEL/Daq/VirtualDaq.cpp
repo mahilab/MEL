@@ -13,7 +13,8 @@ static Voltage DEFAULT_AI_SOURCE(Time t) {
     return sin(2.0 * PI * t.as_seconds());
 }
 
-VirtualAI::VirtualAI(VirtualDaq& daq) :
+VirtualAI::VirtualAI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) :
+    AnalogInput(channel_numbers),
     sources(this, DEFAULT_AI_SOURCE),
     daq_(daq)
 {
@@ -29,7 +30,10 @@ bool VirtualAI::update_channel(uint32 channel_number) {
 // VIRUTAL AO
 //==============================================================================
 
-VirtualAO::VirtualAO(VirtualDaq& daq) : daq_(daq) {
+VirtualAO::VirtualAO(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) : 
+    AnalogOutput(channel_numbers),
+    daq_(daq) 
+{
     set_name(daq.get_name() + "_AO");
 }
 
@@ -48,7 +52,8 @@ static Logic DEFAULT_DI_SOURCE(Time t) {
         return Low;
 }
 
-VirtualDI::VirtualDI(VirtualDaq& daq) :
+VirtualDI::VirtualDI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) :
+    DigitalInput(channel_numbers),
     sources(this, DEFAULT_DI_SOURCE),
     daq_(daq)
 {
@@ -64,7 +69,10 @@ bool VirtualDI::update_channel(uint32 channel_number) {
 // VIRTUAL DO
 //==============================================================================
 
-VirtualDO::VirtualDO(VirtualDaq& daq) : daq_(daq) {
+VirtualDO::VirtualDO(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) : 
+    DigitalOutput(channel_numbers),
+    daq_(daq)
+{
     set_name(daq.get_name() + "_DO");
 }
 
@@ -80,7 +88,8 @@ int32 DEFAULT_ENCODER_SOURCE(Time t) {
     return static_cast<int32>(1024.0 * (sin(2.0 * PI * t.as_seconds())));
 }
 
-VirtualEncoder::VirtualEncoder(VirtualDaq& daq) :
+VirtualEncoder::VirtualEncoder(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) :
+    Encoder(channel_numbers),
     sources(this, DEFAULT_ENCODER_SOURCE),
     daq_(daq)
 {
@@ -98,17 +107,13 @@ bool VirtualEncoder::update_channel(uint32 channel_number) {
 
 VirtualDaq::VirtualDaq(const std::string& name)
     : DaqBase(name),
-      AI(*this),
-      AO(*this),
-      DI(*this),
-      DO(*this),
-      encoder(*this)
+      AI(*this, {0,1,2,3,4,5,6,7,8}),
+      AO(*this, {0,1,2,3,4,5,6,7,8}),
+      DI(*this, {0,1,2,3,4,5,6,7,8}),
+      DO(*this, {0,1,2,3,4,5,6,7,8}),
+      encoder(*this, {0,1,2,3,4,5,6,7,8})
 {
-    AI.set_channel_numbers({0,1,2,3,4,5,6,7,8});
-    AO.set_channel_numbers({0,1,2,3,4,5,6,7,8});
-    DI.set_channel_numbers({0,1,2,3,4,5,6,7,8});
-    DO.set_channel_numbers({0,1,2,3,4,5,6,7,8});
-    encoder.set_channel_numbers({0,1,2,3,4,5,6,7,8});
+
 }
 
 VirtualDaq::~VirtualDaq() {

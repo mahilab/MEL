@@ -31,11 +31,17 @@ std::map<uint32, std::size_t> make_channel_map(const std::vector<uint32>& channe
 
 ModuleBase::ModuleBase() { }
 
+ModuleBase::ModuleBase(const std::vector<uint32>& channel_numbers) {
+    set_channel_numbers(channel_numbers);
+}
+
 bool ModuleBase::on_enable() {
+    // return true by default
     return true;
 }
 
 bool ModuleBase::on_disable() {
+    // return true by default
     return true;
 }
 
@@ -52,8 +58,8 @@ void ModuleBase::set_channel_numbers(const std::vector<uint32>& channel_numbers)
     std::map<uint32, std::size_t> old_map = channel_map_;
     channel_numbers_ = sort_and_reduce_channels(channel_numbers);
     channel_map_ = make_channel_map(channel_numbers_);
-    for (std::size_t i = 0; i < buffers_.size(); i++)
-        buffers_[i]->change_channel_numbers(old_map, channel_map_);
+    for (std::size_t i = 0; i < registries_.size(); i++)
+        registries_[i]->change_channel_numbers(old_map, channel_map_);
 }
 
 const std::vector<uint32>& ModuleBase::get_channel_numbers() const {
@@ -76,12 +82,12 @@ bool ModuleBase::validate_channel_count(std::size_t size) const {
     if (channel_numbers_.size() == size)
         return true;
     LOG(Error) << "Invalid number of elements (" << size
-               << ") not equal to channel count of " << channel_numbers_.size();
+               << ") not equal to channel count of " << get_channel_count();
     return false;
 }
 
-void ModuleBase::add_buffer(BufferBase* container) {
-    buffers_.push_back(container);
+void ModuleBase::add_registry(RegistryBase* registry) {
+    registries_.push_back(registry);
 }
 
 std::size_t ModuleBase::index(uint32 channel_number) const {

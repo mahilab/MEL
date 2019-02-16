@@ -2,9 +2,18 @@ namespace mel {
 
 template <typename T>
 Module<T>::Module() :
-   values_(this),
-   min_values_(this),
-   max_values_(this)
+    ModuleBase(),
+    values_(this),
+    min_values_(this),
+    max_values_(this)
+{}
+
+template <typename T>
+Module<T>::Module(const std::vector<uint32>& channel_numbers) :
+    ModuleBase(channel_numbers),
+    values_(this),
+    min_values_(this),
+    max_values_(this)
 {}
 
 template <typename T>

@@ -8,6 +8,21 @@ namespace mel {
 //==============================================================================
 
 Encoder::Encoder() :
+    Module(),
+    has_velocity_(false),
+    factors_(this, X4),
+    units_per_count_(this, 1.0),
+    positions_(this),
+    conversions_(this),
+    values_per_sec_(this),
+    velocities_(this)
+{
+    compute_conversions();
+}
+
+
+Encoder::Encoder(const std::vector<uint32>& channel_numbers) :
+    Module(channel_numbers),
     has_velocity_(false),
     factors_(this, X4),
     units_per_count_(this, 1.0),
