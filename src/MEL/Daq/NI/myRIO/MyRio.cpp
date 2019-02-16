@@ -8,9 +8,9 @@ namespace mel {
 
 MyRio::MyRio(const std::string& name) :
     DaqBase(name),
-    mxpA(*this, MyRioConnector::Type::MxpA, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,13,14,15}, {0}),
-    mxpB(*this, MyRioConnector::Type::MxpB, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,13,14,15}, {0}),
-    mspC(*this, MyRioConnector::Type::MspC, {0,1},     {0,1}, {1,3,5,7}, {0,1})
+    mxpA(*this, MyRioConnector::Type::MxpA, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}, {}),
+    mxpB(*this, MyRioConnector::Type::MxpB, {0,1,2,3}, {0,1}, {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}, {}),
+    mspC(*this, MyRioConnector::Type::MspC, {0,1},     {0,1}, {0,1,2,3,4,5,6,7}, {})
 {
 }
 

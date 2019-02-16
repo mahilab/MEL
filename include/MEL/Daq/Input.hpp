@@ -28,7 +28,7 @@ namespace mel {
 
 /// Encapsulates an Input only Module
 template <typename T>
-class Input : virtual public Module<T> {
+class Input : public Module<T> {
 public:
     class Channel;
 

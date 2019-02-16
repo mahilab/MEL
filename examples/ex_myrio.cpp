@@ -75,6 +75,8 @@ int main(int argc, char** argv) {
     if (!myrio.open())
         return 1;
 
+    myrio.mxpA.configure_encoders(1);
+    myrio.mspC.configure_encoders(2);
     myrio.mxpB.DIO.set_direction(5, Out);
     myrio.mxpB.DIO.set_direction(6, Out);
 
@@ -107,7 +109,7 @@ int main(int argc, char** argv) {
     Waveform sinwave(Waveform::Sin, seconds(1), 10);
 
     // create loop Timer and Time t
-    Timer timer(hertz(1000));
+    Timer timer(hertz(1000), Timer::Sleep);
     Time t;
 
     // loop
@@ -124,11 +126,14 @@ int main(int argc, char** argv) {
         // send myRIO encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, position});
         // update myrio outputs
-        print(position);
+        // print(position);
         myrio.update_output();
         // wait timer
         timer.wait();
+        // LOG(Verbose) << t.as_seconds();
     }
+
+    print("Miss Rate:", timer.get_miss_rate());
 
     // shutdown myrio
     myrio.disable();

@@ -74,7 +74,7 @@ bool ModuleBase::validate_channel_number(uint32 channel_number) const {
     if (channel_map_.count(channel_number) > 0)
         return true;
     LOG(Error) << "Invalid channel number " << channel_number
-               << " not declared in channel numbers";
+               << " not declared in channel numbers [" << channel_numbers_ << "] on Module " << get_name();
     return false;
 }
 
@@ -82,7 +82,7 @@ bool ModuleBase::validate_channel_count(std::size_t size) const {
     if (channel_numbers_.size() == size)
         return true;
     LOG(Error) << "Invalid number of elements (" << size
-               << ") not equal to channel count of " << get_channel_count();
+               << ") not equal to channel count of " << get_channel_count() << " on Module " << get_name();
     return false;
 }
 

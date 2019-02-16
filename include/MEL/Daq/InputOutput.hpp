@@ -26,9 +26,9 @@ namespace mel {
 // CLASS DEClARATION
 //==============================================================================
 
-/// Encapsulates an InputOutput only Module, with added functionality
+/// Encapsulates an InputOutput only Module
 template <typename T>
-class InputOutput : public Input<T>, public Output<T> {
+class InputOutput : public Output<T> {
 public:
 
     class Channel;
@@ -76,12 +76,12 @@ public:
 
 protected:
     /// Sorts channel numbers associated with inputs and outputs
-    void sort_input_output_channel_numbers();
+    void sort_input_output_channel_numbers() const;
 
 protected:
-    Registry<Direction>   directions_;            ///< The I/O directions of each channel
-    std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
-    std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
+    Registry<Direction>         directions_;              ///< The I/O directions of each channel
+    mutable std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
+    mutable std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
 
 public: 
 

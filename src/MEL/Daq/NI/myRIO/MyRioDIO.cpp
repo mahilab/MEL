@@ -50,8 +50,6 @@ MyRioDIO::MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel
     connector_(connector)
 {
     set_name(connector_.get_name() + "_DIO");
-    set_channel_numbers(channel_numbers);
-    set_directions(std::vector<Direction>(channel_numbers.size(), Direction::In));
 }
 
 bool MyRioDIO::update_channel(uint32 channel_number) {

@@ -36,7 +36,6 @@ private:
     friend class MyRioConnector;
 
     MyRioEncoder(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
-    bool on_enable() override;
 
 private:
 

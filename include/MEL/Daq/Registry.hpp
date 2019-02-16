@@ -22,6 +22,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <algorithm>
 
 namespace mel {
 
@@ -74,8 +75,11 @@ public:
     /// Gets size of Registry
     std::size_t size() const;
 
-    /// Gets reference to raw values array
+    /// Gets non-const reference to raw values array
     std::vector<T>& get();
+
+    /// Gets a const reference to raw values array
+    const std::vector<T>& get() const;
 
     /// Sets raw values array
     void set(const std::vector<T>& values);
@@ -85,7 +89,7 @@ public:
 
     /// Overload stream operator
     template <typename U>
-    friend std::ostream& operator<<(std::ostream& os, const Registry<U>& container);
+    friend std::ostream& operator<<(std::ostream& os, const Registry<U>& registry);
 
 private:
 

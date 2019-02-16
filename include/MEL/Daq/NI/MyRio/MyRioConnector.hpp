@@ -42,8 +42,13 @@ public:
 
     /// Updates all Input Modules simultaenously
     bool update_input();
+
     /// Updates all Output Modules simultaenously
     bool update_output();
+
+    /// Configures the Connector for a certain number of Encoders
+    /// 0 or 1 for MXPA and MXPB, 0, 1, or 2 for MSPC
+    bool configure_encoders(std::size_t encoder_count);
 
 public:
 
@@ -68,6 +73,8 @@ private:
     bool on_close() override;
     bool on_enable() override;
     bool on_disable() override;
+
+    void reconfigure_dios();
 
 private:
 

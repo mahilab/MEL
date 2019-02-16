@@ -27,7 +27,7 @@ namespace mel {
 
 /// Encapsulates an Output only Module, with added functionality
 template <typename T>
-class Output : virtual public Module<T> {
+class Output : public Module<T> {
 public:
 
     class Channel;

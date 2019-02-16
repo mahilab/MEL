@@ -64,27 +64,37 @@ public:
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period
-    Time get_elapsed_time();
+    Time get_elapsed_time() const;
 
     /// Gets the actual elapsed time since construction or last call to restart().
-    Time get_elapsed_time_actual();
+    Time get_elapsed_time_actual() const;
 
-    /// Gets the elapsed number of ticks since construction or the last call to
-    /// restart().
-    int64 get_elapsed_ticks();
+    /// Gets the elapsed number of ticks since construction or the last call to restart().
+    int64 get_elapsed_ticks() const;
+
+    /// Get the number of times the Timer has missed a tick deadline
+    int64 get_misses() const;
+
+    /// Gets the deadline miss rate of the Timer
+    double get_miss_rate() const;
 
     /// Gets the Timer frequency
-    Frequency get_frequency();
+    Frequency get_frequency() const;
 
     /// Gets the Timer period
-    Time get_period();
+    Time get_period() const;
+
+    /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.005 = 0.5%)
+    void set_acceptable_miss_rate(double rate);
 
 protected:
-    WaitMode mode_;   ///< The Timer's waiting mode
-    Clock clock_;     ///< The Timer's internal clock
-    Time period_;     ///< The Timer's waiting period
-    int64 ticks_;     ///< The running tick count
-    Time prev_time_;  ///< Time saved at previous call to wait or restart
+    WaitMode mode_;   ///< the Timer's waiting mode
+    Clock clock_;     ///< the Timer's internal clock
+    Time period_;     ///< the Timer's waiting period
+    int64 ticks_;     ///< the running tick count
+    int64 misses_;    ///< number of misses
+    Time prev_time_;  ///< time saved at previous call to wait or restart
+    double rate_;     ///< acceptable miss rate
 };
 
 }  // namespace mel

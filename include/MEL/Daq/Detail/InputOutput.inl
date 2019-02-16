@@ -38,21 +38,25 @@ namespace mel {
 
     template <typename T>
     std::size_t InputOutput<T>::get_input_channel_count() const {
+        this->sort_input_output_channel_numbers();
         return input_channel_numbers_.size();
     }
 
     template <typename T>
     std::size_t InputOutput<T>::get_output_channel_count() const {
+        this->sort_input_output_channel_numbers();
         return output_channel_numbers_.size();
     }
 
     template <typename T>
     const std::vector<uint32>& InputOutput<T>::get_input_channel_numbers() const {
+        this->sort_input_output_channel_numbers();
         return input_channel_numbers_;
     }
 
     template <typename T>
     const std::vector<uint32>& InputOutput<T>::get_output_channel_numbers() const {
+        this->sort_input_output_channel_numbers();
         return output_channel_numbers_;
     }
 
@@ -85,7 +89,7 @@ namespace mel {
     }
 
     template <typename T>
-    void InputOutput<T>::sort_input_output_channel_numbers() {
+    void InputOutput<T>::sort_input_output_channel_numbers() const {
         input_channel_numbers_.clear();
         output_channel_numbers_.clear();
         for (std::size_t i = 0; i < this->get_channel_count(); ++i) {

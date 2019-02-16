@@ -6,8 +6,7 @@ namespace mel {
         enable_values_(this),
         disable_values_(this),
         expire_values_(this)
-    {
-    }
+    { }
 
     template <typename T>
     Output<T>::Output(const std::vector<uint32>& channel_numbers) :
@@ -15,8 +14,7 @@ namespace mel {
         enable_values_(this),
         disable_values_(this),
         expire_values_(this)
-    {
-    }
+    { }
 
     template <typename T>
     Output<T>::~Output() {}

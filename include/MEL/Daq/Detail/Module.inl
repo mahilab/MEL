@@ -1,3 +1,5 @@
+#include <MEL/Core/Console.hpp>
+
 namespace mel {
 
 template <typename T>

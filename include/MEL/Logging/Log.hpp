@@ -147,7 +147,7 @@ inline Logger<instance>& init_logger(Severity max_severity,
 
 /// Built in MEL Logger. Contains two writers: (0) a RollingFileWriter with a
 /// TxtFormatter and default severity Verbose, and (1) a ColorConsoleWriter with
-/// TxtFormatter and defaultl severity Info. Can be disabled by defining
+/// TxtFormatter and default severity Info. Can be disabled by defining
 /// MEL_DISABLE_LOG or enabling DISABLE_LOG option in CMakeLists.txt
 extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 

@@ -8,7 +8,10 @@ namespace mel {
     Registry<T>::Registry(ModuleBase* module, T default_value) :
         RegistryBase(module),
         default_value_(default_value)
-    { }
+    { 
+        values_.resize(this->module_->get_channel_count());        
+        std::fill(values_.begin(), values_.end(), default_value_);
+    }
 
     template <typename T>
     const T& Registry<T>::operator[](uint32 channel_number) const {
@@ -27,6 +30,11 @@ namespace mel {
 
     template <typename T>
     std::vector<T>& Registry<T>::get() {
+        return values_;
+    }
+
+    template <typename T>
+    const std::vector<T> &Registry<T>::get() const {
         return values_;
     }
 
@@ -55,15 +63,15 @@ namespace mel {
 
     /// Overload stream operator for Registry
     template <typename T>
-    std::ostream& operator<<(std::ostream& os, const Registry<T>& container) {
-        if (container.size() > 0) {
+    std::ostream& operator<<(std::ostream& os, const Registry<T>& registry) {
+        if (registry.size() > 0) {
             os << "{";
-            for (std::size_t i = 0; i < container.size() - 1; i++) {
-                uint32 ch = container.module_->get_channel_numbers()[i];
-                os << "[" << ch << "]:" << container[ch] << ", ";
+            for (std::size_t i = 0; i < registry.size() - 1; i++) {
+                uint32 ch = registry.module_->get_channel_numbers()[i];
+                os << "[" << ch << "]:" << registry[ch] << ", ";
             }
-            uint32 ch = container.module_->get_channel_numbers()[container.size() - 1];
-            os << "[" << ch << "]:" << container[ch] << "}";
+            uint32 ch = registry.module_->get_channel_numbers()[registry.size() - 1];
+            os << "[" << ch << "]:" << registry[ch] << "}";
         }
         else {
             os << "{}";
