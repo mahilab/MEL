@@ -21,7 +21,6 @@
 #include <MEL/Logging/File.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Utility/System.hpp>
-#include <MEL/Logging/Detail/StreamMeta.hpp>
 #include <vector>
 #include <sstream>
 #include <fstream>

@@ -28,7 +28,7 @@ using namespace std;
 int main() {
 
     //=========================================================================
-    // Basic CSV usage with Csv static functions
+    // Basic CSV usage with free CSV functions
     //=========================================================================
 
     // container for header
@@ -67,14 +67,18 @@ int main() {
 
     Csv csv("my_files/data2.csv");
     if (csv.is_open()) {
+        // make a header
         csv.write_row("Time", "double", "string", "int", "vector[0]", "vector[1]", "vector[2]");
+        // simulate a loop
         Timer timer(hertz(1000));
         Time  t;
-        while (t < seconds(1)) {
-            auto a_double = random(0.0, 100.0);
-            auto a_string = "string" + std::to_string(timer.get_elapsed_ticks());
-            auto a_int    = random(0, 100);
-            auto a_vector = linspace(0, 10, 3);
+        while (t < seconds(60)) {
+            // make some data
+            double a_double         = random(0.0, 100.0);
+            string a_string         = "string" + std::to_string(timer.get_elapsed_ticks());
+            int a_int               = random(0, 100);
+            vector<double> a_vector = {random(0.0,1.0), random(1.0,2.0), random(2.0,3.0)};
+            // write a row (note a_vector will count as 3 fields)
             csv.write_row(t, a_double, a_string, a_int, a_vector);
             t = timer.wait();
         }
@@ -82,7 +86,6 @@ int main() {
         print("Miss Rate: ", timer.get_miss_rate());
         print("Wait Ratio:", timer.get_wait_ratio());
     }
-
 
     return 0;
 }
