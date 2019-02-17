@@ -42,6 +42,11 @@ bool handler(CtrlEvent event) {
 // main
 int main(int argc, char** argv) {
 
+    while (true) {
+        auto ch = get_ch();
+        print(ch,":",(char)ch);
+    }
+
     // user options
     Options options("myrio", "myRIO Example");
     options.add_options()

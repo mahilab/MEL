@@ -12,11 +12,11 @@
 #define getch _getch
 #define kbhit _kbhit
 #else
-#include <termios.h> // for getch() and kbhit()
-#include <unistd.h> // for getch(), kbhit() and (u)sleep()
+#include <termios.h>   // for getch() and kbhit()
+#include <unistd.h>    // for getch(), kbhit() and (u)sleep()
 #include <sys/ioctl.h> // for getkey()
 #include <sys/types.h> // for kbhit()
-#include <sys/time.h> // for kbhit()
+#include <sys/time.h>  // for kbhit()
 #endif
 
 namespace mel {
@@ -347,7 +347,7 @@ int get_key(void) {
         case 10:  return KEY_ENTER;
         case 127: return KEY_BACKSPACE;
 #else
-        case 13: return KEY_ENTER;
+        case 10: return KEY_ENTER;
         case 8:  return KEY_BACKSPACE;
 #endif
 
