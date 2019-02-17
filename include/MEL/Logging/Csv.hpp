@@ -39,19 +39,9 @@ public:
     /// Constructor with filepath provided (opens file)
     Csv(const std::string& filepath, WriteMode w_mode = Truncate, OpenMode o_mode = OpenOrCreate);
 
-
+    /// Writes a variable number of arguments to a new row, separated by commas
     template <typename Arg, typename... Args>
-    void row(Arg&& arg, Args&&... args) {
-        std::stringstream ss;
-        ss << std::forward<Arg>(arg);
-        using expander = int[];
-        (void)expander{0, (void(ss << ' ' << std::forward<Args>(args)), 0)...};
-        ss << "\n";
-        print_string(ss.str());
-    }
-
-
-public:
+    void write_row(Arg&& arg, Args&&... args);
 
 private:
 

@@ -1,5 +1,15 @@
 namespace mel {
 
+ template <typename Arg, typename... Args>
+void Csv::write_row(Arg&& arg, Args&&... args) {
+    std::ostringstream ss;
+    ss << std::forward<Arg>(arg);
+    using expander = int[];
+    (void)expander{0, (void(ss << ',' << std::forward<Args>(args)), 0)...};
+    ss << "\n";
+    write(ss.str());
+}
+
 template <typename Container1D>
 static bool csv_read_row(const std::string& filepath, Container1D& data_out, std::size_t row_offset, std::size_t col_offset) {
     std::string directory, filename, ext, full;

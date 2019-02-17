@@ -18,6 +18,8 @@
 #include <MEL/Logging/Csv.hpp>
 #include <MEL/Core/Console.hpp>
 #include <MEL/Math/Random.hpp>
+#include <MEL/Math/Functions.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <array>
 
 using namespace mel;
@@ -59,14 +61,28 @@ int main() {
     for (auto& r : rows) 
         print(r);
 
-    // //=========================================================================
-    // // Advanced CSV usage with Csv instance
-    // //=========================================================================
+    //=========================================================================
+    // Advanced CSV usage with Csv instance
+    //=========================================================================
 
     Csv csv("my_files/data2.csv");
     if (csv.is_open()) {
-        csv.row("evan",100.f);
+        csv.write_row("Time", "double", "string", "int", "vector[0]", "vector[1]", "vector[2]");
+        Timer timer(hertz(1000));
+        Time  t;
+        while (t < seconds(1)) {
+            auto a_double = random(0.0, 100.0);
+            auto a_string = "string" + std::to_string(timer.get_elapsed_ticks());
+            auto a_int    = random(0, 100);
+            auto a_vector = linspace(0, 10, 3);
+            csv.write_row(t, a_double, a_string, a_int, a_vector);
+            t = timer.wait();
+        }
+        // print timer info to see performance
+        print("Miss Rate: ", timer.get_miss_rate());
+        print("Wait Ratio:", timer.get_wait_ratio());
     }
+
 
     return 0;
 }
