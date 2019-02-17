@@ -31,37 +31,29 @@ namespace mel {
 template <class Formatter>
 class RollingFileWriter : public Writer {
 public:
-    RollingFileWriter(const char* filename,
+    RollingFileWriter(const std::string& filename,
                       size_t max_file_size = 0,
                       int max_files       = 0,
                       Severity max_severity = Debug)
         : Writer(max_severity),
           file_size_(),
-          max_file_size_(
-              (std::max)(static_cast<off_t>(max_file_size),
-                         static_cast<off_t>(
-                             1000)))  // set a lower limit for the maxFileSize
-          ,
+          max_file_size_((std::max)(static_cast<off_t>(max_file_size), static_cast<off_t>(1000))),
           last_file_number_((std::max)(max_files - 1, 0)),
-          first_write_(true) {
+          first_write_(true) 
+    {
         split_filename(filename, filename_no_ext_, file_ext_);
     }
 
     virtual void write(const Record& record) {
         Lock lock(mutex_);
-
         if (first_write_) {
             open_log_file();
             first_write_ = false;
-        } else if (last_file_number_ > 0 && file_size_ > max_file_size_ &&
-                   -1 != file_size_) {
+        } 
+        else if (last_file_number_ > 0 && file_size_ > max_file_size_ && -1 != file_size_) {
             roll_log_files();
         }
-
-        int bytes_written =
-            file_.write(Formatter::format(record));
-
-
+        int bytes_written = file_.write(Formatter::format(record));
         if (bytes_written > 0) {
             file_size_ += bytes_written;
         }
@@ -74,12 +66,10 @@ private:
         std::string lastFileName = build_file_name(last_file_number_);
         mel::File::unlink(lastFileName.c_str());
 
-        for (int fileNumber = last_file_number_ - 1; fileNumber >= 0;
-             --fileNumber) {
+        for (int fileNumber = last_file_number_ - 1; fileNumber >= 0;--fileNumber) {
             std::string currentFileName = build_file_name(fileNumber);
             std::string nextFileName    = build_file_name(fileNumber + 1);
-
-            File::rename(currentFileName.c_str(), nextFileName.c_str());
+            File::rename(currentFileName, nextFileName);
         }
 
         open_log_file();
@@ -87,11 +77,10 @@ private:
 
     void open_log_file() {
         std::string fileName = build_file_name();
-        file_size_           = file_.open(fileName.c_str());
+        file_size_ = file_.open(fileName);
 
         if (0 == file_size_) {
-            int bytesWritten =
-                file_.write(Formatter::header());
+            int bytesWritten = file_.write(Formatter::header());
 
             if (bytesWritten > 0) {
                 file_size_ += bytesWritten;

@@ -23,26 +23,23 @@
 
 namespace mel {
 
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
-
-class MEL_API File : mel::NonCopyable {
+/// Representats a file resource
+class MEL_API File : NonCopyable {
 public:
     /// Default constructor
     File();
 
-    /// Constructor with filename provided
-    File(const char* fileName);
+    /// Constructor with filepath provided (opens file)
+    File(const std::string& filepath);
 
-    /// Default destructor
+    /// Default destructor (closes file if open)
     ~File();
 
     /// Opens the file for input-output operations
-    off_t open(const char* fileName);
+    off_t open(const std::string& filepath);
 
     /// Writes to the file if the file is open
-    int write(const void* buf, size_t count);
+    int write(const void* data, std::size_t count);
 
     /// Writes to the file if the file is open
     template <class CharType>
@@ -50,19 +47,34 @@ public:
         return write(str.data(), str.size() * sizeof(CharType));
     }
 
-    off_t seek(off_t offset, int whence);
+    /// Repositions file offset from beginning
+    off_t seek_set(off_t offset);
+
+    /// Repositions file offset from current
+    off_t seek_cur(off_t offset);
+
+    /// Repositions file offset from end
+    off_t seek_end(off_t offset);
 
     /// Closes the file if the file is open
     void close();
 
-    /// Removes the file if it exists
-    static int unlink(const char* fileName);
+public:
 
-    /// Renames the file if it exists
-    static int rename(const char* oldFilename, const char* newFilename);
+    /// Removes a file if it exists
+    static int unlink(const std::string& filepath);
+
+    /// Renames a file if it exists
+    static int rename(const std::string& old_filename, const std::string& new_filename);
 
 private:
-    int m_file;  ///< Windows file type
+
+    /// Repositions file offset according to directive whence and returns resulting offset
+    off_t seek(off_t offset, int whence);
+
+private:
+
+    int m_file; ///< file handle
 };
 
 }  // namespace mel

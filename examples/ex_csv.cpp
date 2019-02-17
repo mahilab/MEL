@@ -19,6 +19,7 @@
 #include <MEL/Core/Console.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Math/Random.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <array>
 
 using namespace mel;
@@ -38,6 +39,8 @@ int main()
     }
 
     string filepath = "my_files/data.csv";
+
+    LOG(Error) << "MEL.log still works?";
 
     Csv::write_row(filepath, header);
     Csv::append_rows(filepath, data1);

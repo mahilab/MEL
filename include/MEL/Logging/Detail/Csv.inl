@@ -7,8 +7,8 @@ bool Csv::write_row(const std::string &filepath, const Array1D &data)
     if (!parse_filepath(filepath, directory, filename, ext, full))
         return false;
     create_directory(directory);
-    File::unlink(full.c_str());
-    File file(full.c_str());
+    File::unlink(full);
+    File file(full);
     std::ostringstream ss;
     ss << std::setprecision(6);
     for (size_t j = 0; j < data.size() - 1; ++j)
@@ -26,8 +26,8 @@ bool Csv::write_rows(const std::string &filepath, const Array2D &data)
     if (!parse_filepath(filepath, directory, filename, ext, full))
         return false;
     create_directory(directory);
-    File::unlink(full.c_str());
-    File file(full.c_str());
+    File::unlink(full);
+    File file(full);
     for (std::size_t i = 0; i < data.size(); i++)
     {
         std::ostringstream ss;
@@ -48,7 +48,7 @@ bool Csv::append_row(const std::string &filepath, const Array1D &data)
     if (!parse_filepath(filepath, directory, filename, ext, full))
         return false;
     create_directory(directory);
-    File file(full.c_str());
+    File file(full);
     std::ostringstream ss;
     ss << std::setprecision(6);
     for (size_t j = 0; j < data.size() - 1; ++j)
@@ -66,7 +66,7 @@ bool Csv::append_rows(const std::string &filepath, const Array2D &data)
     if (!parse_filepath(filepath, directory, filename, ext, full))
         return false;
     create_directory(directory);
-    File file(full.c_str());
+    File file(full);
     for (std::size_t i = 0; i < data.size(); i++)
     {
         std::ostringstream ss;

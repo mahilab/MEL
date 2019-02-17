@@ -17,9 +17,10 @@
 
 #pragma once
 
-#include <MEL/Logging/File.hpp>
-#include <MEL/Utility/System.hpp>
 #include <MEL/Config.hpp>
+#include <MEL/Logging/File.hpp>
+#include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Utility/System.hpp>
 #include <vector>
 #include <sstream>
 #include <fstream>
@@ -27,8 +28,32 @@
 
 namespace mel {
 
-class MEL_API Csv {
+class MEL_API Csv : NonCopyable {
 public:
+
+    /// Open Mode
+    enum Mode {
+        Trunc = 0,  ///< existing content will be truncated on open
+        Append = 1, ///< existing content will not be truncated on open 
+    };
+
+    /// Default constructor
+    Csv();
+
+    /// Constructor, automatically opens file
+    Csv(const std::string& filepath, Mode mode = Trunc);
+
+    /// Opens or creates file
+    void open(const std::string& filepath, Mode mode = Trunc);
+
+    /// Closes file
+    void close();    
+
+public:
+
+    //=========================================================================
+    // STATIC FUNCTIONS
+    //=========================================================================
 
 	/// Read a vector of vectors from a file
 	static bool read(std::vector<std::vector<double>> &data_out, const std::string &filename, const std::string& directory = ".");
@@ -56,6 +81,7 @@ private:
 
     /// Parses filepath into sub components
     static bool parse_filepath(const std::string &in, std::string &directory, std::string &filename, std::string &ext, std::string &full);
+
 };
 
 } // namespace mel

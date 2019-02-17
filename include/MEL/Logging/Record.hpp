@@ -142,7 +142,7 @@ public:
 
 private:
     Timestamp timestamp_;              ///< timestamp
-    const Severity severity_;          /// Record severity
+    const Severity severity_;          ///< Record severity
     const unsigned int tid_;           ///< thread ID
     const size_t line_;                ///< line number
     std::ostringstream message_;       ///< string stream for message
