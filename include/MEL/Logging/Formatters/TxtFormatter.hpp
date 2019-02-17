@@ -18,7 +18,7 @@
 #pragma once
 
 #include <MEL/Config.hpp>
-#include <MEL/Logging/Record.hpp>
+#include <MEL/Logging/LogRecord.hpp>
 #include <iomanip>
 
 namespace mel {
@@ -31,7 +31,7 @@ class MEL_API TxtFormatter {
 public:
     static std::string header() { return std::string(); }
 
-    static std::string format(const Record& record) {
+    static std::string format(const LogRecord& record) {
         std::ostringstream ss;
         ss << record.get_timestamp().yyyy_mm_dd_hh_mm_ss_mmm() << " ";
         ss << std::setfill(' ') << std::setw(5) << std::left

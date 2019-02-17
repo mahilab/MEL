@@ -18,7 +18,7 @@
 #pragma once
 
 #include <MEL/Config.hpp>
-#include <MEL/Logging/Record.hpp>
+#include <MEL/Logging/LogRecord.hpp>
 #include <iomanip>
 
 namespace mel {
@@ -33,7 +33,7 @@ public:
         return "Date, Time, Severity, TID, Function, Message\n";
     }
 
-    static std::string format(const Record& record) {
+    static std::string format(const LogRecord& record) {
         std::ostringstream ss;
         ss << record.get_timestamp().yyyy_mm_dd() << ", ";
         ss << record.get_timestamp().hh_mm_ss_mmm() << ", ";

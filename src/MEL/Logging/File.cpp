@@ -2,6 +2,8 @@
 #include <MEL/Logging/File.hpp>
 #include <sys/stat.h>
 #include <MEL/Utility/System.hpp>
+#include <MEL/Core/Console.hpp>
+#include <MEL/Logging/Log.hpp>
 
 #ifdef _WIN32
 #include <io.h>
@@ -16,31 +18,56 @@ namespace mel {
 
 File::File() : file_handle_(-1) {}
 
-File::File(const std::string& filepath, WriteMode mode) : 
+File::File(const std::string& filepath, WriteMode w_mode, OpenMode o_mode) : 
     file_handle_(-1)
 {
-    open(filepath, mode);
+    open(filepath, w_mode, o_mode);
 }
 
 File::~File() {
     close();
 }
 
-off_t File::open(const std::string& filepath, WriteMode mode) {
+bool File::open(const std::string& filepath, WriteMode w_mode, OpenMode o_mode) {
 
-    auto tidy = tidy_path(filepath, true);
-    if (mode == WriteMode::Truncate)
-        unlink(filepath);
+    // parse filepath
+    std::string directory, filename, ext, full;
+    if (!parse_filepath(filepath, directory, filename, ext, full)) {
+        LOG(Error) << "Failed to parse filepath: " << filepath;
+        return false;
+    }
 
+    // make directory if it doesn't exist
+    if (o_mode == OpenMode::OpenOrCreate && !directory_exits(directory)) {
+        LOG(Warning) << "Created directory " << directory << " for file: " << full;
+        create_directory(directory);
+    }
+
+    // open file
 #if defined(_WIN32) && (defined(__BORLANDC__) || defined(__MINGW32__))
-    file_handle_ = ::_sopen(tidy.c_str(), _O_CREAT | _O_WRONLY | _O_BINARY, SH_DENYWR, _S_IREAD | _S_IWRITE);
+    auto open_flags = o_mode == OpenMode::OpenOrCreate ? _O_CREAT | _O_RDWR : _O_RDWR;
+    if (w_mode == WriteMode::Truncate)
+        open_flags |= _O_TRUNC;
+    file_handle_ = ::_sopen(full.c_str(), open_flags | _O_BINARY, SH_DENYWR, _S_IREAD | _S_IWRITE);
 #elif defined(_WIN32)
-    ::_sopen_s(&file_handle_, tidy.c_str(), _O_CREAT | _O_WRONLY | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE);
+    auto open_flags = o_mode == OpenMode::OpenOrCreate ? _O_CREAT | _O_RDWR : _O_RDWR;
+    if (w_mode == WriteMode::Truncate)
+        open_flags |= _O_TRUNC;
+    auto result = ::_sopen_s(&file_handle_, full.c_str(), open_flags | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE);
 #else
-    file_handle_ = ::open(tidy.c_str(), O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    auto open_flags = o_mode == OpenMode::OpenOrCreate ? O_CREAT | O_RDWR : O_RDWR;
+    if (w_mode == WriteMode::Truncate)
+        open_flags |= O_TRUNC;
+    file_handle_ = ::open(full.c_str(), open_flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 #endif
-    return seek_end(0);
-    
+
+    seek_end(0);
+    if (is_open())
+        return true;
+    else {
+        LOG(Error) << "Failed to open file: " << full;
+        return false;
+    } 
 }
 
 int File::write(const void* data, std::size_t size) {
@@ -69,6 +96,10 @@ off_t File::seek_cur(off_t offset) {
 
 off_t File::seek_end(off_t offset) {
     return seek(offset, SEEK_END);
+}
+
+bool File::is_open() {
+    return file_handle_ != -1;
 }
 
 void File::close() {
@@ -100,30 +131,5 @@ int File::rename(const std::string& old_filepath, const std::string& new_filepat
     return ::rename(old_tidy.c_str(), new_tidy.c_str());
 #endif
 }
-
-bool File::parse(const std::string &in, std::string &directory, std::string &filename, std::string &ext, std::string &full)
-{
-    // can't do anythign with empty string
-    if (in == "" || in.empty())
-        return false;
-    // split path
-    auto splits = split_path(in);
-    // split filename
-    auto filename_ext = splits.back();
-    if (filename_ext == "" || filename_ext.empty())
-        return false;
-    split_filename(filename_ext, filename, ext);
-    // make directory string
-    directory.clear();
-    for (std::size_t i = 0; i < splits.size() - 1; ++i)
-        directory += splits[i] + get_separator();
-    directory = tidy_path(directory, false);
-    full = directory + filename;
-    if (ext != "" || !ext.empty())
-        full += "." + ext;
-    return true;
-}
-
-
 
 }  // namespace mel

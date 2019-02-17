@@ -31,7 +31,7 @@ public:
 
     ColorConsoleWriter(Severity max_severity = Debug) : ConsoleWriter<Formatter>(max_severity) {}
 
-    virtual void write(const Record& record) override {
+    virtual void write(const LogRecord& record) override {
         std::string str = Formatter::format(record);
         Lock lock(this->mutex_);
         setColor(record.get_severity());

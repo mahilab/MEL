@@ -1,9 +1,9 @@
 namespace mel {
 
 template <typename Container1D>
-static bool Csv::read_row(const std::string& filepath, Container1D& data_out, std::size_t row_offset, std::size_t col_offset) {
+static bool csv_read_row(const std::string& filepath, Container1D& data_out, std::size_t row_offset, std::size_t col_offset) {
     std::string directory, filename, ext, full;
-    if (!parse(filepath, directory, filename, ext, full))
+    if (!parse_filepath(filepath, directory, filename, ext, full))
         return false;
     std::ifstream file(full);
     file.precision(6);
@@ -33,9 +33,9 @@ static bool Csv::read_row(const std::string& filepath, Container1D& data_out, st
 }
 
 template <typename Container2D>
-static bool Csv::read_rows(const std::string& filepath, Container2D& data_out, std::size_t row_offset, std::size_t col_offset) {
+static bool csv_read_rows(const std::string& filepath, Container2D& data_out, std::size_t row_offset, std::size_t col_offset) {
     std::string directory, filename, ext, full;
-    if (!parse(filepath, directory, filename, ext, full))
+    if (!parse_filepath(filepath, directory, filename, ext, full))
         return false;
     std::ifstream file(full);
     file.precision(6);
@@ -72,13 +72,9 @@ static bool Csv::read_rows(const std::string& filepath, Container2D& data_out, s
 }
 
 template <typename Array1D>
-bool Csv::write_row(const std::string &filepath, const Array1D &data)
+bool csv_write_row(const std::string &filepath, const Array1D &data)
 {
-    std::string directory, filename, ext, full;
-    if (!parse(filepath, directory, filename, ext, full))
-        return false;
-    create_directory(directory);
-    File file(full, File::Truncate);
+    File file(filepath, WriteMode::Truncate);
     std::ostringstream ss;
     ss << std::setprecision(6);
     for (size_t j = 0; j < data.size() - 1; ++j)
@@ -90,13 +86,9 @@ bool Csv::write_row(const std::string &filepath, const Array1D &data)
 }
 
 template <typename Array2D>
-bool Csv::write_rows(const std::string &filepath, const Array2D &data)
+bool csv_write_rows(const std::string &filepath, const Array2D &data)
 {
-    std::string directory, filename, ext, full;
-    if (!parse(filepath, directory, filename, ext, full))
-        return false;
-    create_directory(directory);
-    File file(full, File::Truncate);
+    File file(filepath, WriteMode::Truncate);
     for (std::size_t i = 0; i < data.size(); i++)
     {
         std::ostringstream ss;
@@ -111,13 +103,9 @@ bool Csv::write_rows(const std::string &filepath, const Array2D &data)
 }
 
 template <typename Array1D>
-bool Csv::append_row(const std::string &filepath, const Array1D &data)
+bool csv_append_row(const std::string &filepath, const Array1D &data)
 {
-    std::string directory, filename, ext, full;
-    if (!parse(filepath, directory, filename, ext, full))
-        return false;
-    create_directory(directory);
-    File file(full, File::Append);
+    File file(filepath, WriteMode::Append);
     std::ostringstream ss;
     ss << std::setprecision(6);
     for (size_t j = 0; j < data.size() - 1; ++j)
@@ -129,13 +117,9 @@ bool Csv::append_row(const std::string &filepath, const Array1D &data)
 }
 
 template <typename Array2D>
-bool Csv::append_rows(const std::string &filepath, const Array2D &data)
+bool csv_append_rows(const std::string &filepath, const Array2D &data)
 {
-    std::string directory, filename, ext, full;
-    if (!parse(filepath, directory, filename, ext, full))
-        return false;
-    create_directory(directory);
-    File file(full, File::Append);
+    File file(filepath, WriteMode::Append);
     for (std::size_t i = 0; i < data.size(); i++)
     {
         std::ostringstream ss;

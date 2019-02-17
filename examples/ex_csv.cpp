@@ -17,17 +17,18 @@
 
 #include <MEL/Logging/Csv.hpp>
 #include <MEL/Core/Console.hpp>
-#include <MEL/Utility/System.hpp>
 #include <MEL/Math/Random.hpp>
-#include <MEL/Logging/Log.hpp>
-#include <MEL/Core/Timer.hpp>
 #include <array>
 
 using namespace mel;
 using namespace std;
 
-int main()
-{
+int main() {
+
+    //=========================================================================
+    // Basic CSV usage with Csv static functions
+    //=========================================================================
+
     // container for header
     vector<string> header;
     // container for data
@@ -41,24 +42,30 @@ int main()
     }
 
     // path to csv file (my_files dir will be created)
-    string filepath = "my_files/data.csv";
+    string filepath = "my_files/data1.csv";
 
     // write the header
-    Csv::write_row(filepath, header);    
+    csv_write_row(filepath, header);    
     // append the data
-    Csv::append_rows(filepath, data);
+    csv_append_rows(filepath, data);
 
     // read back subset of header with offset
     array<string, 5> row;
-    Csv::read_row(filepath, row, 0, 2);
+    csv_read_row(filepath, row, 0, 2);
     print(row);
     // read back subset of data with offset as doubles
     array<array<double,5>,5> rows;
-    Csv::read_rows(filepath, rows, 1, 2);
+    csv_read_rows(filepath, rows, 1, 2);
     for (auto& r : rows) 
-        print(r);    
+        print(r);
 
+    // //=========================================================================
+    // // Advanced CSV usage with Csv instance
+    // //=========================================================================
 
+    Csv csv("my_files/data2.csv");
+    if (csv.is_open()) {
+    }
 
     return 0;
 }

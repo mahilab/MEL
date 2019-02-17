@@ -48,6 +48,8 @@ std::vector<std::string> split_path(std::string path)
 
 void create_directory(const std::string &path)
 {
+    if (path == "" || path.empty())
+        return;
     std::vector<std::string> dirs = split_path(path);
     for (std::size_t i = 0; i < dirs.size(); ++i) {
         std::string sub_path;
@@ -64,6 +66,8 @@ void create_directory(const std::string &path)
 }
 
 bool directory_exits(std::string path) {
+    if (path == "" || path.empty())
+        return true;
     path = tidy_path(path, false);
     #ifdef _WIN32
         DWORD ftyp = GetFileAttributesA(path.c_str());
@@ -99,6 +103,8 @@ void split_filename(const std::string &filename_ext, std::string &filename, std:
 
 std::string tidy_path(const std::string &in, bool is_file)
 {
+    if (in == "" || in.empty())
+        return in;
     std::string out;
     auto dirs = split_path(in);
     for (std::size_t i = 0; i < dirs.size(); ++i)
@@ -115,6 +121,29 @@ std::string tidy_path(const std::string &in, bool is_file)
     if (is_file)
         out.pop_back();
     return out;
+}
+
+bool parse_filepath(const std::string &in, std::string &directory, std::string &filename, std::string &ext, std::string &full)
+{
+    // can't do anythign with empty string
+    if (in == "" || in.empty())
+        return false;
+    // split path
+    auto splits = split_path(in);
+    // split filename
+    auto filename_ext = splits.back();
+    if (filename_ext == "" || filename_ext.empty())
+        return false;
+    split_filename(filename_ext, filename, ext);
+    // make directory string
+    directory.clear();
+    for (std::size_t i = 0; i < splits.size() - 1; ++i)
+        directory += splits[i] + get_separator();
+    directory = tidy_path(directory, false);
+    full = directory + filename;
+    if (ext != "" || !ext.empty())
+        full += "." + ext;
+    return true;
 }
 
 //==============================================================================

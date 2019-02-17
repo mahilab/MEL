@@ -35,7 +35,7 @@ public:
     ConsoleWriter(Severity max_severity = Debug) : Writer(max_severity) {}
 
     /// Formats then writers a Record to the console
-    virtual void write(const Record& record) override {
+    virtual void write(const LogRecord& record) override {
         std::string str = Formatter::format(record);
         Lock lock(mutex_);
         print_string(str);

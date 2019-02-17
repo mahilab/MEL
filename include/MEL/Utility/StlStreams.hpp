@@ -34,7 +34,6 @@ namespace std {
         s << c[N - 1] ;
         return s;
     }
-
 }
 
 // NOTE: The follwing used to be able to stream any STL container

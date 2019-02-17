@@ -18,7 +18,7 @@
 #pragma once
 
 #include <MEL/Config.hpp>
-#include <MEL/Logging/Record.hpp>
+#include <MEL/Logging/LogRecord.hpp>
 
 namespace mel {
 
@@ -33,7 +33,7 @@ public:
 
     virtual ~Writer() {}
 
-    virtual void write(const Record& record) = 0;
+    virtual void write(const LogRecord& record) = 0;
 
     Severity get_max_severity() const { return max_severity_; }
 

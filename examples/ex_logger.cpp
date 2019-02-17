@@ -32,7 +32,7 @@ class MyFormatter {
 public:
     static std::string header() { return "This is my header."; }
 
-    static std::string format(const Record& record) {
+    static std::string format(const LogRecord& record) {
         std::string formatted_message = "";
         formatted_message += "Message: ";
         formatted_message += record.get_message();
@@ -47,7 +47,7 @@ public:
 template <class Formatter>
 class MyWriter : public Writer {
 public:
-    virtual void write(const Record& record) override {
+    virtual void write(const LogRecord& record) override {
         std::string str = Formatter::format(record);
         if (record.get_severity() == Fatal)
             set_text_color(Color::White, Color::Red);

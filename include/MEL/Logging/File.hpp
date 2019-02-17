@@ -18,6 +18,7 @@
 #pragma once
 
 #include <MEL/Config.hpp>
+#include <MEL/Core/Types.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <sstream>
 
@@ -26,24 +27,18 @@ namespace mel {
 /// Representats a file resource
 class MEL_API File : NonCopyable {
 public:
-
-    /// Represents mode in which a file is written when it is opened
-    enum WriteMode {
-        Truncate = 0,  ///< file will be truncated if it exists
-        Append   = 1   ///< file will be not be truncated on open
-    };
     
     /// Default constructor
     File();
 
     /// Constructor with filepath provided (opens file)
-    File(const std::string& filepath, WriteMode mode = WriteMode::Truncate);
+    File(const std::string& filepath, WriteMode w_mode = Truncate, OpenMode o_mode = OpenOrCreate);
 
     /// Default destructor (closes file if open)
     virtual ~File();
 
     /// Opens the file for input-output operations
-    off_t open(const std::string& filepath, WriteMode mode = WriteMode::Truncate);
+    bool open(const std::string &filepath, WriteMode mode = Truncate, OpenMode o_mode = OpenOrCreate);
 
     /// Writes to the file if the file is open
     int write(const void* data, std::size_t count);
@@ -53,15 +48,9 @@ public:
     int write(const std::basic_string<CharType>& str) {
         return write(str.data(), str.size() * sizeof(CharType));
     }
-
-    /// Repositions file offset from beginning
-    off_t seek_set(off_t offset);
-
-    /// Repositions file offset from current
-    off_t seek_cur(off_t offset);
-
-    /// Repositions file offset from end
-    off_t seek_end(off_t offset);
+    
+    /// Returns true if file is open
+    bool is_open();
 
     /// Closes the file if the file is open
     void close();
@@ -76,11 +65,17 @@ public:
 
 protected:
 
+    /// Repositions file offset from beginning
+    off_t seek_set(off_t offset);
+
+    /// Repositions file offset from current
+    off_t seek_cur(off_t offset);
+
+    /// Repositions file offset from end
+    off_t seek_end(off_t offset);
+
     /// Repositions file offset according to directive whence and returns resulting offset
     off_t seek(off_t offset, int whence);
-
-    /// Parses filepath into sub components
-    static bool parse(const std::string &in, std::string &directory, std::string &filename, std::string &ext, std::string &full);
 
 private:
 

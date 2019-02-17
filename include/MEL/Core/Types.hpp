@@ -43,13 +43,19 @@ typedef unsigned long long uint64;  ///<                          0 to 18,446,74
 #endif
 
 //==============================================================================
-// GENERIC TYPES
+// FILESYSTEM TYPES
 //==============================================================================
 
 /// Represents mode in which process resources can be opened or created
 enum OpenMode {
     OpenOrCreate,  ///< create the object if it does not exit
     OpenOnly       ///< only attempt to open an existing object
+};
+
+/// Represents mode in which a file is written when it is opened
+enum WriteMode {
+    Truncate = 0, ///< file will be truncated if it exists
+    Append = 1    ///< file will be not be truncated on open
 };
 
 //==============================================================================

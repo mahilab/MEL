@@ -49,6 +49,11 @@ void MEL_API split_filename(const std::string &filename_ext,
                             std::string &filename,
                             std::string &ext);
 
+/// Parses a filepath into its subcomponents
+bool MEL_API parse_filepath(const std::string &in, 
+                           std::string &directory, std::string &filename, 
+                           std::string &ext, std::string &full);
+
 //==============================================================================
 // SYSTEM FUNCTIONS
 //==============================================================================

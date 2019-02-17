@@ -44,7 +44,7 @@ public:
         split_filename(filename, filename_no_ext_, file_ext_);
     }
 
-    virtual void write(const Record& record) {
+    virtual void write(const LogRecord& record) {
         Lock lock(mutex_);
         if (first_write_) {
             open_log_file();
@@ -77,7 +77,7 @@ private:
 
     void open_log_file() {
         std::string fileName = build_file_name();
-        file_size_ = file_.open(fileName, File::Append);
+        file_size_ = file_.open(fileName, WriteMode::Append);
 
         if (0 == file_size_) {
             int bytesWritten = file_.write(Formatter::header());

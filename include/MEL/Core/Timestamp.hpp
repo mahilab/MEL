@@ -27,7 +27,7 @@ class MEL_API Timestamp {
 public:
     /// Default constructor
     Timestamp();
-
+    
     /// Returns timestamp string as "yyyy-mm-dd"
     std::string yyyy_mm_dd() const;
 

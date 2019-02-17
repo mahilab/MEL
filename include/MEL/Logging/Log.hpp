@@ -69,13 +69,13 @@ public:
     }
 
     /// Writes a Record to the Logger
-    virtual void write(const Record& record) override {
+    virtual void write(const LogRecord& record) override {
         if (check_severity(record.get_severity())) {
             *this += record;
         }
     }
 
-    void operator+=(const Record& record) {
+    void operator+=(const LogRecord& record) {
         for (std::vector<Writer*>::iterator it = writers_.begin();
              it != writers_.end(); ++it) {
             if ((*it)->check_severity(record.get_severity()))
@@ -108,7 +108,7 @@ template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity, Writer* writer) {
     static Logger<instance> logger(max_severity);
     logger.add_writer(writer);
-    logger += Record(Info, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+    logger += LogRecord(Info, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
               << "Logger " << instance << " Initialized";
     return logger;
 }
@@ -167,7 +167,7 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 /// Main logging macro for specific logger instance
 #define LOG_(instance, severity) \
     IF_LOG_(instance, severity)  \
-    (*get_logger<instance>()) += Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+    (*get_logger<instance>()) += LogRecord(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
 
 /// Conditional logging macro for specific logger instance
 #define LOG_IF_(instance, severity, condition) \
@@ -185,7 +185,7 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 /// Main logging macro for defaulter MEL logger
 #define LOG(severity) \
     IF_LOG(severity)  \
-        *MEL_LOGGER += Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+        *MEL_LOGGER += LogRecord(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
 
 /// Conditional logging macro for default MEL logger
 #define LOG_IF(severity, condition) \
