@@ -1,4 +1,5 @@
 #include <MEL/Core/Console.hpp>
+#include <MEL/Utility/Mutex.hpp>
 #include <csignal>
 #include <iostream>
 #include <cstdio>
@@ -24,17 +25,24 @@ namespace mel {
 // CONSTANTS
 //==============================================================================
 
+namespace {
+
 #ifdef _WIN32
 HANDLE stdout_handle = GetStdHandle(static_cast<DWORD>(-11));
-CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+CONSOLE_SCREEN_BUFFER_INFO g_csbiInfo;
 struct Initializer {
     Initializer() {
-        GetConsoleScreenBufferInfo(stdout_handle, &csbiInfo);
+        GetConsoleScreenBufferInfo(stdout_handle, &g_csbiInfo);
     }
-    ~Initializer() { SetConsoleTextAttribute(stdout_handle, csbiInfo.wAttributes); }
+    ~Initializer() { SetConsoleTextAttribute(stdout_handle, g_csbiInfo.wAttributes); }
 };
-Initializer initializer;
+Initializer g_initializer;
 #endif
+
+// mutex to make console output thread safe
+static Mutex g_console_mutex;
+
+} // namespace
 
 //==============================================================================
 // SIGNAL HANDLING
@@ -81,7 +89,7 @@ bool register_ctrl_handler(bool (*handler)(CtrlEvent)) {
 #endif
 
 //==============================================================================
-// CONSOLE FORMAT
+// CONSOLE FORMAT (THREAD SAFE)
 //==============================================================================
 
 #ifdef _WIN32
@@ -92,7 +100,7 @@ WORD get_color(Color color, bool background) {
 
         case Color::None:
             if (background)
-                return (csbiInfo.wAttributes & ~(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY));
+                return (g_csbiInfo.wAttributes & ~(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY));
             val = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
             break;
 
@@ -150,16 +158,19 @@ WORD get_color(Color color, bool background) {
 
 void set_text_color(Color foreground, Color background) {
     WORD attributes = get_color(foreground, false) | get_color(background, true);
+    Lock lock(g_console_mutex);
     SetConsoleTextAttribute(stdout_handle, attributes);
 }
 
 void reset_text_color() {
-    SetConsoleTextAttribute(stdout_handle, csbiInfo.wAttributes);
+    Lock lock(g_console_mutex);
+    SetConsoleTextAttribute(stdout_handle, g_csbiInfo.wAttributes);
 }
 
 #else
 
 void set_text_color(Color foreground, Color background) {
+    Lock lock(g_console_mutex);
     // background
     if (background == Color::None)
         std::cout << "\x1B[0m";
@@ -229,13 +240,14 @@ void set_text_color(Color foreground, Color background) {
 }
 
 void reset_text_color() {
+    Lock lock(g_console_mutex);
     std::cout << "\x1B[0m\x1B[0K";
 }
 
 #endif
 
 //==============================================================================
-// CONSOLE INPUT
+// CONSOLE INPUT (THREAD SAFE)
 //==============================================================================
 
 #ifndef _WIN32
@@ -277,14 +289,17 @@ int kbhit(void) {
 #endif
 
 int kb_hit() {
+    Lock lock(g_console_mutex);
     return kbhit();
 }
 
 int get_ch() {
+    Lock lock(g_console_mutex);
     return getch();
 }
 
 int get_ch_nb() {
+    Lock lock(g_console_mutex);
     if (kbhit())
         return getch();
     else
@@ -292,6 +307,7 @@ int get_ch_nb() {
 }
 
 int get_key(void) {
+    Lock lock(g_console_mutex);
     #ifndef _WIN32
     int cnt = kbhit(); // for ANSI escapes processing
     #endif
@@ -364,6 +380,7 @@ int get_key_nb() {
 
 void prompt(const std::string& message) {
     print_string(message);
+    Lock lock(g_console_mutex);
     getchar();
 }
 
@@ -371,13 +388,16 @@ void prompt(const std::string& message) {
 // CONSOLE OUTPUT
 //==============================================================================
 
+
+
 #ifdef _WIN32
 void print_string(const std::string& str) {
-    WriteConsoleA(stdout_handle, str.c_str(), static_cast<DWORD>(str.size()),
-                  NULL, NULL);
+    Lock lock(g_console_mutex);
+    WriteConsoleA(stdout_handle, str.c_str(), static_cast<DWORD>(str.size()), NULL, NULL);
 }
 #else
 void print_string(const std::string& str) {
+    Lock lock(g_console_mutex);
     std::cout << str;
 }
 #endif
@@ -398,6 +418,7 @@ bool is_tty() {
 
 void beep() {
 #ifdef _WIN32
+    Lock lock(g_console_mutex);
     Beep(750, 250);
 #endif
 }
@@ -407,6 +428,7 @@ const std::string ANSI_CLS                = "\033[2J\033[3J";
 const std::string ANSI_CURSOR_HOME        = "\033[H";
 
 void cls(void) {
+    Lock lock(g_console_mutex);
 #if defined(_WIN32)
     // Based on https://msdn.microsoft.com/en-us/library/windows/desktop/ms682022%28v=vs.85%29.aspx
     const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);

@@ -21,7 +21,6 @@
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/StlStreams.hpp>
 #include <MEL/Core/Types.hpp>
-#include <MEL/Utility/Mutex.hpp>
 #include <atomic>
 #include <sstream>
 #include <utility>
@@ -76,47 +75,44 @@ enum class Color {
     Gold
 };
 
-/// Sets the foreground and background text color in the console
+/// Sets the foreground and background text color in the console (thread-safe)
 void MEL_API set_text_color(Color foreground, Color background = Color::None);
 
-/// Resets the foreground and background text color to the default style
+/// Resets the foreground and background text color to the default style (thread-safe)
 void MEL_API reset_text_color();
 
 //==============================================================================
 // CONSOLE INPUT
 //==============================================================================
 
-/// Determines if keyboard has been hit
+/// Determines if keyboard has been hit (thread-safe)
 int MEL_API kb_hit();
 
-/// Get character without waiting for Return to be pressed (blocking).
+/// Get character without waiting for Return to be pressed (blocking) (thread-safe)
 int MEL_API get_ch();
 
-/// Get character without waiting for Return to be pressed (non-blocking).
+/// Get character without waiting for Return to be pressed (non-blocking) (thread-safe)
 /// Returns 0 if no key was pressed.
 int MEL_API get_ch_nb();
 
-/// Reads a key press and returns a key code (blocking).
+/// Reads a key press and returns a key code (blocking) (thread-safe)
 int MEL_API get_key();
 
-/// Reads a key press and returns a key code (blocking).
+/// Reads a key press and returns a key code (blocking) (thread-safe)
 /// Returns 0 if no key was pressed.
 int MEL_API get_key_nb();
 
-/// Prompts the user with a message and waits for Enter to be pressed.
+/// Prompts the user with a message and waits for Enter to be pressed (thread-safe)
 void MEL_API prompt(const std::string& message);
 
 //==============================================================================
 // CONSOLE OUTPUT
 //==============================================================================
 
-/// Global mutex console printing
-extern Mutex MEL_API CONSOLE_MUTEX;
-
-/// Prints a string to the console using the fastest method the OS offers
+/// Prints a string to the console using the fastest method the OS offers (thread-safe)
 void MEL_API print_string(const std::string& str);
 
-/// Prints anything that works with stream operators and then starts a new line
+/// Prints anything that works with stream operators and then starts a new line (thread-safe)
 template <typename T>
 void print(const T& value) {
     std::stringstream ss;
@@ -124,7 +120,7 @@ void print(const T& value) {
     print_string(ss.str());
 }
 
-// Prints variadic number of values with separating spaces and then starts a new line
+// Prints variadic number of arguments with separating spaces and then starts a new line (thread-safe)
 template <typename Arg, typename... Args>
 void print(Arg&& arg, Args&&... args) {
     std::stringstream ss;
@@ -135,7 +131,7 @@ void print(Arg&& arg, Args&&... args) {
     print_string(ss.str());
 }
 
-/// Print with color
+/// Print with color (thread-safe)
 template <typename T>
 void color_print(const T& value, Color foreground, Color background = Color::None) {
     set_text_color(foreground, background);
@@ -157,14 +153,13 @@ std::string stringify(T value) {
 // MISC
 //==============================================================================
 
-/// Returns true if stdout is a character device (a terminal, console, printer, or
-/// serial port)
+/// Returns true if stdout is a character device (thread-safe)
 bool MEL_API is_tty();
 
-/// Causes the console to emit a beep sound
+/// Causes the console to emit a beep sound (thread-safe)
 void MEL_API beep();
 
-/// Clears screen, resets all attributes and moves cursor home.
+/// Clears screen, resets all attributes and moves cursor home (thread-safe)
 void MEL_API cls();
 
 /// Key Codes
