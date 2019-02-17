@@ -26,10 +26,9 @@ bool DataLogger::write_to_csv(const std::vector<std::string> &header, const std:
 	}
 	LOG(Verbose) << "Writing header to " << full_filename;
 	create_directory(directory);
-	File::unlink(full_filename.c_str());
 	File file;
 	if (!header.empty()) {
-		file.open(full_filename.c_str());
+		file.open(full_filename.c_str(), File::Truncate);
 		std::ostringstream ss;
 		for (std::size_t i = 0; i < header.size() - 1; i++) {
 			ss << header[i] << ",";
@@ -58,9 +57,8 @@ bool DataLogger::write_to_csv(const std::vector<std::vector<double>> &data, cons
 	}
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
-	File::unlink(full_filename.c_str());
 	File file;
-	file.open(full_filename.c_str());
+	file.open(full_filename.c_str(), File::Truncate);
 
 	for (std::size_t i = 0; i < data.size(); i++) {
 		std::ostringstream ss;
@@ -93,9 +91,8 @@ bool DataLogger::write_to_csv(const Table &data, const std::string &filename, co
 	}
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
-	File::unlink(full_filename.c_str());
 	File file;
-	file.open(full_filename.c_str());
+	file.open(full_filename.c_str(), File::Truncate);
 	std::ostringstream oss;
 	oss << std::setprecision(6);
 	oss << make_csv_header(data);
@@ -134,9 +131,8 @@ bool DataLogger::write_to_csv(const std::vector<Table> &data, const std::string 
 	}
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
-	File::unlink(full_filename.c_str());
 	File file;
-	file.open(full_filename.c_str());
+	file.open(full_filename.c_str(), File::Truncate);
 	std::ostringstream oss;
 	oss << std::setprecision(6);
 	for (std::size_t k = 0; k < data.size(); ++k) {
@@ -593,8 +589,7 @@ void DataLogger::open(const std::string& filename, const std::string& directory,
         else
             full_filename = directory + get_separator() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Opening data file " << full_filename;
-        File::unlink(full_filename.c_str());
-        file_size_ = file_.open(full_filename.c_str());
+        file_size_ = file_.open(full_filename, File::Truncate);
         file_opened_ = true;
     }
     else {
@@ -616,7 +611,7 @@ void DataLogger::reopen(const std::string& filename, const std::string& director
         else
             full_filename = directory + get_separator() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Reopening data file " << full_filename;
-        file_size_ = file_.open(full_filename.c_str());
+        file_size_ = file_.open(full_filename, File::Append);
         file_opened_ = true;
     }
     else {
@@ -724,8 +719,7 @@ void DataLogger::double_rows() {
 void DataLogger::save_thread_func(const std::string& full_filename, const std::string& directory, std::vector<std::vector<double>> temp_data) {
     Lock lock(mutex_);
     create_directory(directory);
-    File::unlink(full_filename.c_str());
-    file_.open(full_filename.c_str());
+    file_.open(full_filename, File::Truncate);
     file_opened_ = true;
     write_header();
     for (std::size_t i = 0; i < temp_data.size(); i++) {

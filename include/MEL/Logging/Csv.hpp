@@ -28,59 +28,50 @@
 
 namespace mel {
 
-class MEL_API Csv : NonCopyable {
-public:
+class MEL_API Csv : public File {
 
-    /// Open Mode
-    enum Mode {
-        Trunc = 0,  ///< existing content will be truncated on open
-        Append = 1, ///< existing content will not be truncated on open 
-    };
+public:
 
     /// Default constructor
     Csv();
 
-    /// Constructor, automatically opens file
-    Csv(const std::string& filepath, Mode mode = Trunc);
-
-    /// Opens or creates file
-    void open(const std::string& filepath, Mode mode = Trunc);
-
-    /// Closes file
-    void close();    
+    /// Constructor with filepath provided (opens file)
+    Csv(const std::string& filepath, WriteMode mode = WriteMode::Truncate);
 
 public:
 
-    //=========================================================================
-    // STATIC FUNCTIONS
-    //=========================================================================
+    // The following static functions are provided for convenience and are not
+    // intended to be used in conjunction with a Csv instance. These functions 
+    // can be used to quickly read/write/append homogenous data to a CSV file. 
+    // Since they open and close the file on demand, you should not use these
+    // to continously access a file in a loop; prefer an instance of the Csv 
+    // class instead. Containers can be any type which overloads operator[]() 
+    // for indexing, and provides a size() method for one or both dimensions. 
+    // (e.g vector, array, vector<vector>, array<array>, vector<array>, etc.)
 
-	/// Read a vector of vectors from a file
-	static bool read(std::vector<std::vector<double>> &data_out, const std::string &filename, const std::string& directory = ".");
-
-    /// Read a vector of vectors from a file with a row and column offset
-    static bool read(std::vector<std::vector<double>>& data_out, std::size_t row_offset, std::size_t col_offset, const std::string &filename, const std::string& directory = ".");
-
-    /// Writes a 1D container to file. The container must provide indexing and size().
+    /// Reads a single row into a 1D container. The container must be presized.
     template <typename Container1D>
-    static bool write_row(const std::string& filepath, const Container1D& data);
+    static bool read_row(const std::string &filepath, Container1D &data_out, std::size_t row_offset, std::size_t col_offset = 0);
 
-    /// Writes a 2D container to file. Both dimensions must provide indexing and size().
+    /// Reads multiple rows into a 1D container. The container must be presized.
     template <typename Container2D>
-    static bool write_rows(const std::string &filepath, const Container2D &data);
+    static bool read_rows(const std::string& filepath, Container2D& data_out, std::size_t row_offset = 0, std::size_t col_offset = 0);
 
-    /// Appends a 1D container to file. The container must provide indexing and size().
+    /// Writes a 1D container to file
     template <typename Container1D>
-    static bool append_row(const std::string &filepath, const Container1D &data);
+    static bool write_row(const std::string& filepath, const Container1D& data_in);
 
-    /// Appends a 2D container to file. Both dimensions must provide indexing and size().
+    /// Writes a 2D container to file
     template <typename Container2D>
-    static bool append_rows(const std::string& filepath, const Container2D& data);
+    static bool write_rows(const std::string &filepath, const Container2D &data_in);
 
-private:
+    /// Appends a 1D container to file
+    template <typename Container1D>
+    static bool append_row(const std::string &filepath, const Container1D &data_in);
 
-    /// Parses filepath into sub components
-    static bool parse_filepath(const std::string &in, std::string &directory, std::string &filename, std::string &ext, std::string &full);
+    /// Appends a 2D container to file
+    template <typename Container2D>
+    static bool append_rows(const std::string& filepath, const Container2D& data_in);
 
 };
 

@@ -84,6 +84,9 @@ public:
     /// Gets the Timer period
     Time get_period() const;
 
+    /// Gets the ratio of time waited to time elapsed for benchmarking purposes
+    double get_wait_ratio() const;
+
     /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.005 = 0.5%)
     void set_acceptable_miss_rate(double rate);
 
@@ -94,6 +97,7 @@ protected:
     int64 ticks_;     ///< the running tick count
     int64 misses_;    ///< number of misses
     Time prev_time_;  ///< time saved at previous call to wait or restart
+    Time waited_;     ///< accumulated wait time
     double rate_;     ///< acceptable miss rate
 };
 

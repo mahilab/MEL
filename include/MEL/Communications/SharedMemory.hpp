@@ -42,6 +42,7 @@ typedef int MapHandle;
 /// Encapsulates a unmanaged named memory map
 class MEL_API SharedMemory : NonCopyable {
 public:
+
     /// Default constructor. Creates or opens a memory map containing size bytes
     SharedMemory(const std::string& name, OpenMode mode, std::size_t max_bytes = 256);
 

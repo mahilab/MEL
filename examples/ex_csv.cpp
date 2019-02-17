@@ -20,6 +20,7 @@
 #include <MEL/Utility/System.hpp>
 #include <MEL/Math/Random.hpp>
 #include <MEL/Logging/Log.hpp>
+#include <MEL/Core/Timer.hpp>
 #include <array>
 
 using namespace mel;
@@ -27,24 +28,37 @@ using namespace std;
 
 int main()
 {
+    // container for header
     vector<string> header;
-    array<array<char,10>,10> data1;
-    array<array<int ,10>,10> data2;
-    for (std::size_t r = 0; r < 10; ++r) {
-        header.push_back("Col " + std::to_string(r));
-        for (std::size_t c = 0; c < 10; ++c) {
-            data1[r][c] = (char)random(97,122);
-            data2[r][c] = random(0,100);
+    // container for data
+    array<array<int ,10>, 10> data;
+    // make some data
+    for (std::size_t c = 0; c < 10; ++c) {
+        header.push_back("Col_" + std::to_string(c));
+        for (std::size_t r = 0; r < 10; ++r) {
+            data[r][c] = random(0,100);
         }
     }
 
+    // path to csv file (my_files dir will be created)
     string filepath = "my_files/data.csv";
 
-    LOG(Error) << "MEL.log still works?";
+    // write the header
+    Csv::write_row(filepath, header);    
+    // append the data
+    Csv::append_rows(filepath, data);
 
-    Csv::write_row(filepath, header);
-    Csv::append_rows(filepath, data1);
-    Csv::append_rows(filepath, data2);
+    // read back subset of header with offset
+    array<string, 5> row;
+    Csv::read_row(filepath, row, 0, 2);
+    print(row);
+    // read back subset of data with offset as doubles
+    array<array<double,5>,5> rows;
+    Csv::read_rows(filepath, rows, 1, 2);
+    for (auto& r : rows) 
+        print(r);    
+
+
 
     return 0;
 }

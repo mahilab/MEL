@@ -8,7 +8,7 @@ namespace mel {
 static void wait_busy(const Time& duration) {
     Clock temp_clock;
     while (temp_clock.get_elapsed_time() <= duration) {
-        // do nothing
+        // kill the CPU :)
     }
 }
 
@@ -38,11 +38,13 @@ Time Timer::restart() {
     ticks_  = 0;
     misses_ = 0;
     prev_time_ = Clock::get_current_time();
+    waited_ = Time::Zero;
     return clock_.restart();
 }
 
 Time Timer::wait() {
     Time remaining_time = period_ - (Clock::get_current_time() - prev_time_);
+
     if (remaining_time < Time::Zero) {
         misses_++;
         double miss_rate = get_miss_rate();
@@ -51,6 +53,7 @@ Time Timer::wait() {
         }
     }
     else if (remaining_time > Time::Zero) {
+        waited_ += remaining_time;
         if (mode_ == WaitMode::Busy)
             wait_busy(remaining_time);
         else if (mode_ == WaitMode::Sleep)
@@ -92,6 +95,10 @@ Frequency Timer::get_frequency() const {
 
 Time Timer::get_period() const {
     return period_;
+}
+
+double Timer::get_wait_ratio() const {
+    return waited_.as_seconds() / get_elapsed_time_actual().as_seconds();
 }
 
 void Timer::set_acceptable_miss_rate(double rate) {

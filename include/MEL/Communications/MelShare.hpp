@@ -36,6 +36,7 @@ class Packet;
 /// High-level communication class that simplifies shared memory communication
 class MEL_API MelShare : NonCopyable {
 public:
+
     /// Default constructor.
     MelShare(const std::string& name, OpenMode mode = OpenOrCreate, std::size_t max_bytes = 256);
 
