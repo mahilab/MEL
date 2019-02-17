@@ -77,12 +77,9 @@ bool directory_exits(std::string path) {
             return true; 
         return false; 
     #else
-        struct stat statbuf;
-        if (stat(path, &statbuf) != -1) {
-            if (S_ISDIR(statbuf.st_mode)) {
-                return true;
-            }
-        }
+        struct stat sb;
+        if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
+            return true;
         return false;
     #endif
 }
