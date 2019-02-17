@@ -44,7 +44,7 @@ public:
           ,
           last_file_number_((std::max)(max_files - 1, 0)),
           first_write_(true) {
-        split_file_name(filename, filename_no_ext_, file_ext_);
+        split_filename(filename, filename_no_ext_, file_ext_);
     }
 
     virtual void write(const Record& record) {

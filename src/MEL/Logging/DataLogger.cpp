@@ -12,17 +12,17 @@ namespace mel {
 bool DataLogger::write_to_csv(const std::vector<std::string> &header, const std::string &filename, const std::string& directory, bool timestamp) {
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(filename.c_str(), filename_no_ext, file_ext);
+	split_filename(filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
 	if (timestamp) {
 		Timestamp stamp;
-		full_filename = directory + get_path_slash() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
 	}
 	else {
-		full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	}
 	LOG(Verbose) << "Writing header to " << full_filename;
 	create_directory(directory);
@@ -44,17 +44,17 @@ bool DataLogger::write_to_csv(const std::vector<std::string> &header, const std:
 bool DataLogger::write_to_csv(const std::vector<std::vector<double>> &data, const std::string &filename, const std::string& directory, bool timestamp) {
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(filename.c_str(), filename_no_ext, file_ext);
+	split_filename(filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
 	if (timestamp) {
 		Timestamp stamp;
-		full_filename = directory + get_path_slash() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
 	}
 	else {
-		full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	}
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
@@ -79,17 +79,17 @@ bool DataLogger::write_to_csv(const Table &data, const std::string &filename, co
 	std::string new_filename = filename.empty() ? (data.name().empty() ? "mel_table" : data.name()) : filename;
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(new_filename.c_str(), filename_no_ext, file_ext);
+	split_filename(new_filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
 	if (timestamp) {
 		Timestamp stamp;
-		full_filename = directory + get_path_slash() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
 	}
 	else {
-		full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	}
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
@@ -120,17 +120,17 @@ bool DataLogger::write_to_csv(const std::vector<Table> &data, const std::string 
 	std::string new_filename = filename.empty() ? ( data.empty() ? "empty_table" : ( data[0].name().empty() ? "mel_table" : data[0].name() ) ) : filename;
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(filename.c_str(), filename_no_ext, file_ext);
+	split_filename(filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
 	if (timestamp) {
 		Timestamp stamp;
-		full_filename = directory + get_path_slash() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext;
 	}
 	else {
-		full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+		full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	}
 	LOG(Verbose) << "Saving data to " << full_filename;
 	create_directory(directory);
@@ -163,12 +163,12 @@ bool DataLogger::write_to_csv(const std::vector<Table> &data, const std::string 
 bool DataLogger::read_from_csv(std::vector<std::vector<double>> &data, const std::string &filename, const std::string& directory) {
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(filename.c_str(), filename_no_ext, file_ext);
+	split_filename(filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
-	full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+	full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	LOG(Verbose) << "Reading data from " << full_filename;
 	std::vector<std::vector<double>> output;
 	std::ifstream input(full_filename);
@@ -199,12 +199,12 @@ bool DataLogger::read_from_csv(std::vector<std::vector<double>>& data_out, std::
 {
     std::string filename_no_ext;
     std::string file_ext;
-    split_file_name(filename.c_str(), filename_no_ext, file_ext);
+    split_filename(filename, filename_no_ext, file_ext);
     if (file_ext.empty()) {
         file_ext = "csv";
     }
     std::string full_filename;
-    full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+    full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
     LOG(Verbose) << "Reading data from " << full_filename;
     std::vector<std::vector<double>> output;
     std::ifstream input(full_filename);
@@ -239,12 +239,12 @@ bool DataLogger::read_from_csv(std::vector<std::vector<double>>& data_out, std::
 bool DataLogger::read_from_csv(Table &data, const std::string &filename, const std::string& directory) {
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(filename.c_str(), filename_no_ext, file_ext);
+	split_filename(filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
-	full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+	full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	LOG(Verbose) << "Reading data from " << full_filename;
 	std::vector<std::vector<double>> output;
 	std::ifstream input(full_filename);
@@ -301,12 +301,12 @@ bool DataLogger::read_from_csv(Table &data, const std::string &filename, const s
 bool DataLogger::read_from_csv(std::vector<Table> &data, const std::string &filename, const std::string& directory) {
 	std::string filename_no_ext;
 	std::string file_ext;
-	split_file_name(filename.c_str(), filename_no_ext, file_ext);
+	split_filename(filename, filename_no_ext, file_ext);
 	if (file_ext.empty()) {
 		file_ext = "csv";
 	}
 	std::string full_filename;
-	full_filename = directory + get_path_slash() + filename_no_ext + "." + file_ext;
+	full_filename = directory + get_separator() + filename_no_ext + "." + file_ext;
 	LOG(Verbose) << "Reading data from " << full_filename;
 	std::vector<std::vector<double>> output;
 	std::ifstream input(full_filename);
@@ -504,17 +504,17 @@ void DataLogger::buffer(const std::vector<double>& data_record) {
 void DataLogger::save_data(const std::string& filename, const std::string& directory, bool timestamp) {
     if (writer_type_ == WriterType::Buffered) {
         saving_ = true;
-        split_file_name(filename.c_str(), filename_no_ext_, file_ext_);
+        split_filename(filename.c_str(), filename_no_ext_, file_ext_);
         if (file_ext_.empty()) {
             file_ext_ = "csv";
         }
         std::string full_filename;
         if (timestamp) {
             Timestamp stamp;
-            full_filename = directory + get_path_slash() + filename_no_ext_ + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext_;
+            full_filename = directory + get_separator() + filename_no_ext_ + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext_;
         }
         else
-            full_filename = directory + get_path_slash() + filename_no_ext_ + "." + file_ext_;
+            full_filename = directory + get_separator() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Saving data to " << full_filename;
         std::thread t(&DataLogger::save_thread_func, this, full_filename, directory, data_buffer_);
         t.detach();
@@ -581,17 +581,17 @@ void DataLogger::write(const std::vector<double>& data_record) {
 
 void DataLogger::open(const std::string& filename, const std::string& directory, bool timestamp) {
     if (writer_type_ == WriterType::Immediate) {
-        split_file_name(filename.c_str(), filename_no_ext_, file_ext_);
+        split_filename(filename.c_str(), filename_no_ext_, file_ext_);
         if (file_ext_.empty()) {
             file_ext_ = "csv";
         }
         std::string full_filename;
         if (timestamp) {
             Timestamp stamp;
-            full_filename = directory + get_path_slash() + filename_no_ext_ + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext_;
+            full_filename = directory + get_separator() + filename_no_ext_ + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext_;
         }
         else
-            full_filename = directory + get_path_slash() + filename_no_ext_ + "." + file_ext_;
+            full_filename = directory + get_separator() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Opening data file " << full_filename;
         File::unlink(full_filename.c_str());
         file_size_ = file_.open(full_filename.c_str());
@@ -604,17 +604,17 @@ void DataLogger::open(const std::string& filename, const std::string& directory,
 
 void DataLogger::reopen(const std::string& filename, const std::string& directory, bool timestamp) {
     if (writer_type_ == WriterType::Immediate) {
-        split_file_name(filename.c_str(), filename_no_ext_, file_ext_);
+        split_filename(filename.c_str(), filename_no_ext_, file_ext_);
         if (file_ext_.empty()) {
             file_ext_ = "csv";
         }
         std::string full_filename;
         if (timestamp) {
             Timestamp stamp;
-            full_filename = directory + get_path_slash() + filename_no_ext_ + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext_;
+            full_filename = directory + get_separator() + filename_no_ext_ + "_" + stamp.yyyy_mm_dd_hh_mm_ss() + "." + file_ext_;
         }
         else
-            full_filename = directory + get_path_slash() + filename_no_ext_ + "." + file_ext_;
+            full_filename = directory + get_separator() + filename_no_ext_ + "." + file_ext_;
         LOG(Verbose) << "Reopening data file " << full_filename;
         file_size_ = file_.open(full_filename.c_str());
         file_opened_ = true;

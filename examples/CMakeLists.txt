@@ -25,6 +25,7 @@ mel_example(chat)
 mel_example(comms_server)
 mel_example(virtual_daq)
 mel_example(serial)
+mel_example(csv)
 
 if(WIN32)
     mel_example(limiter)

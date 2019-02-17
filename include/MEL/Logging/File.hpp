@@ -32,7 +32,7 @@ public:
     /// Default constructor
     File();
 
-    /// Cosntructor with file name provided
+    /// Constructor with filename provided
     File(const char* fileName);
 
     /// Default destructor

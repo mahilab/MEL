@@ -26,22 +26,28 @@
 namespace mel {
 
 //==============================================================================
-// DIRECTORY FUNCTIONS
+// FILESYSTEM FUNCTIONS
 //==============================================================================
 
-/// Returns directory path divider for current operating system
-std::string MEL_API get_path_slash();
-
-/// Parses a path string and returns a vector of directory strings
-std::vector<std::string> MEL_API parse_path(std::string path);
+/// Returns directory path separator for current OS (i.e. "/" or "\\")
+std::string MEL_API get_separator();
 
 /// Creates a single folder or path of folders if it doesn't exist.
-void MEL_API create_directory(std::string path);
+void MEL_API create_directory(const std::string& path);
+
+/// Returns true if the path exits
+bool MEL_API directory_exits(std::string path);
+
+/// Parses a path string and returns a vector of directory strings
+std::vector<std::string> MEL_API split_path(std::string path);
+
+/// Tidies up a file or directory path per the OS filesystem
+std::string tidy_path(const std::string& path, bool is_file);
 
 /// Splits "filename.ext" into "filename" and "ext"
-void MEL_API split_file_name(const char* file_name,
-                     std::string& file_name_no_ext,
-                     std::string& file_ext);
+void MEL_API split_filename(const std::string &filename_ext,
+                            std::string &filename,
+                            std::string &ext);
 
 //==============================================================================
 // SYSTEM FUNCTIONS

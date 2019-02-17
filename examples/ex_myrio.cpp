@@ -119,22 +119,20 @@ int main(int argc, char** argv) {
 
     // loop
     while (!stop) {
-        t = timer.get_elapsed_time_actual();
         // update myrio inputs
         myrio.update_input();
         // perform analog loopback
         double voltage_write = sinwave(t);
         myrio.mspC.AO[0].set_value(voltage_write);
-        double voltage_read  = myrio.mspC.AI[0].get_value();
+        double voltage_read  = myrio.mspC.AI[0].get_value(); 
         // read an encoder
         double position = myrio.mspC.encoder[0].get_position();
         // send myRIO encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, position});
         // update myrio outputs
-        // print(position);
         myrio.update_output();
         // wait timer
-        timer.wait();
+        t = timer.wait();
     }
 
     print("Miss Rate:", timer.get_miss_rate());

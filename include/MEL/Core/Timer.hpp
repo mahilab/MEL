@@ -57,10 +57,10 @@ public:
     ~Timer();
 
     /// Restarts the Timer and returns the elapsed time
-    virtual Time restart();
+    Time restart();
 
     /// Waits the Timer and returns the ideal elapsed time after the wait completes
-    virtual Time wait();
+    Time wait();
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period

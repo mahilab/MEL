@@ -24,7 +24,7 @@ namespace mel {
 // DIRECTORY FUNCTIONS
 //==============================================================================
 
-std::string get_path_slash() {
+std::string get_separator() {
     #ifdef _WIN32
         return "\\";
     #else
@@ -32,7 +32,8 @@ std::string get_path_slash() {
     #endif
 }
 
-std::vector<std::string> parse_path(std::string path) {
+std::vector<std::string> split_path(std::string path)
+{
     std::vector<std::string> directories;
     std::size_t found = path.find_first_of("/\\");
     while (found != std::string::npos) {
@@ -45,13 +46,14 @@ std::vector<std::string> parse_path(std::string path) {
     return directories;
 }
 
-void create_directory(std::string directory) {
-    std::vector<std::string> dirs = parse_path(directory);
+void create_directory(const std::string &path)
+{
+    std::vector<std::string> dirs = split_path(path);
     for (std::size_t i = 0; i < dirs.size(); ++i) {
         std::string sub_path;
         for (std::size_t j = 0; j <= i; ++j) {
             sub_path += dirs[j];
-            sub_path += get_path_slash();
+            sub_path += get_separator();
         }
         #ifdef _WIN32
             CreateDirectory(sub_path.c_str(), NULL);
@@ -61,18 +63,58 @@ void create_directory(std::string directory) {
     }
 }
 
-void split_file_name(const char* file_name, std::string& file_name_no_ext, std::string& file_ext)
+bool directory_exits(std::string path) {
+    path = tidy_path(path, false);
+    #ifdef _WIN32
+        DWORD ftyp = GetFileAttributesA(path.c_str());
+        if (ftyp == INVALID_FILE_ATTRIBUTES)
+            return false; 
+        if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+            return true; 
+        return false; 
+    #else
+        struct stat statbuf;
+        if (stat(path, &statbuf) != -1) {
+            if (S_ISDIR(statbuf.st_mode)) {
+                return true;
+            }
+        }
+        return false;
+    #endif
+}
+
+void split_filename(const std::string &filename_ext, std::string &filename, std::string &ext)
 {
-    const char* dot = std::strrchr(file_name, '.');
+    const char *dot = std::strrchr(filename_ext.c_str(), '.');
 
     if (dot) {
-        file_name_no_ext.assign(file_name, dot);
-        file_ext.assign(dot + 1);
+        filename.assign(filename_ext.c_str(), dot);
+        ext.assign(dot + 1);
     }
     else {
-        file_name_no_ext.assign(file_name);
-        file_ext.clear();
+        filename.assign(filename_ext);
+        ext.clear();
     }
+}
+
+std::string tidy_path(const std::string &in, bool is_file)
+{
+    std::string out;
+    auto dirs = split_path(in);
+    for (std::size_t i = 0; i < dirs.size(); ++i)
+    {
+        if (dirs[i] == "")
+        {
+            if (i == 0)
+                out += get_separator();
+        }
+        else if (dirs[i] != ".") {
+            out += dirs[i] + get_separator();
+        }
+    }
+    if (is_file)
+        out.pop_back();
+    return out;
 }
 
 //==============================================================================
