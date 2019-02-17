@@ -65,6 +65,7 @@ int main() {
 
     Csv csv("my_files/data2.csv");
     if (csv.is_open()) {
+        csv.row("evan",100.f);
     }
 
     return 0;

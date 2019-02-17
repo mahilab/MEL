@@ -29,17 +29,9 @@
 
 namespace mel {
 
-class MEL_API CsvRecord {
-
-private:
-    std::ostringstream  row_stream_; ///< stream
-    mutable std::string row_string_; ///< string
-};
-
 /// Represents an instance of a Comma-Separated Value (CSV) file
 class MEL_API Csv : public File {
 public:
-
 
     /// Default constructor
     Csv();
@@ -47,6 +39,16 @@ public:
     /// Constructor with filepath provided (opens file)
     Csv(const std::string& filepath, WriteMode w_mode = Truncate, OpenMode o_mode = OpenOrCreate);
 
+
+    template <typename Arg, typename... Args>
+    void row(Arg&& arg, Args&&... args) {
+        std::stringstream ss;
+        ss << std::forward<Arg>(arg);
+        using expander = int[];
+        (void)expander{0, (void(ss << ' ' << std::forward<Args>(args)), 0)...};
+        ss << "\n";
+        print_string(ss.str());
+    }
 
 
 public:
