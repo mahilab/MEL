@@ -42,8 +42,6 @@ bool handler(CtrlEvent event) {
 // main
 int main(int argc, char** argv) {
 
-    MEL_LOGGER->set_max_severity(Error);
-
     // user options
     Options options("myrio", "myRIO Example");
     options.add_options()
@@ -124,9 +122,8 @@ int main(int argc, char** argv) {
         double voltage_read  = myrio.mspC.AI[0].get_value(); 
         // read an encoder
         double position = myrio.mspC.encoder[0].get_position();
-        // send myRIO encoder position over MelNet
+        // send myRIO voltages and encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, position});
-        print(position);
         // update myrio outputs
         myrio.update_output();
         // wait timer
