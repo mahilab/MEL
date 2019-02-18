@@ -27,7 +27,7 @@ class MEL_API MyRio : public DaqBase, NonCopyable {
 public:
 
     /// Constructor
-    MyRio(const std::string& name);
+    MyRio();
 
     /// Default Destructor
     ~MyRio();

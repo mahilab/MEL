@@ -22,6 +22,7 @@ include_directories(
 link_directories("../../../MEL/lib")
 
 # remove or uncomment if linking MEL statically
+# you must also manually link your app to MEL's dependencies
 # add_definitions(-DMEL_STATIC)
 
 # create your application

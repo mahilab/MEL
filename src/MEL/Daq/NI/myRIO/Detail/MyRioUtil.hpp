@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 
 namespace mel {
 
@@ -11,5 +12,8 @@ void clr_register_bit(unsigned int reg, int i);
 
 /// Get a myRIO reigster bit
 bool get_register_bit(unsigned int reg, int i);
+
+/// Formats NI Error
+std::string get_nifpga_error_message(int error);
 
 } // namespace mel

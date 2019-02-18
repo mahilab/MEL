@@ -42,10 +42,7 @@ bool handler(CtrlEvent event) {
 // main
 int main(int argc, char** argv) {
 
-    while (true) {
-        auto ch = get_ch();
-        print(ch,":",(char)ch);
-    }
+    MEL_LOGGER->set_max_severity(Error);
 
     // user options
     Options options("myrio", "myRIO Example");
@@ -76,7 +73,7 @@ int main(int argc, char** argv) {
     MelNet mn(local_port, remote_port, remote_ip_address);
 
     // create MyRio object
-    MyRio myrio("myrio");
+    MyRio myrio;
     if (!myrio.open())
         return 1;
 
@@ -129,13 +126,12 @@ int main(int argc, char** argv) {
         double position = myrio.mspC.encoder[0].get_position();
         // send myRIO encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, position});
+        print(position);
         // update myrio outputs
         myrio.update_output();
         // wait timer
         t = timer.wait();
     }
-
-    print("Miss Rate:", timer.get_miss_rate());
 
     // shutdown myrio
     myrio.disable();
