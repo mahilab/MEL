@@ -1,5 +1,5 @@
 
-![MEL Logo](https://raw.githubusercontent.com/mahilab/MEL/master/util/logo.png)
+![MEL Logo](https://raw.githubusercontent.com/mahilab/MEL/master/misc/logo.png)
 
 # MEL - Mechatronics Engine & Library
 
