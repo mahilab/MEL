@@ -48,7 +48,7 @@ Time Timer::wait() {
     if (remaining_time < Time::Zero) {
         misses_++;
         double miss_rate = get_miss_rate();
-        if (miss_rate >= rate_) {
+        if (miss_rate >= rate_ && ticks_ > 1000) {
             LOG(Warning) << "Timer miss rate of " << miss_rate << " exceeded acceptable rate of " << rate_;
         }
     }
