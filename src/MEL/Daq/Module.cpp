@@ -45,6 +45,11 @@ bool ModuleBase::on_disable() {
     return true;
 }
 
+bool ModuleBase::on_channel_numbers_changed(const std::vector<uint32>& current, std::vector<uint32>& requested) {
+    // return true by default
+    return true;
+}
+
 bool ModuleBase::update() {
     bool success = true;
     for (std::size_t i = 0; i < channel_numbers_.size(); ++i) {
@@ -56,10 +61,13 @@ bool ModuleBase::update() {
 
 void ModuleBase::set_channel_numbers(const std::vector<uint32>& channel_numbers) {
     std::map<uint32, std::size_t> old_map = channel_map_;
-    channel_numbers_ = sort_and_reduce_channels(channel_numbers);
-    channel_map_ = make_channel_map(channel_numbers_);
-    for (std::size_t i = 0; i < registries_.size(); i++)
-        registries_[i]->change_channel_numbers(old_map, channel_map_);
+    auto new_channel_numbers = sort_and_reduce_channels(channel_numbers);
+    if (on_channel_numbers_changed(channel_numbers_, new_channel_numbers)) {
+        channel_numbers_ = new_channel_numbers;
+        channel_map_ = make_channel_map(channel_numbers_);
+        for (std::size_t i = 0; i < registries_.size(); i++)
+            registries_[i]->change_channel_numbers(old_map, channel_map_);
+    }
 }
 
 const std::vector<uint32>& ModuleBase::get_channel_numbers() const {

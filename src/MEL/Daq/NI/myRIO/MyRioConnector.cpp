@@ -137,6 +137,26 @@ void MyRioConnector::reconfigure_dios() {
 }
 
 bool MyRioConnector::on_open() {
+    // determine how many encoders are enabled and reconfigure
+    if (type == Type::MxpA || type == Type::MxpB) {
+        if (get_register_bit(SYSSELECT[type], 5))
+            encoder.set_channel_numbers({0});
+    }
+    else if (type == Type::MspC) {
+        if (get_register_bit(SYSSELECT[type], 0) && get_register_bit(SYSSELECT[type], 2))
+            encoder.set_channel_numbers({0,1});
+        else if (get_register_bit(SYSSELECT[type], 0))
+            encoder.set_channel_numbers({0});
+        else
+            encoder.set_channel_numbers({});
+    }
+    // configure and enable each encoder
+    for (auto &c : encoder.get_channel_numbers()) {
+        clr_register_bit(ENCCNFG[type][c], 2); // set to quadrature mode
+        set_register_bit(ENCCNFG[type][c], 0); // enable encoder
+    }
+    // reconfigure DIO channels
+    reconfigure_dios();
     return true;
 }
 

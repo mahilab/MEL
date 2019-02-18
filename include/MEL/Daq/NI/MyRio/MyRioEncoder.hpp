@@ -35,6 +35,9 @@ private:
 
     friend class MyRioConnector;
 
+    void sync_from_myrio();
+    void sync_to_myrio();
+
     MyRioEncoder(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
 
 private:

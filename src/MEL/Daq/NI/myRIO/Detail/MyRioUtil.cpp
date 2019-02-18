@@ -60,11 +60,9 @@ extern NiFpga_Session myrio_session;
 
 */
 
-
 namespace mel {
 
 void set_register_bit(unsigned int reg, int i) {
-    assert(i >= 0 && i < 8);
     uint8_t bits;
     NiFpga_Status status;
     status = NiFpga_ReadU8(myrio_session, reg, &bits);
@@ -80,7 +78,6 @@ void set_register_bit(unsigned int reg, int i) {
 }
 
 void clr_register_bit(unsigned int reg, int i) {
-    assert(i >= 0 && i < 8);
     uint8_t bits;
     NiFpga_Status status;
     status = NiFpga_ReadU8(myrio_session, reg, &bits);
@@ -96,7 +93,6 @@ void clr_register_bit(unsigned int reg, int i) {
 }
 
 bool get_register_bit(unsigned int reg, int i) {
-    assert(i >= 0 && i < 8);
     uint8_t bits;
     NiFpga_Status status;
     status = NiFpga_ReadU8(myrio_session, reg, &bits);

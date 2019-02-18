@@ -72,6 +72,9 @@ protected:
     /// Default implementation of on_disable (always returns true)
     virtual bool on_disable() override;
 
+    /// Called when the user requests to change the current channel numbers
+    virtual bool on_channel_numbers_changed(const std::vector<uint32>& current, std::vector<uint32>& requested);
+
 private:
 
     friend class RegistryBase;

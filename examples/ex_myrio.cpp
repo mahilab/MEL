@@ -75,10 +75,10 @@ int main(int argc, char** argv) {
     if (!myrio.open())
         return 1;
 
-    myrio.mxpA.configure_encoders(1);
-    myrio.mspC.configure_encoders(2);
-    myrio.mxpB.DIO.set_direction(5, Out);
-    myrio.mxpB.DIO.set_direction(6, Out);
+    // myrio.mxpA.configure_encoders(1);
+    // myrio.mspC.configure_encoders(2);
+    // myrio.mxpB.DIO.set_direction(5, Out);
+    // myrio.mxpB.DIO.set_direction(6, Out);
 
     // Print channel information
     print("Connector MXP A");
