@@ -1,7 +1,7 @@
 # MEL CMakeLists.txt
 # Evan Pezent (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
-# Updated: 9/2018
+# Updated: 2/2019
 
 cmake_minimum_required(VERSION 3.7)
 
@@ -9,21 +9,24 @@ cmake_minimum_required(VERSION 3.7)
 # USER OPTIONS
 #===============================================================================
 
-# hardware options
-option(QUANSER     "Turn ON if compiling for Quanser hardware"                                  OFF) # e.g. Q8 USB, Q2 USB
-option(NI_DAQ      "Turn ON if compiling for NI DAQmx compatible hardware"                      OFF) # e.g. NI myDAQ
-option(MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                          OFF)
-# general options
+# General
 option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
 option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
 option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
-option(TESTS       "Turn ON to build test executable(s)"                                        OFF)
 option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile"     OFF)
 option(BUILD_DOC   "Turn ON to build MEL documentation"                                         OFF)
-# third party paths
-set(QUANSER_ROOT   "/Program Files/Quanser"                    CACHE FILEPATH "Absolute path to Quanser installation directory.")
-set(NI_ROOT        "/Program Files (x86)/National Instruments" CACHE FILEPATH "Absolute path to NI installation directory.")
-set(MYO_ROOT       "/dev/myo-sdk-win-0.9.0"                    CACHE FILEPATH "Absolute path to Myo SDK.")
+
+# Quanser HIL (# e.g. Q8 USB, Q2 USB)
+option(QUANSER   "Turn ON if compiling for Quanser hardware" OFF) 
+set(QUANSER_ROOT "/Program Files/Quanser" CACHE FILEPATH "Absolute path to Quanser installation directory.")
+
+# NI DAQmx (e.g. myDAQ)
+option(NI_DAQMX "Turn ON if compiling for NI DAQmx compatible hardware"  OFF) 
+set(NI_DAQMX_ROOT "/Program Files (x86)/National Instruments" CACHE FILEPATH "Absolute path to NI installation directory.")
+
+# Thalmic Labs Myro Armband
+option(MYO   "Turn ON if compiling for Thalmic Labs Myo Armband" OFF)
+set(MYO_ROOT "/dev/myo-sdk-win-0.9.0" CACHE FILEPATH "Absolute path to Myo SDK.")
 
 #===============================================================================
 # FIND MEL SOURCE FILES
@@ -260,11 +263,11 @@ if (QUANSER)
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
-if(NI_DAQ)
+if(NI_DAQMX)
     # hardware includes
-    list(APPEND INCLUDE_DIRS "${NI_ROOT}/NI-DAQ/DAQmx ANSI C Dev/include")
+    list(APPEND INCLUDE_DIRS "${NI_DAQMX_ROOTNI-DAQ/DAQmx ANSI C Dev/include")
     # hardware libs
-    list(APPEND LINK_DIRS "${NI_ROOT}/NI-DAQ/DAQmx ANSI C Dev/lib/msvc")
+    list(APPEND LINK_DIRS "${NI_DAQMX_ROOTNI-DAQ/DAQmx ANSI C Dev/lib/msvc")
     list(APPEND LINK_LIBS NIDAQmx.lib)
 endif()
 
@@ -335,10 +338,6 @@ target_compile_definitions(MEL PRIVATE MyRio_1900)
 
 if(EXAMPLES)
     add_subdirectory(examples)
-endif()
-
-if(TESTS)
-    add_subdirectory(tests)
 endif()
 
 #==============================================================================
