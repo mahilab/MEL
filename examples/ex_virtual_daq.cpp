@@ -49,12 +49,14 @@ int main(int argc, char* argv[]) {
     Amplifier amp("amp", High, daq.DO[0], 2, daq.AO[0]);
     Motor motor("motor", 5, amp);
     Encoder::Channel p = daq.encoder[0];
-    Joint joint("joint0", &motor, &p, &p, 2);
+    VirtualVelocitySensor  v("velocity_sensor", p);
+    Joint joint("joint0", &motor, &p, &v, 2);
     rob.add_joint(joint);
 
     Timer timer(hertz(1000));
     while(true) {
         daq.update_input();
+        v.update();
         ms.write_data({
             daq.AI[0],
             daq.AI[1],

@@ -1,11 +1,11 @@
 [
     {
         "name": "nilrt-arm",
-        "toolchainFile": "/Git/MEL/cmake/nilrt-arm-toolchain.cmake"
+        "toolchainFile": "${workspaceRoot}/cmake/nilrt-arm-toolchain.cmake"
     },
     {
         "name": "nilrt-x64",
-        "toolchainFile": "/Git/MEL/cmake/nilrt-x64-toolchain.cmake"
+        "toolchainFile": "${workspaceRoot}/cmake/nilrt-x64-toolchain.cmake"
     },
     {
         "name": "msvc-x64",

@@ -101,6 +101,11 @@ bool VirtualEncoder::update_channel(ChanNum channel_number) {
     return true;
 }
 
+bool VirtualEncoder::reset_count(ChanNum channel_number, int count) {
+    return true;
+}
+
+
 //==============================================================================
 // VIRTUAL DAQ
 //==============================================================================

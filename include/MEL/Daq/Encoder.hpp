@@ -25,12 +25,8 @@
 
 namespace mel {
 
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
-
-/// Encapsulates an incremental optical encoder module
-class MEL_API Encoder : public Module<int32> {
+/// Encapsulates an incremental optical encoder module with 32-bit precision
+class MEL_API Encoder : public Module<int> {
 public:
     class Channel;
 
@@ -43,41 +39,29 @@ public:
     /// Default destructor
     virtual ~Encoder();
 
+    /// Calls the DAQ's API to set a single encoder counter
+    virtual bool reset_count(ChanNum channel_number, int count) = 0;
+
     /// This function should call the DAQ's API to set all encoder counters
-    virtual bool reset_counts(const std::vector<int32>& counts);
-
-    /// This function should call the DAQ's API to set a single encoder counter
-    virtual bool reset_count(ChanNum channel_number, int32 count);
-
-    /// Zeros all encoder channels
-    bool zero();
+    virtual bool reset_counts(const std::vector<int>& counts);
 
     /// Zeros a single encoder channel
     bool zero_channel(ChanNum channel_number);
 
-    /// Sets the units per count of all encoder channels.
-    void set_units_per_count(const std::vector<double>& units_per_count);
+    /// Zeros all encoder channels (calls reset_counts({0,...,0}))
+    bool zero();
 
     /// Sets the units per count on a single encoder channel
     void set_units_per_count(ChanNum channel_number, double units_per_count);
 
-    /// Performs conversion to positions using #factors_ and #counts_per_unit
-    const std::vector<double>& get_positions();
+    /// Sets the units per count of all encoder channels.
+    void set_units_per_count(const std::vector<double>& units_per_count);
 
-    /// Performs conversion to position using #factors_ and #counts_per_unit
+        /// Performs conversion to position using #factors_ and #counts_per_unit
     double get_position(ChanNum channel_number);
 
     /// Performs conversion to positions using #factors_ and #counts_per_unit
-    std::vector<double>& get_values_per_sec();
-
-    /// Performs conversion to position using #factors_ and #counts_per_unit
-    double get_value_per_sec(ChanNum channel_number);
-
-    /// Performs conversion to positions using #factors_ and #counts_per_unit
-    const std::vector<double>& get_velocities();
-
-    /// Performs conversion to position using #factors_ and #counts_per_unit
-    double get_velocity(ChanNum channel_number);
+    const std::vector<double>& get_positions();
 
     /// Returns a Encoder::Channel
     Channel get_channel(ChanNum channel_number);
@@ -90,9 +74,6 @@ public:
 
     /// Returns multiple Encoder::Channels
     std::vector<Channel> operator[](const ChanNums& channel_numbers);
-
-    /// Set whether the Encoder enables velocity estimation
-    void has_velocity(bool has_velocity);
 
     /// Precomputes position conversion sclars (i.e. #units_per_count_ / #factors_)
     void compute_conversions();
@@ -110,17 +91,14 @@ protected:
 
 protected:
 
-    bool has_velocity_;                 ///< True if Encoder module has velocity estimation
     Registry<QuadFactor> factors_;      ///< The encoder quadrature factors
     Registry<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
     Registry<double> positions_;        ///< The calculated positions of the Encoder channels
     Registry<double> conversions_;      ///< Conversion scalars used to convert to positions
-    Registry<double> values_per_sec_;   ///< Counts per second if Encoder has velocity
-    Registry<double> velocities_;       ///< The calculated velocities of the Encoder channels
 
 public:
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
-    class MEL_API Channel : public ChannelBase<int32>, public PositionSensor, public VelocitySensor {
+    class MEL_API Channel : public ChannelBase<int>, public PositionSensor {
     public:
         /// Default constructor. Creates invalid channel
         Channel();
@@ -129,22 +107,16 @@ public:
         Channel(Encoder* module, ChanNum channel_number);
 
         /// Inherit assignment operator for setting
-        using ChannelBase<int32>::operator=;
+        using ChannelBase<int>::operator=;
 
         /// Gets the encoder position
         double get_position() override;
-
-        /// Gets the encoder counts per second if available
-        double get_value_per_sec();
-
-        /// Gets the encoder velocity if available
-        double get_velocity() override;
 
         /// Zeros the encoder count
         bool zero();
 
         /// Sets the encoder count to a specific value
-        bool reset_count(int32 count);
+        bool reset_count(int count);
 
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);

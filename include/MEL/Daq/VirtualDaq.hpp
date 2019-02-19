@@ -89,6 +89,7 @@ class MEL_API VirtualEncoder : public Encoder {
 public:
     VirtualEncoder(VirtualDaq& daq, const ChanNums& channel_numbers);
     bool update_channel(ChanNum channel_number) override;
+    bool reset_count(ChanNum channel_number, int count);
 public:
     Registry<std::function<int32(Time)>> sources;
 private:
