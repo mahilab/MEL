@@ -31,6 +31,9 @@ public:
     /// Updates a single channel
     bool update_channel(ChanNum channel_number) override;
 
+    /// Resets Encoder counts to a specifc value
+    bool reset_count(ChanNum channel_number, int count) override;
+
     /// Enables or disables an encoder channel
     bool configure(ChanNum channel_number, bool enabled);
 

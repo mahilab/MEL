@@ -41,7 +41,7 @@ namespace mel {
         auto chnums = get_input_channel_numbers();
         bool success = true;
         for (auto& c : chnums)
-            success = update_channel(c) ? success : false;
+            success = this->update_channel(c) ? success : false;
         return success;
     }
 
@@ -50,7 +50,7 @@ namespace mel {
         auto chnums = get_output_channel_numbers();
         bool success = true;
         for (auto& c : chnums)
-            success = update_channel(c) ? success : false;
+            success = this->update_channel(c) ? success : false;
         return success;
     }
 

@@ -55,6 +55,12 @@ bool MyRioEncoder::update_channel(ChanNum channel_number) {
     return true;
 }
 
+bool MyRioEncoder::reset_count(ChanNum channel_number, int count) {
+    LOG(Error) << "myRIO Encoders do not support resetting counts";
+    return false;
+}
+
+
 void MyRioEncoder::sync_from_myrio() {
     // determine how many encoders are enabled and reconfigure
     if (connector_.type == MyRioConnector::MxpA || connector_.type == MyRioConnector::MxpB) {
