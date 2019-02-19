@@ -60,7 +60,7 @@ public:
         /// Performs conversion to position using #factors_ and #counts_per_unit
     double get_position(ChanNum channel_number);
 
-    /// Performs conversion to positions using #factors_ and #counts_per_unit
+    /// Performs conversion to positions using factors_ and counts_per_unit
     const std::vector<double>& get_positions();
 
     /// Returns a Encoder::Channel
@@ -75,9 +75,6 @@ public:
     /// Returns multiple Encoder::Channels
     std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
-    /// Precomputes position conversion sclars (i.e. #units_per_count_ / #factors_)
-    void compute_conversions();
-
 protected:
 
     /// Override to call compute_conversions
@@ -89,9 +86,12 @@ protected:
     /// This function should call the DAQ's API to set the quadrature factor on a single channel
     virtual bool set_quadrature_factor(ChanNum channel_number, QuadFactor factor);
 
+    /// Precomputes position conversion sclars (i.e. units_per_count_ / factors_)
+    void compute_conversions();
+
 protected:
 
-    Registry<QuadFactor> factors_;      ///< The encoder quadrature factors
+    Registry<QuadFactor> factors_;      ///< The encoder quadrature factors (default X4)
     Registry<double> units_per_count_;  ///< The number of counts per unit of travel of the Encoder
     Registry<double> positions_;        ///< The calculated positions of the Encoder channels
     Registry<double> conversions_;      ///< Conversion scalars used to convert to positions

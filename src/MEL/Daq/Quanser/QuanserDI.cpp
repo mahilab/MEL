@@ -35,7 +35,7 @@ namespace mel {
 
     bool QuanserDI::update_channel(ChanNum channel_number) {
         t_error result;
-        result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_number]);
+        result = hil_read_digital(daq_.handle_, &channel_number, 1, &quanser_values_[channel_number]);
         if (result == 0) {
             values_[channel_number] = static_cast<Logic>(quanser_values_[channel_number]);
             return true;

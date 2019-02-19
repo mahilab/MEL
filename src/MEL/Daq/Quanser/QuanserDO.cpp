@@ -36,7 +36,7 @@ namespace mel {
         // convert MEL Logic to Quanser t_boolean (aka char)
         quanser_values_[channel_number] = static_cast<char>(values_[channel_number]);
         t_error result;
-        result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_number]);
+        result = hil_write_digital(daq_.handle_, &channel_number, 1, &quanser_values_[channel_number]);
         if (result == 0)
             return true;
         else {
@@ -85,7 +85,7 @@ namespace mel {
         else
             converted_expire_value = DIGITAL_STATE_LOW;
         t_error result;
-        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_expire_value);
+        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, 1, &converted_expire_value);
         if (result == 0) {
             LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " expire value to " << expire_value;
             return true;

@@ -20,13 +20,11 @@ Q2Usb::Q2Usb(QuanserOptions options, uint32 id) :
     AI(*this,     {0,1}),
     AO(*this,     {0,1}),
     DIO(*this,    {0,1,2,3,4,5,6,7,8}),
-    encoder(*this,{0,1}),
+    encoder(*this,{0,1}, false),
     watchdog(*this, milliseconds(100))
 {
     // increment next_id_
     ++NEXT_Q2USB_ID;
-    // disable velocity estimation
-    encoder.has_velocity(false);
 }
 
 
@@ -130,7 +128,7 @@ bool Q2Usb::update_input() {
             << get_name() << " is not open";
         return false;
     }
-    if (AI.update() && encoder.update() && DIO.update())
+    if (AI.update() && encoder.update() && DIO.update_input())
         return true;
     else {
         return false;
@@ -143,7 +141,7 @@ bool Q2Usb::update_output() {
             << get_name() << " is not open";
         return false;
     }
-    if (AO.update() && DIO.update())
+    if (AO.update() && DIO.update_output())
         return true;
     else
         return false;

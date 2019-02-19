@@ -38,6 +38,10 @@ public:
 
     bool update() override;
 
+    bool update_input() override;
+
+    bool update_output() override;
+
     bool update_channel(ChanNum channel_number) override;
 
     bool set_directions(const std::vector<Direction>& directions) override;

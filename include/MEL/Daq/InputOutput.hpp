@@ -42,6 +42,12 @@ public:
     /// Default destructor
     virtual ~InputOutput();
 
+    /// Updates only channels configured as inputs
+    virtual bool update_input();
+
+    /// Updates only channels configured as outputs
+    virtual bool update_output();
+
     /// Sets the directions of all channels
     virtual bool set_directions(const std::vector<Direction>& directions);
 
@@ -79,7 +85,7 @@ protected:
     void sort_input_output_channel_numbers() const;
 
 protected:
-    Registry<Direction>         directions_;              ///< The I/O directions of each channel
+    Registry<Direction> directions_;           ///< The I/O directions of each channel
     mutable ChanNums input_channel_numbers_;   ///< the channel numbers that are inputs
     mutable ChanNums output_channel_numbers_;  ///< the channel numbers that are outputs
 

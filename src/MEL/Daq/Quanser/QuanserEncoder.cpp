@@ -10,13 +10,13 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserEncoder::QuanserEncoder(QuanserDaq& daq, const ChanNums& channel_numbers) :
+QuanserEncoder::QuanserEncoder(QuanserDaq& daq, const ChanNums& channel_numbers, bool has_velocity) :
     Encoder(channel_numbers),
     daq_(daq),
     velocity_channel_numbes_(this),
     values_per_sec_(this),
     velocities_(this),
-    has_velocity_(false)
+    has_velocity_(has_velocity)
 {
     set_name(daq.get_name() + "_encoder");
 }
@@ -40,11 +40,11 @@ bool QuanserEncoder::update() {
 
 bool QuanserEncoder::update_channel(ChanNum channel_number) {
     t_error result;
-    result = hil_read_encoder(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
+    result = hil_read_encoder(daq_.handle_, &channel_number, 1, &values_[channel_number]);
     if (has_velocity_)
     {
         ChanNum velocity_channel = channel_number + 14000;
-        result = hil_read_other(daq_.handle_, &velocity_channel, static_cast<uint32>(1), &values_per_sec_[channel_number]);
+        result = hil_read_other(daq_.handle_, &velocity_channel, 1, &values_per_sec_[channel_number]);
     }
     if (result == 0)
         return true;
@@ -76,7 +76,7 @@ bool QuanserEncoder::reset_count(ChanNum channel_number, int count) {
     if (!Encoder::reset_count(channel_number, count))
         return false;
     t_error result;
-    result = hil_set_encoder_counts(daq_.handle_, &channel_number, static_cast<uint32>(1), &count);
+    result = hil_set_encoder_counts(daq_.handle_, &channel_number, 1, &count);
     sleep(milliseconds(10));
     if (result == 0) {
         LOG(Verbose) << "Reset " << get_name() << " channel number " << channel_number << " count to " << count;
@@ -141,7 +141,7 @@ bool QuanserEncoder::set_quadrature_factor(ChanNum channel_number, QuadFactor fa
         return false;
     }
     t_error result;
-    result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_factor);
+    result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, 1, &converted_factor);
     sleep(milliseconds(10));
     if (result == 0) {
         LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " quadrature factor";
@@ -191,8 +191,8 @@ double QuanserEncoder::get_velocity(ChanNum channel_number) {
         return double();
 }
 
-void QuanserEncoder::has_velocity(bool has_velocity) {
-    has_velocity_ = has_velocity;
+bool QuanserEncoder::has_velocity() const {
+    return has_velocity_;
 }
 
 const ChanNums QuanserEncoder::get_quanser_velocity_channels() {

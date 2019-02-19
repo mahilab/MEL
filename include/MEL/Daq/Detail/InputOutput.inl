@@ -37,26 +37,40 @@ namespace mel {
     }
 
     template <typename T>
+    bool InputOutput<T>::update_input() {
+        auto chnums = get_input_channel_numbers();
+        bool success = true;
+        for (auto& c : chnums)
+            success = update_channel(c) ? success : false;
+        return success;
+    }
+
+    template <typename T>
+    bool InputOutput<T>::update_output() {
+        auto chnums = get_output_channel_numbers();
+        bool success = true;
+        for (auto& c : chnums)
+            success = update_channel(c) ? success : false;
+        return success;
+    }
+
+    template <typename T>
     std::size_t InputOutput<T>::get_input_channel_count() const {
-        this->sort_input_output_channel_numbers();
         return input_channel_numbers_.size();
     }
 
     template <typename T>
     std::size_t InputOutput<T>::get_output_channel_count() const {
-        this->sort_input_output_channel_numbers();
         return output_channel_numbers_.size();
     }
 
     template <typename T>
     const ChanNums& InputOutput<T>::get_input_channel_numbers() const {
-        this->sort_input_output_channel_numbers();
         return input_channel_numbers_;
     }
 
     template <typename T>
     const ChanNums& InputOutput<T>::get_output_channel_numbers() const {
-        this->sort_input_output_channel_numbers();
         return output_channel_numbers_;
     }
 

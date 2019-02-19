@@ -36,7 +36,7 @@ class MEL_API QuanserEncoder : public Encoder {
 public:
     class Channel;
 
-    QuanserEncoder(QuanserDaq& daq, const ChanNums& channel_numbers);
+    QuanserEncoder(QuanserDaq& daq, const ChanNums& channel_numbers, bool has_velocity);
 
     bool update() override;
 
@@ -50,6 +50,9 @@ public:
 
     bool set_quadrature_factor(ChanNum channel_number, QuadFactor factor) override;
 
+        /// Set whether the Encoder enables velocity estimation
+    bool has_velocity() const;
+
     /// Performs conversion to positions using #factors_ and #counts_per_unit
     std::vector<double>& get_values_per_sec();
 
@@ -61,9 +64,6 @@ public:
 
     /// Performs conversion to position using #factors_ and #counts_per_unit
     double get_velocity(ChanNum channel_number);
-
-    /// Set whether the Encoder enables velocity estimation
-    void has_velocity(bool has_velocity);
 
     /// Returns the Quanser encoder velocity channels
     const ChanNums get_quanser_velocity_channels();

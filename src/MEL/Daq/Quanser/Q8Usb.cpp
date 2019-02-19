@@ -24,13 +24,11 @@ Q8Usb::Q8Usb(QuanserOptions options,
     AO(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
     DI(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
     DO(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
-    encoder(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    encoder(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }, true), // has velocity estimation
     watchdog(*this, milliseconds(100))
 {
     // increment NEXT_ID
     ++NEXT_Q8USB_ID;
-    // enable velocity estimation
-    encoder.has_velocity(true);
 }
 
 Q8Usb::~Q8Usb() {
