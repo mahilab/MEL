@@ -69,12 +69,12 @@ while ((t = timer.get_elapsed_time()) < seconds(60)) {          // loop for 1 mi
 
 ### Other Features
 
-In addition to it's core functionality, MEL comes packed with other features that mechatronics designers will find useful, including:
+In addition to it's core functionality, MEL comes with other features that mechatronics designers will find useful, including:
 - real-time data visualization and scoping
 - basic math functions and classes
-- error and data logging
+- error and data logging to CSV
 - basic signal processing such high/low pass filters
-- communication over UDP, TCP, and shared memory
+- communication over UDP, TCP, shared memory, and RS-232 serial
 - console interactivity
 - keyboard and joystick support
 
