@@ -29,7 +29,10 @@ class MEL_API MyRioEncoder : public Encoder, NonCopyable {
 public:
 
     /// Updates a single channel
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
+
+    /// Enables or disables an encoder channel
+    bool configure(ChanNum channel_number, bool enabled);
 
 private:
 
@@ -37,12 +40,13 @@ private:
 
     void sync_from_myrio();
     void sync_to_myrio();
+    bool on_enable() override;
 
-    MyRioEncoder(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+    MyRioEncoder(MyRioConnector& connector, const ChanNums& channel_numbers);
 
 private:
 
-    const MyRioConnector& connector_; ///< connector this module is on
+    MyRioConnector& connector_; ///< connector this module is on
 };
 
 } //namespace mel

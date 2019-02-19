@@ -19,23 +19,14 @@ std::string connectorName(MyRioConnector::Type type) {
         return "Unkown";
 }
 
-static const std::vector<uint32_t> SYSSELECT({SYSSELECTA, SYSSELECTB, SYSSELECTC});
-
-// encoder configure registers
-static const std::vector<std::vector<uint32_t>> ENCCNFG ({
-    {ENCACNFG},
-    {ENCBCNFG},
-    {ENCC_0CNFG, ENCC_1CNFG}
-});
-
 }
     
 MyRioConnector::MyRioConnector(MyRio& myrio,
                             Type _type,
-                            const std::vector<uint32>& ai_channels,
-                            const std::vector<uint32>& ao_channels,
-                            const std::vector<uint32>& dio_channels,
-                            const std::vector<uint32>& enc_channels) :
+                            const ChanNums& ai_channels,
+                            const ChanNums& ao_channels,
+                            const ChanNums& dio_channels,
+                            const ChanNums& enc_channels) :
     DaqBase(myrio.get_name() + "_" + connectorName(_type)),
     type(_type),
     AI(*this, ai_channels),
@@ -55,68 +46,8 @@ bool MyRioConnector::update_output() {
     return AO.update() && DIO.update();
 }
 
-bool MyRioConnector::configure_encoders(std::size_t encoder_count) {
-    if (!is_open()) {
-        LOG(Error) << "myRIO must be open to configure Encoders";
-        return false; 
-    }
-    // MXP Connectors
-    if (type == Type::MxpA || type == Type::MxpB) {
-        // check requested count
-        if (encoder_count > 1) {
-            LOG(Warning) << "myRIO MXP connectors support a maximum of 1 encoders (" << encoder_count << " requested)";
-            encoder_count = 1;
-        }
-        // enable encoder
-        if (encoder_count == 1) {
-            set_register_bit(SYSSELECT[type], 5);
-            encoder.set_channel_numbers({0});
-        }
-        // disable encoder
-        else if (encoder_count == 0) {
-            clr_register_bit(SYSSELECT[type], 5);
-            encoder.set_channel_numbers({});
-        }
-    }
-    // MSP Connector
-    else if (type == Type::MspC) {
-        // check requested count
-        if (encoder_count > 2) {
-            LOG(Warning) << "myRIO MSP connectors support a maximum of 2 encoders (" << encoder_count << " requested)";
-            encoder_count = 2;
-        }
-        // enable 2 encoders
-        if (encoder_count == 2) {
-            set_register_bit(SYSSELECT[type], 0);
-            set_register_bit(SYSSELECT[type], 2);
-            encoder.set_channel_numbers({0,1});
-        }
-        else if (encoder_count == 1) {
-            set_register_bit(SYSSELECT[type], 0);
-            clr_register_bit(SYSSELECT[type], 2);
-            encoder.set_channel_numbers({0});
-        }
-        else if (encoder_count == 0) {
-            clr_register_bit(SYSSELECT[type], 0);
-            clr_register_bit(SYSSELECT[type], 2);
-            encoder.set_channel_numbers({});
-        }
-    }
-
-    // configure and enable each encoder
-    for (auto &c : encoder.get_channel_numbers()) {
-        clr_register_bit(ENCCNFG[type][c], 2); // set to quadrature mode
-        set_register_bit(ENCCNFG[type][c], 0); // enable encoder
-    }
-
-    LOG(Verbose) << "Configured myRIO Connector " << get_name() << " for Encoders channels [" << encoder.get_channel_numbers() << "]"; 
-    // reconfigure DIO channels
-    reconfigure_dios();
-    return true;
-}
-
 void MyRioConnector::reconfigure_dios() {
-    std::vector<uint32> channels;
+    ChanNums channels;
     auto num_encoders = encoder.get_channel_count();
     if (type == Type::MxpA || type == Type::MxpB) {
         if (num_encoders == 1)
@@ -133,29 +64,10 @@ void MyRioConnector::reconfigure_dios() {
             channels = {0,1,2,3,4,5,6,7};
     }
     DIO.set_channel_numbers(channels);
-    LOG(Verbose) << "Configured myRIO Connector " << get_name() << " for DIO channels [" << DIO.get_channel_numbers() << "]";
 }
 
 bool MyRioConnector::on_open() {
-    // determine how many encoders are enabled and reconfigure
-    if (type == Type::MxpA || type == Type::MxpB) {
-        if (get_register_bit(SYSSELECT[type], 5))
-            encoder.set_channel_numbers({0});
-    }
-    else if (type == Type::MspC) {
-        if (get_register_bit(SYSSELECT[type], 0) && get_register_bit(SYSSELECT[type], 2))
-            encoder.set_channel_numbers({0,1});
-        else if (get_register_bit(SYSSELECT[type], 0))
-            encoder.set_channel_numbers({0});
-        else
-            encoder.set_channel_numbers({});
-    }
-    // configure and enable each encoder
-    for (auto &c : encoder.get_channel_numbers()) {
-        clr_register_bit(ENCCNFG[type][c], 2); // set to quadrature mode
-        set_register_bit(ENCCNFG[type][c], 0); // enable encoder
-    }
-    // reconfigure DIO channels
+    encoder.sync_from_myrio();
     reconfigure_dios();
     return true;
 }

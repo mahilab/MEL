@@ -149,7 +149,7 @@ bool Q2Usb::update_output() {
         return false;
 }
 
-bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
+bool Q2Usb::identify(ChanNum input_channel_number, ChanNum outout_channel_number) {
     if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";

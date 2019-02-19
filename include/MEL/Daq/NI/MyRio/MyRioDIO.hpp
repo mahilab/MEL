@@ -23,19 +23,23 @@
 namespace mel {
 
 class MyRioConnector;
+class MyRioEncoder;
 
 /// myRIO Digital Input/Output Module
 class MEL_API MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
 
     /// Updates a single channel
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
 private:
 
     friend class MyRioConnector;
+    friend class MyRioEncoder;
 
-    MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+    void refresh_channels();
+
+    MyRioDIO(MyRioConnector& connector, const ChanNums& channel_numbers);
 
 private:
 

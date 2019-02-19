@@ -14,12 +14,12 @@ namespace mel {
     }
 
     template <typename T>
-    const T& Registry<T>::operator[](uint32 channel_number) const {
+    const T& Registry<T>::operator[](ChanNum channel_number) const {
         return values_[index(channel_number)];
     }
 
     template <typename T>
-    T& Registry<T>::operator[](uint32 channel_number) {
+    T& Registry<T>::operator[](ChanNum channel_number) {
         return values_[index(channel_number)];
     }
 
@@ -50,8 +50,8 @@ namespace mel {
     }
 
     template <typename T>
-    void Registry<T>::change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
-                                const std::map<uint32, std::size_t>& new_map)
+    void Registry<T>::change_channel_numbers(const ChanMap& old_map,
+                                const ChanMap& new_map)
     {
         std::vector<T> new_values(new_map.size(), default_value_);
         for (auto it = old_map.begin(); it != old_map.end(); ++it) {
@@ -67,10 +67,10 @@ namespace mel {
         if (registry.size() > 0) {
             os << "{";
             for (std::size_t i = 0; i < registry.size() - 1; i++) {
-                uint32 ch = registry.module_->get_channel_numbers()[i];
+                ChanNum ch = registry.module_->get_channel_numbers()[i];
                 os << "[" << ch << "]:" << registry[ch] << ", ";
             }
-            uint32 ch = registry.module_->get_channel_numbers()[registry.size() - 1];
+            ChanNum ch = registry.module_->get_channel_numbers()[registry.size() - 1];
             os << "[" << ch << "]:" << registry[ch] << "}";
         }
         else {

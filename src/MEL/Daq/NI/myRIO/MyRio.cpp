@@ -108,6 +108,21 @@ MyRio::~MyRio() {
         close();
 }
 
+bool MyRio::reset() {
+    if (is_open()) {
+        NiFpga_Status status = NiFpga_Reset(myrio_session);
+        if (MyRio_IsNotSuccess(status)) {
+            LOG(Error) << "Failed to reset myRIO FPGA " << get_nifpga_error_message(status);
+            return false;
+        }
+        return true;
+    }
+    else {
+        LOG(Error) << "Failed to reset myRIO FPGA because the myRIO is not open";
+        return false;
+    }    
+}
+
 bool MyRio::on_open() {    
     return (open_myrio(false) &&  mxpA.open() &&  mxpB.open() && mspC.open());
 }

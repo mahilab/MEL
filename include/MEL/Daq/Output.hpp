@@ -36,7 +36,7 @@ public:
     Output();
 
     /// Constructor with specified channel numbers
-    Output(const std::vector<uint32>& channel_numbers);
+    Output(const ChanNums& channel_numbers);
 
     /// Destructor
     virtual ~Output();
@@ -45,31 +45,31 @@ public:
     virtual bool set_expire_values(const std::vector<T>& expire_values);
 
     /// Override to set watchdog expiration state of a single channel
-    virtual bool set_expire_value(uint32 channel_number, T expire_value);
+    virtual bool set_expire_value(ChanNum channel_number, T expire_value);
 
     /// Sets the initial values to be written on enable
     void set_enable_values(const std::vector<T>& enable_values);
 
     /// Sets the intial value of a single channel to be written on enable
-    void set_enable_value(uint32 channel_number, T enable_value);
+    void set_enable_value(ChanNum channel_number, T enable_value);
 
     /// Sets the final values to be written on disable
     void set_disable_values(const std::vector<T>& disable_values);
 
     /// Sets the final value of a single channel to be written on disable
-    void set_disable_value(uint32 channel_number, T disable_value);
+    void set_disable_value(ChanNum channel_number, T disable_value);
 
     /// Gets a handle to a channel on this module
-    Channel get_channel(uint32 channel_number);
+    Channel get_channel(ChanNum channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(const ChanNums& channel_numbers);
 
     /// Gets a handle to a channel on this module
-    Channel operator[](uint32 channel_number);
+    Channel operator[](ChanNum channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
 protected:
 
@@ -92,7 +92,7 @@ public:
         Channel();
 
         /// Creates a valid channel.
-        Channel(Output* module, uint32 channel_number);
+        Channel(Output* module, ChanNum channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<T>::operator=;

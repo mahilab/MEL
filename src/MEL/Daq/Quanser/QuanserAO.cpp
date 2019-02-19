@@ -9,7 +9,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserAO::QuanserAO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+QuanserAO::QuanserAO(QuanserDaq& daq, const ChanNums& channel_numbers) :
     AnalogOutput(channel_numbers),
     daq_(daq)
 {
@@ -28,7 +28,7 @@ bool QuanserAO::update() {
     }
 }
 
-bool QuanserAO::update_channel(uint32 channel_number) {
+bool QuanserAO::update_channel(ChanNum channel_number) {
     t_error result;
     result = hil_write_analog(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
     if (result == 0)
@@ -56,7 +56,7 @@ bool QuanserAO::set_ranges(const std::vector<Voltage>& min_values, const std::ve
     }
 }
 
-bool QuanserAO::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
+bool QuanserAO::set_range(ChanNum channel_number, Voltage min_value, Voltage max_value) {
     if (!Module::set_range(channel_number, min_value, max_value))
         return false;
     t_error result;
@@ -88,7 +88,7 @@ bool QuanserAO::set_expire_values(const std::vector<Voltage>& expire_values) {
     }
 }
 
-bool QuanserAO::set_expire_value(uint32 channel_number, Voltage expire_value) {
+bool QuanserAO::set_expire_value(ChanNum channel_number, Voltage expire_value) {
     if (!Output::set_expire_value(channel_number, expire_value))
         return false;
     t_error result;

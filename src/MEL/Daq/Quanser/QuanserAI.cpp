@@ -9,7 +9,7 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserAI::QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+QuanserAI::QuanserAI(QuanserDaq& daq, const ChanNums& channel_numbers) :
     AnalogInput(channel_numbers),
     daq_(daq)
 {
@@ -27,7 +27,7 @@ bool QuanserAI::update() {
     }
 }
 
-bool QuanserAI::update_channel(uint32 channel_number) {
+bool QuanserAI::update_channel(ChanNum channel_number) {
     t_error result;
     result = hil_read_analog(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
     if (result == 0)
@@ -55,7 +55,7 @@ bool QuanserAI::set_ranges(const std::vector<Voltage>& min_values, const std::ve
     }
 }
 
-bool QuanserAI::set_range(uint32 channel_number, Voltage min_value, Voltage max_value) {
+bool QuanserAI::set_range(ChanNum channel_number, Voltage min_value, Voltage max_value) {
     if (!Module::set_range(channel_number, min_value, max_value))
         return false;
     t_error result;

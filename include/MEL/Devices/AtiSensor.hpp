@@ -49,8 +49,8 @@ public:
     /// Constucts AtiSensor with unspecified channels and no calibration
     AtiSensor();
 
-    /// Constructs AtiSensor with specified channels and loads calibration from filename
-    AtiSensor(std::vector <Input<Voltage>::Channel> channels, const std::string& filename);
+    /// Constructs AtiSensor with specified channels and loads calibration from filepath
+    AtiSensor(std::vector <Input<Voltage>::Channel> channels, const std::string& filepath);
 
     /// Constructs AtiSensor from specified channels and manual calibration
     AtiSensor(std::vector<Input<Voltage>::Channel> channels, Calibration calibration);
@@ -59,7 +59,7 @@ public:
     void set_channels(std::vector<Input<Voltage>::Channel> channels);
 
     /// Loads calibration from ATI calibration file (e.g. "FTXXXXX.cal")
-    bool load_calibration(const std::string& filename);
+    bool load_calibration(const std::string& filepath);
 
     /// Allows for manually setting calibration
     void set_calibration(Calibration calibration);
@@ -86,8 +86,8 @@ private:
 
 private:
 
-    Calibration calibration_;                       ///< calibration matrix
     std::vector<Input<Voltage>::Channel> channels_; ///< raw voltage channels
+    Calibration calibration_;                       ///< calibration matrix
     std::array<double, 6> bias_;                    ///< bias vector
     std::array<double, 6> bSTG_;                    ///< biased strain gauge voltages
 };

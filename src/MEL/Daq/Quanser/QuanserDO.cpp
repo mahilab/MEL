@@ -9,7 +9,7 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDO::QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    QuanserDO::QuanserDO(QuanserDaq& daq, const ChanNums& channel_numbers) :
         DigitalOutput(channel_numbers),
         daq_(daq),
         quanser_values_(this)
@@ -32,7 +32,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDO::update_channel(uint32 channel_number) {
+    bool QuanserDO::update_channel(ChanNum channel_number) {
         // convert MEL Logic to Quanser t_boolean (aka char)
         quanser_values_[channel_number] = static_cast<char>(values_[channel_number]);
         t_error result;
@@ -75,7 +75,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDO::set_expire_value(uint32 channel_number, Logic expire_value) {
+    bool QuanserDO::set_expire_value(ChanNum channel_number, Logic expire_value) {
         if (!Output::set_expire_value(channel_number, expire_value))
             return false;
         // convert MEL logic to Quanser t_encoder_quadratue_mode

@@ -36,22 +36,22 @@ public:
     Input();
 
     /// Constructor with specified channel numbers
-    Input(const std::vector<uint32>& channel_numbers);
+    Input(const ChanNums& channel_numbers);
 
     /// Default destructor
     virtual ~Input();
 
     /// Gets a handle to a channel on this module
-    Channel get_channel(uint32 channel_number);
+    Channel get_channel(ChanNum channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(const ChanNums& channel_numbers);
 
     /// Gets a handle to a channel on this module
-    Channel operator[](uint32 channel_number);
+    Channel operator[](ChanNum channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
     /// Encapsulates a Module channel
     class Channel : virtual public ChannelBase<T> {
@@ -60,7 +60,7 @@ public:
         Channel();
 
         /// Creates a valid channel.
-        Channel(Input* module, uint32 channel_number);
+        Channel(Input* module, ChanNum channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<T>::operator=;

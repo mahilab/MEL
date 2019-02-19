@@ -46,9 +46,7 @@ public:
     /// Updates all Output Modules simultaenously
     bool update_output();
 
-    /// Configures the Connector for a certain number of Encoders
-    /// 0 or 1 for MXPA and MXPB, 0, 1, or 2 for MSPC
-    bool configure_encoders(std::size_t encoder_count);
+
 
 public:
 
@@ -64,10 +62,10 @@ private:
 
     /// Private constructor
     MyRioConnector(MyRio& myrio, Type type,
-        const std::vector<uint32>& ai_channels,
-        const std::vector<uint32>& ao_channels,
-        const std::vector<uint32>& dio_channels,
-        const std::vector<uint32>& enc_channels);
+        const ChanNums& ai_channels,
+        const ChanNums& ao_channels,
+        const ChanNums& dio_channels,
+        const ChanNums& enc_channels);
 
     bool on_open() override;
     bool on_close() override;

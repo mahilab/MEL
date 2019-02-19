@@ -13,7 +13,7 @@ static Voltage DEFAULT_AI_SOURCE(Time t) {
     return sin(2.0 * PI * t.as_seconds());
 }
 
-VirtualAI::VirtualAI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) :
+VirtualAI::VirtualAI(VirtualDaq& daq, const ChanNums& channel_numbers) :
     AnalogInput(channel_numbers),
     sources(this, DEFAULT_AI_SOURCE),
     daq_(daq)
@@ -21,7 +21,7 @@ VirtualAI::VirtualAI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers
     set_name(daq.get_name() + "_AI");
 }
 
-bool VirtualAI::update_channel(uint32 channel_number) {
+bool VirtualAI::update_channel(ChanNum channel_number) {
     values_[channel_number] = sources[channel_number](daq_.clock_.get_elapsed_time());
     return true;
 }
@@ -30,14 +30,14 @@ bool VirtualAI::update_channel(uint32 channel_number) {
 // VIRUTAL AO
 //==============================================================================
 
-VirtualAO::VirtualAO(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) : 
+VirtualAO::VirtualAO(VirtualDaq& daq, const ChanNums& channel_numbers) : 
     AnalogOutput(channel_numbers),
     daq_(daq) 
 {
     set_name(daq.get_name() + "_AO");
 }
 
-bool VirtualAO::update_channel(uint32 channel_number) {
+bool VirtualAO::update_channel(ChanNum channel_number) {
     return true;
 }
 
@@ -52,7 +52,7 @@ static Logic DEFAULT_DI_SOURCE(Time t) {
         return Low;
 }
 
-VirtualDI::VirtualDI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) :
+VirtualDI::VirtualDI(VirtualDaq& daq, const ChanNums& channel_numbers) :
     DigitalInput(channel_numbers),
     sources(this, DEFAULT_DI_SOURCE),
     daq_(daq)
@@ -60,7 +60,7 @@ VirtualDI::VirtualDI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers
     set_name(daq.get_name() + "_DI");
 }
 
-bool VirtualDI::update_channel(uint32 channel_number) {
+bool VirtualDI::update_channel(ChanNum channel_number) {
     values_[channel_number] = sources[channel_number](daq_.clock_.get_elapsed_time());
     return true;
 }
@@ -69,14 +69,14 @@ bool VirtualDI::update_channel(uint32 channel_number) {
 // VIRTUAL DO
 //==============================================================================
 
-VirtualDO::VirtualDO(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) : 
+VirtualDO::VirtualDO(VirtualDaq& daq, const ChanNums& channel_numbers) : 
     DigitalOutput(channel_numbers),
     daq_(daq)
 {
     set_name(daq.get_name() + "_DO");
 }
 
-bool VirtualDO::update_channel(uint32 channel_number) {
+bool VirtualDO::update_channel(ChanNum channel_number) {
     return true;
 }
 
@@ -88,7 +88,7 @@ int32 DEFAULT_ENCODER_SOURCE(Time t) {
     return static_cast<int32>(1024.0 * (sin(2.0 * PI * t.as_seconds())));
 }
 
-VirtualEncoder::VirtualEncoder(VirtualDaq& daq, const std::vector<uint32>& channel_numbers) :
+VirtualEncoder::VirtualEncoder(VirtualDaq& daq, const ChanNums& channel_numbers) :
     Encoder(channel_numbers),
     sources(this, DEFAULT_ENCODER_SOURCE),
     daq_(daq)
@@ -96,7 +96,7 @@ VirtualEncoder::VirtualEncoder(VirtualDaq& daq, const std::vector<uint32>& chann
     set_name(daq.get_name() + "_encoder");
 }
 
-bool VirtualEncoder::update_channel(uint32 channel_number) {
+bool VirtualEncoder::update_channel(ChanNum channel_number) {
     values_[channel_number] = sources[channel_number](daq_.clock_.get_elapsed_time());
     return true;
 }

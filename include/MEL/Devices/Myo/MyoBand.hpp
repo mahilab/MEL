@@ -31,7 +31,7 @@ public:
     ~MyoBand();
 
     bool update() override;
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
 private:
 

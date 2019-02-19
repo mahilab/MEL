@@ -2,6 +2,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <fstream>
 #include <MEL/Core/Console.hpp>
+#include <MEL/Utility/System.hpp>
 
 namespace mel {
 
@@ -49,10 +50,10 @@ AtiSensor::AtiSensor() {
 
 }
 
-AtiSensor::AtiSensor(std::vector<Input<Voltage>::Channel> channels, const std::string& filename) :
+AtiSensor::AtiSensor(std::vector<Input<Voltage>::Channel> channels, const std::string& filepath) :
     channels_(channels)
 {
-    load_calibration(filename);
+    load_calibration(filepath);
 }
 
 AtiSensor::AtiSensor(std::vector<Input<Voltage>::Channel> channels, Calibration calibration) :
@@ -67,9 +68,10 @@ void AtiSensor::set_channels(std::vector<Input<Voltage>::Channel> channels) {
     channels_ = channels;
 }
 
-bool AtiSensor::load_calibration(const std::string& filename) {
+bool AtiSensor::load_calibration(const std::string& filepath) {
+    std::string tidy_filepath = tidy_path(filepath, true);
     std::ifstream file;
-    file.open(filename);
+    file.open(tidy_filepath);
     if (file.is_open()) {
         // convert file to string
         std::string file_str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -82,14 +84,14 @@ bool AtiSensor::load_calibration(const std::string& filename) {
             calibration_.Tx = get_values(xml_str(file_str, "<UserAxis Name=\"Tx\" values="));
             calibration_.Ty = get_values(xml_str(file_str, "<UserAxis Name=\"Ty\" values="));
             calibration_.Tz = get_values(xml_str(file_str, "<UserAxis Name=\"Tz\" values="));        
-            LOG(Info) << "Loaded ATI sensor calibration file \"" << filename << "\"";
+            LOG(Info) << "Loaded ATI sensor calibration file \"" << filepath << "\"";
             return true;
         }
         else
-            LOG(Error) << "Unable to load ATI sensor calibration file \"" << filename << "\". Unsupported CalFileVersion " << ver;
+            LOG(Error) << "Unable to load ATI sensor calibration file \"" << filepath << "\". Unsupported CalFileVersion " << ver;
     }
     else
-        LOG(Error) << "Unable to find ATI sensor calibration file \"" << filename << "\"";
+        LOG(Error) << "Unable to find ATI sensor calibration file \"" << filepath << "\"";
    
     return false;
 }

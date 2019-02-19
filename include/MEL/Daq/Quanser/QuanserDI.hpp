@@ -34,11 +34,11 @@ class QuanserDaq;
 
 class MEL_API QuanserDI : public DigitalInput, NonCopyable {
 public:
-    QuanserDI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserDI(QuanserDaq& daq, const ChanNums& channel_numbers);
 
     bool update() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
     std::vector<char>& get_quanser_values();
 

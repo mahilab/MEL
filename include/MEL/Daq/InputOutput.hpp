@@ -37,7 +37,7 @@ public:
     InputOutput();
 
     /// Constructor with specified channel numbers
-    InputOutput(const std::vector<uint32>& channel_numbers);
+    InputOutput(const ChanNums& channel_numbers);
 
     /// Default destructor
     virtual ~InputOutput();
@@ -46,7 +46,7 @@ public:
     virtual bool set_directions(const std::vector<Direction>& directions);
 
     /// Sets the direction of a single channel
-    virtual bool set_direction(uint32 channel_number, Direction direction);
+    virtual bool set_direction(ChanNum channel_number, Direction direction);
 
 public:
 
@@ -57,22 +57,22 @@ public:
     std::size_t get_output_channel_count() const;
     
     /// Gets the vector of input channel numbers this Module maintains
-    const std::vector<uint32>& get_input_channel_numbers() const;
+    const ChanNums& get_input_channel_numbers() const;
 
     /// Gets the vector of output channel numbers this Module maintains
-    const std::vector<uint32>& get_output_channel_numbers() const;
+    const ChanNums& get_output_channel_numbers() const;
 
     /// Gets a handle to a channel on this module
-    Channel get_channel(uint32 channel_number);
+    Channel get_channel(ChanNum channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(const ChanNums& channel_numbers);
 
     /// Gets a handle to a channel on this module
-    Channel operator[](uint32 channel_number);
+    Channel operator[](ChanNum channel_number);
 
     /// Gets a vector of handles to channels on this module
-    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
 protected:
     /// Sorts channel numbers associated with inputs and outputs
@@ -80,8 +80,8 @@ protected:
 
 protected:
     Registry<Direction>         directions_;              ///< The I/O directions of each channel
-    mutable std::vector<uint32> input_channel_numbers_;   ///< the channel numbers that are inputs
-    mutable std::vector<uint32> output_channel_numbers_;  ///< the channel numbers that are outputs
+    mutable ChanNums input_channel_numbers_;   ///< the channel numbers that are inputs
+    mutable ChanNums output_channel_numbers_;  ///< the channel numbers that are outputs
 
 public: 
 
@@ -92,7 +92,7 @@ public:
         Channel();
 
         /// Creates a valid channel.
-        Channel(InputOutput* module, uint32 channel_number);
+        Channel(InputOutput* module, ChanNum channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<T>::operator=;

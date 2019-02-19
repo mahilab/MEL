@@ -33,7 +33,7 @@ public:
     ChannelBase();
 
     /// Creates a valid channel.
-    ChannelBase(Module<T>* module, uint32 channel_number);
+    ChannelBase(Module<T>* module, ChanNum channel_number);
 
     /// Destructor
     virtual ~ChannelBase();
@@ -54,14 +54,14 @@ public:
     operator T() const;
 
     /// Gets the channel number
-    uint32 get_channel_number() const;
+    ChanNum get_channel_number() const;
 
     /// Returns true if the Channel is valid
     bool is_valid() const;
 
 protected:
-    Module<T>* module_;      ///< Pointer to the module this channel is on
-    uint32 channel_number_;  ///< The channel number of this channel
+    Module<T>* module_;       ///< Pointer to the module this channel is on
+    ChanNum channel_number_;  ///< The channel number of this channel
 };
 
 }  // namespace mel

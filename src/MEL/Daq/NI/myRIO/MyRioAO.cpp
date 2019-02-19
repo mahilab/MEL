@@ -31,14 +31,14 @@ static const std::vector<std::vector<double>> OFFSETS({
 
 } // namespace
 
-MyRioAO::MyRioAO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+MyRioAO::MyRioAO(MyRioConnector& connector, const ChanNums& channel_numbers) :
     AnalogOutput(channel_numbers),
     connector_(connector)
 {
     set_name(connector_.get_name() + "_AO");
 }
 
-bool MyRioAO::update_channel(uint32 channel_number) {
+bool MyRioAO::update_channel(ChanNum channel_number) {
     NiFpga_Status status;
     uint16_t valueScaled;
     double value = values_[channel_number];

@@ -34,17 +34,17 @@ class QuanserDaq;
 
 class MEL_API QuanserDO : public DigitalOutput, NonCopyable {
 public:
-    QuanserDO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserDO(QuanserDaq& daq, const ChanNums& channel_numbers);
 
     bool update() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
     std::vector<char>& get_quanser_values();
 
     bool set_expire_values(const std::vector<Logic>& expire_values) override;
 
-    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+    bool set_expire_value(ChanNum channel_number, Logic expire_value) override;
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq

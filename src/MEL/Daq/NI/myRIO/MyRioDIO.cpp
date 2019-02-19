@@ -45,14 +45,14 @@ static const std::vector<std::vector<uint8_t>> BITS({
 
 } // namespace
 
-MyRioDIO::MyRioDIO(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+MyRioDIO::MyRioDIO(MyRioConnector& connector, const ChanNums& channel_numbers) :
     DigitalInputOutput(channel_numbers),
     connector_(connector)
 {
     set_name(connector_.get_name() + "_DIO");
 }
 
-bool MyRioDIO::update_channel(uint32 channel_number) {
+bool MyRioDIO::update_channel(ChanNum channel_number) {
     NiFpga_Status status;
     uint8_t dirValue;
     if (directions_[channel_number] == In) {

@@ -34,16 +34,16 @@ class QuanserDaq;
 
 class MEL_API QuanserAI : public AnalogInput, NonCopyable {
 public:
-    QuanserAI(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserAI(QuanserDaq& daq, const ChanNums& channel_numbers);
 
     bool update() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
     bool set_ranges(const std::vector<Voltage>& min_values,
                     const std::vector<Voltage>& max_values) override;
 
-    bool set_range(uint32 channel_number,
+    bool set_range(ChanNum channel_number,
                    Voltage min_value,
                    Voltage max_value) override;
 

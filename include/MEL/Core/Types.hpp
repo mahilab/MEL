@@ -20,6 +20,8 @@
 
 #include <string>
 #include <typeinfo>
+#include <vector>
+#include <map>
 #include <MEL/Config.hpp>
 
 namespace mel {
@@ -61,6 +63,16 @@ enum WriteMode {
 //==============================================================================
 // DAQ TYPES
 //==============================================================================
+
+/// Default type for a channel number
+typedef uint32 ChanNum;
+
+/// An array of channel numbers
+typedef std::vector<ChanNum> ChanNums;
+
+/// Maps a channel number to an array index
+// typdef channel number(s)
+typedef std::map<uint32, std::size_t> ChanMap;
 
 /// Represents a voltage in [V]
 typedef double Voltage;

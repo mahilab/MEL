@@ -29,13 +29,13 @@ class MEL_API MyRioAI : public AnalogInput, NonCopyable {
 public:
 
     /// Updates a single channel
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
 private:
 
     friend class MyRioConnector;
 
-    MyRioAI(MyRioConnector& connector, const std::vector<uint32>& channel_numbers);
+    MyRioAI(MyRioConnector& connector, const ChanNums& channel_numbers);
 
 private:
 

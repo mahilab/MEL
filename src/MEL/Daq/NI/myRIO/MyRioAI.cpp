@@ -33,14 +33,14 @@ static const std::vector<std::vector<double>> OFFSETS({
 
 } // namespace
 
-MyRioAI::MyRioAI(MyRioConnector& connector, const std::vector<uint32>& channel_numbers) :
+MyRioAI::MyRioAI(MyRioConnector& connector, const ChanNums& channel_numbers) :
     AnalogInput(channel_numbers),
     connector_(connector)
 {
     set_name(connector_.get_name() + "_AI");
 }
 
-bool MyRioAI::update_channel(uint32 channel_number) {
+bool MyRioAI::update_channel(ChanNum channel_number) {
     if (!connector_.is_open()) {
         LOG(Error) << "Failed to update channel because" << connector_.get_name() << " is not open";
         return false;

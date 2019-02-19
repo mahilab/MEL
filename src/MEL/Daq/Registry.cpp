@@ -9,7 +9,7 @@ namespace mel {
         module_->add_registry(this);
     }
 
-    std::size_t RegistryBase::index(uint32 channel_number) const {
+    std::size_t RegistryBase::index(ChanNum channel_number) const {
         return module_->index(channel_number);
     }
 

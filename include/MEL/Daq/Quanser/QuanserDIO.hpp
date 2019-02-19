@@ -34,19 +34,19 @@ class QuanserDaq;
 
 class MEL_API QuanserDIO : public DigitalInputOutput, NonCopyable {
 public:
-    QuanserDIO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers);
+    QuanserDIO(QuanserDaq& daq, const ChanNums& channel_numbers);
 
     bool update() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
     bool set_directions(const std::vector<Direction>& directions) override;
 
-    bool set_direction(uint32 channel_number, Direction direction) override;
+    bool set_direction(ChanNum channel_number, Direction direction) override;
 
     bool set_expire_values(const std::vector<Logic>& expire_values) override;
 
-    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+    bool set_expire_value(ChanNum channel_number, Logic expire_value) override;
 
 private:
 

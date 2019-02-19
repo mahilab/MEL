@@ -9,7 +9,7 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDIO::QuanserDIO(QuanserDaq& daq, const std::vector<uint32>& channel_numbers) :
+    QuanserDIO::QuanserDIO(QuanserDaq& daq, const ChanNums& channel_numbers) :
         DigitalInputOutput(channel_numbers),
         daq_(daq)
     {
@@ -62,7 +62,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDIO::update_channel(uint32 channel_number) {
+    bool QuanserDIO::update_channel(ChanNum channel_number) {
         char buffer;
         t_error result;
         if (directions_[channel_number] == In) {
@@ -100,7 +100,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDIO::set_direction(uint32 channel_number, Direction direction) {
+    bool QuanserDIO::set_direction(ChanNum channel_number, Direction direction) {
         if (!InputOutput::set_direction(channel_number, direction))
             return false;
         return set_directions(directions_.get());
@@ -130,7 +130,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDIO::set_expire_value(uint32 channel_number, Logic expire_value) {
+    bool QuanserDIO::set_expire_value(ChanNum channel_number, Logic expire_value) {
         if (!InputOutput::set_expire_value(channel_number, expire_value))
             return false;
         // convert MEL logic to Quanser t_encoder_quadratue_mode

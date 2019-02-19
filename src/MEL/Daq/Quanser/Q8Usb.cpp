@@ -190,7 +190,7 @@ bool Q8Usb::update_output() {
     }
 }
 
-bool Q8Usb::identify(uint32 channel_number) {
+bool Q8Usb::identify(ChanNum channel_number) {
     if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
@@ -218,7 +218,7 @@ bool Q8Usb::identify(uint32 channel_number) {
 }
 
 int Q8Usb::identify() {
-    for (uint32 channel_number = 0; channel_number < 8; ++channel_number) {
+    for (ChanNum channel_number = 0; channel_number < 8; ++channel_number) {
         if (identify(channel_number))
             return (int)channel_number;
     }

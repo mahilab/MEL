@@ -19,20 +19,14 @@
 
 #include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
-#include <vector>
 #include <iostream>
-#include <map>
 #include <algorithm>
 
 namespace mel {
 
 class ModuleBase;
 
-//==============================================================================
-// BASE DECLARATION
-//==============================================================================
-
-/// Base class for Buffer
+/// Base class for Registry
 class MEL_API RegistryBase {
 public:
     /// Constructor
@@ -43,11 +37,10 @@ protected:
     friend class ModuleBase;
 
     /// Called by ModuleBase when channel numbers change
-    virtual void change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
-                                        const std::map<uint32, std::size_t>& new_map) = 0;
+    virtual void change_channel_numbers(const ChanMap& old_map, const ChanMap& new_map) = 0;
 
     /// Returns vector index associated with channel number
-    std::size_t index(uint32 channel_number) const;
+    std::size_t index(ChanNum channel_number) const;
 
 protected:
 
@@ -67,10 +60,10 @@ public:
     Registry(ModuleBase* module, T default_value = T());
 
     /// Read access indexed by channel number
-    const T& operator[](uint32 channel_number) const;
+    const T& operator[](ChanNum channel_number) const;
 
     /// Write access indexed by channel number
-    T& operator[](uint32 channel_number);
+    T& operator[](ChanNum channel_number);
 
     /// Gets size of Registry
     std::size_t size() const;
@@ -94,8 +87,8 @@ public:
 private:
 
     /// Called by ModuleBase when channel numbers change
-    void change_channel_numbers(const std::map<uint32, std::size_t>& old_map,
-                                const std::map<uint32, std::size_t>& new_map) override;
+    void change_channel_numbers(const ChanMap& old_map,
+                                const ChanMap& new_map) override;
 
 private:
 

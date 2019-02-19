@@ -35,8 +35,8 @@ class VirtualDaq;
 
 class MEL_API VirtualAI : public AnalogInput {
 public:
-    VirtualAI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers);
-    bool update_channel(uint32 channel_number) override;
+    VirtualAI(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 public:
     Registry<std::function<Voltage(Time)>> sources;
 private:
@@ -49,8 +49,8 @@ private:
 
 class MEL_API VirtualAO : public AnalogOutput {
 public:
-    VirtualAO(VirtualDaq& daq, const std::vector<uint32>& channel_numbers);
-    bool update_channel(uint32 channel_number) override;
+    VirtualAO(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 private:
     VirtualDaq& daq_;
 };
@@ -61,8 +61,8 @@ private:
 
 class MEL_API VirtualDI : public DigitalInput {
 public:
-    VirtualDI(VirtualDaq& daq, const std::vector<uint32>& channel_numbers);
-    bool update_channel(uint32 channel_number) override;
+    VirtualDI(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 public:
     Registry<std::function<Logic(Time)>> sources;
 private:
@@ -75,8 +75,8 @@ private:
 
 class MEL_API VirtualDO : public DigitalOutput {
 public:
-    VirtualDO(VirtualDaq& daq, const std::vector<uint32>& channel_numbers);
-    bool update_channel(uint32 channel_number) override;
+    VirtualDO(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 private:
     VirtualDaq& daq_;
 };
@@ -87,8 +87,8 @@ private:
 
 class MEL_API VirtualEncoder : public Encoder {
 public:
-    VirtualEncoder(VirtualDaq& daq, const std::vector<uint32>& channel_numbers);
-    bool update_channel(uint32 channel_number) override;
+    VirtualEncoder(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 public:
     Registry<std::function<int32(Time)>> sources;
 private:

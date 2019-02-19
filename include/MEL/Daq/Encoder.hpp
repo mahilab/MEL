@@ -38,7 +38,7 @@ public:
     Encoder();
 
     /// Constructor with specified channel numbers
-    Encoder(const std::vector<uint32>& channel_numbers);
+    Encoder(const ChanNums& channel_numbers);
 
     /// Default destructor
     virtual ~Encoder();
@@ -47,57 +47,49 @@ public:
     virtual bool reset_counts(const std::vector<int32>& counts);
 
     /// This function should call the DAQ's API to set a single encoder counter
-    virtual bool reset_count(uint32 channel_number, int32 count);
-
-    /// This function should call the DAQ's API to set the quadrature factor on
-    /// all encoder channels
-    virtual bool set_quadrature_factors(const std::vector<QuadFactor>& factors);
-
-    /// This function should call the DAQ's API to set the quadrature factor on
-    /// a single channel
-    virtual bool set_quadrature_factor(uint32 channel_number, QuadFactor factor);
+    virtual bool reset_count(ChanNum channel_number, int32 count);
 
     /// Zeros all encoder channels
     bool zero();
 
     /// Zeros a single encoder channel
-    bool zero_channel(uint32 channel_number);
+    bool zero_channel(ChanNum channel_number);
 
     /// Sets the units per count of all encoder channels.
     void set_units_per_count(const std::vector<double>& units_per_count);
 
     /// Sets the units per count on a single encoder channel
-    void set_units_per_count(uint32 channel_number, double units_per_count);
+    void set_units_per_count(ChanNum channel_number, double units_per_count);
 
     /// Performs conversion to positions using #factors_ and #counts_per_unit
     const std::vector<double>& get_positions();
 
     /// Performs conversion to position using #factors_ and #counts_per_unit
-    double get_position(uint32 channel_number);
+    double get_position(ChanNum channel_number);
 
     /// Performs conversion to positions using #factors_ and #counts_per_unit
     std::vector<double>& get_values_per_sec();
 
     /// Performs conversion to position using #factors_ and #counts_per_unit
-    double get_value_per_sec(uint32 channel_number);
+    double get_value_per_sec(ChanNum channel_number);
 
     /// Performs conversion to positions using #factors_ and #counts_per_unit
     const std::vector<double>& get_velocities();
 
     /// Performs conversion to position using #factors_ and #counts_per_unit
-    double get_velocity(uint32 channel_number);
+    double get_velocity(ChanNum channel_number);
 
     /// Returns a Encoder::Channel
-    Channel get_channel(uint32 channel_number);
+    Channel get_channel(ChanNum channel_number);
 
     /// Returns multiple Encoder::Channels
-    std::vector<Channel> get_channels(const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> get_channels(const ChanNums& channel_numbers);
 
     /// Returns a Encoder::Channel
-    Channel operator[](uint32 channel_number);
+    Channel operator[](ChanNum channel_number);
 
     /// Returns multiple Encoder::Channels
-    std::vector<Channel> operator[](const std::vector<uint32>& channel_numbers);
+    std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
     /// Set whether the Encoder enables velocity estimation
     void has_velocity(bool has_velocity);
@@ -109,6 +101,12 @@ protected:
 
     /// Override to call compute_conversions
     virtual bool on_enable() override;
+
+    /// This function should call the DAQ's API to set the quadrature factor on all encoder channels
+    virtual bool set_quadrature_factors(const std::vector<QuadFactor>& factors);
+
+    /// This function should call the DAQ's API to set the quadrature factor on a single channel
+    virtual bool set_quadrature_factor(ChanNum channel_number, QuadFactor factor);
 
 protected:
 
@@ -128,7 +126,7 @@ public:
         Channel();
 
         /// Creates a valid channel.
-        Channel(Encoder* module, uint32 channel_number);
+        Channel(Encoder* module, ChanNum channel_number);
 
         /// Inherit assignment operator for setting
         using ChannelBase<int32>::operator=;
@@ -148,11 +146,13 @@ public:
         /// Sets the encoder count to a specific value
         bool reset_count(int32 count);
 
-        /// Sets the encoder quadrature factor
-        bool set_quadrature_factor(QuadFactor factor);
-
         /// Sets the encoder units/count
         void set_units_per_count(double units_per_count);
+
+    private:
+
+        /// Sets the encoder quadrature factor
+        bool set_quadrature_factor(QuadFactor factor);
 
     };
 };

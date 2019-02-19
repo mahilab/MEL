@@ -32,6 +32,9 @@ public:
     /// Default Destructor
     ~MyRio();
 
+    /// Resets the myRIO FPGA to default configuration
+    bool reset();
+
     /// Updates all connector inputs simultaneously.
     bool update_input() override;
 
