@@ -1,0 +1,57 @@
+# Visual Studio Code - CMake Tools Extension Vairants
+# Evan Pezent (epezent@rice.edu)
+
+buildType:
+  default: release
+  description: Build Type
+  choices:
+    debug:
+      short: Debug
+      long: Build with debugging information
+      buildType: Debug
+    release:
+      short: Release
+      long: Optimize the resulting binaries
+      buildType: Release
+
+static:
+  default: 'off'
+  choices:
+    'on':
+      short: Static
+      long: Build MEL as static library
+      settings:
+        MEL_STATIC: ON # -DQUANSER=ON
+    'off':
+      short: Dynamic
+      long: Build MEL as dynamic library
+      settings:
+        MEL_STATIC: OFF # -DQUANSER=OFF
+
+quanser:
+  default: 'off'
+  choices:
+    'on':
+      short: Quanser
+      long: Build with Quanser DAQ support
+      settings:
+        QUANSER: ON # -DQUANSER=ON
+    'off':
+      short: No Quanser
+      long: Build without Quanser DAQ support
+      settings:
+        QUANSER: OFF # -DQUANSER=OFF
+
+examples:
+  default: 'on'
+  choices:
+    'on':
+      short: Examples
+      long: Build examples
+      settings:
+        EXAMPLES: ON # -DEXAMPLES=ON
+    'off':
+      short: No Examples
+      long: Do not build examples
+      settings:
+        EXAMPLES: OFF # -DEXAMPLES=OFF

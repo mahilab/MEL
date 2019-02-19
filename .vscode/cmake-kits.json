@@ -1,0 +1,19 @@
+[
+    {
+        "name": "nilrt-arm",
+        "toolchainFile": "/Git/MEL/cmake/nilrt-arm-toolchain.cmake"
+    },
+    {
+        "name": "nilrt-x64",
+        "toolchainFile": "/Git/MEL/cmake/nilrt-x64-toolchain.cmake"
+    },
+    {
+        "name": "msvc-x64",
+        "visualStudio": "VisualStudio.15.0",
+        "visualStudioArchitecture": "amd64",
+        "preferredGenerator": {
+            "name": "Visual Studio 15 2017",
+            "platform": "x64"
+        }
+    }
+]
