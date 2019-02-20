@@ -46,7 +46,8 @@ public:
     /// Updates all Output Modules simultaenously
     bool update_output();
 
-
+    /// Resets the connector digital pin configurations
+    void reset();
 
 public:
 
@@ -61,18 +62,17 @@ private:
     friend class MyRio;
 
     /// Private constructor
-    MyRioConnector(MyRio& myrio, Type type,
-        const ChanNums& ai_channels,
-        const ChanNums& ao_channels,
-        const ChanNums& dio_channels,
-        const ChanNums& enc_channels);
+    MyRioConnector(MyRio& myrio, Type type);
 
+    // Hide open/close functins
+    using DaqBase::open;
+    using DaqBase::close;
+
+    // Implement virtual functions
     bool on_open() override;
     bool on_close() override;
     bool on_enable() override;
     bool on_disable() override;
-
-    void reconfigure_dios();
 
 private:
 

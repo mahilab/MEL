@@ -47,6 +47,7 @@ namespace mel {
 
     template <typename T>
     bool InputOutput<T>::update_output() {
+        
         auto chnums = get_output_channel_numbers();
         bool success = true;
         for (auto& c : chnums)
@@ -100,6 +101,24 @@ namespace mel {
     std::vector<typename InputOutput<T>::Channel> InputOutput<T>::operator[](
         const ChanNums& channel_numbers) {
         return get_channels(channel_numbers);
+    }
+
+    template <typename T>
+    void InputOutput<T>::set_channel_numbers(const ChanNums& channel_numbers) {
+        Output<T>::set_channel_numbers(channel_numbers);
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    void InputOutput<T>::add_channel_number(ChanNum channel_number) {
+        Output<T>::add_channel_number(channel_number);
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    void InputOutput<T>::remove_channel_number(ChanNum channel_number) {
+        Output<T>::remove_channel_number(channel_number);
+        sort_input_output_channel_numbers();
     }
 
     template <typename T>

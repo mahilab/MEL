@@ -54,10 +54,16 @@ public:
     /// If quiet is false, an error log will be thrown.
     bool validate_channel_count(std::size_t size, bool quiet = false) const;
 
-    /// Sets the channel numbers this Module maintains
-    void set_channel_numbers(const ChanNums& channel_numbers);
-
 protected:
+
+    /// Sets the channel numbers this Module maintains
+    virtual void set_channel_numbers(const ChanNums& channel_numbers);
+
+    /// Adds a channel number to current channel numbers
+    virtual void add_channel_number(ChanNum channel_number);
+
+    /// Removes a channel number from current channel numbers
+    virtual void remove_channel_number(ChanNum channel_number);
 
     /// Called when the user enables the Module
     virtual bool on_enable() override;
@@ -65,15 +71,15 @@ protected:
     /// Called when the user disables the Module
     virtual bool on_disable() override;
 
-    /// Called when the user requests to change current channel numbers
-    virtual bool on_set_channel_numbers(const ChanNums& cur, const ChanNums& req);
-
 private:
 
     friend class RegistryBase;
 
     /// Adds a Registry to this Module
     void add_registry(RegistryBase* registry);
+
+    /// Updates the channel Map and notifies Registries
+    void update_map();
 
     /// Returns vector index associated with channel number
     std::size_t index(uint32 channel_number) const;

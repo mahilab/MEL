@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <bitset>
 
 namespace mel {
 
@@ -13,6 +14,9 @@ void clr_register_bit(unsigned int reg, int i);
 
 /// Get a myRIO reigster bit
 bool get_register_bit(unsigned int reg, int i);
+
+/// Read a whole register into a bitset
+std::bitset<8> read_register(unsigned int reg);
 
 /// Formats NI Error
 std::string get_nifpga_error_message(int error);

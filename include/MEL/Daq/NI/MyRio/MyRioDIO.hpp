@@ -32,18 +32,28 @@ public:
     /// Updates a single channel
     bool update_channel(ChanNum channel_number) override;
 
+    /// Sets the direction of a single channel
+    bool set_direction(ChanNum channel_number, Direction direction) override;
+
 private:
 
     friend class MyRioConnector;
     friend class MyRioEncoder;
 
-    void refresh_channels();
+    void sync();
 
     MyRioDIO(MyRioConnector& connector, const ChanNums& channel_numbers);
 
 private:
 
     const MyRioConnector& connector_; ///< connector this module is on
+
+    // NI FPGA Registers
+    uint32_t sysselect_;
+    std::vector<uint32_t> dirs_;
+    std::vector<uint32_t> ins_;
+    std::vector<uint32_t> outs_;
+
 };
 
 }  // namespace mel

@@ -19,6 +19,7 @@
 
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Daq/Encoder.hpp>
+#include <utility>
 
 namespace mel {
 
@@ -34,22 +35,32 @@ public:
     /// Resets Encoder counts to a specifc value
     bool reset_count(ChanNum channel_number, int count) override;
 
-    /// Enables or disables an encoder channel
-    bool configure(ChanNum channel_number, bool enabled);
+    /// Enable a myRIO encoder channel
+    void enable_channel(ChanNum channel_number);
+
+    /// Disable a myRIO encoder channel
+    void disable_channel(ChanNum channel_number_);
 
 private:
 
     friend class MyRioConnector;
 
-    void sync_from_myrio();
-    void sync_to_myrio();
-    bool on_enable() override;
+    void sync();
 
     MyRioEncoder(MyRioConnector& connector, const ChanNums& channel_numbers);
 
 private:
 
-    MyRioConnector& connector_; ///< connector this module is on
+    MyRioConnector& connector_;
+
+    // NI FPGA Registers
+    uint32_t              sysselect_;
+    std::vector<int>      bits_;
+    std::vector<uint32_t> stat_;
+    std::vector<uint32_t> cntr_;
+    std::vector<uint32_t> cnfg_;
+
+    ChanNums              allowed_;  ///< allowed channels
 };
 
 } //namespace mel

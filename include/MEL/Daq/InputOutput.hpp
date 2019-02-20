@@ -48,11 +48,11 @@ public:
     /// Updates only channels configured as outputs
     virtual bool update_output();
 
+    /// Sets the direction of a single channel
+    virtual bool set_direction(ChanNum channel_number, Direction direction) = 0;
+
     /// Sets the directions of all channels
     virtual bool set_directions(const std::vector<Direction>& directions);
-
-    /// Sets the direction of a single channel
-    virtual bool set_direction(ChanNum channel_number, Direction direction);
 
 public:
 
@@ -81,6 +81,16 @@ public:
     std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
 protected:
+
+    /// Sets the channel numbers this Module maintains
+    virtual void set_channel_numbers(const ChanNums& channel_numbers) override;
+
+    /// Adds a channel number to current channel numbers
+    virtual void add_channel_number(ChanNum channel_number) override;
+
+    /// Removes a channel number from current channel numbers
+    virtual void remove_channel_number(ChanNum channel_number) override;
+
     /// Sorts channel numbers associated with inputs and outputs
     void sort_input_output_channel_numbers() const;
 

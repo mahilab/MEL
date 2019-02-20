@@ -80,7 +80,7 @@ typedef double Voltage;
 /// Represents a digital TTL logic level
 enum Logic {
     Low  = 0, ///< Low TTL level  (typically 0V)
-    High = 1  ///< High TTL level (typically 5V)
+    High = 1   ///< High TTL level (typically 5V)
 };
 
 /// Represents a digital pin direction

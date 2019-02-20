@@ -112,7 +112,7 @@ int main() {
     timer.restart();
     while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.DI.get_value(0));
+        print((bool)q8.DI.get_value(0));
         signal = (Logic)(High - signal);
         q8.DO.set_value(0, signal);
         q8.update_output();

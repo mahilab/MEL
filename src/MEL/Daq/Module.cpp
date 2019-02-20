@@ -12,9 +12,6 @@ ChanNums sort_and_reduce_channels(const ChanNums& channels) {
     ChanNums sorted_channels = channels;
     std::sort(sorted_channels.begin(), sorted_channels.end());
     sorted_channels.erase(std::unique(sorted_channels.begin(), sorted_channels.end()), sorted_channels.end());
-    if (sorted_channels != channels) {
-        LOG(Warning) << "Specifed channels " << channels << " sorted and reduced to " << sorted_channels;
-    }
     return sorted_channels;
 }
 
@@ -31,8 +28,10 @@ ChanMap make_channel_map(const ChanNums& channel_numbers) {
 
 ModuleBase::ModuleBase() { }
 
-ModuleBase::ModuleBase(const ChanNums& channel_numbers) {
-    set_channel_numbers(channel_numbers);
+ModuleBase::ModuleBase(const ChanNums& channel_numbers) 
+    : channel_numbers_(channel_numbers)
+{
+    update_map();
 }
 
 bool ModuleBase::on_enable() {
@@ -45,29 +44,44 @@ bool ModuleBase::on_disable() {
     return true;
 }
 
-bool ModuleBase::on_set_channel_numbers(const ChanNums& cur, const ChanNums& req) {
-    // return true by default
-    return true;
-}
-
 bool ModuleBase::update() {
     bool success = true;
-    for (std::size_t i = 0; i < channel_numbers_.size(); ++i) {
-        if (!update_channel(channel_numbers_[i]))
-            success = false;
-    }
+    for (auto& ch : channel_numbers_) 
+        success = update_channel(ch) ? success : false;
     return success;
 }
 
 void ModuleBase::set_channel_numbers(const ChanNums& channel_numbers) {
-    ChanMap old_map = channel_map_;
     auto new_channel_numbers = sort_and_reduce_channels(channel_numbers);
-    if (on_set_channel_numbers(channel_numbers_, new_channel_numbers)) {
+    if (new_channel_numbers != channel_numbers_) {
         channel_numbers_ = new_channel_numbers;
-        channel_map_ = make_channel_map(channel_numbers_);
-        for (std::size_t i = 0; i < registries_.size(); i++)
-            registries_[i]->change_channel_numbers(old_map, channel_map_);
+        update_map();
+        LOG(Verbose) << "Set Module " << get_name() << " channel numbers to " << channel_numbers_;
     }
+}
+
+void ModuleBase::add_channel_number(ChanNum channel_number) {
+    if (!channel_map_.count(channel_number)) {
+        channel_numbers_.push_back(channel_number);
+        sort_and_reduce_channels(channel_numbers_);
+        update_map(); 
+        LOG(Verbose) << "Added channel number " << channel_number << " to Module " << get_name();      
+    } 
+}
+
+void ModuleBase::remove_channel_number(ChanNum channel_number) {
+    if (channel_map_.count(channel_number)) {
+        channel_numbers_.erase(std::remove(channel_numbers_.begin(), channel_numbers_.end(), channel_number), channel_numbers_.end());
+        update_map();
+        LOG(Verbose) << "Removed channel number " << channel_number << " from Module " << get_name();      
+    }
+}
+
+void ModuleBase::update_map() {
+    ChanMap old_map = channel_map_;
+    channel_map_ = make_channel_map(channel_numbers_);
+    for (std::size_t i = 0; i < registries_.size(); i++)
+        registries_[i]->change_channel_numbers(old_map, channel_map_);    
 }
 
 const ChanNums& ModuleBase::get_channel_numbers() const {
@@ -82,8 +96,7 @@ bool ModuleBase::validate_channel_number(uint32 channel_number, bool quiet) cons
     if (channel_map_.count(channel_number) > 0)
         return true;
     if (!quiet) {
-        LOG(Error) << "Invalid channel number " << channel_number
-                   << " not declared in channel numbers [" << channel_numbers_ << "] on Module " << get_name();
+        LOG(Error) << "Invalid channel number " << channel_number << " not declared in channel numbers [" << channel_numbers_ << "] on Module " << get_name();
     }
     return false;
 }
@@ -92,8 +105,7 @@ bool ModuleBase::validate_channel_count(std::size_t size, bool quiet) const {
     if (channel_numbers_.size() == size)
         return true;
     if (!quiet) {
-        LOG(Error) << "Invalid number of elements (" << size
-                   << ") not equal to channel count of " << get_channel_count() << " on Module " << get_name();
+        LOG(Error) << "Invalid number of elements (" << size << ") not equal to channel count of " << get_channel_count() << " on Module " << get_name();
     }
     return false;
 }

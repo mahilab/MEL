@@ -19,56 +19,55 @@ std::string connectorName(MyRioConnector::Type type) {
         return "Unkown";
 }
 
-}
+static const std::vector<ChanNums> AI_CHANNELS({
+    {0,1,2,3},
+    {0,1,2,3},
+    {0,1}
+});
+
+static const std::vector<ChanNums> AO_CHANNELS({
+    {0,1},
+    {0,1},
+    {0,1}
+});
+
+static const std::vector<ChanNums> DIO_CHANNELS({
+    {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},
+    {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},
+    {0,1,2,3,4,5,6,7}
+});
+
+} // namespace
     
-MyRioConnector::MyRioConnector(MyRio& myrio,
-                            Type _type,
-                            const ChanNums& ai_channels,
-                            const ChanNums& ao_channels,
-                            const ChanNums& dio_channels,
-                            const ChanNums& enc_channels) :
+MyRioConnector::MyRioConnector(MyRio& myrio,Type _type) :
     DaqBase(myrio.get_name() + "_" + connectorName(_type)),
     type(_type),
-    AI(*this, ai_channels),
-    AO(*this, ao_channels),
-    DIO(*this, dio_channels),
-    encoder(*this, enc_channels),
+    AI(*this, AI_CHANNELS[type]),
+    AO(*this, AO_CHANNELS[type]),
+    DIO(*this, DIO_CHANNELS[type]),
+    encoder(*this, {}),
     myrio_(myrio)
-{
-    
+{   
+
 }
 
 bool MyRioConnector::update_input() {
-    return AI.update() && DIO.update() && encoder.update();
+    return AI.update() && DIO.update_input() && encoder.update();
 }
 
 bool MyRioConnector::update_output() {
-    return AO.update() && DIO.update();
+    return AO.update() && DIO.update_output();
 }
 
-void MyRioConnector::reconfigure_dios() {
-    ChanNums channels;
-    auto num_encoders = encoder.get_channel_count();
-    if (type == Type::MxpA || type == Type::MxpB) {
-        if (num_encoders == 1)
-            channels = {0,1,2,3,4,5,6,7,8,9,10,13,14,15};
-        else
-            channels = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    }
-    else if (type == Type::MspC) {
-        if (num_encoders == 2)
-            channels = {1,3,5,7};
-        else if (num_encoders == 1)
-            channels = {1,3,4,5,6,7};
-        else
-            channels = {0,1,2,3,4,5,6,7};
-    }
-    DIO.set_channel_numbers(channels);
+void MyRioConnector::reset() {
+    for (auto& ch : encoder.get_channel_numbers())
+        encoder.disable_channel(ch);
+    DIO.sync();
 }
 
 bool MyRioConnector::on_open() {
-    encoder.sync_from_myrio();
-    reconfigure_dios();
+    encoder.sync();
+    DIO.sync();
     return true;
 }
 

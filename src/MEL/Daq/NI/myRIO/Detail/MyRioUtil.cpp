@@ -64,8 +64,7 @@ namespace mel {
 
 void set_register_bit(unsigned int reg, int i) {
     uint8_t bits;
-    NiFpga_Status status;
-    status = NiFpga_ReadU8(myrio_session, reg, &bits);
+    NiFpga_Status status = NiFpga_ReadU8(myrio_session, reg, &bits);
     if (status < 0) {
         LOG(Error) << "Could not read from regiser " << reg;
         return;
@@ -79,8 +78,7 @@ void set_register_bit(unsigned int reg, int i) {
 
 void clr_register_bit(unsigned int reg, int i) {
     uint8_t bits;
-    NiFpga_Status status;
-    status = NiFpga_ReadU8(myrio_session, reg, &bits);
+    NiFpga_Status status = NiFpga_ReadU8(myrio_session, reg, &bits);
     if (status < 0) {
         LOG(Error) << "Could not read from regiser " << reg;
         return;
@@ -94,12 +92,21 @@ void clr_register_bit(unsigned int reg, int i) {
 
 bool get_register_bit(unsigned int reg, int i) {
     uint8_t bits;
-    NiFpga_Status status;
-    status = NiFpga_ReadU8(myrio_session, reg, &bits);
+    NiFpga_Status status = NiFpga_ReadU8(myrio_session, reg, &bits);
     if (status < 0) {
         LOG(Error) << "Could not read from regiser " << reg;
     }
     return ((bits >> i) & 1) != 0;
+}
+
+std::bitset<8> read_register(unsigned int reg) {
+    uint8_t bits;
+    NiFpga_Status status = NiFpga_ReadU8(myrio_session, reg, &bits);
+    if (status < 0) {
+        LOG(Error) << "Could not read from regiser " << reg;
+    }
+    std::bitset<8> out(bits);
+    return out;    
 }
 
 std::string get_nifpga_error_message(int error) {
@@ -110,5 +117,7 @@ std::string get_nifpga_error_message(int error) {
     else
         return "";
 }
+
+
 
 } // namespace mel
