@@ -85,6 +85,8 @@ int main() {
         // print timer info to see performance
         print("Miss Rate: ", timer.get_miss_rate());
         print("Wait Ratio:", timer.get_wait_ratio());
+
+        
     }
 
     return 0;

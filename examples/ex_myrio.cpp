@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     if (user.count("x"))
         myrio.reset();
 
-    myrio.mspC.encoder.enable_channel(1);
+    myrio.mspC.encoder.enable_channel(0);
 
     myrio.mspC.DIO[1].set_direction(Out);
     myrio.mspC.DIO[5].set_direction(In);
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     print_channel_info(myrio);
 
     // set units per count on encoder
-    myrio.mspC.encoder[1].set_units_per_count(2 * PI / 500.0f);
+    myrio.mspC.encoder[0].set_units_per_count(2 * PI / 500.0f);
 
     // enable myrio
     myrio.enable();
@@ -147,10 +147,10 @@ int main(int argc, char** argv) {
         else
             myrio.set_led(3, false);
         // read an encoder
-        int    counts   = myrio.mspC.encoder[1].get_value();
-        double position = myrio.mspC.encoder[1].get_position(); // counts scale by 2*PI/500.0f
+        int    counts   = myrio.mspC.encoder[0].get_value();
+        double position = myrio.mspC.encoder[0].get_position(); // counts scale by 2*PI/500.0f
         if (myrio.is_button_pressed()) 
-            myrio.mspC.encoder[1].zero();
+            myrio.mspC.encoder[0].zero();
         // send myRIO voltages and encoder position over MelNet
         mn.send_data({voltage_write, voltage_read, (double)counts, position});
         // update myrio outputs
