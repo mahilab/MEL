@@ -266,8 +266,6 @@ if(MEL_NI_ARM)
     list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
 endif()
 
-
-
 #===============================================================================
 # CREATE MEL LIBRARY
 #===============================================================================
@@ -286,8 +284,7 @@ else()
 endif()
 target_link_libraries(MEL ${LINK_LIBS})
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
-# define MEL_EXPORTS for DLL exports
-target_compile_definitions(MEL PRIVATE MyRio_1900)
+git starget_compile_definitions(MEL PRIVATE MyRio_1900)
 
 #===============================================================================
 # EXECUTABLES
