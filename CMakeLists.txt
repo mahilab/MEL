@@ -3,7 +3,7 @@
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
 # Updated: 2/2019
 
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.13.0)
 
 #===============================================================================
 # USER OPTIONS
@@ -15,11 +15,10 @@ option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logg
 option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                                 OFF)
 option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
 option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                                     OFF)
-
-# Hardware
-option(MEL_QUANSER "Turn ON if compiling for Quanser hardware"             OFF) 
-option(MEL_NIDAQMX "Turn ON if compiling for NI DAQmx compatible hardware" OFF) 
-option(MEL_MYO     "Turn ON if compiling for Thalmic Labs Myo Armband"     OFF)
+# Hardware Support
+option(MEL_QUANSER     "Turn ON if compiling for Quanser hardware"                              OFF) 
+option(MEL_NIDAQMX     "Turn ON if compiling for NI DAQmx compatible hardware"                  OFF) 
+option(MEL_MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                      OFF)
 
 #===============================================================================
 # FRONT MATTER
@@ -31,20 +30,10 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 # enable C/C++ 11
 enable_language(C)
 enable_language(CXX)
-set(CMAKE_CXX_STANDARD 11)
+# set(CMAKE_CXX_STANDARD 11)
 
 # create project
 project(MEL VERSION 1.2.0 LANGUAGES CXX)
-
-# turn static compilation on/off
-if (MEL_STATIC)
-    add_definitions(-DMEL_STATIC)
-endif()
-
-# turn default logger on/off
-if (MEL_DISABLE_LOG)
-    add_definitions(-DMEL_DISABLE_LOG)
-endif()
 
 # set binary output locations
 if (MEL_MOVE_BINS)
@@ -54,12 +43,47 @@ if (MEL_MOVE_BINS)
 endif()
 
 #===============================================================================
-# FIND MEL SOURCE FILES
+# CREATE MEL LIBRARY
 #===============================================================================
 
-set(INCLUDE_DIRS include)
-set(LINK_DIRS "")
-set(LINK_LIBS "")
+# Build MEL as shared or static library?
+if (MEL_STATIC)
+    add_library(mel STATIC "")
+    target_compile_definitions(mel PUBLIC  -DMEL_STATIC)
+else()
+    add_library(mel SHARED "")
+    target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)
+endif()
+
+# alias 
+add_library(MEL::mel ALIAS mel)
+
+# turn default logger on/off
+if (MEL_DISABLE_LOG)
+    target_compile_definitions(mel PRIVATE -DMEL_DISABLE_LOG)
+endif()
+
+# include directories
+target_include_directories(mel
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src                
+)
+
+# compile features
+# complete listing:
+# https://cmake.org/cmake/help/v3.14/prop_gbl/CMAKE_CXX_KNOWN_FEATURES.html
+target_compile_features(mel
+    PUBLIC
+        cxx_std_11
+    PRIVATE
+)
+
+#===============================================================================
+# FIND MEL SOURCE FILES
+#===============================================================================
 
 file (GLOB SRC_BASE
     "${CMAKE_SOURCE_DIR}/include/MEL/*.hpp"
@@ -156,6 +180,26 @@ file(GLOB SRC_UTILITY_WINDOWS
     "${CMAKE_SOURCE_DIR}/src/MEL/Utility/Windows/*.cpp"
 )
 
+# base source files
+set(SOURCE_FILES
+    ${SRC_BASE}
+    ${SRC_COMMUNICATIONS}
+    ${SRC_CORE}
+    ${SRC_DAQ}
+    ${SRC_DAQ_DETAIL}
+    ${SRC_DEVICES}
+    ${SRC_LOGGING}
+    ${SRC_LOGGING_FORMATTERS}
+    ${SRC_LOGGING_WRITERS}
+    ${SRC_MATH}
+    ${SRC_MECHATRONICS}
+    ${SRC_UTILITY}
+)
+
+#===============================================================================
+# SOURCE GROUPS / IDE FOLDERS
+#===============================================================================
+
 # create source groups
 source_group("\\" FILES ${SRC_BASE})
 source_group("Communications" FILES ${SRC_COMMUNICATIONS})
@@ -176,111 +220,89 @@ source_group("Math" FILES ${SRC_MATH})
 source_group("Utility" FILES ${SRC_UTILITY})
 source_group("Utility\\Windows" FILES ${SRC_UTILITY_WINDOWS})
 
-set(SOURCE_FILES
-    ${SRC_BASE}
-    ${SRC_COMMUNICATIONS}
-    ${SRC_CORE}
-    ${SRC_DAQ}
-    ${SRC_DAQ_DETAIL}
-    ${SRC_DEVICES}
-    ${SRC_LOGGING}
-    ${SRC_LOGGING_FORMATTERS}
-    ${SRC_LOGGING_WRITERS}
-    ${SRC_MATH}
-    ${SRC_MECHATRONICS}
-    ${SRC_UTILITY}
-)
+# Enable IDE folders and set them for predefined CMake projects
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
+set_target_properties(mel PROPERTIES FOLDER "MEL")
 
 #===============================================================================
 # PLATFORM SPECIFIC SETUP
 #===============================================================================
 
+# Windows
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
-    list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi)
-    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS} ${SRC_KEYBOARD_WINDOWS})
-    # XInput for Xbox controllers
-    find_library(LIB_XINPUT XInput)
-    if (LIB_XINPUT)
-        list(APPEND LINK_LIBS XInput)
-        list(APPEND SOURCE_FILES ${SRC_XINPUT_WINDOWS})
-        message(STATUS "Found XInput")
-    else()
-        message(WARNING "Could not find XInput")
+    target_link_libraries(mel
+        PRIVATE
+            ws2_32 # Windows Sockets 2 (for Socket, UDP, TCP, etc.)
+            winmm  # Windows Multimedia API (for high-precision timers)
+            Pdh    # Windows Performance Data Helper (for performance queries)
+            Psapi  # Windows Process Status API (for performance queries)
+            XInput # Windows XInput (for Xbox 360/One controller support)
+    )
+    list(APPEND SOURCE_FILES ${SRC_UTILITY_WINDOWS} ${SRC_KEYBOARD_WINDOWS} ${SRC_XINPUT_WINDOWS})
+endif()
+
+# National Instruments Linux Realt-Time ARM/x64
+if (MEL_NI_X64 OR MEL_NI_ARM)
+    target_link_libraries(mel
+        PRIVATE
+            dl # Dynamic Linking Library
+            rt # Realtime Extensions library
+    )
+    if (MEL_NI_ARM)
+        target_compile_definitions(mel PRIVATE MyRio_1900) # needed by NI src
+        # append MEL source
+        list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
     endif()
 endif()
-
-#===============================================================================
-# COMPILER SPECIFIC SETUP
-#===============================================================================
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O3") # all warnings
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    # set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4") # warning level 4
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP") # multicore build
-endif()
-
-set(default_build_type "Release") # set default configurationi to Release
 
 #===============================================================================
 # HARDWARE SPECIFIC SETUP
 #===============================================================================
 
+# Quanser HIL SDK
 if (MEL_QUANSER)
     # find HIL
     find_package(HIL REQUIRED)
-    list(APPEND LINK_LIBS 
-        HIL::HIL 
-        HIL::quanser_runtime 
-        HIL::quanser_common  
-        bufferoverflowU 
-        legacy_stdio_definitions
+    target_link_libraries(mel
+        PRIVATE
+            HIL::HIL              # HIL SDK
+            HIL::quanser_runtime  # HIL quanser_runtime
+            HIL::quanser_common   # HIL quanser_common
+            bufferoverflowU  
+            legacy_stdio_definitions
     )
-    # MEL source
+    # append MEL source
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
+# National Insruments DAQmx
 if(MEL_NIDAQMX)
     find_package(NIDAQmx REQUIRED)
-    list(APPEND LINK_LIBS NIDAQmx::NIDAQmx)
+    target_link_libraries(mel
+        PRIVATE
+            NIDAQmx::NIDAQmx      # NIDAQmx
+    )
 endif()
 
+# Thalmic Labs Myo SDK
 if (MEL_MYO)
-    find_package(MYO REQUIRED)
-    list(APPEND LINK_LIBS MYO::MYO)
-    # MEL source
+    find_package(myo REQUIRED)
+    target_link_libraries(mel
+        PRIVATE
+            myo::myo              # myo
+    )
+    # append MEL source
     list(APPEND SOURCE_FILES ${SRC_DEVICES_MYO})
 endif()
 
-if (MEL_NI_X64)
-    list(APPEND LINK_LIBS dl rt)
-endif()
-
-if(MEL_NI_ARM)
-    list(APPEND LINK_LIBS dl rt)
-    list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
-endif()
-
 #===============================================================================
-# CREATE MEL LIBRARY
+# SET MEL SOURCE FILES
 #===============================================================================
 
-# Enable IDE folders and set them for predefined CMake projects
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
-
-include_directories(${INCLUDE_DIRS})
-link_directories(${LINK_DIRS})
-if (MEL_STATIC)
-    add_library(MEL STATIC ${SOURCE_FILES})
-else()
-    add_library(MEL SHARED ${SOURCE_FILES})
-    target_compile_definitions(MEL PRIVATE -DMEL_EXPORTS)
-endif()
-target_link_libraries(MEL ${LINK_LIBS})
-set_target_properties(MEL PROPERTIES FOLDER "MEL")
-target_compile_definitions(MEL PRIVATE MyRio_1900)
+# source files
+target_sources(mel PRIVATE ${SOURCE_FILES})
 
 #===============================================================================
 # EXECUTABLES

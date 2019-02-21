@@ -70,6 +70,7 @@ int main() {
         // make a header
         csv.write_row("Time", "double", "string", "int", "vector[0]", "vector[1]", "vector[2]");
         // simulate a loop
+        print("Starting 60 second loop ...");
         Timer timer(hertz(1000));
         Time  t;
         while (t < seconds(60)) {
@@ -84,9 +85,7 @@ int main() {
         }
         // print timer info to see performance
         print("Miss Rate: ", timer.get_miss_rate());
-        print("Wait Ratio:", timer.get_wait_ratio());
-
-        
+        print("Wait Ratio:", timer.get_wait_ratio());        
     }
 
     return 0;

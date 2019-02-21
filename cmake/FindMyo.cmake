@@ -15,47 +15,47 @@
 # 
 #  Author(s): Evan Pezent (epezent@rice.edu)
 
-# Locates Locates Thalmic Lab's Myo SDK
+# Locates Locates Thalmic Lab's myo SDK
 # This module defines
-#   NIDAQmx_FOUND
-#   NIDAQmx_LIBRARY
-#   NIDAQmx_INCLUDE_DIR
+#   myo_FOUND
+#   myo_LIBRARY
+#   myo_INCLUDE_DIR
 
-set(MYO_ROOT "/dev/myo-sdk-win-0.9.0")
+set(myo_ROOT "/dev/myo-sdk-win-0.9.0")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-  SET(MYO_LIB_NAMES "myo64")
+  SET(myo_LIB_NAMES "myo64")
 else()
-  SET(MYO_LIB_NAMES "myo32")
+  SET(myo_LIB_NAMES "myo32")
 endif()
 
 # find includes
-find_path(MYO_INCLUDE_DIR 
+find_path(myo_INCLUDE_DIR 
 			NAMES "myo.hpp"
-      PATHS ${MYO_ROOT}
+      PATHS ${myo_ROOT}
       PATH_SUFFIXES "include/myo")
 
 # find lib
-find_library(MYO_LIBRARY 
-			NAMES ${MYO_LIB_NAMES}
-            PATHS ${MYO_ROOT}
+find_library(myo_LIBRARY 
+			NAMES ${myo_LIB_NAMES}
+            PATHS ${myo_ROOT}
             PATH_SUFFIXES "lib")          
 
-if (MYO_INCLUDE_DIR)
-  get_filename_component(PARENT_DIR ${MYO_INCLUDE_DIR} DIRECTORY)
-  set(MYO_INCLUDE_DIR ${PARENT_DIR})
+if (myo_INCLUDE_DIR)
+  get_filename_component(PARENT_DIR ${myo_INCLUDE_DIR} DIRECTORY)
+  set(myo_INCLUDE_DIR ${PARENT_DIR})
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(MYO REQUIRED_VARS MYO_LIBRARY MYO_INCLUDE_DIR)
+find_package_handle_standard_args(myo REQUIRED_VARS myo_LIBRARY myo_INCLUDE_DIR)
 
-if (MYO_FOUND AND NOT MYO::MYO)
-    add_library(MYO::MYO STATIC IMPORTED)
-    set_target_properties(MYO::MYO PROPERTIES
+if (myo_FOUND AND NOT myo::myo)
+    add_library(myo::myo STATIC IMPORTED)
+    set_target_properties(myo::myo PROPERTIES
         IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-        IMPORTED_LOCATION "${MYO_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${MYO_INCLUDE_DIR}"
+        IMPORTED_LOCATION "${myo_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${myo_INCLUDE_DIR}"
     )
 endif()
     
-mark_as_advanced(MYO_LIBRARY MYO_INCLUDE_DIR)
+mark_as_advanced(myo_LIBRARY myo_INCLUDE_DIR)

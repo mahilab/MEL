@@ -20,35 +20,16 @@
     "choices": {
       "on": {
         "short": "Static",
-        "long": "Build MEL as static library",
+        "long": "Build as static library",
         "settings": {
           "MEL_STATIC": "ON"
         }
       },
       "off": {
-        "short": "Dynamic",
-        "long": "Build MEL as dynamic library",
+        "short": "Shared",
+        "long": "Build as shared library",
         "settings": {
           "MEL_STATIC": "OFF"
-        }
-      }
-    }
-  },
-  "quanser": {
-    "default": "off",
-    "choices": {
-      "on": {
-        "short": "Quanser",
-        "long": "Build with Quanser DAQ support",
-        "settings": {
-          "MEL_QUANSER": "ON"
-        }
-      },
-      "off": {
-        "short": "No Quanser",
-        "long": "Build without Quanser DAQ support",
-        "settings": {
-          "MEL_QUANSER": "OFF"
         }
       }
     }
@@ -68,6 +49,44 @@
         "long": "Do not build examples",
         "settings": {
           "MEL_EXAMPLES": "OFF"
+        }
+      }
+    }
+  },
+  "quanser": {
+    "default": "off",
+    "choices": {
+      "on": {
+        "short": "Quanser",
+        "long": "Build with Quanser support",
+        "settings": {
+          "MEL_QUANSER": "ON"
+        }
+      },
+      "off": {
+        "short": "No Quanser",
+        "long": "Build without Quanser support",
+        "settings": {
+          "MEL_QUANSER": "OFF"
+        }
+      }
+    }
+  },
+  "myo": {
+    "default": "off",
+    "choices": {
+      "on": {
+        "short": "Myo",
+        "long": "Build with Myo support",
+        "settings": {
+          "MEL_MYO": "ON"
+        }
+      },
+      "off": {
+        "short": "No Myo",
+        "long": "Build without Myo support",
+        "settings": {
+          "MEL_MYO": "OFF"
         }
       }
     }
