@@ -199,11 +199,6 @@ endif()
 # PLATFORM SPECIFIC SETUP
 #===============================================================================
 
-set(MEL_64BIT OFF)
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(MEL_64BIT ON)
-endif()
-
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
     list(APPEND LINK_LIBS ws2_32 winmm Pdh Psapi)
