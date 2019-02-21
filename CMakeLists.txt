@@ -24,16 +24,15 @@ option(MEL_MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"      
 # FRONT MATTER
 #===============================================================================
 
+# create project
+project(MEL VERSION 1.2.0 LANGUAGES CXX)
+
 # add custom CMake modules
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 # enable C/C++ 11
 enable_language(C)
 enable_language(CXX)
-# set(CMAKE_CXX_STANDARD 11)
-
-# create project
-project(MEL VERSION 1.2.0 LANGUAGES CXX)
 
 # set binary output locations
 if (MEL_MOVE_BINS)
@@ -48,9 +47,11 @@ endif()
 
 # Build MEL as shared or static library?
 if (MEL_STATIC)
+    message("Configuring MEL as a static library")
     add_library(mel STATIC "")
     target_compile_definitions(mel PUBLIC  -DMEL_STATIC)
 else()
+    message("Configuring MEL as a shared library")
     add_library(mel SHARED "")
     target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)
 endif()
@@ -60,6 +61,7 @@ add_library(MEL::mel ALIAS mel)
 
 # turn default logger on/off
 if (MEL_DISABLE_LOG)
+    message("Disabling built-in MEL Log")
     target_compile_definitions(mel PRIVATE -DMEL_DISABLE_LOG)
 endif()
 
@@ -231,7 +233,12 @@ set_target_properties(mel PROPERTIES FOLDER "MEL")
 
 # Windows
 if(WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -D_WINSOCK_DEPRECATED_NO_WARNINGS)
+    target_compile_definitions(mel
+        PUBLIC
+            -D_CRT_SECURE_NO_WARNINGS
+            -DNOMINMAX
+            -D_WINSOCK_DEPRECATED_NO_WARNINGS
+    )
     target_link_libraries(mel
         PRIVATE
             ws2_32 # Windows Sockets 2 (for Socket, UDP, TCP, etc.)
@@ -305,7 +312,64 @@ endif()
 target_sources(mel PRIVATE ${SOURCE_FILES})
 
 #===============================================================================
-# EXECUTABLES
+# INSTALL MEL
+#===============================================================================
+
+include(GNUInstallDirs)
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/MEL)
+install(TARGETS mel
+	EXPORT mel-targets
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+set_target_properties(mel PROPERTIES EXPORT_NAME MEL)
+set_target_properties(mel PROPERTIES FOLDER "MEL")
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# export the targets to a script
+install(EXPORT mel-targets
+	FILE
+		MELTargets.cmake
+	NAMESPACE
+		MEL::
+	DESTINATION
+		${INSTALL_CONFIGDIR}
+)
+
+# include helper functions for creating config files that can be included by other projects to find and use a package
+include(CMakePackageConfigHelpers)
+
+# generate a package configuration file and a package version file
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/MELConfig.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/MELConfig.cmake
+	INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/MELConfigVersion.cmake
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY AnyNewerVersion
+)
+
+# install the config and configversion modules
+install(FILES
+	${CMAKE_CURRENT_BINARY_DIR}/MELConfig.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/MELConfigVersion.cmake
+	DESTINATION ${INSTALL_CONFIGDIR}
+)
+
+# export from the build tree
+export(EXPORT mel-targets
+	   NAMESPACE MEL::
+	   FILE ${CMAKE_CURRENT_BINARY_DIR}/MELTargets.cmake)
+
+# register package in user's package registry
+export(PACKAGE MEL)
+
+#===============================================================================
+# EXAMPLE EXECUTABLES
 #===============================================================================
 
 if(MEL_EXAMPLES)
