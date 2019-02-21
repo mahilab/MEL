@@ -1,5 +1,5 @@
 # MEL CMakeLists.txt
-# Evan Pezent (epezent@rice.edu)
+# Evan Pezent     (epezent@rice.edu)
 # Craig McDonalod (craig.g.mcdonald@gmail.com)
 # Updated: 2/2019
 
@@ -10,29 +10,22 @@ cmake_minimum_required(VERSION 3.7)
 #===============================================================================
 
 # General
-option(MEL_STATIC  "Turn ON to build MEL as a static library (default shared)"                  OFF)
-option(DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"                 OFF)
-option(EXAMPLES    "Turn ON to build example executable(s)"                                     OFF)
-option(MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile"     OFF)
-option(BUILD_DOC   "Turn ON to build MEL documentation"                                         OFF)
+option(MEL_STATIC      "Turn ON to build MEL as a static library (default shared)"              OFF)
+option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"             OFF)
+option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                                 OFF)
+option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
+option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                                     OFF)
 
-# Quanser HIL (# e.g. Q8 USB, Q2 USB)
-option(QUANSER   "Turn ON if compiling for Quanser hardware" OFF) 
-set(QUANSER_ROOT "/Program Files/Quanser" CACHE FILEPATH "Absolute path to Quanser installation directory.")
-
-# NI DAQmx (e.g. myDAQ)
-option(NI_DAQMX "Turn ON if compiling for NI DAQmx compatible hardware"  OFF) 
-set(NI_DAQMX_ROOT "/Program Files (x86)/National Instruments" CACHE FILEPATH "Absolute path to NI installation directory.")
-
-# Thalmic Labs Myro Armband
-option(MYO   "Turn ON if compiling for Thalmic Labs Myo Armband" OFF)
-set(MYO_ROOT "/dev/myo-sdk-win-0.9.0" CACHE FILEPATH "Absolute path to Myo SDK.")
+# Hardware
+option(MEL_QUANSER "Turn ON if compiling for Quanser hardware"             OFF) 
+option(MEL_NIDAQMX "Turn ON if compiling for NI DAQmx compatible hardware" OFF) 
+option(MEL_MYO     "Turn ON if compiling for Thalmic Labs Myo Armband"     OFF)
 
 #===============================================================================
 # FRONT MATTER
 #===============================================================================
 
-# make sure custom cmake modules are found
+# add custom CMake modules
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 #===============================================================================
@@ -191,12 +184,12 @@ if (MEL_STATIC)
 endif()
 
 # turn default logger on/off
-if (DISABLE_LOG)
+if (MEL_DISABLE_LOG)
     add_definitions(-DMEL_DISABLE_LOG)
 endif()
 
 # set binary output locations
-if (MOVE_BINS)
+if (MEL_MOVE_BINS)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
@@ -243,7 +236,7 @@ set(default_build_type "Release") # set default configurationi to Release
 # HARDWARE SPECIFIC SETUP
 #===============================================================================
 
-if (QUANSER)
+if (MEL_QUANSER)
     # find HIL
     find_package(HIL REQUIRED)
     list(APPEND LINK_LIBS 
@@ -257,12 +250,16 @@ if (QUANSER)
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
 
-if(NI_DAQMX)
-    # hardware includes
-    list(APPEND INCLUDE_DIRS "${NI_DAQMX_ROOTNI-DAQ/DAQmx ANSI C Dev/include")
-    # hardware libs
-    list(APPEND LINK_DIRS "${NI_DAQMX_ROOTNI-DAQ/DAQmx ANSI C Dev/lib/msvc")
-    list(APPEND LINK_LIBS NIDAQmx.lib)
+if(MEL_NIDAQMX)
+    find_package(NIDAQmx REQUIRED)
+    list(APPEND LINK_LIBS NIDAQmx::NIDAQmx)
+endif()
+
+if (MEL_MYO)
+    find_package(MYO REQUIRED)
+    list(APPEND LINK_LIBS MYO::MYO)
+    # MEL source
+    list(APPEND SOURCE_FILES ${SRC_DEVICES_MYO})
 endif()
 
 if (MEL_NI_X64)
@@ -291,19 +288,7 @@ if(MEL_NI_ARM)
     SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
 
-if (MYO)
-    # hardware includes
-    list(APPEND INCLUDE_DIRS "${MYO_ROOT}/include")
-    # hardware libs
-    list(APPEND LINK_DIRS "${MYO_ROOT}/lib")
-    if (MEL_64BIT)
-        list(APPEND LINK_LIBS myo64)
-    else()
-        list(APPEND LINK_LIBS myo32)
-    endif()
-    # MEL source
-    list(APPEND SOURCE_FILES ${SRC_DEVICES_MYO})
-endif()
+
 
 #===============================================================================
 # CREATE MEL LIBRARY
@@ -330,7 +315,7 @@ target_compile_definitions(MEL PRIVATE MyRio_1900)
 # EXECUTABLES
 #===============================================================================
 
-if(EXAMPLES)
+if(MEL_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
@@ -338,6 +323,6 @@ endif()
 # DOCUMENTATION
 #==============================================================================
 
-if(BUILD_DOC)
+if(MEL_BUILD_DOC)
     add_subdirectory(doc)
 endif()

@@ -41,14 +41,14 @@
         "short": "Quanser",
         "long": "Build with Quanser DAQ support",
         "settings": {
-          "QUANSER": "ON"
+          "MEL_QUANSER": "ON"
         }
       },
       "off": {
         "short": "No Quanser",
         "long": "Build without Quanser DAQ support",
         "settings": {
-          "QUANSER": "OFF"
+          "MEL_QUANSER": "OFF"
         }
       }
     }
@@ -60,14 +60,14 @@
         "short": "Examples",
         "long": "Build examples",
         "settings": {
-          "EXAMPLES": "ON"
+          "MEL_EXAMPLES": "ON"
         }
       },
       "off": {
         "short": "No Examples",
         "long": "Do not build examples",
         "settings": {
-          "EXAMPLES": "OFF"
+          "MEL_EXAMPLES": "OFF"
         }
       }
     }
