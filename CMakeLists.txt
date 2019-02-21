@@ -28,6 +28,31 @@ option(MEL_MYO     "Turn ON if compiling for Thalmic Labs Myo Armband"     OFF)
 # add custom CMake modules
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
+# enable C/C++ 11
+enable_language(C)
+enable_language(CXX)
+set(CMAKE_CXX_STANDARD 11)
+
+# create project
+project(MEL VERSION 1.2.0 LANGUAGES CXX)
+
+# turn static compilation on/off
+if (MEL_STATIC)
+    add_definitions(-DMEL_STATIC)
+endif()
+
+# turn default logger on/off
+if (MEL_DISABLE_LOG)
+    add_definitions(-DMEL_DISABLE_LOG)
+endif()
+
+# set binary output locations
+if (MEL_MOVE_BINS)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+endif()
+
 #===============================================================================
 # FIND MEL SOURCE FILES
 #===============================================================================
@@ -167,35 +192,6 @@ set(SOURCE_FILES
 )
 
 #===============================================================================
-# BASIC SETUP
-#===============================================================================
-
-# enable C/C++ 11
-enable_language(C)
-enable_language(CXX)
-set(CMAKE_CXX_STANDARD 11)
-
-# create project
-project(MEL)
-
-# turn static compilation on/off
-if (MEL_STATIC)
-    add_definitions(-DMEL_STATIC)
-endif()
-
-# turn default logger on/off
-if (MEL_DISABLE_LOG)
-    add_definitions(-DMEL_DISABLE_LOG)
-endif()
-
-# set binary output locations
-if (MEL_MOVE_BINS)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-endif()
-
-#===============================================================================
 # PLATFORM SPECIFIC SETUP
 #===============================================================================
 
@@ -284,7 +280,7 @@ else()
 endif()
 target_link_libraries(MEL ${LINK_LIBS})
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
-git starget_compile_definitions(MEL PRIVATE MyRio_1900)
+target_compile_definitions(MEL PRIVATE MyRio_1900)
 
 #===============================================================================
 # EXECUTABLES
