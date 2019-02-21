@@ -22,3 +22,8 @@ set(CMAKE_CROSSCOMPILING 1)
 
 # setup sysroot (for NI RT cross compiler)
 set(CMAKE_SYSROOT ${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux CACHE FILEPATH "Path to NI x64 Cross Compiler Sysroot")
+
+set(CMAKE_C_FLAGS_INIT   "-pthread")
+set(CMAKE_CXX_FLAGS_INIT "-pthread")
+
+SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)

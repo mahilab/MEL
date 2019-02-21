@@ -263,29 +263,12 @@ if (MEL_MYO)
 endif()
 
 if (MEL_NI_X64)
-    # compiler flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-    # hardware includes
-    list(APPEND INCLUDE_DIRS
-        "${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2"
-        "${NI_X64_ROOT}/sysroots/core2-64-nilrt-linux/usr/include/c++/4.9.2/x86_64-nilrt-linux")
-    # hardware libs
     list(APPEND LINK_LIBS dl rt)
-    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
 
 if(MEL_NI_ARM)
-    # compiler flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -march=armv7-a -mfpu=vfpv3  -mfloat-abi=softfp -mcpu=cortex-a9")
-    # hardware inclues
-    list(APPEND INCLUDE_DIRS
-        "${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2"
-        "${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/4.9.2/arm-nilrt-linux-gnueabi")
-    # hardware libs
     list(APPEND LINK_LIBS dl rt)
-    # MEL source
     list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
-    SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 endif()
 
 
