@@ -39,7 +39,6 @@ if(MEL_QUANSER)
     mel_example(haptic_paddle)
     mel_example(overview)
     mel_example(ati_sensor)
-    mel_example(pendulum)
 endif()
 
 if(MEL_NI_ARM)
