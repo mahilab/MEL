@@ -29,6 +29,13 @@ option(MYO   "Turn ON if compiling for Thalmic Labs Myo Armband" OFF)
 set(MYO_ROOT "/dev/myo-sdk-win-0.9.0" CACHE FILEPATH "Absolute path to Myo SDK.")
 
 #===============================================================================
+# FRONT MATTER
+#===============================================================================
+
+# make sure custom cmake modules are found
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
+
+#===============================================================================
 # FIND MEL SOURCE FILES
 #===============================================================================
 
@@ -237,28 +244,15 @@ set(default_build_type "Release") # set default configurationi to Release
 #===============================================================================
 
 if (QUANSER)
-    # for users with full QUARC installation
-    if (EXISTS "${QUANSER_ROOT}/QUARC/")
-        # hardware includes
-        list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/QUARC/include")
-        # hardware libs
-        if (MEL_64BIT)
-            list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/win64")
-        else()
-            list(APPEND LINK_DIRS "${QUANSER_ROOT}/QUARC/lib/windows")
-        endif()
-    # for users with HIL SDK standalone
-    else()
-        # hardware includes
-        list(APPEND INCLUDE_DIRS "${QUANSER_ROOT}/HIL SDK/include")
-        # hardware libs
-        if (MEL_64BIT)
-            list(APPEND LINK_DIRS "${QUANSER_ROOT}/HIL SDK/lib/win64")
-        else()
-            list(APPEND LINK_DIRS "${QUANSER_ROOT}/HIL SDK/lib/windows")
-        endif()
-    endif()
-    list(APPEND LINK_LIBS hil quanser_runtime quanser_common bufferoverflowU legacy_stdio_definitions)
+    # find HIL
+    find_package(HIL REQUIRED)
+    list(APPEND LINK_LIBS 
+        HIL::HIL 
+        HIL::quanser_runtime 
+        HIL::quanser_common  
+        bufferoverflowU 
+        legacy_stdio_definitions
+    )
     # MEL source
     list(APPEND SOURCE_FILES ${SRC_QUANSER})
 endif()
