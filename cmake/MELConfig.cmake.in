@@ -2,9 +2,19 @@ get_filename_component(MEL_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 include(CMakeFindDependencyMacro)
 
-list(APPEND CMAKE_MODULE_PATH ${MEL_CMAKE_DIR})
+list(APPEND CMAKE_MODULE_PATH "${MEL_CMAKE_DIR}/Modules")
 
-find_dependency(HIL REQUIRED)
+if (MEL_QUANSER)
+    find_dependency(HIL REQUIRED)
+endif()
+
+if (MEL_NIDAQMX)
+    find_dependency(NIDAQmx REQUIRED)
+endif()
+
+if (MEL_MYO)
+    find_dependency(myo REQUIRED)
+endif()
 
 if(NOT TARGET MEL::mel)
     include("${MEL_CMAKE_DIR}/MELTargets.cmake")

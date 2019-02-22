@@ -21,7 +21,7 @@
 #   myo_LIBRARY
 #   myo_INCLUDE_DIR
 
-set(myo_ROOT "/dev/myo-sdk-win-0.9.0")
+set(myo_ROOT "C:/Program Files/myo-sdk-win-0.9.0")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
   SET(myo_LIB_NAMES "myo64")

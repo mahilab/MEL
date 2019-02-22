@@ -21,7 +21,7 @@
 #   NIDAQmx_LIBRARY
 #   NIDAQmx_INCLUDE_DIR
 
-set(NIDAQmx_ROOT "/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
+set(NIDAQmx_ROOT "C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
   SET(NIDAQmx_PATH_SUFFIXES "lib64/msvc")

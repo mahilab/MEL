@@ -360,13 +360,19 @@ install(FILES
 	DESTINATION ${INSTALL_CONFIGDIR}
 )
 
+# install find modules
+install(FILES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindHIL.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindMyo.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindNIDAQmx.cmake
+    DESTINATION ${INSTALL_CONFIGDIR}/Modules
+)
+
 # export from the build tree
 export(EXPORT mel-targets
 	   NAMESPACE MEL::
 	   FILE ${CMAKE_CURRENT_BINARY_DIR}/MELTargets.cmake)
 
-# register package in user's package registry
-export(PACKAGE MEL)
 
 #===============================================================================
 # EXAMPLE EXECUTABLES
