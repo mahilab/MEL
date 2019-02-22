@@ -17,45 +17,45 @@
 
 # Locates Locates Thalmic Lab's myo SDK
 # This module defines
-#   myo_FOUND
-#   myo_LIBRARY
-#   myo_INCLUDE_DIR
+#   Myo_FOUND
+#   Myo_LIBRARY
+#   Myo_INCLUDE_DIR
 
-set(myo_ROOT "C:/Program Files/myo-sdk-win-0.9.0")
+set(Myo_ROOT "C:/Program Files/myo-sdk-win-0.9.0")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-  SET(myo_LIB_NAMES "myo64")
+  SET(Myo_LIB_NAMES "myo64")
 else()
-  SET(myo_LIB_NAMES "myo32")
+  SET(Myo_LIB_NAMES "myo32")
 endif()
 
 # find includes
-find_path(myo_INCLUDE_DIR 
+find_path(Myo_INCLUDE_DIR 
 			NAMES "myo.hpp"
-      PATHS ${myo_ROOT}
+      PATHS ${Myo_ROOT}
       PATH_SUFFIXES "include/myo")
 
 # find lib
-find_library(myo_LIBRARY 
-			NAMES ${myo_LIB_NAMES}
-            PATHS ${myo_ROOT}
+find_library(Myo_LIBRARY 
+			NAMES ${Myo_LIB_NAMES}
+            PATHS ${Myo_ROOT}
             PATH_SUFFIXES "lib")          
 
-if (myo_INCLUDE_DIR)
-  get_filename_component(PARENT_DIR ${myo_INCLUDE_DIR} DIRECTORY)
-  set(myo_INCLUDE_DIR ${PARENT_DIR})
+if (Myo_INCLUDE_DIR)
+  get_filename_component(PARENT_DIR ${Myo_INCLUDE_DIR} DIRECTORY)
+  set(Myo_INCLUDE_DIR ${PARENT_DIR})
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(myo REQUIRED_VARS myo_LIBRARY myo_INCLUDE_DIR)
+find_package_handle_standard_args(Myo REQUIRED_VARS Myo_LIBRARY Myo_INCLUDE_DIR)
 
-if (myo_FOUND AND NOT myo::myo)
-    add_library(myo::myo STATIC IMPORTED)
-    set_target_properties(myo::myo PROPERTIES
+if (Myo_FOUND AND NOT Myo::Myo)
+    add_library(Myo::Myo STATIC IMPORTED)
+    set_target_properties(Myo::Myo PROPERTIES
         IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-        IMPORTED_LOCATION "${myo_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${myo_INCLUDE_DIR}"
+        IMPORTED_LOCATION "${Myo_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Myo_INCLUDE_DIR}"
     )
 endif()
     
-mark_as_advanced(myo_LIBRARY myo_INCLUDE_DIR)
+mark_as_advanced(Myo_LIBRARY Myo_INCLUDE_DIR)

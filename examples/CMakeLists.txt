@@ -1,9 +1,3 @@
-macro(mel_example MEL_EXAMPLE_NAME)
-    add_executable(${MEL_EXAMPLE_NAME} "ex_${MEL_EXAMPLE_NAME}.cpp")
-    target_link_libraries(${MEL_EXAMPLE_NAME} PRIVATE MEL::mel)
-    set_target_properties(${MEL_EXAMPLE_NAME} PROPERTIES FOLDER "Examples")
-endmacro()
-
 mel_example(hello_world)
 mel_example(tcp)
 mel_example(udp)
