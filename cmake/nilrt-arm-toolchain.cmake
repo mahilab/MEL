@@ -2,6 +2,7 @@
 # Evan Pezent (epezent@rice.edu)
 
 SET(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # set flag for MEL CMakeLists.txt
 set(MEL_NI_ARM ON)
@@ -17,7 +18,6 @@ set(CMAKE_C_COMPILER   arm-nilrt-linux-gnueabi-gcc CACHE FILEPATH "NI LRT ARM C 
 set(CMAKE_CXX_COMPILER arm-nilrt-linux-gnueabi-g++ CACHE FILEPATH "NI LRT ARM C++ Compiler")
 
 # set to cross compile
-set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_CROSSCOMPILING 1)
 
 # setup sysroot (for NI RT cross compiler)

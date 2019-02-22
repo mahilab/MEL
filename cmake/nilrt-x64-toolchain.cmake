@@ -17,7 +17,6 @@ set(CMAKE_C_COMPILER   x86_64-nilrt-linux-gcc CACHE FILEPATH "NI LRT x64 C Compi
 set(CMAKE_CXX_COMPILER x86_64-nilrt-linux-g++ CACHE FILEPATH "NI LRT x64 C++ Compiler")
 
 # set to cross compile
-set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_CROSSCOMPILING 1)
 
 # setup sysroot (for NI RT cross compiler)

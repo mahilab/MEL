@@ -51,9 +51,14 @@ if (MEL_STATIC)
     add_library(mel STATIC "")
     target_compile_definitions(mel PUBLIC  -DMEL_STATIC)
 else()
+    if (MEL_NI_ARM OR MEL_NI_X64)
+        set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+    endif()
     message("Configuring MEL as a shared library")
     add_library(mel SHARED "")
     target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)
+        
+
 endif()
 
 # alias 
