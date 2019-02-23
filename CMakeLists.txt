@@ -20,12 +20,15 @@ option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                     
 # FRONT MATTER
 #===============================================================================
 
-# create project
+# create the MEL project
 project(MEL VERSION 1.2.0 LANGUAGES C CXX)
 
-# add custom CMake modules and macros
+# add ./cmake to cmake module path so our .cmake files can be found
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
-include(Macros)
+
+include(Macros)         # MEL macros
+include(MELSources)     # lists of MEL source and header files
+include(GNUInstallDirs) # defines conventional GNU isntallation directories
 
 # set binary output locations
 if (MEL_MOVE_BINS)
@@ -36,25 +39,21 @@ if (MEL_MOVE_BINS)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 endif()
 
-# include GNU install dirs
-include(GNUInstallDirs)
+# does the user want a shared version?
+if (MEL_SHARED)
+    set(BUILD_SHARED_LIBS ON) # turn on built in shared libs option
+endif()
 
-# include MEL source files (sets MEL_COMMON_SRC and MEL_COMMON_HEADERS among others)
-include(MELSources)
+# Enable IDE folders and set them for predefined CMake projects
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 #===============================================================================
 # CREATE COMMON MEL LIBRARY
 #===============================================================================
 
-# does the user want a shared version?
-if (MEL_SHARED)
-    set(BUILD_SHARED_LIBS ON)
-endif()
-
-# create core MEL library
-mel_add_library(MEL)
-target_sources(MEL PRIVATE ${MEL_COMMON_SRC} ${MEL_COMMON_HEADERS})
-
+# create core MEL library (MEL::MEL)
+mel_add_library(MEL SOURCES ${MEL_COMMON_SRC} ${MEL_COMMON_HEADERS})
 
 # turn default logger on/off
 if (MEL_DISABLE_LOG)
@@ -65,24 +64,19 @@ endif()
 # source groups / IDE folders
 mel_source_group_by_folder(MEL)
 
-# Enable IDE folders and set them for predefined CMake projects
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
-set_target_properties(MEL PROPERTIES FOLDER "MEL")
-
 #===============================================================================
 # WINDOWS ONLY
 #===============================================================================
 
 if(WIN32)
-    target_compile_definitions( MEL
+    target_compile_definitions(MEL
         PUBLIC
             -D_CRT_SECURE_NO_WARNINGS          # remove secure warnings (e.g sprinft_s)
             -DNOMINMAX                         # remove min/max macros
             -D_WINSOCK_DEPRECATED_NO_WARNINGS  # remove winsock deprecated warnings
     )
 
-    target_link_libraries( MEL
+    target_link_libraries(MEL
         PRIVATE
             ws2_32 # Windows Sockets 2 (for Socket, UDP, TCP, etc.)
             winmm  # Windows Multimedia API (for high-precision timers)
