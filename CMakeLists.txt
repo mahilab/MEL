@@ -125,11 +125,10 @@ if(WIN32)
         # find HIL
         target_link_libraries(MEL
             PRIVATE
-                HIL::HIL              # HIL SDK
-                HIL::quanser_runtime  # HIL quanser_runtime
-                HIL::quanser_common   # HIL quanser_common
-                bufferoverflowU  
-                legacy_stdio_definitions
+                HIL::HIL                 # HIL SDK
+                HIL::quanser_runtime     # HIL quanser_runtime
+                HIL::quanser_common      # HIL quanser_common
+                legacy_stdio_definitions # needed for _vsnprintf in quanser_common
         )
     endif()
 
@@ -174,9 +173,9 @@ endif()
 #===============================================================================
 
 # detect incompatible options
-mel_incompatible(MEL_NI_LRT  MEL_QUANSER)
-mel_incompatible(MEL_NI_LRT  MEL_NIDAQMX)
-mel_incompatible(MEL_NI_LRT  MEL_MYO)
+mel_incompatible(MEL_NI_LRT MEL_QUANSER)
+mel_incompatible(MEL_NI_LRT MEL_NIDAQMX)
+mel_incompatible(MEL_NI_LRT MEL_MYO)
 
 if (MEL_NI_LRT)
     message("Building MEL for NI LRT")
