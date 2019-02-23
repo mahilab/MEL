@@ -15,6 +15,7 @@ option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logg
 option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                                 OFF)
 option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
 option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                                     OFF)
+
 # Hardware Support
 option(MEL_QUANSER     "Turn ON if compiling for Quanser hardware"                              OFF) 
 option(MEL_NIDAQMX     "Turn ON if compiling for NI DAQmx compatible hardware"                  OFF) 
@@ -27,12 +28,14 @@ option(MEL_MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"      
 # create project
 project(MEL VERSION 1.2.0 LANGUAGES C CXX)
 
-# add custom CMake modules
+# add custom CMake modules and macros
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 include(Macros)
 
 # set binary output locations
 if (MEL_MOVE_BINS)
+    message("MEL libraries will be output to ${CMAKE_SOURCE_DIR}/lib")
+    message("MEL binaries will be output to ${CMAKE_SOURCE_DIR}/bin")
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
@@ -44,14 +47,14 @@ endif()
 
 # Build MEL as shared or static library?
 if (MEL_STATIC)
-    message("Configuring MEL as a Static library")
+    message("Building MEL as a Static library")
     add_library(MEL STATIC "")
     target_compile_definitions(MEL PUBLIC  -DMEL_STATIC)
 else()
     if (MEL_NI_ARM OR MEL_NI_X64)
         set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
     endif()
-    message("Configuring MEL as a Shared library")
+    message("Building MEL as a Shared library")
     add_library(MEL SHARED "")
     target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)      
 endif()
@@ -61,7 +64,7 @@ add_library(MEL::MEL ALIAS MEL)
 
 # turn default logger on/off
 if (MEL_DISABLE_LOG)
-    message("Disabling built-in MEL Log")
+    message("Disabling MEL logger")
     target_compile_definitions(MEL PRIVATE -DMEL_DISABLE_LOG)
 endif()
 
@@ -83,12 +86,8 @@ target_compile_features(MEL
     PRIVATE
 )
 
-
-# find MEL source files (sets MEL_SRC and MEL_HEADERS)
-include(MELSources)
-
 # source groups / IDE folders
-source_group_by_folder(MEL)
+mel_source_group_by_folder(MEL)
 
 # Enable IDE folders and set them for predefined CMake projects
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -96,21 +95,18 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
 
 #===============================================================================
-# PLATFORM SPECIFIC SETUP
+# WINDOWS ONLY
 #===============================================================================
 
-# Windows
 if(WIN32)
+    message("Building MEL for Windows")
     target_compile_definitions( MEL
         PUBLIC
-            -D_CRT_SECURE_NO_WARNINGS
-            -DNOMINMAX
-            -D_WINSOCK_DEPRECATED_NO_WARNINGS
+            -D_CRT_SECURE_NO_WARNINGS          # remove secure warnings (e.g sprinft_s)
+            -DNOMINMAX                         # remove min/max macros
+            -D_WINSOCK_DEPRECATED_NO_WARNINGS  # remove winsock deprecated warnings
     )
-    # target_compile_options( MEL
-    #     PRIVATE
-    #         /W4
-    # )
+
     target_link_libraries( MEL
         PRIVATE
             ws2_32 # Windows Sockets 2 (for Socket, UDP, TCP, etc.)
@@ -119,61 +115,71 @@ if(WIN32)
             Psapi  # Windows Process Status API (for performance queries)
             XInput # Windows XInput (for Xbox 360/One controller support)
     )
+
+    # Quanser HIL SDK
+    if (MEL_QUANSER)
+        message("Building MEL with Quanser support")
+        # find HIL
+        find_package(HIL REQUIRED)
+        target_link_libraries(MEL
+            PRIVATE
+                HIL::HIL              # HIL SDK
+                HIL::quanser_runtime  # HIL quanser_runtime
+                HIL::quanser_common   # HIL quanser_common
+                bufferoverflowU  
+                legacy_stdio_definitions
+        )
+    endif()
+
+    # National Insruments DAQmx
+    if(MEL_NIDAQMX)
+        message("Building MEL with NI-DAQmx support")
+        find_package(NIDAQmx REQUIRED)
+        target_link_libraries(MEL
+            PRIVATE
+                NIDAQmx::NIDAQmx      # NIDAQmx
+        )
+    endif()
+
+    # Thalmic Labs Myo SDK
+    if (MEL_MYO)
+        message("Building MEL with Myo support")
+        find_package(Myo REQUIRED)
+        target_link_libraries(MEL
+            PRIVATE
+                Myo::Myo              # myo
+        )
+    endif()
 endif()
 
-# National Instruments Linux Realt-Time ARM/x64
-if (MEL_NI_X64 OR MEL_NI_ARM)
+#===============================================================================
+# NI LINUX REAL-TIME ONLY
+#===============================================================================
+
+# detect incompatible options
+mel_incompatible(MEL_NI_LRT  MEL_QUANSER)
+mel_incompatible(MEL_NI_LRT  MEL_NIDAQMX)
+mel_incompatible(MEL_NI_LRT  MEL_MYO)
+
+if (MEL_NI_LRT)
+    message("Building MEL for NI LRT")
     target_link_libraries( MEL
         PRIVATE
             dl # Dynamic Linking Library
             rt # Realtime Extensions library
     )
-    if (MEL_NI_ARM)
+    if (CMAKE_SYSTEM_PROCESSOR MATCHES ARM)
+        message("Building MEL with myRIO support")
         target_compile_definitions(MEL PRIVATE MyRio_1900) # needed by NI src
-        # append MEL source
-        #list(APPEND SOURCE_FILES ${SRC_NI_MYRIO})
     endif()
-endif()
-
-#===============================================================================
-# HARDWARE SPECIFIC SETUP
-#===============================================================================
-
-# Quanser HIL SDK
-if (MEL_QUANSER)
-    # find HIL
-    find_package(HIL REQUIRED)
-    target_link_libraries(MEL
-        PRIVATE
-            HIL::HIL              # HIL SDK
-            HIL::quanser_runtime  # HIL quanser_runtime
-            HIL::quanser_common   # HIL quanser_common
-            bufferoverflowU  
-            legacy_stdio_definitions
-    )
-endif()
-
-# National Insruments DAQmx
-if(MEL_NIDAQMX)
-    find_package(NIDAQmx REQUIRED)
-    target_link_libraries(MEL
-        PRIVATE
-            NIDAQmx::NIDAQmx      # NIDAQmx
-    )
-endif()
-
-# Thalmic Labs Myo SDK
-if (MEL_MYO)
-    find_package(Myo REQUIRED)
-    target_link_libraries(MEL
-        PRIVATE
-            Myo::Myo              # myo
-    )
 endif()
 
 #===============================================================================
 # ADD MEL SOURCE FILES
 #===============================================================================
+
+# find MEL source files (sets MEL_SRC and MEL_HEADERS)
+include(MELSources)
 
 # source files
 target_sources(MEL PRIVATE ${MEL_SRC} ${MEL_HEADERS})
@@ -183,11 +189,12 @@ target_sources(MEL PRIVATE ${MEL_SRC} ${MEL_HEADERS})
 #===============================================================================
 
 if(MEL_EXAMPLES)
+    message("Building MEL examples")
     add_subdirectory(examples)
 endif()
 
 #===============================================================================
-# INSTALL MEL
+# INSTALL
 #===============================================================================
 
 include(GNUInstallDirs)
@@ -201,6 +208,7 @@ install(TARGETS MEL
 
 set_target_properties(MEL PROPERTIES EXPORT_NAME MEL)
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
+set_target_properties(MEL PROPERTIES DEBUG_POSTFIX -d)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
@@ -253,5 +261,6 @@ export(EXPORT MEL-targets
 #==============================================================================
 
 if(MEL_BUILD_DOC)
+    message("Building MEL documentation")
     add_subdirectory(doc)
 endif()

@@ -2,8 +2,10 @@
 # Evan Pezent (epezent@rice.edu)
 
 set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR x64)
 
 # set flag for MEL CMakeLists.txt
+set(MEL_NI_LRT ON)
 set(MEL_NI_X64 ON)
 
 # root to cross compiler

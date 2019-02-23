@@ -2,6 +2,7 @@
 # Evan Pezent (epezent@rice.edu)
 
 SET(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # set flag for MEL CMakeLists.txt
 set(MEL_NI_ARM ON)
@@ -17,8 +18,10 @@ set(CMAKE_C_COMPILER   arm-nilrt-linux-gnueabi-gcc CACHE FILEPATH "NI LRT ARM C 
 set(CMAKE_CXX_COMPILER arm-nilrt-linux-gnueabi-g++ CACHE FILEPATH "NI LRT ARM C++ Compiler")
 
 # set to cross compile
-set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_CROSSCOMPILING 1)
 
 # setup sysroot (for NI RT cross compiler)
 set(CMAKE_SYSROOT ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi CACHE FILEPATH "Path to NI ARM Cross Compiler Sysroot")
+
+set(CMAKE_C_FLAGS_INIT   "-pthread -march=armv7-a -mfpu=vfpv3 -mfloat-abi=softfp -mcpu=cortex-a9")
+set(CMAKE_CXX_FLAGS_INIT "-pthread -march=armv7-a -mfpu=vfpv3 -mfloat-abi=softfp -mcpu=cortex-a9")
