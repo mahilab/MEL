@@ -1,10 +1,14 @@
-# collection of all headers
-set(MEL_HEADERS "")
+# This file groups all MEL header and source files 
+
+#===============================================================================
+# HEADER FILES
+#===============================================================================
+
+# headers directory
 set(MEL_HEADERS_DIR "${CMAKE_SOURCE_DIR}/include/MEL")
 
-# collections of subdirectory headers
+# collections of common subdirectory headers
 set(MEL_BASE_HEADERS "")
-set(MEL_COMMUNICATIONS_HEADERS "")
 set(MEL_COMMUNICATIONS_HEADERS "")
 set(MEL_CORE_HEADERS "")
 set(MEL_DAQ_HEADERS "")
@@ -14,8 +18,14 @@ set(MEL_MATH_HEADERS "")
 set(MEL_MECHATRONICS_HEADERS "")
 set(MEL_UTILITY_HEADERS "")
 
+# collections of platform/hardware specific headers
+set(MEL_WINDOWS_HEADERS "")
+set(MEL_MYRIO_HEADERS "")
+set(MEL_QUANSER_HEADERS "")
+set(MEL_MYO_HEADERS "")
+
 # MEL Base
-list(APPEND MEL_HEADERS
+list(APPEND MEL_BASE_HEADERS
     "${MEL_HEADERS_DIR}/Communications.hpp"
     "${MEL_HEADERS_DIR}/Config.hpp"
     "${MEL_HEADERS_DIR}/Core.hpp"
@@ -75,31 +85,6 @@ list(APPEND MEL_DAQ_HEADERS
     "${MEL_DAQ_HEADERS_DIR}/Detail/Output.inl"
     "${MEL_DAQ_HEADERS_DIR}/Detail/Registry.inl"
 )
-if (MEL_NI_ARM) 
-    list(APPEND MEL_DAQ_HEADERS
-        "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRio.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioAI.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioAO.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioConnector.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioDIO.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioEncoder.hpp"
-    )
-endif()
-if (MEL_QUANSER)
-    list(APPEND MEL_DAQ_HEADERS
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/Q2Usb.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/Q8Usb.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserAI.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserAO.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDaq.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDI.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDIO.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDO.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserEncoder.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserOptions.hpp"
-        "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserWatchdog.hpp"
-    )
-endif()
 
 # MEL Devices
 set(MEL_DEVICES_HEADERS_DIR "${MEL_HEADERS_DIR}/Devices")
@@ -107,17 +92,6 @@ list(APPEND MEL_DEVICES_HEADERS
     "${MEL_DEVICES_HEADERS_DIR}/AtiSensor.hpp"
     "${MEL_DEVICES_HEADERS_DIR}/VoltPaqX4.hpp"
 )
-if (MEL_MYO)
-    list(APPEND MEL_DEVICE_HEADERS
-        "${MEL_DEVICES_HEADERS_DIR}/Myo/MyoBand.hpp"
-    )
-endif()
-if (WIN32)
-    list(APPEND MEL_DEVICE_HEADERS
-        "${MEL_DEVICES_HEADERS_DIR}/Windows/Keyboard.hpp"
-        "${MEL_DEVICES_HEADERS_DIR}/Windows/XboxController.hpp"
-    )
-endif()
 
 # MEL Logging
 set(MEL_LOGGING_HEADERS_DIR "${MEL_HEADERS_DIR}/Logging")
@@ -188,14 +162,9 @@ list(APPEND MEL_UTILITY_HEADERS
     "${MEL_UTILITY_HEADERS_DIR}/StlStreams.hpp"
     "${MEL_UTILITY_HEADERS_DIR}/System.hpp"
 )
-if (WIN32)
-    list(APPEND MEL_UTILITY_HEADERS
-        "${MEL_UTILITY_HEADERS_DIR}/Windows/ExternalApp.hpp"
-    )
-endif()
 
-# collect header files
-list(APPEND MEL_HEADERS
+# collect common header files
+set(MEL_COMMON_HEADERS
     ${MEL_BASE_HEADERS}
     ${MEL_COMMUNICATIONS_HEADERS}
     ${MEL_CORE_HEADERS}
@@ -207,15 +176,48 @@ list(APPEND MEL_HEADERS
     ${MEL_UTILITY_HEADERS}
 )
 
+list(APPEND MEL_WINDOWS_HEADERS
+    "${MEL_UTILITY_HEADERS_DIR}/Windows/ExternalApp.hpp"
+    "${MEL_DEVICES_HEADERS_DIR}/Windows/Keyboard.hpp"
+    "${MEL_DEVICES_HEADERS_DIR}/Windows/XboxController.hpp"
+)
 
+list(APPEND MEL_MYRIO_HEADERS
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRio.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioAI.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioAO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioConnector.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioDIO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioEncoder.hpp"
+)
 
-# collection of all sources
-set(MEL_SRC "")
+list(APPEND MEL_QUANSER_HEADERS
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/Q2Usb.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/Q8Usb.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserAI.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserAO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDaq.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDI.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDIO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserEncoder.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserOptions.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserWatchdog.hpp"
+)
+
+list(APPEND MEL_MYO_HEADERS
+    "${MEL_DEVICES_HEADERS_DIR}/Myo/MyoBand.hpp"
+)
+
+#===============================================================================
+# SOURCE FILES
+#===============================================================================
+
+# source directory
 set(MEL_SRC_DIR "${CMAKE_SOURCE_DIR}/src/MEL")
 
 # collections of subdirectory sources
 set(MEL_BASE_SRC "")
-set(MEL_COMMUNICATIONS_SRC "")
 set(MEL_COMMUNICATIONS_SRC "")
 set(MEL_CORE_SRC "")
 set(MEL_DAQ_SRC "")
@@ -225,9 +227,14 @@ set(MEL_MATH_SRC "")
 set(MEL_MECHATRONICS_SRC "")
 set(MEL_UTILITY_SRC "")
 
+# collections of platform/hardware specific sources
+set(MEL_WINDOWS_SRC "")
+set(MEL_QUANSER_SRC "")
+set(MEL_MYRIO_SRC "")
+set(MEL_MYO_SRC "")
 
 # MEL Base
-# (no source files)
+# (no source files yet)
 
 # MEL Communications
 set(MEL_COMMUNICATIONS_SRC_DIR "${MEL_SRC_DIR}/Communications")
@@ -271,46 +278,6 @@ list(APPEND MEL_DAQ_SRC
     "${MEL_DAQ_SRC_DIR}/VirtualDaq.cpp"
     "${MEL_DAQ_SRC_DIR}/Watchdog.cpp"
 )
-if (MEL_NI_ARM) 
-    list(APPEND MEL_DAQ_SRC
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRio.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioAI.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioAO.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioConnector.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioDIO.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioEncoder.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioUtil.cpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioUtil.hpp"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/IRQConfigure.c"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/IRQConfigure.h"
-        "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/libvisa.so"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio.c"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio1900.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio1950.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga.c"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga_MyRio1900Fpga60.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga_MyRio1950Fpga60.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/visa.h"
-		"${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/visatype.h"
-    )
-endif()
-if (MEL_QUANSER)
-    list(APPEND MEL_DAQ_SRC
-        "${MEL_DAQ_SRC_DIR}/Quanser/Q2Usb.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/Q8Usb.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserAI.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserAO.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDaq.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDI.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDIO.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDO.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserEncoder.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserOptions.cpp"
-        "${MEL_DAQ_SRC_DIR}/Quanser/QuanserWatchdog.cpp"
-    )
-endif()
 
 # MEL Devices
 set(MEL_DEVICES_SRC_DIR "${MEL_SRC_DIR}/Devices")
@@ -318,17 +285,6 @@ list(APPEND MEL_DEVICES_SRC
     "${MEL_DEVICES_SRC_DIR}/AtiSensor.cpp"
     "${MEL_DEVICES_SRC_DIR}/VoltPaqX4.cpp"
 )
-if (MEL_MYO)
-    list(APPEND MEL_DEVICES_SRC
-        "${MEL_DEVICES_SRC_DIR}/Myo/MyoBand.cpp"
-    )
-endif()
-if (WIN32)
-    list(APPEND MEL_DEVICES_SRC
-        "${MEL_DEVICES_SRC_DIR}/Windows/Keyboard.cpp"
-        "${MEL_DEVICES_SRC_DIR}/Windows/XboxController.cpp"
-    )
-endif()
 
 # MEL Logging
 set(MEL_LOGGING_SRC_DIR "${MEL_SRC_DIR}/Logging")
@@ -384,14 +340,9 @@ list(APPEND MEL_UTILITY_SRC
     "${MEL_UTILITY_SRC_DIR}/StateMachine.cpp"
     "${MEL_UTILITY_SRC_DIR}/System.cpp"
 )
-if (WIN32)
-    list(APPEND MEL_UTILITY_SRC
-        "${MEL_UTILITY_SRC_DIR}/Windows/ExternalApp.cpp"
-    )
-endif()
 
-# collect source files
-list(APPEND MEL_SRC
+# collect common source files
+set(MEL_COMMON_SRC
     ${MEL_BASE_SRC}
     ${MEL_COMMUNICATIONS_SRC}
     ${MEL_CORE_SRC}
@@ -401,4 +352,52 @@ list(APPEND MEL_SRC
     ${MEL_MATH_SRC}
     ${MEL_MECHATRONICS_SRC}
     ${MEL_UTILITY_SRC}
+)
+
+list(APPEND MEL_WINDOWS_SRC
+    "${MEL_DEVICES_SRC_DIR}/Windows/Keyboard.cpp"
+    "${MEL_DEVICES_SRC_DIR}/Windows/XboxController.cpp"
+    "${MEL_UTILITY_SRC_DIR}/Windows/ExternalApp.cpp"
+)
+
+list(APPEND MEL_MYRIO_SRC
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRio.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioAI.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioAO.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioConnector.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioDIO.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioEncoder.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioUtil.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioUtil.hpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/IRQConfigure.c"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/IRQConfigure.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/libvisa.so"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio.c"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio1900.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/MyRio1950.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga.c"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga_MyRio1900Fpga60.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/NiFpga_MyRio1950Fpga60.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/visa.h"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/visatype.h"
+)
+
+list(APPEND MEL_QUANSER_SRC
+    "${MEL_DAQ_SRC_DIR}/Quanser/Q2Usb.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/Q8Usb.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserAI.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserAO.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDaq.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDI.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDIO.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDO.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserEncoder.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserOptions.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserWatchdog.cpp"
+)
+
+list(APPEND MEL_MYO_SRC
+    "${MEL_DEVICES_SRC_DIR}/Myo/MyoBand.cpp"
 )

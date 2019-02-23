@@ -39,8 +39,11 @@ endif()
 # include GNU install dirs
 include(GNUInstallDirs)
 
+# include MEL source files (sets MEL_COMMON_SRC and MEL_COMMON_HEADERS among others)
+include(MELSources)
+
 #===============================================================================
-# CREATE MEL LIBRARY
+# CREATE COMMON MEL LIBRARY
 #===============================================================================
 
 # does the user want a shared version?
@@ -50,13 +53,14 @@ endif()
 
 # create core MEL library
 mel_add_library(MEL)
+target_sources(MEL PRIVATE ${MEL_COMMON_SRC} ${MEL_COMMON_HEADERS})
+
 
 # turn default logger on/off
 if (MEL_DISABLE_LOG)
     message("Disabling MEL logger")
     target_compile_definitions(MEL PRIVATE -DMEL_DISABLE_LOG)
 endif()
-
 
 # source groups / IDE folders
 mel_source_group_by_folder(MEL)
@@ -87,6 +91,8 @@ if(WIN32)
             XInput # Windows XInput (for Xbox 360/One controller support)
     )
 
+    target_sources(MEL PRIVATE ${MEL_WINDOWS_SRC} ${MEL_WINDOWS_HEADERS})
+
     #===========================================================================
     # HIL / QUANSER
     #===========================================================================
@@ -106,6 +112,7 @@ if(WIN32)
                 HIL::quanser_common      # HIL quanser_common
                 legacy_stdio_definitions # needed for _vsnprintf in quanser_common
         )
+        target_sources(MEL PRIVATE ${MEL_QUANSER_SRC} ${MEL_QUANSER_HEADERS})
     endif()
 
     #===========================================================================
@@ -140,6 +147,7 @@ if(WIN32)
             PRIVATE
                 Myo::Myo              # myo
         )
+        target_sources(MEL PRIVATE ${MEL_MYO_SRC} ${MEL_MYO_HEADERS})
     endif()
 
 endif()
@@ -162,18 +170,9 @@ if (MEL_NI_LRT)
     if (CMAKE_SYSTEM_PROCESSOR MATCHES ARM)
         message("Building MEL with myRIO support")
         target_compile_definitions(MEL PRIVATE MyRio_1900) # needed by NI src
+        target_sources(MEL PRIVATE ${MEL_MYRIO_SRC} ${MEL_MYRIO_HEADERS})
     endif()
 endif()
-
-#===============================================================================
-# ADD MEL SOURCE FILES
-#===============================================================================
-
-# find MEL source files (sets MEL_SRC and MEL_HEADERS)
-include(MELSources)
-
-# source files
-target_sources(MEL PRIVATE ${MEL_SRC} ${MEL_HEADERS})
 
 #===============================================================================
 # EXAMPLE EXECUTABLES
@@ -188,12 +187,7 @@ endif()
 # INSTALL
 #===============================================================================
 
-
-
-set_target_properties(MEL PROPERTIES EXPORT_NAME MEL)
-set_target_properties(MEL PROPERTIES FOLDER "MEL")
-set_target_properties(MEL PROPERTIES DEBUG_POSTFIX -debug)
-
+# install headers
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # set where  we want to install our confgig

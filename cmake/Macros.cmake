@@ -88,4 +88,9 @@ macro(mel_add_library target)
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 
+    # add misc properties
+    set_target_properties(${target} PROPERTIES EXPORT_NAME ${target})
+    set_target_properties(${target} PROPERTIES FOLDER "${target}")
+    set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -debug)
+
 endmacro(mel_add_library)
