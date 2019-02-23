@@ -16,11 +16,6 @@ option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                 
 option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
 option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                                     OFF)
 
-# Hardware Support
-option(MEL_QUANSER     "Turn ON if compiling for Quanser hardware"                              OFF) 
-option(MEL_NIDAQMX     "Turn ON if compiling for NI DAQmx compatible hardware"                  OFF) 
-option(MEL_MYO         "Turn ON if compiling for Thalmic Labs Myo Armband"                      OFF)
-
 #===============================================================================
 # FRONT MATTER
 #===============================================================================
@@ -116,11 +111,18 @@ if(WIN32)
             XInput # Windows XInput (for Xbox 360/One controller support)
     )
 
-    # Quanser HIL SDK
+    #===========================================================================
+    # HIL / QUANSER
+    #===========================================================================
+    find_package(HIL)
+    if (HIL_FOUND)
+        option(MEL_QUANSER "Turn ON to build MEL with Quanser support"  ON) 
+    else()
+        option(MEL_QUANSER "Turn ON to build MEL with Quanser support"  OFF) 
+    endif()
     if (MEL_QUANSER)
         message("Building MEL with Quanser support")
         # find HIL
-        find_package(HIL REQUIRED)
         target_link_libraries(MEL
             PRIVATE
                 HIL::HIL              # HIL SDK
@@ -131,25 +133,40 @@ if(WIN32)
         )
     endif()
 
-    # National Insruments DAQmx
+    #===========================================================================
+    # NI DAQMX
+    #===========================================================================
+    find_package(NIDAQmx)
+    if (NIDAQmx_FOUND)
+        option(MEL_NIDAQMX "Turn ON to build MEL with NI DAQmx support" ON)  
+    else()
+        option(MEL_NIDAQMX "Turn ON to build MEL with NI DAQmx support" OFF)
+    endif() 
     if(MEL_NIDAQMX)
         message("Building MEL with NI-DAQmx support")
-        find_package(NIDAQmx REQUIRED)
         target_link_libraries(MEL
             PRIVATE
                 NIDAQmx::NIDAQmx      # NIDAQmx
         )
     endif()
 
-    # Thalmic Labs Myo SDK
+    #===========================================================================
+    # THALMIC LABS MYO
+    #===========================================================================
+    find_package(Myo)
+    if (Myo_FOUND)
+        option(MEL_MYO "Turn ON to build MEL with Myo suppport" ON)  
+    else()
+        option(MEL_MYO "Turn ON to build MEL with Myo suppport" ON)  
+    endif()
     if (MEL_MYO)
         message("Building MEL with Myo support")
-        find_package(Myo REQUIRED)
         target_link_libraries(MEL
             PRIVATE
                 Myo::Myo              # myo
         )
     endif()
+
 endif()
 
 #===============================================================================
