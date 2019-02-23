@@ -36,26 +36,20 @@ if (MEL_MOVE_BINS)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 endif()
 
+# include GNU install dirs
+include(GNUInstallDirs)
+
 #===============================================================================
 # CREATE MEL LIBRARY
 #===============================================================================
 
-# Build MEL as shared or static library?
+# does the user want a shared version?
 if (MEL_SHARED)
-    if (MEL_NI_ARM OR MEL_NI_X64)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-    endif()
-    message("Building MEL as a Shared library")
-    add_library(MEL SHARED "")
-    target_compile_definitions(MEL PRIVATE -DMEL_EXPORTS)      
-else()
-    message("Building MEL as a Static library")
-    add_library(MEL STATIC "")
-    target_compile_definitions(MEL PUBLIC  -DMEL_STATIC)
+    set(BUILD_SHARED_LIBS ON)
 endif()
 
-# add alias so that find_package(MEL) and add_subdirectory(MEL) provide the same targets and namespaces
-add_library(MEL::MEL ALIAS MEL)
+# create core MEL library
+mel_add_library(MEL)
 
 # turn default logger on/off
 if (MEL_DISABLE_LOG)
@@ -63,23 +57,6 @@ if (MEL_DISABLE_LOG)
     target_compile_definitions(MEL PRIVATE -DMEL_DISABLE_LOG)
 endif()
 
-# include directories
-target_include_directories(MEL
-    PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src                
-)
-
-# compile features
-# complete listing:
-# https://cmake.org/cmake/help/v3.14/prop_gbl/CMAKE_CXX_KNOWN_FEATURES.html
-target_compile_features(MEL
-    PUBLIC
-        cxx_std_11
-    PRIVATE
-)
 
 # source groups / IDE folders
 mel_source_group_by_folder(MEL)
@@ -94,7 +71,6 @@ set_target_properties(MEL PROPERTIES FOLDER "MEL")
 #===============================================================================
 
 if(WIN32)
-    message("Building MEL for Windows")
     target_compile_definitions( MEL
         PUBLIC
             -D_CRT_SECURE_NO_WARNINGS          # remove secure warnings (e.g sprinft_s)
@@ -178,7 +154,6 @@ mel_incompatible(MEL_NI_LRT MEL_NIDAQMX)
 mel_incompatible(MEL_NI_LRT MEL_MYO)
 
 if (MEL_NI_LRT)
-    message("Building MEL for NI LRT")
     target_link_libraries( MEL
         PRIVATE
             dl # Dynamic Linking Library
@@ -213,20 +188,16 @@ endif()
 # INSTALL
 #===============================================================================
 
-include(GNUInstallDirs)
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/MEL)
-install(TARGETS MEL
-	EXPORT MEL-targets
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+
 
 set_target_properties(MEL PROPERTIES EXPORT_NAME MEL)
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
 set_target_properties(MEL PROPERTIES DEBUG_POSTFIX -debug)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# set where  we want to install our confgig
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/MEL)
 
 # export the targets to a script
 install(EXPORT MEL-targets
