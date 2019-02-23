@@ -3,33 +3,33 @@
     "default": "release",
     "description": "Build Type",
     "choices": {
-      "debug": {
-        "short": "Debug",
-        "long": "Build with debugging information",
-        "buildType": "Debug"
-      },
       "release": {
         "short": "Release",
         "long": "Optimize the resulting binaries",
         "buildType": "Release"
+      },
+      "debug": {
+        "short": "Debug",
+        "long": "Build with debugging information",
+        "buildType": "Debug"
       }
     }
   },
-  "static": {
-    "default": "off",
+  "shared": {
+    "default": "static",
     "choices": {
-      "on": {
+      "static": {
         "short": "Static",
         "long": "Build as static library",
         "settings": {
-          "MEL_STATIC": "ON"
+          "MEL_SHARED": "OFF"
         }
       },
-      "off": {
+      "shared": {
         "short": "Shared",
         "long": "Build as shared library",
         "settings": {
-          "MEL_STATIC": "OFF"
+          "MEL_SHARED": "ON"
         }
       }
     }
@@ -56,18 +56,18 @@
   "quanser": {
     "default": "off",
     "choices": {
-      "on": {
-        "short": "Quanser",
-        "long": "Build with Quanser support",
-        "settings": {
-          "MEL_QUANSER": "ON"
-        }
-      },
       "off": {
         "short": "No Quanser",
         "long": "Build without Quanser support",
         "settings": {
           "MEL_QUANSER": "OFF"
+        }
+      },
+      "on": {
+        "short": "Quanser",
+        "long": "Build with Quanser support",
+        "settings": {
+          "MEL_QUANSER": "ON"
         }
       }
     }
@@ -75,18 +75,18 @@
   "myo": {
     "default": "off",
     "choices": {
-      "on": {
-        "short": "Myo",
-        "long": "Build with Myo support",
-        "settings": {
-          "MEL_MYO": "ON"
-        }
-      },
       "off": {
         "short": "No Myo",
         "long": "Build without Myo support",
         "settings": {
           "MEL_MYO": "OFF"
+        }
+      },
+      "on": {
+        "short": "Myo",
+        "long": "Build with Myo support",
+        "settings": {
+          "MEL_MYO": "ON"
         }
       }
     }

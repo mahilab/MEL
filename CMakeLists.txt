@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.13.0)
 #===============================================================================
 
 # General
-option(MEL_STATIC      "Turn ON to build MEL as a static library (default shared)"              OFF)
+option(MEL_SHARED      "Turn ON to build MEL as a shared library (default static)"              OFF)
 option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"             OFF)
 option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                                 OFF)
 option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
@@ -46,17 +46,17 @@ endif()
 #===============================================================================
 
 # Build MEL as shared or static library?
-if (MEL_STATIC)
-    message("Building MEL as a Static library")
-    add_library(MEL STATIC "")
-    target_compile_definitions(MEL PUBLIC  -DMEL_STATIC)
-else()
+if (MEL_SHARED)
     if (MEL_NI_ARM OR MEL_NI_X64)
-        set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
     endif()
     message("Building MEL as a Shared library")
     add_library(MEL SHARED "")
-    target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)      
+    target_compile_definitions(MEL PRIVATE -DMEL_EXPORTS)      
+else()
+    message("Building MEL as a Static library")
+    add_library(MEL STATIC "")
+    target_compile_definitions(MEL PUBLIC  -DMEL_STATIC)
 endif()
 
 # add alias so that find_package(MEL) and add_subdirectory(MEL) provide the same targets and namespaces
@@ -208,7 +208,7 @@ install(TARGETS MEL
 
 set_target_properties(MEL PROPERTIES EXPORT_NAME MEL)
 set_target_properties(MEL PROPERTIES FOLDER "MEL")
-set_target_properties(MEL PROPERTIES DEBUG_POSTFIX -d)
+set_target_properties(MEL PROPERTIES DEBUG_POSTFIX -debug)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
