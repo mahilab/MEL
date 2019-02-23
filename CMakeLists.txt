@@ -44,18 +44,16 @@ endif()
 
 # Build MEL as shared or static library?
 if (MEL_STATIC)
-    message("Configuring MEL as a static library")
+    message("Configuring MEL as a Static library")
     add_library(MEL STATIC "")
     target_compile_definitions(MEL PUBLIC  -DMEL_STATIC)
 else()
     if (MEL_NI_ARM OR MEL_NI_X64)
         set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
     endif()
-    message("Configuring MEL as a shared library")
+    message("Configuring MEL as a Shared library")
     add_library(MEL SHARED "")
-    target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)
-        
-
+    target_compile_definitions(mel PRIVATE -DMEL_EXPORTS)      
 endif()
 
 # add alias so that find_package(MEL) and add_subdirectory(MEL) provide the same targets and namespaces
@@ -84,6 +82,7 @@ target_compile_features(MEL
         cxx_std_11
     PRIVATE
 )
+
 
 # find MEL source files (sets MEL_SRC and MEL_HEADERS)
 include(MELSources)
@@ -187,7 +186,6 @@ if(MEL_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
-
 #===============================================================================
 # INSTALL MEL
 #===============================================================================
@@ -249,9 +247,6 @@ install(FILES
 export(EXPORT MEL-targets
 	   NAMESPACE MEL::
 	   FILE ${CMAKE_CURRENT_BINARY_DIR}/MELTargets.cmake)
-
-
-
 
 #==============================================================================
 # DOCUMENTATION

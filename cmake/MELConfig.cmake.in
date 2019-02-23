@@ -13,7 +13,7 @@ if (MEL_NIDAQMX)
 endif()
 
 if (MEL_MYO)
-    find_dependency(myo REQUIRED)
+    find_dependency(Myo REQUIRED)
 endif()
 
 if(NOT TARGET MEL::mel)
