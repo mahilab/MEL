@@ -26,7 +26,7 @@ class MyRioConnector;
 class MyRioEncoder;
 
 /// myRIO Digital Input/Output Module
-class MEL_API MyRioDIO : public DigitalInputOutput, NonCopyable {
+class MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
 
     /// Updates a single channel

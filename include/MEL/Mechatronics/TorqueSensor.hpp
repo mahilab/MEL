@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Types.hpp>
 #include <vector>
 
@@ -27,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API TorqueSensor {
+class TorqueSensor {
 public:
 
     /// Constructor

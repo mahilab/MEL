@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Math/Integrator.hpp>
 #include <MEL/Math/Differentiator.hpp>
@@ -25,7 +25,7 @@
 
 namespace mel {
 
-class MEL_API PidController {
+class PidController {
 public:
     /// Constructor
     PidController(double kp = 0.0, double ki = 0.0, double kd = 0.0);

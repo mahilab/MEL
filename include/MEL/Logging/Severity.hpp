@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 
@@ -32,7 +32,7 @@ enum Severity {
     Debug   = 6,  ///< useful information needed for diagnostics
 };
 
-inline MEL_API const char* severity_to_string(Severity severity) {
+inline const char* severity_to_string(Severity severity) {
     switch (severity) {
         case Fatal:
             return "FATAL";
@@ -51,7 +51,7 @@ inline MEL_API const char* severity_to_string(Severity severity) {
     }
 }
 
-inline MEL_API Severity string_to_severity(const char* str) {
+inline Severity string_to_severity(const char* str) {
     for (Severity severity = Fatal; severity <= Debug;
          severity          = static_cast<Severity>(severity + 1)) {
         if (severity_to_string(severity)[0] == str[0]) {

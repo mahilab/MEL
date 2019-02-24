@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/LogRecord.hpp>
 #include <iomanip>
 
@@ -27,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 //
-class MEL_API TxtFormatter {
+class TxtFormatter {
 public:
     static std::string header() { return std::string(); }
 

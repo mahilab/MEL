@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Device.hpp>
 #include <MEL/Mechatronics/Limiter.hpp>
 #include <MEL/Daq/Input.hpp>
@@ -30,7 +30,7 @@ namespace mel {
 //==============================================================================
 /// Encapsulates a DC current amplifier
 //==============================================================================
-class MEL_API Amplifier : public Device {
+class Amplifier : public Device {
 
 public:
 

@@ -14,19 +14,19 @@ buildType:
    long: "Build with debugging information"
    buildType: Debug
 
-shared: 
- default: static
- choices: 
-  static: 
-   short: Static
-   long: "Build as static library"
-   settings: 
-    MEL_SHARED: OFF
-  shared: 
-   short: Shared
-   long: "Build as shared library"
-   settings: 
-    MEL_SHARED: ON
+# shared: 
+#  default: static
+#  choices: 
+#   static: 
+#    short: Static
+#    long: "Build as static library"
+#    settings: 
+#     MEL_SHARED: OFF
+#   shared: 
+#    short: Shared
+#    long: "Build as shared library"
+#    settings: 
+#     MEL_SHARED: ON
 
 examples: 
  default: on

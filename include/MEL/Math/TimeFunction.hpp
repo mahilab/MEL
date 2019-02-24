@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
 
 /// Base class for functions which are evaluated in the time domain
-class MEL_API TimeFunction {
+class TimeFunction {
 public:
 
     /// Pure virtual function which must be implemented

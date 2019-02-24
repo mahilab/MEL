@@ -30,7 +30,7 @@ namespace mel {
 class MyRio;
 
 /// myRIo Connector
-class MEL_API MyRioConnector : public DaqBase, NonCopyable {
+class MyRioConnector : public DaqBase, NonCopyable {
 public:
 
     /// Types of myRIO connector

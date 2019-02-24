@@ -26,18 +26,6 @@ macro(mel_incompatible first second)
   endif()
 endmacro(mel_incompatible)
 
-macro(mel_example MEL_EXAMPLE_NAME)
-    add_executable(${MEL_EXAMPLE_NAME} "ex_${MEL_EXAMPLE_NAME}.cpp")
-    target_link_libraries(${MEL_EXAMPLE_NAME} PRIVATE MEL::MEL)
-    set_target_properties(${MEL_EXAMPLE_NAME} PROPERTIES FOLDER "Examples")
-endmacro(mel_example)
-
-macro(mel_test MEL_TEST_NAME)
-    add_executable(${MEL_TEST_NAME} "test_${MEL_TEST_NAME}.cpp")
-    target_link_libraries(${MEL_TEST_NAME} PRIVATE MEL::MEL)
-    set_target_properties(${MEL_TEST_NAME} PROPERTIES FOLDER "Tests")
-endmacro(mel_test)
-
 macro(mel_add_library target)
 
     # parse the arguments
@@ -48,20 +36,28 @@ macro(mel_add_library target)
 
     # Build MEL as shared or static library?
     if (BUILD_SHARED_LIBS)
-        message("Building MEL::${target} as a Shared library")
-        if (MEL_NI_LRT)
-            set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-        endif()
-        add_library(${target} SHARED "")
-        target_compile_definitions(${target} PRIVATE -DMEL_EXPORTS)      
+        # message("Building MEL::${target} as a Shared library")
+        # if (MEL_NI_LRT)
+        #     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+        # endif()
+        # add_library(${target} SHARED "")
+        # target_compile_definitions(${target} PRIVATE -DMEL_EXPORTS)      
     else()
-        message("Building MEL::${target} as a Static library")
+        message("Building MEL::${target}")
         add_library(${target} STATIC "")
-        target_compile_definitions(${target} PUBLIC  -DMEL_STATIC)
+        target_compile_definitions(${target} PUBLIC)
+    endif()
+    
+    # change filename of sublibaries
+    if (NOT ${target} MATCHES "MEL")
+      set_target_properties(${target} PROPERTIES OUTPUT_NAME "MEL-${target}")
     endif()
 
     # add alias so that find_package(MEL) and add_subdirectory(MEL) provide the same targets and namespaces
     add_library(MEL::${target} ALIAS ${target})
+
+    # add sources
+    target_sources(${target} PRIVATE ${THIS_SOURCES})
     
     # add <project>/include as public include directory
     target_include_directories(${target}
@@ -71,6 +67,19 @@ macro(mel_add_library target)
         PRIVATE
             ${PROJECT_SOURCE_DIR}/src                
     )
+
+    # For Visual Studio on Windows, export debug symbols (PDB files) to lib directory
+    if(BUILD_SHARED_LIBS)
+        # DLLs export debug symbols in the linker PDB (the compiler PDB is an intermediate file)
+        set_target_properties(${target} PROPERTIES
+                                PDB_NAME "${target}$"
+                                PDB_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+    else()
+        # Static libraries have no linker PDBs, thus the compiler PDBs are relevant
+        set_target_properties(${target} PROPERTIES
+                                COMPILE_PDB_NAME "${target}"
+                                COMPILE_PDB_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+    endif()
 
     # add compile features
     # complete listing:
@@ -90,7 +99,27 @@ macro(mel_add_library target)
 
     # add misc properties
     set_target_properties(${target} PROPERTIES EXPORT_NAME ${target})
-    set_target_properties(${target} PROPERTIES FOLDER "${target}")
-    set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -debug)
+    set_target_properties(${target} PROPERTIES FOLDER "MEL")
+    set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
 
 endmacro(mel_add_library)
+
+macro(mel_example target)
+
+    cmake_parse_arguments(THIS "" "" "DEPENDS" ${ARGN})
+
+    # create executable
+    add_executable(${target} "ex_${target}.cpp")
+
+    # set dependencies
+    target_link_libraries(${target} PRIVATE MEL::MEL ${THIS_DEPENDS})
+
+    # add install rule
+    install(TARGETS ${target}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+    set_target_properties(${target} PROPERTIES FOLDER "Examples")
+    set_target_properties(${target} PROPERTIES DEBUG_POSTFIX -d)
+
+endmacro(mel_example)

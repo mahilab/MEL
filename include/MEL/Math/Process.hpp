@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -26,7 +26,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Process {
+class Process {
 public:
     /// Default constructor
     Process(){};

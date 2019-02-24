@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Socket.hpp>
 #include <vector>
@@ -39,7 +39,7 @@ class Packet;
 //==============================================================================
 
 /// Specialized socket using the UDP protocol
-class MEL_API UdpSocket : public Socket {
+class UdpSocket : public Socket {
 public:
     enum {
         MaxDatagramSize = 65507  ///< The maximum number of bytes that can be

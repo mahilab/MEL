@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -28,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// CPU based fixed rate waitable timer.
-class MEL_API Timer {
+class Timer {
 public:
     /// The waiting mode to be used when wait() is called.
     ///
@@ -87,7 +87,7 @@ public:
     /// Gets the ratio of time waited to time elapsed for benchmarking purposes
     double get_wait_ratio() const;
 
-    /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.005 = 0.5%)
+    /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.01 = 1%)
     void set_acceptable_miss_rate(double rate);
 
 protected:

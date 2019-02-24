@@ -33,7 +33,7 @@ class VirtualDaq;
 // VIRTUAL AI
 //==============================================================================
 
-class MEL_API VirtualAI : public AnalogInput {
+class VirtualAI : public AnalogInput {
 public:
     VirtualAI(VirtualDaq& daq, const ChanNums& channel_numbers);
     bool update_channel(ChanNum channel_number) override;
@@ -47,7 +47,7 @@ private:
 // VIRTUAL AO
 //==============================================================================
 
-class MEL_API VirtualAO : public AnalogOutput {
+class VirtualAO : public AnalogOutput {
 public:
     VirtualAO(VirtualDaq& daq, const ChanNums& channel_numbers);
     bool update_channel(ChanNum channel_number) override;
@@ -59,7 +59,7 @@ private:
 // VIRTUAL DI
 //==============================================================================
 
-class MEL_API VirtualDI : public DigitalInput {
+class VirtualDI : public DigitalInput {
 public:
     VirtualDI(VirtualDaq& daq, const ChanNums& channel_numbers);
     bool update_channel(ChanNum channel_number) override;
@@ -73,7 +73,7 @@ private:
 // VIRTUAL DO
 //==============================================================================
 
-class MEL_API VirtualDO : public DigitalOutput {
+class VirtualDO : public DigitalOutput {
 public:
     VirtualDO(VirtualDaq& daq, const ChanNums& channel_numbers);
     bool update_channel(ChanNum channel_number) override;
@@ -85,7 +85,7 @@ private:
 // VIRTUAL ENCODER
 //==============================================================================
 
-class MEL_API VirtualEncoder : public Encoder {
+class VirtualEncoder : public Encoder {
 public:
     VirtualEncoder(VirtualDaq& daq, const ChanNums& channel_numbers);
     bool update_channel(ChanNum channel_number) override;
@@ -101,7 +101,7 @@ private:
 //==============================================================================
 
 /// Virtual DAQ for testing/prototyping the absence of actual hardware
-class MEL_API VirtualDaq : public DaqBase {
+class VirtualDaq : public DaqBase {
 public:
     VirtualDaq(const std::string& name);
     ~VirtualDaq();

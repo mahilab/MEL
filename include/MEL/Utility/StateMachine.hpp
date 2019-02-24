@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <string>
 
 namespace mel {
@@ -26,7 +26,7 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class MEL_API EventData {
+class EventData {
 public:
     virtual ~EventData() {}
 };
@@ -35,7 +35,7 @@ typedef EventData NoEventData;
 
 class StateMachine;
 
-class MEL_API StateBase {
+class StateBase {
 public:
     virtual void invoke_state_action(StateMachine* sm,
                                      const EventData* data) const = 0;
@@ -56,7 +56,7 @@ public:
     }
 };
 
-struct MEL_API StateMapRow {
+struct StateMapRow {
     const StateBase* const state;
 };
 
@@ -64,7 +64,7 @@ struct MEL_API StateMapRow {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API StateMachine {
+class StateMachine {
 public:
     StateMachine(int num_states, int initial_state = 0);
 

@@ -1,6 +1,6 @@
 {
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
-    "cmake.buildDirectory": "${workspaceRoot}/build-${buildKit}-${variant:buildType}-${variant:shared}",
+    "cmake.buildDirectory": "${workspaceRoot}/build-${buildKit}-${variant:buildType}",
     "files.associations": {
         "vector": "cpp",
         "algorithm": "cpp",

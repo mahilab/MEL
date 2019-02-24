@@ -10,9 +10,8 @@ cmake_minimum_required(VERSION 3.13.0)
 #===============================================================================
 
 # General
-option(MEL_SHARED      "Turn ON to build MEL as a shared library (default static)"              OFF)
-option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"             OFF)
 option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                                 OFF)
+option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"             OFF)
 option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
 option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                                     OFF)
 
@@ -22,6 +21,11 @@ option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                     
 
 # create the MEL project
 project(MEL VERSION 1.2.0 LANGUAGES C CXX)
+
+# tell user they can't have shared version of MEL if they try
+if (BUILD_SHARED_LIBS)
+    message(FATAL_ERROR "MEL does not support shared libaries")
+endif()
 
 # add ./cmake to cmake module path so our .cmake files can be found
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
@@ -37,11 +41,6 @@ if (MEL_MOVE_BINS)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-endif()
-
-# does the user want a shared version?
-if (MEL_SHARED)
-    set(BUILD_SHARED_LIBS ON) # turn on built in shared libs option
 endif()
 
 # Enable IDE folders and set them for predefined CMake projects
@@ -60,9 +59,6 @@ if (MEL_DISABLE_LOG)
     message("Disabling MEL logger")
     target_compile_definitions(MEL PRIVATE -DMEL_DISABLE_LOG)
 endif()
-
-# source groups / IDE folders
-mel_source_group_by_folder(MEL)
 
 #===============================================================================
 # WINDOWS ONLY
@@ -85,6 +81,7 @@ if(WIN32)
             XInput # Windows XInput (for Xbox 360/One controller support)
     )
 
+    # append windows specific sources to MEL::MEL
     target_sources(MEL PRIVATE ${MEL_WINDOWS_SRC} ${MEL_WINDOWS_HEADERS})
 
     #===========================================================================
@@ -92,21 +89,22 @@ if(WIN32)
     #===========================================================================
     find_package(HIL)
     if (HIL_FOUND)
-        option(MEL_QUANSER "Turn ON to build MEL with Quanser support"  ON) 
+        option(MEL_QUANSER "Turn ON to build MEL Quanser support"  ON) 
     else()
-        option(MEL_QUANSER "Turn ON to build MEL with Quanser support"  OFF) 
+        option(MEL_QUANSER "Turn ON to build MEL Quanser support"  OFF) 
     endif()
     if (MEL_QUANSER)
-        message("Building MEL with Quanser support")
-        # find HIL
-        target_link_libraries(MEL
+        # create Quanser library module
+        mel_add_library(quanser SOURCES ${MEL_QUANSER_SRC} ${MEL_QUANSER_HEADERS})
+        target_link_libraries(quanser
+            PUBLIC
+                MEL
             PRIVATE
                 HIL::HIL                 # HIL SDK
                 HIL::quanser_runtime     # HIL quanser_runtime
                 HIL::quanser_common      # HIL quanser_common
                 legacy_stdio_definitions # needed for _vsnprintf in quanser_common
         )
-        target_sources(MEL PRIVATE ${MEL_QUANSER_SRC} ${MEL_QUANSER_HEADERS})
     endif()
 
     #===========================================================================
@@ -114,16 +112,15 @@ if(WIN32)
     #===========================================================================
     find_package(NIDAQmx)
     if (NIDAQmx_FOUND)
-        option(MEL_NIDAQMX "Turn ON to build MEL with NI DAQmx support" ON)  
+        option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" ON)  
     else()
-        option(MEL_NIDAQMX "Turn ON to build MEL with NI DAQmx support" OFF)
+        option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" OFF)
     endif() 
     if(MEL_NIDAQMX)
-        message("Building MEL with NI-DAQmx support")
-        target_link_libraries(MEL
-            PRIVATE
-                NIDAQmx::NIDAQmx      # NIDAQmx
-        )
+        # target_link_libraries(MEL
+        #     PRIVATE
+        #         NIDAQmx::NIDAQmx      # NIDAQmx
+        # )
     endif()
 
     #===========================================================================
@@ -131,20 +128,20 @@ if(WIN32)
     #===========================================================================
     find_package(Myo)
     if (Myo_FOUND)
-        option(MEL_MYO "Turn ON to build MEL with Myo suppport" ON)  
+        option(MEL_MYO "Turn ON to build MEL Myo suppport" ON)  
     else()
-        option(MEL_MYO "Turn ON to build MEL with Myo suppport" ON)  
+        option(MEL_MYO "Turn ON to build MEL Myo suppport" ON)  
     endif()
     if (MEL_MYO)
-        message("Building MEL with Myo support")
-        target_link_libraries(MEL
+        mel_add_library(myo SOURCES ${MEL_MYO_SRC} ${MEL_MYO_HEADERS})
+        target_link_libraries(myo
+            PUBLIC
+                MEL
             PRIVATE
-                Myo::Myo              # myo
+                Myo::Myo # myo
         )
-        target_sources(MEL PRIVATE ${MEL_MYO_SRC} ${MEL_MYO_HEADERS})
     endif()
-
-endif()
+endif(WIN32)
 
 #===============================================================================
 # NI LINUX REAL-TIME ONLY

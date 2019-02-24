@@ -39,8 +39,10 @@ bool File::open(const std::string& filepath, WriteMode w_mode, OpenMode o_mode) 
 
     // make directory if it doesn't exist
     if (o_mode == OpenMode::OpenOrCreate && !directory_exits(directory)) {
-        LOG(Warning) << "Created directory " << directory << " for file: " << full;
-        create_directory(directory);
+        if (!create_directory(directory)) {
+            return false;
+        }
+        LOG(Info) << "Created directory " << directory << " for file: " << full;
     }
 
     // open file

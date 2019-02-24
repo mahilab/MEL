@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <memory>
 
 namespace mel {
 
 /// Encapsulates an Xbox 360 or Xbox One Controller
-class MEL_API XboxController {
+class XboxController {
 public:
     /// Represents an Xbox Controller Button
     enum Button {

@@ -17,26 +17,26 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 
 /// Returns an int random number in the interval [min, max].
-int MEL_API random(int min, int max);
+int random(int min, int max);
 
 /// Returns an unsigned int random number in the interval [min, max].
-unsigned int MEL_API random(unsigned int min, unsigned int max);
+unsigned int random(unsigned int min, unsigned int max);
 
 /// Returns a double random number in the interval [min, max].
-double MEL_API random(double min, double max);
+double random(double min, double max);
 
 /// Returns a double random number in the interval [middle-deviation, middle+deviation].
-double MEL_API randomDev(double middle, double deviation);
+double randomDev(double middle, double deviation);
 
 /// Sets the seed of the random number generator.
 ///
 /// Setting the seed manually is useful when you want to reproduce a given sequence of random
 /// numbers. Without calling this function, the seed is different at each program startup.
-void MEL_API setRandomSeed(unsigned long seed);
+void setRandomSeed(unsigned long seed);
 
 }

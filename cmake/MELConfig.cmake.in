@@ -4,16 +4,10 @@ include(CMakeFindDependencyMacro)
 
 list(APPEND CMAKE_MODULE_PATH "${MEL_CMAKE_DIR}/Modules")
 
-if (MEL_QUANSER)
-    find_dependency(HIL REQUIRED)
-endif()
-
-if (MEL_NIDAQMX)
-    find_dependency(NIDAQmx REQUIRED)
-endif()
-
-if (MEL_MYO)
-    find_dependency(Myo REQUIRED)
+if (WIN32)
+    find_dependency(HIL)
+    find_dependency(NIDAQmx)
+    find_dependency(Myo)
 endif()
 
 if(NOT TARGET MEL::mel)

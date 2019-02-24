@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Time.hpp>
 #include <MEL/Core/Types.hpp>
 #include <string>
@@ -30,27 +30,27 @@ namespace mel {
 //==============================================================================
 
 /// Returns directory path separator for current OS (i.e. "/" or "\\")
-std::string MEL_API get_separator();
+std::string get_separator();
 
 /// Creates a single folder or path of folders if it doesn't exist.
-void MEL_API create_directory(const std::string& path);
+bool create_directory(const std::string& path);
 
 /// Returns true if the path exits
-bool MEL_API directory_exits(std::string path);
+bool directory_exits(std::string path);
 
 /// Parses a path string and returns a vector of directory strings
-std::vector<std::string> MEL_API split_path(std::string path);
+std::vector<std::string> split_path(std::string path);
 
 /// Tidies up a file or directory path per the OS filesystem
 std::string tidy_path(const std::string& path, bool is_file);
 
 /// Splits "filename.ext" into "filename" and "ext"
-void MEL_API split_filename(const std::string &filename_ext,
+void split_filename(const std::string &filename_ext,
                             std::string &filename,
                             std::string &ext);
 
 /// Parses a filepath into its subcomponents
-bool MEL_API parse_filepath(const std::string &in, 
+bool parse_filepath(const std::string &in, 
                            std::string &directory, std::string &filename, 
                            std::string &ext, std::string &full);
 
@@ -59,46 +59,46 @@ bool MEL_API parse_filepath(const std::string &in,
 //==============================================================================
 
 /// Sleeps the thread for a given amount of time as accurately as possible
-void MEL_API sleep(Time duration);
+void sleep(Time duration);
 
 /// Gets the last operating system error
-std::string MEL_API get_last_os_error();
+std::string get_last_os_error();
 
 /// Enables real-time OS priority. The program must be run 'As Administrator'.
-bool MEL_API enable_realtime();
+bool enable_realtime();
 
 /// Disables real-time OS priority. The program must be run 'As Administrator'.
-bool MEL_API disable_realtime();
+bool disable_realtime();
 
 /// Gets the operating system's ID number of the calling thread
-uint32 MEL_API get_thread_id();
+uint32 get_thread_id();
 
 //==============================================================================
 // PEROFRMANCE MONITORING FUNCTIONS
 //==============================================================================
 
 /// Gets the CPU core usage as a percent used by all processes
-double MEL_API cpu_usage_total();
+double cpu_usage_total();
 
 /// Gets the CPU core usage as a percent used by this process
-double MEL_API cpu_usage_process();
+double cpu_usage_process();
 
 /// Gets the total virtual memory available in bytes
-uint64 MEL_API virt_mem_available();
+uint64 virt_mem_available();
 
 /// Gets the virtual memory used by all processes in bytes
-uint64 MEL_API virt_mem_used_total();
+uint64 virt_mem_used_total();
 
 /// Gets the virtual memory used by this process in bytes
-uint64 MEL_API virt_mem_used_process();
+uint64 virt_mem_used_process();
 
 /// Gets the total RAM available in bytes
-uint64 MEL_API ram_available();
+uint64 ram_available();
 
 /// Gets the RAM used by all process in bytes
-uint64 MEL_API ram_used_total();
+uint64 ram_used_total();
 
 /// Gets the RAM used by this process in bytes
-uint64 MEL_API ram_used_process();
+uint64 ram_used_process();
 
 }  // namespace mel

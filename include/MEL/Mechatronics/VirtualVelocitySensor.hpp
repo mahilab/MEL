@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Mechatronics/PositionSensor.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>
@@ -30,7 +30,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API VirtualVelocitySensor : public VelocitySensor, public Device {
+class VirtualVelocitySensor : public VelocitySensor, public Device {
 public:
     /// Constructor
     VirtualVelocitySensor(const std::string& name,

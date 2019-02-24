@@ -27,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a hardware watchdog timer
-class MEL_API Watchdog : NonCopyable {
+class Watchdog : NonCopyable {
 public:
     /// Default constructor
     Watchdog(Time timeout);

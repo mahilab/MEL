@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Core/NonCopyable.hpp>
@@ -31,7 +31,7 @@ namespace mel {
 //==============================================================================
 
 /// High-level communication class that simplifies UDP communication
-class MEL_API MelNet : NonCopyable {
+class MelNet : NonCopyable {
 public:
     /// Default constructor. Use ports in the range of 49152 to 65535.
     MelNet(unsigned short local_port,

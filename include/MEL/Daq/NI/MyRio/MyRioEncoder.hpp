@@ -26,7 +26,7 @@ namespace mel {
 class MyRioConnector;
 
 /// myRIO Encoder Module
-class MEL_API MyRioEncoder : public Encoder, NonCopyable {
+class MyRioEncoder : public Encoder, NonCopyable {
 public:
 
     /// Updates a single channel

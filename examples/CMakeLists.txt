@@ -1,3 +1,4 @@
+# common examples
 mel_example(hello_world)
 mel_example(tcp)
 mel_example(udp)
@@ -20,24 +21,32 @@ mel_example(virtual_daq)
 mel_example(serial)
 mel_example(csv)
 
+# windows only examples
 if(WIN32)
+
     mel_example(limiter)
     mel_example(keyboard)
+
+    # quanser only examples
+    if(MEL_QUANSER)
+        mel_example(q2usb          DEPENDS MEL::quanser)
+        mel_example(q8usb          DEPENDS MEL::quanser)
+        mel_example(q8usb_loopback DEPENDS MEL::quanser)
+        mel_example(haptic_paddle  DEPENDS MEL::quanser)
+        mel_example(overview       DEPENDS MEL::quanser)
+        mel_example(ati_sensor     DEPENDS MEL::quanser)
+    endif()
+
+    # myro example
+    if (MEL_MYO)
+        mel_example(myoband DEPENDS MEL::myo)
+    endif()
+
 endif()
 
-if(MEL_QUANSER)
-    mel_example(q2usb)
-    mel_example(q8usb)
-    mel_example(q8usb_loopback)
-    mel_example(haptic_paddle)
-    mel_example(overview)
-    mel_example(ati_sensor)
-endif()
-
+# myRIO example
 if(MEL_NI_ARM)
     mel_example(myrio)
 endif()
 
-if (MEL_MYO)
-    mel_example(myo)
-endif()
+

@@ -28,6 +28,7 @@ using namespace mel;
 
 // create global stop variable CTRL-C handler function
 ctrl_bool stop(false);
+
 bool handler(CtrlEvent event) {
     if (event == CtrlEvent::CtrlC)
         stop = true;
@@ -46,7 +47,8 @@ int main() {
     // create default Q8 USB object
     // (all channels enabled, auto open on, sanity check on)
     Q8Usb q8;
-    q8.open();
+    if (!q8.open())
+        return 1;
 
     // override default enable/disable/expiration states
     q8.DO.set_enable_values(std::vector<Logic>(8, High));  // default is LOW
@@ -63,7 +65,8 @@ int main() {
     // ask for user input
     prompt("Press ENTER to enable Q8 USB.");
     // enable Q8 USB
-    q8.enable();
+    if (!q8.enable())
+        return 1;
 
     //==============================================================================
     // ENCODER

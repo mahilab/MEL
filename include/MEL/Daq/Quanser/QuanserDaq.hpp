@@ -51,7 +51,7 @@ typedef t_card QuanserHandle;
 //==============================================================================
 
 /// Encapsulates a generic Quanser DAQ
-class MEL_API QuanserDaq : public DaqBase, NonCopyable {
+class QuanserDaq : public DaqBase, NonCopyable {
 public:
     /// Default constructor
     QuanserDaq(const std::string& card_type,

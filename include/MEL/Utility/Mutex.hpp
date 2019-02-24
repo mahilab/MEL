@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Utility/Lock.hpp>
 #include <memory>
 
@@ -28,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple threads
-class MEL_API Mutex : public Lockable, NonCopyable {
+class Mutex : public Lockable, NonCopyable {
 public:
     /// Default constructor
     Mutex();

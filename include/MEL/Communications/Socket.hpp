@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>
 #include <vector>
@@ -63,7 +63,7 @@ class SocketSelector;
 //==============================================================================
 
 /// Base class for all the socket types
-class MEL_API Socket : NonCopyable {
+class Socket : NonCopyable {
 public:
     /// Types of protocols that the socket can use
     enum Type {

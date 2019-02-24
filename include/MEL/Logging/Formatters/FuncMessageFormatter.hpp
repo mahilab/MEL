@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/Record.hpp>
 
 namespace mel {
@@ -26,7 +26,7 @@ namespace mel {
 // CLASS DECLARATIOn
 //==============================================================================
 //
-class MEL_API FuncMessageFormatter {
+class FuncMessageFormatter {
 public:
     static std::string header() { return std::string(); }
 

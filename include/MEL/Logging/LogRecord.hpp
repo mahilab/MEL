@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/Detail/StreamMeta.hpp>
 #include <sys/stat.h>
 #include <MEL/Logging/Severity.hpp>
@@ -28,7 +28,7 @@
 namespace mel {
 
 /// Encapsulates a Log record
-class MEL_API LogRecord {
+class LogRecord {
 public:
     /// Constructor
     LogRecord(Severity severity,
@@ -85,6 +85,6 @@ private:
     mutable std::string message_str_;  ///< message string
 };
 
-inline MEL_API std::string process_function_name(const char* func);
+inline std::string process_function_name(const char* func);
 
 }  // namespace mel

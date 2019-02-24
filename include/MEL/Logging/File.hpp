@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Types.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <sstream>
@@ -25,7 +25,7 @@
 namespace mel {
 
 /// Representats a file resource
-class MEL_API File : NonCopyable {
+class File : NonCopyable {
 public:
     
     /// Default constructor

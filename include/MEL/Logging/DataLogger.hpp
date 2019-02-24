@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/File.hpp>
 #include <MEL/Utility/Mutex.hpp>
 #include <MEL/Logging/Table.hpp>
@@ -42,7 +42,7 @@ enum class DataFormat {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API DataLogger {
+class DataLogger {
 public:
 
 	/// Write a vector of strings to a file

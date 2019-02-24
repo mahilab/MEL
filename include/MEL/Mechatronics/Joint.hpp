@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Device.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Mechatronics/Actuator.hpp>
@@ -33,7 +33,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Joint : public Device {
+class Joint : public Device {
 public:
     /// Constructor
     Joint(const std::string& name,

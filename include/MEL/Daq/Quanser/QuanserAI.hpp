@@ -32,7 +32,7 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API QuanserAI : public AnalogInput, NonCopyable {
+class QuanserAI : public AnalogInput, NonCopyable {
 public:
     QuanserAI(QuanserDaq& daq, const ChanNums& channel_numbers);
 

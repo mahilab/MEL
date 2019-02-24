@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
 #include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
@@ -149,7 +149,7 @@ inline Logger<instance>& init_logger(Severity max_severity,
 /// TxtFormatter and default severity Verbose, and (1) a ColorConsoleWriter with
 /// TxtFormatter and default severity Info. Can be disabled by defining
 /// MEL_DISABLE_LOG or enabling DISABLE_LOG option in CMakeLists.txt
-extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
+extern Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 
 }  // namespace mel
 

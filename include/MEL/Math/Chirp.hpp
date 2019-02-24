@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Math/TimeFunction.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -28,7 +28,7 @@ namespace mel {
     //==============================================================================
 
     /// A function whose frequency increases or decreases linearly as a function of time
-    class MEL_API Chirp : public TimeFunction {
+    class Chirp : public TimeFunction {
     public:
 
 

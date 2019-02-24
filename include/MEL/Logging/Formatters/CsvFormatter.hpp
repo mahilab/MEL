@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/LogRecord.hpp>
 #include <iomanip>
 
@@ -27,7 +27,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API CsvFormatter {
+class CsvFormatter {
 public:
     static std::string header() {
         return "Date, Time, Severity, TID, Function, Message\n";

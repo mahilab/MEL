@@ -27,7 +27,6 @@ set(MEL_MYO_HEADERS "")
 # MEL Base
 list(APPEND MEL_BASE_HEADERS
     "${MEL_HEADERS_DIR}/Communications.hpp"
-    "${MEL_HEADERS_DIR}/Config.hpp"
     "${MEL_HEADERS_DIR}/Core.hpp"
     "${MEL_HEADERS_DIR}/Math.hpp"
     "${MEL_HEADERS_DIR}/Mechatronics.hpp"

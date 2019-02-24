@@ -24,7 +24,7 @@
 namespace mel {
 
 /// Defines non-templated Module functions/members
-class MEL_API ModuleBase : public Device {
+class ModuleBase : public Device {
 public:
 
     /// Default Constructor (creates an invlaid empty Module)

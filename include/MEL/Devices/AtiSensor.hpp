@@ -29,7 +29,7 @@ namespace mel {
 //==============================================================================
 
 /// Implements an ATI force/torque transducer
-class MEL_API AtiSensor : public ForceSensor, public TorqueSensor {
+class AtiSensor : public ForceSensor, public TorqueSensor {
 
 public:
 

@@ -28,7 +28,7 @@ Timer::Timer(Time period, WaitMode mode) :
     ticks_(0),
     misses_(0),
     prev_time_(Clock::get_current_time()),
-    rate_(0.005)
+    rate_(0.01)
 {
 }
 

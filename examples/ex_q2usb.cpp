@@ -26,6 +26,7 @@
 using namespace mel;
 
 ctrl_bool stop(false);
+
 bool handler(CtrlEvent event) {
     if (event == CtrlEvent::CtrlC)
         stop = true;
@@ -43,7 +44,8 @@ int main() {
 
     // create default Q28 USB object (all channels enabled)
     Q2Usb q2;
-    q2.open();
+    if (!q2.open())
+        return 1;
 
     //==============================================================================
     // ENABLE
@@ -52,7 +54,8 @@ int main() {
     // ask for user input
     prompt("Press ENTER to open and enable Q8 USB.");
     // enable Q8 USB
-    q2.enable();
+    if (!q2.enable())
+        return 1;
 
     //==============================================================================
     // ENCODER

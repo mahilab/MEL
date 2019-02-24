@@ -32,7 +32,7 @@ class QuanserDaq;
 //==============================================================================
 
 /// Quanser implementation of Encoder
-class MEL_API QuanserEncoder : public Encoder {
+class QuanserEncoder : public Encoder {
 public:
     class Channel;
 
@@ -91,7 +91,7 @@ private:
 public:
 
     /// Encapsulates and QuanserEncoder channel (can be used as a PositionSensor or VelocitySensor)
-    class MEL_API Channel : public Encoder::Channel, public VelocitySensor {
+    class Channel : public Encoder::Channel, public VelocitySensor {
     public:
         /// Default constructor. Creates invalid channel
         Channel();

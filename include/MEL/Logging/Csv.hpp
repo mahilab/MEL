@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Logging/File.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Utility/System.hpp>
@@ -29,7 +29,7 @@
 namespace mel {
 
 /// Represents an instance of a Comma-Separated Value (CSV) file
-class MEL_API Csv : public File {
+class Csv : public File {
 public:
 
     /// Default constructor

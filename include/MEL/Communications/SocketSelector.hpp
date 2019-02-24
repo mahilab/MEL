@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -29,7 +29,7 @@ namespace mel {
 class Socket;
 
 /// Multiplexer that allows to read from multiple sockets
-class MEL_API SocketSelector {
+class SocketSelector {
 public:
     /// \brief Default constructor
     SocketSelector();

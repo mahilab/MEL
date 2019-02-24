@@ -25,7 +25,7 @@ namespace mel {
 class MyRioConnector;
 
 /// myRIO Analog Output Module
-class MEL_API MyRioAO : public AnalogOutput, NonCopyable {
+class MyRioAO : public AnalogOutput, NonCopyable {
 public:
 
     /// Updates a single channel

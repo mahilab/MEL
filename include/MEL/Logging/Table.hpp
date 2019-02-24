@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <vector>
 #include <string>
 
 namespace mel{
 
-class MEL_API Table {
+class Table {
 public:
 	static const std::string table_id;
 
@@ -99,7 +99,7 @@ public:
 	bool empty() const;
 
 	/// Overload the << stream operator with a Table as the rhs argument
-	friend MEL_API std::ostream& operator<<(std::ostream& os, const Table& table);
+	friend std::ostream& operator<<(std::ostream& os, const Table& table);
 
 private:
 
@@ -115,6 +115,6 @@ private:
 	std::vector<std::vector<double>> values_;
 };
 
-MEL_API std::ostream& operator<<(std::ostream& os, const Table& table);
+std::ostream& operator<<(std::ostream& os, const Table& table);
 
 } // namespace mel

@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
+
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Socket.hpp>
 
@@ -38,7 +38,7 @@ class TcpSocket;
 //==============================================================================
 
 /// Socket that listens to new TCP connections
-class MEL_API TcpListener : public Socket {
+class TcpListener : public Socket {
 public:
     /// Default constructor
     TcpListener();

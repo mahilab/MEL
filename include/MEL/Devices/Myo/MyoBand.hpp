@@ -23,7 +23,7 @@
 
 namespace mel {
 
-class MEL_API MyoBand : public mel::Input<Voltage>, mel::NonCopyable {
+class MyoBand : public mel::Input<Voltage>, mel::NonCopyable {
 
 public:
 

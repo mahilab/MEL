@@ -32,7 +32,7 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API QuanserDO : public DigitalOutput, NonCopyable {
+class QuanserDO : public DigitalOutput, NonCopyable {
 public:
     QuanserDO(QuanserDaq& daq, const ChanNums& channel_numbers);
 

@@ -22,7 +22,7 @@
 namespace mel {
 
 /// National Instruments myRIO embedded system
-class MEL_API MyRio : public DaqBase, NonCopyable {
+class MyRio : public DaqBase, NonCopyable {
 
 public:
 
