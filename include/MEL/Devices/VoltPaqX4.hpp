@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Input.hpp>

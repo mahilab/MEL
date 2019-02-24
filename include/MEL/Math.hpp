@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Math/Differentiator.hpp>

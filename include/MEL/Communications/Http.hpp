@@ -20,7 +20,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Core/Time.hpp>

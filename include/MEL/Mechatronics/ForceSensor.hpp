@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Types.hpp>
 #include <vector>
 

@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Logging/File.hpp>
 #include <MEL/Utility/Mutex.hpp>
 #include <MEL/Logging/Table.hpp>

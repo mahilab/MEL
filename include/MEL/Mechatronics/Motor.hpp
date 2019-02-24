@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Mechatronics/Amplifier.hpp>
 

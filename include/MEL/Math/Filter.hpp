@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Math/Process.hpp>
 #include <vector>
 

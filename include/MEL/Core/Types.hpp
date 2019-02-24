@@ -17,7 +17,6 @@
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
 #pragma once
-
 #include <string>
 #include <typeinfo>
 #include <vector>

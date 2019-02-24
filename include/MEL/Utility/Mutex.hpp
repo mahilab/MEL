@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Utility/Lock.hpp>
 #include <memory>
 

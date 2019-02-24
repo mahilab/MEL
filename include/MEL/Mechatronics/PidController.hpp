@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Math/Integrator.hpp>
 #include <MEL/Math/Differentiator.hpp>

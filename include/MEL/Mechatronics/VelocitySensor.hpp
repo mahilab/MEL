@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Device.hpp>
 
 namespace mel {

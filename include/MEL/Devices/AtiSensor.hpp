@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Mechatronics/ForceSensor.hpp>
 #include <MEL/Mechatronics/TorqueSensor.hpp>
 #include <MEL/Daq/Input.hpp>

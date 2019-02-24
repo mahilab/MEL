@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Mechatronics/PositionSensor.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <MEL/Daq/ChannelBase.hpp>

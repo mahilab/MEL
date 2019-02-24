@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Math/TimeFunction.hpp>
 #include <MEL/Core/Frequency.hpp>
 

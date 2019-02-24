@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Module.hpp>
 #include <typeindex>

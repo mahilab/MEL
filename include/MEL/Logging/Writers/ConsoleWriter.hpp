@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Logging/Writers/Writer.hpp>
 #include <MEL/Utility/Mutex.hpp>
 #include <MEL/Core/Console.hpp>

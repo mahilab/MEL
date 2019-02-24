@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Mechatronics/PositionSensor.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>

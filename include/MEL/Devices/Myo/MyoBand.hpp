@@ -17,7 +17,6 @@
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
 #pragma once
-
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 

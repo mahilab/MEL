@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>

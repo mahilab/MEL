@@ -21,7 +21,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Time.hpp>
 #include <MEL/Core/Types.hpp>
 #include <istream>

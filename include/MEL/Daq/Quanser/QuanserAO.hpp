@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/Output.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 

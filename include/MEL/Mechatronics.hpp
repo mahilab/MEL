@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Mechatronics/ForceSensor.hpp>

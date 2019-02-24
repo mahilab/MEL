@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Frequency.hpp>
 

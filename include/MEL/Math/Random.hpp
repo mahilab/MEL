@@ -18,7 +18,6 @@
 #pragma once
 
 
-
 namespace mel {
 
 /// Returns an int random number in the interval [min, max].

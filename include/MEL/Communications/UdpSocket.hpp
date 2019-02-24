@@ -21,7 +21,6 @@
 
 #pragma once
 
-
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Socket.hpp>
 #include <vector>

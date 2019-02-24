@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Mechatronics/Joint.hpp>

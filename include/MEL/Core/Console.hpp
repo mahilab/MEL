@@ -17,7 +17,6 @@
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
 #pragma once
-
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/StlStreams.hpp>
 #include <MEL/Core/Types.hpp>

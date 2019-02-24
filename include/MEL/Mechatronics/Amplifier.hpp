@@ -19,7 +19,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Device.hpp>
 #include <MEL/Mechatronics/Limiter.hpp>
 #include <MEL/Daq/Input.hpp>

@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Communications/Http.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/MelNet.hpp>

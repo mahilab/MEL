@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Logging/Detail/StreamMeta.hpp>
 #include <sys/stat.h>
 #include <MEL/Logging/Severity.hpp>

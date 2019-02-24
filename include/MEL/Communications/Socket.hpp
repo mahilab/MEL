@@ -21,7 +21,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>
 #include <vector>

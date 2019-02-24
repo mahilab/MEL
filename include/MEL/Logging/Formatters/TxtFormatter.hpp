@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Logging/LogRecord.hpp>
 #include <iomanip>
 

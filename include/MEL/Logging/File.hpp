@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Types.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <sstream>

@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/Quanser/QuanserDaq.hpp>
 #include <MEL/Daq/Quanser/QuanserAI.hpp>
 #include <MEL/Daq/Quanser/QuanserAO.hpp>

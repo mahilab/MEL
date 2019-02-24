@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Logging/File.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Utility/System.hpp>

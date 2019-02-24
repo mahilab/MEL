@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Logging/Record.hpp>
 
 namespace mel {

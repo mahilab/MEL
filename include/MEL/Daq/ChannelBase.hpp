@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/Types.hpp>
 #include <MEL/Daq/Module.hpp>
 

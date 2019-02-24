@@ -18,7 +18,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Device.hpp>
 #include <MEL/Math/Constants.hpp>
 #include <MEL/Mechatronics/Actuator.hpp>

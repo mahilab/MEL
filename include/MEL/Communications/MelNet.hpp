@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Core/NonCopyable.hpp>

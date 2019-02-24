@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Console.hpp>
 #include <MEL/Core/Device.hpp>

@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
 #include <MEL/Logging/Writers/ColorConsoleWriter.hpp>

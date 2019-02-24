@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
