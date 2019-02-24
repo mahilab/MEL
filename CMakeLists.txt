@@ -156,9 +156,9 @@ if (NI_LRT)
             rt # Realtime Extensions library
     )
     if (CMAKE_SYSTEM_PROCESSOR MATCHES ARM)
-        message("Building MEL with myRIO support")
-        target_compile_definitions(MEL PRIVATE MyRio_1900) # needed by NI src
-        target_sources(MEL PRIVATE ${MEL_MYRIO_SRC} ${MEL_MYRIO_HEADERS})
+        mel_add_library(myrio SOURCES ${MEL_MYRIO_SRC} ${MEL_MYRIO_HEADERS})
+        target_link_libraries(myrio PUBLIC MEL)
+        target_compile_definitions(myrio PRIVATE MyRio_1900) # needed by NI src
     endif()
 endif()
 
