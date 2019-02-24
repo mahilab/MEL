@@ -4,7 +4,7 @@ buildType:
  choices: 
   release: 
    short: Release
-   long: "Building with optimizations"
+   long: "Build with optimizations"
    buildType: Release
   debug: 
    short: Debug

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 
-# create your project
+# create your C++ project
 project(MyProject VERSION 0.1.0 LANGUAGES CXX)
 
-# find MEL
+# find MEL::MEL and all available MEL::xxx modules
 find_package(MEL REQUIRED)
 
 # add your include directories
@@ -16,9 +16,10 @@ add_executable(my_app
     "src/my_app.cpp"
 )
 
-# link MEL core lib and/or MEL sublibs to your app
+# link your app to MEL libaries
 target_link_libraries(my_app 
-    MEL::MEL       # common MEL classes
-    # MEL::quanser # needed if using MEL Quanser classes 
-    # MEL::myo     # needed if using MEL Myo classes
+    MEL::MEL          # common MEL classes available on all systems
+    # MEL::quanser    # needed if using MEL Quanser classes
+    # MEL::myo        # needed if using MEL Myo classes
+    # MEL::myrio      # needed if using MEL NI myRIO classes
 )

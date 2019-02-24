@@ -1,5 +1,4 @@
 #include "MyClass.hpp"
-#include <MEL/Daq/NI/MyRio/MyRio.hpp>
 
 int main() {
     MyClass my_class;
