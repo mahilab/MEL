@@ -12,7 +12,6 @@ cmake_minimum_required(VERSION 3.13.0)
 # General
 option(MEL_EXAMPLES    "Turn ON to build example executable(s)"                                 OFF)
 option(MEL_DISABLE_LOG "Turn ON to disable MEL's default console/file debug logger"             OFF)
-option(MEL_MOVE_BINS   "Turn ON to move binaries to conventional bin/lib folders after compile" OFF)
 option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                                     OFF)
 
 #===============================================================================
@@ -24,24 +23,15 @@ project(MEL VERSION 1.2.0 LANGUAGES C CXX)
 
 # tell user they can't have shared version of MEL if they try
 if (BUILD_SHARED_LIBS)
-    message(FATAL_ERROR "MEL does not support shared libaries")
+    message(FATAL_ERROR "MEL does not yet support shared libaries")
 endif()
 
-# add ./cmake to cmake module path so our .cmake files can be found
+# add ./cmake to CMake module path so our .cmake files can be found
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 include(Macros)         # MEL macros
 include(MELSources)     # lists of MEL source and header files
 include(GNUInstallDirs) # defines conventional GNU isntallation directories
-
-# set binary output locations
-if (MEL_MOVE_BINS)
-    message("MEL libraries will be output to ${CMAKE_SOURCE_DIR}/lib")
-    message("MEL binaries will be output to ${CMAKE_SOURCE_DIR}/bin")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-endif()
 
 # Enable IDE folders and set them for predefined CMake projects
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -84,63 +74,69 @@ if(WIN32)
     # append windows specific sources to MEL::MEL
     target_sources(MEL PRIVATE ${MEL_WINDOWS_SRC} ${MEL_WINDOWS_HEADERS})
 
-    #===========================================================================
-    # HIL / QUANSER
-    #===========================================================================
-    find_package(HIL)
-    if (HIL_FOUND)
-        option(MEL_QUANSER "Turn ON to build MEL Quanser support"  ON) 
-    else()
-        option(MEL_QUANSER "Turn ON to build MEL Quanser support"  OFF) 
-    endif()
-    if (MEL_QUANSER)
-        # create Quanser library module
-        mel_add_library(quanser SOURCES ${MEL_QUANSER_SRC} ${MEL_QUANSER_HEADERS})
-        target_link_libraries(quanser
-            PUBLIC
-                MEL
-            PRIVATE
-                HIL::HIL                 # HIL SDK
-                HIL::quanser_runtime     # HIL quanser_runtime
-                HIL::quanser_common      # HIL quanser_common
-                legacy_stdio_definitions # needed for _vsnprintf in quanser_common
-        )
-    endif()
+    # the following only compile under MSVC
+    if (MSVC)
 
-    #===========================================================================
-    # NI DAQMX
-    #===========================================================================
-    find_package(NIDAQmx)
-    if (NIDAQmx_FOUND)
-        option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" ON)  
-    else()
-        option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" OFF)
-    endif() 
-    if(MEL_NIDAQMX)
-        # target_link_libraries(MEL
-        #     PRIVATE
-        #         NIDAQmx::NIDAQmx      # NIDAQmx
-        # )
-    endif()
+        #=======================================================================
+        # HIL / QUANSER
+        #=======================================================================
+        find_package(HIL)
+        if (HIL_FOUND)
+            option(MEL_QUANSER "Turn ON to build MEL Quanser support"  ON) 
+        else()
+            option(MEL_QUANSER "Turn ON to build MEL Quanser support"  OFF) 
+        endif()
+        if (MEL_QUANSER)
+            # create Quanser library module
+            mel_add_library(quanser SOURCES ${MEL_QUANSER_SRC} ${MEL_QUANSER_HEADERS})
+            target_link_libraries(quanser
+                PUBLIC
+                    MEL
+                PRIVATE
+                    HIL::HIL                 # HIL SDK
+                    HIL::quanser_runtime     # HIL quanser_runtime
+                    HIL::quanser_common      # HIL quanser_common
+                    legacy_stdio_definitions # needed for _vsnprintf in quanser_common
+            )
+        endif()
 
-    #===========================================================================
-    # THALMIC LABS MYO
-    #===========================================================================
-    find_package(Myo)
-    if (Myo_FOUND)
-        option(MEL_MYO "Turn ON to build MEL Myo suppport" ON)  
-    else()
-        option(MEL_MYO "Turn ON to build MEL Myo suppport" ON)  
-    endif()
-    if (MEL_MYO)
-        mel_add_library(myo SOURCES ${MEL_MYO_SRC} ${MEL_MYO_HEADERS})
-        target_link_libraries(myo
-            PUBLIC
-                MEL
-            PRIVATE
-                Myo::Myo # myo
-        )
-    endif()
+        #=======================================================================
+        # NI DAQMX
+        #=======================================================================
+        find_package(NIDAQmx)
+        if (NIDAQmx_FOUND)
+            option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" ON)  
+        else()
+            option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" OFF)
+        endif() 
+        if(MEL_NIDAQMX)
+            # target_link_libraries(MEL
+            #     PRIVATE
+            #         NIDAQmx::NIDAQmx      # NIDAQmx
+            # )
+        endif()
+
+        #=======================================================================
+        # THALMIC LABS MYO
+        #=======================================================================
+        find_package(Myo)
+        if (Myo_FOUND)
+            option(MEL_MYO "Turn ON to build MEL Myo suppport" ON)  
+        else()
+            option(MEL_MYO "Turn ON to build MEL Myo suppport" ON)  
+        endif()
+        if (MEL_MYO)
+            mel_add_library(myo SOURCES ${MEL_MYO_SRC} ${MEL_MYO_HEADERS})
+            target_link_libraries(myo
+                PUBLIC
+                    MEL
+                PRIVATE
+                    Myo::Myo # myo
+            )
+        endif()
+
+    endif(MSVC)
+
 endif(WIN32)
 
 #===============================================================================
@@ -152,7 +148,8 @@ mel_incompatible(MEL_NI_LRT MEL_QUANSER)
 mel_incompatible(MEL_NI_LRT MEL_NIDAQMX)
 mel_incompatible(MEL_NI_LRT MEL_MYO)
 
-if (MEL_NI_LRT)
+if (NI_LRT)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
     target_link_libraries( MEL
         PRIVATE
             dl # Dynamic Linking Library
@@ -178,10 +175,24 @@ endif()
 # INSTALL
 #===============================================================================
 
+if (MSVC)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(MEL_INSTALL_SUBDIR "msvc-x64")
+    else()
+        set(MEL_INSTALL_SUBDIR "msvc-x86")
+    endif()
+elseif(NI_LRT AND CMAKE_SYSTEM_PROCESSOR MATCHES ARM)
+    set(MEL_INSTALL_SUBDIR "nilrt-arm")
+elseif(NI_LRT AND CMAKE_SYSTEM_PROCESSOR MATCHES ARM)
+    set(MEL_INSTALL_SUBDIR "nilrt-x64")
+endif()
+
+set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${MEL_INSTALL_SUBDIR}")
+
 # install headers
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-# set where  we want to install our confgig
+# set where we want to install our config
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/MEL)
 
 # export the targets to a script
@@ -202,6 +213,7 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/MELConfig.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/MELConfig.cmake
 	INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
 )
+
 write_basic_package_version_file(
 	${CMAKE_CURRENT_BINARY_DIR}/MELConfigVersion.cmake
 	VERSION ${PROJECT_VERSION}

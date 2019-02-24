@@ -72,6 +72,7 @@ bool create_directory(const std::string &path)
         }
 #endif
     }
+    return true;
 }
 
 bool directory_exits(std::string path) {

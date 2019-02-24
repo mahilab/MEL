@@ -34,21 +34,11 @@ macro(mel_add_library target)
         message(FATAL_ERROR "Extra unparsed arguments when calling mel_add_library: ${THIS_UNPARSED_ARGUMENTS}")
     endif()
 
-    # Build MEL as shared or static library?
-    if (BUILD_SHARED_LIBS)
-        # message("Building MEL::${target} as a Shared library")
-        # if (MEL_NI_LRT)
-        #     set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-        # endif()
-        # add_library(${target} SHARED "")
-        # target_compile_definitions(${target} PRIVATE -DMEL_EXPORTS)      
-    else()
-        message("Building MEL::${target}")
-        add_library(${target} STATIC "")
-        target_compile_definitions(${target} PUBLIC)
-    endif()
+    message("Building MEL::${target}")
+    add_library(${target} STATIC "")
+    target_compile_definitions(${target} PUBLIC)
     
-    # change filename of sublibaries
+    # change filename of sub-libaries
     if (NOT ${target} MATCHES "MEL")
       set_target_properties(${target} PROPERTIES OUTPUT_NAME "MEL-${target}")
     endif()
@@ -67,19 +57,6 @@ macro(mel_add_library target)
         PRIVATE
             ${PROJECT_SOURCE_DIR}/src                
     )
-
-    # For Visual Studio on Windows, export debug symbols (PDB files) to lib directory
-    if(BUILD_SHARED_LIBS)
-        # DLLs export debug symbols in the linker PDB (the compiler PDB is an intermediate file)
-        set_target_properties(${target} PROPERTIES
-                                PDB_NAME "${target}$"
-                                PDB_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
-    else()
-        # Static libraries have no linker PDBs, thus the compiler PDBs are relevant
-        set_target_properties(${target} PROPERTIES
-                                COMPILE_PDB_NAME "${target}"
-                                COMPILE_PDB_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
-    endif()
 
     # add compile features
     # complete listing:
