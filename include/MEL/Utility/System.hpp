@@ -32,15 +32,16 @@ namespace mel {
 std::string get_separator();
 
 /// Creates a single folder or path of folders if it doesn't exist.
+/// Returns false if the directory cannot be created.
 bool create_directory(const std::string& path);
 
-/// Returns true if the path exits
+/// Returns true if the directory path exits
 bool directory_exits(std::string path);
 
-/// Parses a path string and returns a vector of directory strings
+/// Parses a path string and returns a vector of sub-directory strings
 std::vector<std::string> split_path(std::string path);
 
-/// Tidies up a file or directory path per the OS filesystem
+/// Tidies up a file or directory path per the OS filesystem expectations
 std::string tidy_path(const std::string& path, bool is_file);
 
 /// Splits "filename.ext" into "filename" and "ext"
@@ -63,10 +64,10 @@ void sleep(Time duration);
 /// Gets the last operating system error
 std::string get_last_os_error();
 
-/// Enables real-time OS priority. The program must be run 'As Administrator'.
+/// Enables real-time OS priority. The program must be run 'As Administrator' on Windows
 bool enable_realtime();
 
-/// Disables real-time OS priority. The program must be run 'As Administrator'.
+/// Disables real-time OS priority. The program must be run 'As Administrator' on Windows
 bool disable_realtime();
 
 /// Gets the operating system's ID number of the calling thread
