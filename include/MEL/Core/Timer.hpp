@@ -58,15 +58,15 @@ public:
     /// Restarts the Timer and returns the elapsed time
     Time restart();
 
-    /// Waits the Timer and returns the ideal elapsed time after the wait completes
+    /// Waits the Timer and returns the actual elapsed time after the wait completes
     Time wait();
+
+    /// Gets the actual elapsed time since construction or last call to restart().
+    Time get_elapsed_time() const;
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period
-    Time get_elapsed_time() const;
-
-    /// Gets the actual elapsed time since construction or last call to restart().
-    Time get_elapsed_time_actual() const;
+    Time get_elapsed_time_ideal() const;
 
     /// Gets the elapsed number of ticks since construction or the last call to restart().
     int64 get_elapsed_ticks() const;

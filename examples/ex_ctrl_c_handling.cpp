@@ -19,13 +19,14 @@
 
 using namespace mel;
 
-ctrl_bool flag(false);
+ctrl_bool g_stop_flag(false);
+
 bool my_handler(CtrlEvent event) {
     if (event == CtrlEvent::CtrlC)
         print("Ctrl-C Pressed");
     else if (event == CtrlEvent::CtrlQuit) {
         print("Ctrl-Break or Ctrl-\\ Pressed");
-        flag = true;
+        g_stop_flag = true;
     }
     // ... check other Ctrl values as needed
     return 1;
@@ -34,7 +35,7 @@ bool my_handler(CtrlEvent event) {
 int main() {
     print("Press Ctrl+C to continue, or Ctrl+Break to exit");
     register_ctrl_handler(my_handler);
-    while (!flag) {
+    while (!g_stop_flag) {
     }
     return 0;
 }

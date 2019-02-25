@@ -69,11 +69,11 @@ Time Timer::wait() {
     return get_elapsed_time();
 }
 
-Time Timer::get_elapsed_time_actual() const {
+Time Timer::get_elapsed_time() const {
     return clock_.get_elapsed_time();
 }
 
-Time Timer::get_elapsed_time() const {
+Time Timer::get_elapsed_time_ideal() const {
     return period_ * ticks_;
 }
 
@@ -98,7 +98,7 @@ Time Timer::get_period() const {
 }
 
 double Timer::get_wait_ratio() const {
-    return waited_.as_seconds() / get_elapsed_time_actual().as_seconds();
+    return waited_.as_seconds() / get_elapsed_time().as_seconds();
 }
 
 void Timer::set_acceptable_miss_rate(double rate) {

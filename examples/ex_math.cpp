@@ -41,7 +41,7 @@ int main() {
     std::vector<double> data(6);
 
     // loop
-    while (timer.get_elapsed_time_actual() < seconds(5)) {
+    while (timer.get_elapsed_time() < seconds(5)) {
         // get current time in seconds
         double t = timer.get_elapsed_time().as_seconds();
         data[0] = t;
