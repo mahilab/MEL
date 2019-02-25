@@ -8,9 +8,9 @@ if(NOT TARGET MEL::MEL)
     list(APPEND CMAKE_MODULE_PATH "${MEL_CMAKE_DIR}/Modules")
     # find dependencies and set targets filename
     if (MSVC)
-        find_dependency(HIL)
-        find_dependency(NIDAQmx)
-        find_dependency(Myo)
+        find_package(HIL     QUIET)
+        find_package(NIDAQmx QUIET)
+        find_package(Myo     QUIET)
     endif()
     # include the appropriate targets file
     include("${MEL_CMAKE_DIR}/MELTargets.cmake")
