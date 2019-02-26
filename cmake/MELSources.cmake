@@ -98,8 +98,7 @@ list(APPEND MEL_LOGGING_HEADERS
     "${MEL_LOGGING_HEADERS_DIR}/Csv.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/File.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Log.hpp"
-    "${MEL_LOGGING_HEADERS_DIR}/LogRecord.hpp"
-    "${MEL_LOGGING_HEADERS_DIR}/Severity.hpp"
+    "${MEL_LOGGING_HEADERS_DIR}/Detail/LogUtil.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Table.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Detail/Csv.inl"
     "${MEL_LOGGING_HEADERS_DIR}/Detail/StreamMeta.hpp"
@@ -289,7 +288,7 @@ list(APPEND MEL_LOGGING_SRC
     "${MEL_LOGGING_SRC_DIR}/Csv.cpp"
     "${MEL_LOGGING_SRC_DIR}/File.cpp"
     "${MEL_LOGGING_SRC_DIR}/Log.cpp"
-    "${MEL_LOGGING_SRC_DIR}/LogRecord.cpp"
+    "${MEL_LOGGING_SRC_DIR}/LogUtil.cpp"
     "${MEL_LOGGING_SRC_DIR}/Table.cpp"
 )
 

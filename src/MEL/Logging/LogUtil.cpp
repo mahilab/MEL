@@ -1,4 +1,4 @@
-#include <MEL/Logging/LogRecord.hpp>
+#include <MEL/Logging/Detail/LogUtil.hpp>
 #include <cstring>
 
 namespace mel {
