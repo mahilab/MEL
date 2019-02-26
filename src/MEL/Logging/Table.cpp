@@ -352,7 +352,6 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 		}
 		os << table(i, table.n_cols_ - 1) << std::endl;
 	}
-	os << std::endl;
 	return os;
 }
 

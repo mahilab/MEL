@@ -22,6 +22,7 @@
 
 namespace mel{
 
+/// Advanced Data Logging Structure
 class Table {
 public:
 	static const std::string table_id;

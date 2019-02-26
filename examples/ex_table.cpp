@@ -15,18 +15,14 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#include <MEL/Core/Timer.hpp>
-#include <MEL/Logging/DataLogger.hpp>
-#include <MEL/Logging/Log.hpp>
-#include <MEL/Math/Functions.hpp>
+#include <MEL/Logging/Table.hpp>
 #include <MEL/Core/Console.hpp>
-#include <MEL/Utility/System.hpp>
 
 using namespace mel;
 
 int main() {
 
-    std::string filename = "table_data.tbl";
+    std::string filename = "table_data.csv";
     Table tab("my_table", { "col 0", "col 1", "col 2" });
     tab.push_back_row({ 1.01, 2.02, 3.03 });
     tab.push_back_row({ 4.04, 5.05, 6.06 });
@@ -43,9 +39,8 @@ int main() {
     Table new_tab;
     std::vector<Table> new_tabs;
     if (Table::read(filename, new_tabs)) {
-        //std::cout << new_tab << std::endl;
         for (std::size_t i = 0; i < new_tabs.size(); ++i) {
-            std::cout << new_tabs[i];
+            print(new_tabs[i]);
         }
     }
 }
