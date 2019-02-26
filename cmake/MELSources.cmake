@@ -103,7 +103,6 @@ list(APPEND MEL_LOGGING_HEADERS
     "${MEL_LOGGING_HEADERS_DIR}/Table.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Detail/Csv.inl"
     "${MEL_LOGGING_HEADERS_DIR}/Detail/StreamMeta.hpp"
-    "${MEL_LOGGING_HEADERS_DIR}/Formatters/CsvFormatter.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Formatters/FuncMessageFormatter.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Formatters/MessageOnlyFormatter.hpp"
     "${MEL_LOGGING_HEADERS_DIR}/Formatters/TxtFormatter.hpp"

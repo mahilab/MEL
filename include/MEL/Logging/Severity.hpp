@@ -17,7 +17,6 @@
 
 #pragma once
 
-
 namespace mel {
 
 /// Represents a logging severity level

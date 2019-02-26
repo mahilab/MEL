@@ -75,20 +75,22 @@ int main() {
     LOG(Fatal) << "This is a Fatal log";      // goes to MEL.log and console
 
     /// You can change the max severiy of the default logger
-    MEL_LOGGER->set_max_severity(Debug);
+    MEL_LOG->set_max_severity(Debug);
 
     LOG(Debug) << "This is another Debug log";      // goes to MEL.log and console
     LOG(Verbose) << "This is another Verbose log";  // goes to MEL.log and console
 
+    //==========================================================================
+
     // You can create your own loggers too. First you need to choose a
     // Formatter. A Formatter is responsible for taking a log record and turning
     // it into a string. There are several built-in Formatters, and you can even
-    // create your own. Here, we will use the built-in CsvFormatter. Once you've
+    // create your own. Here, we will use the built-in TxtFormatter. Once you've
     // chosen a Formatter, you create a Writer. A Writer is responsible for
     // taking a formatted string from a Formatter and writing it in some
     // prescribed manner, either to the console, a file, memory, etc. Here we
     // will choose the built int RollingFileWriter.
-    RollingFileWriter<CsvFormatter> file_writer("my_log.csv");
+    RollingFileWriter<TxtFormatter> file_writer("my_log.txt");
     // Now, we create the actual Logger. Loggers are paramertized with an
     // integer which can be an enum for convienence. The default logger is 0, so
     // custom loggers should start at 1 or some other number.
