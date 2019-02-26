@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ using namespace mel;
 
 // create global stop variable CTRL-C handler function
 ctrl_bool stop(false);
+
 bool handler(CtrlEvent event) {
     if (event == CtrlEvent::CtrlC)
         stop = true;
@@ -46,7 +47,8 @@ int main() {
     // create default Q8 USB object
     // (all channels enabled, auto open on, sanity check on)
     Q8Usb q8;
-    q8.open();
+    if (!q8.open())
+        return 1;
 
     // override default enable/disable/expiration states
     q8.DO.set_enable_values(std::vector<Logic>(8, High));  // default is LOW
@@ -63,7 +65,8 @@ int main() {
     // ask for user input
     prompt("Press ENTER to enable Q8 USB.");
     // enable Q8 USB
-    q8.enable();
+    if (!q8.enable())
+        return 1;
 
     //==============================================================================
     // ENCODER
@@ -74,7 +77,7 @@ int main() {
     // create 10 Hz Timer
     Timer timer(milliseconds(100));
     // start encoder loop
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.encoder[0].get_value());
         timer.wait();
@@ -91,10 +94,10 @@ int main() {
     Waveform wave(Waveform::Sin, seconds(0.25), 5.0);
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q8.update_input();
         print(q8.AI.get_value(0));
-        double voltage = wave(timer.get_elapsed_time_actual());
+        double voltage = wave(timer.get_elapsed_time());
         q8.AO.set_value(0, voltage);
         q8.update_output();
         timer.wait();
@@ -110,9 +113,9 @@ int main() {
     Logic signal = High;
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q8.update_input();
-        print(q8.DI.get_value(0));
+        print((bool)q8.DI.get_value(0));
         signal = (Logic)(High - signal);
         q8.DO.set_value(0, signal);
         q8.update_output();
@@ -136,7 +139,7 @@ int main() {
     // start watchdog
     q8.watchdog.start();
     timer.restart();
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         // simulate a missed deadline if W pressed
         if (Keyboard::is_key_pressed(Key::W)) {
             print("The program missed it's deadline!");

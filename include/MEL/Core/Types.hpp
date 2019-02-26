@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -16,12 +16,12 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_TYPES_HPP
-#define MEL_TYPES_HPP
-
+#pragma once
 #include <string>
 #include <typeinfo>
-#include <MEL/Config.hpp>
+#include <vector>
+#include <map>
+
 
 namespace mel {
 
@@ -44,7 +44,7 @@ typedef unsigned long long uint64;  ///<                          0 to 18,446,74
 #endif
 
 //==============================================================================
-// GENERIC TYPES
+// FILESYSTEM TYPES
 //==============================================================================
 
 /// Represents mode in which process resources can be opened or created
@@ -53,9 +53,25 @@ enum OpenMode {
     OpenOnly       ///< only attempt to open an existing object
 };
 
+/// Represents mode in which a file is written when it is opened
+enum WriteMode {
+    Truncate = 0, ///< file will be truncated if it exists
+    Append = 1    ///< file will be not be truncated on open
+};
+
 //==============================================================================
 // DAQ TYPES
 //==============================================================================
+
+/// Default type for a channel number
+typedef uint32 ChanNum;
+
+/// An array of channel numbers
+typedef std::vector<ChanNum> ChanNums;
+
+/// Maps a channel number to an array index
+// typdef channel number(s)
+typedef std::map<uint32, std::size_t> ChanMap;
 
 /// Represents a voltage in [V]
 typedef double Voltage;
@@ -63,7 +79,7 @@ typedef double Voltage;
 /// Represents a digital TTL logic level
 enum Logic {
     Low  = 0, ///< Low TTL level  (typically 0V)
-    High = 1  ///< High TTL level (typically 5V)
+    High = 1   ///< High TTL level (typically 5V)
 };
 
 /// Represents a digital pin direction
@@ -103,5 +119,3 @@ std::string type(const T& t) {
 }
 
 } // namespace mel
-
-#endif // MEL_TYPES_HPP

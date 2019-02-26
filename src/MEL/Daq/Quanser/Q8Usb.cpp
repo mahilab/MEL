@@ -20,23 +20,15 @@ Q8Usb::Q8Usb(QuanserOptions options,
              uint32 id) :
     QuanserDaq("q8_usb", id, options),
     perform_sanity_check_(perform_sanity_check),
-    AI(*this),
-    AO(*this),
-    DI(*this),
-    DO(*this),
-    encoder(*this),
+    AI(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    AO(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    DI(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    DO(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }),
+    encoder(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }, true), // has velocity estimation
     watchdog(*this, milliseconds(100))
 {
     // increment NEXT_ID
     ++NEXT_Q8USB_ID;
-    // set channel numbers
-    AI.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    AO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    DI.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    DO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    encoder.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7 });
-    // enable velocity estimation
-    encoder.has_velocity(true);
 }
 
 Q8Usb::~Q8Usb() {
@@ -196,7 +188,7 @@ bool Q8Usb::update_output() {
     }
 }
 
-bool Q8Usb::identify(uint32 channel_number) {
+bool Q8Usb::identify(ChanNum channel_number) {
     if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";
@@ -224,7 +216,7 @@ bool Q8Usb::identify(uint32 channel_number) {
 }
 
 int Q8Usb::identify() {
-    for (uint32 channel_number = 0; channel_number < 8; ++channel_number) {
+    for (ChanNum channel_number = 0; channel_number < 8; ++channel_number) {
         if (identify(channel_number))
             return (int)channel_number;
     }

@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_STATEMACHINE_HPP
-#define MEL_STATEMACHINE_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
@@ -27,7 +25,7 @@ namespace mel {
 // FORWARD DECLARATIONS
 //==============================================================================
 
-class MEL_API EventData {
+class EventData {
 public:
     virtual ~EventData() {}
 };
@@ -36,7 +34,7 @@ typedef EventData NoEventData;
 
 class StateMachine;
 
-class MEL_API StateBase {
+class StateBase {
 public:
     virtual void invoke_state_action(StateMachine* sm,
                                      const EventData* data) const = 0;
@@ -57,7 +55,7 @@ public:
     }
 };
 
-struct MEL_API StateMapRow {
+struct StateMapRow {
     const StateBase* const state;
 };
 
@@ -65,7 +63,7 @@ struct MEL_API StateMapRow {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API StateMachine {
+class StateMachine {
 public:
     StateMachine(int num_states, int initial_state = 0);
 
@@ -96,8 +94,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_STATEMACHINE_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

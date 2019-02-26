@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -16,7 +16,7 @@
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Logging/DataLogger.hpp>
+#include <MEL/Logging/Csv.hpp>
 #include <MEL/Math/Butterworth.hpp>
 #include <MEL/Math/Filter.hpp>
 #include <MEL/Math/Functions.hpp>
@@ -46,14 +46,11 @@ int main() {
     double x = 0.5 + o;
 
     // initialize data logger to write immediately to file
-    DataLogger data_logger(WriterType::Buffered, false);
-    std::vector<std::string> header = {"Input", "LPF Output", "HPF Output",
-                                       "LPF Seeded Output",
-                                       "HPF Seeded Output"};
-    data_logger.set_header(header);
+    Csv csv("filter.csv");
+    csv.write_row("Input", "LPF Output", "HPF Output", "LPF Seeded Output", "HPF Seeded Output");
 
     // data storage container
-    std::vector<double> data_record(header.size());
+    std::vector<double> data(5);
 
     // begin filtering and logging data
     for (int i = 0; i < samples; ++i) {
@@ -61,16 +58,14 @@ int main() {
         x = r * (x - o) * (1 - (x - o)) + o;
 
         // filter input signal and store data
-        data_record[0] = x;
-        data_record[1] = lp_filter.update(x);
-        data_record[2] = hp_filter.update(x);
-        data_record[3] = lps_filter.update(x);
-        data_record[4] = hps_filter.update(x);
+        data[0] = x;
+        data[1] = lp_filter.update(x);
+        data[2] = hp_filter.update(x);
+        data[3] = lps_filter.update(x);
+        data[4] = hps_filter.update(x);
 
         // write to data log buffer
-        data_logger.buffer(data_record);
+        csv.write_row(data);
     }
-
-    data_logger.save_data("example_filter_data", ".", false);
 
 }

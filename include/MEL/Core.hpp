@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CORE_HPP
-#define MEL_CORE_HPP
-
+#pragma once
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Console.hpp>
 #include <MEL/Core/Device.hpp>
@@ -27,5 +25,3 @@
 #include <MEL/Core/Timer.hpp>
 #include <MEL/Core/Timestamp.hpp>
 #include <MEL/Core/Types.hpp>
-
-#endif // MEL_CORE_HPP

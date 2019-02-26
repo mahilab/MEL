@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MELNET_HPP
-#define MEL_MELNET_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Communications/Packet.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
 #include <MEL/Core/NonCopyable.hpp>
@@ -32,7 +30,7 @@ namespace mel {
 //==============================================================================
 
 /// High-level communication class that simplifies UDP communication
-class MEL_API MelNet : NonCopyable {
+class MelNet : NonCopyable {
 public:
     /// Default constructor. Use ports in the range of 49152 to 65535.
     MelNet(unsigned short local_port,
@@ -76,8 +74,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_MELNET_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

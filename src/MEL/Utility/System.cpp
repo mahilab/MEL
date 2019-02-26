@@ -1,4 +1,5 @@
 #include <MEL/Utility/System.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <cstring>
 #include <ctime>
 #include <iomanip>
@@ -24,7 +25,7 @@ namespace mel {
 // DIRECTORY FUNCTIONS
 //==============================================================================
 
-std::string get_path_slash() {
+std::string get_separator() {
     #ifdef _WIN32
         return "\\";
     #else
@@ -32,7 +33,8 @@ std::string get_path_slash() {
     #endif
 }
 
-std::vector<std::string> parse_path(std::string path) {
+std::vector<std::string> split_path(std::string path)
+{
     std::vector<std::string> directories;
     std::size_t found = path.find_first_of("/\\");
     while (found != std::string::npos) {
@@ -45,34 +47,110 @@ std::vector<std::string> parse_path(std::string path) {
     return directories;
 }
 
-void create_directory(std::string directory) {
-    std::vector<std::string> dirs = parse_path(directory);
+bool create_directory(const std::string &path)
+{
+    if (path == "" || path.empty())
+        return true;
+    std::vector<std::string> dirs = split_path(path);
     for (std::size_t i = 0; i < dirs.size(); ++i) {
         std::string sub_path;
         for (std::size_t j = 0; j <= i; ++j) {
             sub_path += dirs[j];
-            sub_path += get_path_slash();
+            sub_path += get_separator();
         }
-        #ifdef _WIN32
-            CreateDirectory(sub_path.c_str(), NULL);
-        #else
-            mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-        #endif
+#ifdef _WIN32
+        auto result = CreateDirectory(sub_path.c_str(), NULL);
+        if (result == 0 && result != ERROR_ALREADY_EXISTS) {
+            LOG(Error) << "Failed to create directory " << sub_path << ". Ensure you have the correct permissions.";
+            return false;
+        }
+#else
+        int result = mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        if (result != 0) {
+            LOG(Error) << "Failed to create directory " << sub_path << ". Ensure you have the correct permissions.";
+            return false;
+        }
+#endif
+    }
+    return true;
+}
+
+bool directory_exits(std::string path) {
+    if (path == "" || path.empty())
+        return true;
+    path = tidy_path(path, false);
+    #ifdef _WIN32
+        DWORD ftyp = GetFileAttributesA(path.c_str());
+        if (ftyp == INVALID_FILE_ATTRIBUTES)
+            return false; 
+        if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+            return true; 
+        return false; 
+    #else
+        struct stat sb;
+        if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
+            return true;
+        return false;
+    #endif
+}
+
+void split_filename(const std::string &filename_ext, std::string &filename, std::string &ext)
+{
+    const char *dot = std::strrchr(filename_ext.c_str(), '.');
+
+    if (dot) {
+        filename.assign(filename_ext.c_str(), dot);
+        ext.assign(dot + 1);
+    }
+    else {
+        filename.assign(filename_ext);
+        ext.clear();
     }
 }
 
-void split_file_name(const char* file_name, std::string& file_name_no_ext, std::string& file_ext)
+std::string tidy_path(const std::string &in, bool is_file)
 {
-    const char* dot = std::strrchr(file_name, '.');
+    if (in == "" || in.empty())
+        return in;
+    std::string out;
+    auto dirs = split_path(in);
+    for (std::size_t i = 0; i < dirs.size(); ++i)
+    {
+        if (dirs[i] == "")
+        {
+            if (i == 0)
+                out += get_separator();
+        }
+        else if (dirs[i] != ".") {
+            out += dirs[i] + get_separator();
+        }
+    }
+    if (is_file)
+        out.pop_back();
+    return out;
+}
 
-    if (dot) {
-        file_name_no_ext.assign(file_name, dot);
-        file_ext.assign(dot + 1);
-    }
-    else {
-        file_name_no_ext.assign(file_name);
-        file_ext.clear();
-    }
+bool parse_filepath(const std::string &in, std::string &directory, std::string &filename, std::string &ext, std::string &full)
+{
+    // can't do anythign with empty string
+    if (in == "" || in.empty())
+        return false;
+    // split path
+    auto splits = split_path(in);
+    // split filename
+    auto filename_ext = splits.back();
+    if (filename_ext == "" || filename_ext.empty())
+        return false;
+    split_filename(filename_ext, filename, ext);
+    // make directory string
+    directory.clear();
+    for (std::size_t i = 0; i < splits.size() - 1; ++i)
+        directory += splits[i] + get_separator();
+    directory = tidy_path(directory, false);
+    full = directory + filename;
+    if (ext != "" || !ext.empty())
+        full += "." + ext;
+    return true;
 }
 
 //==============================================================================

@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_CHANNEL_HPP
-#define MEL_CHANNEL_HPP
-
+#pragma once
 #include <MEL/Core/Types.hpp>
 #include <MEL/Daq/Module.hpp>
 
@@ -34,7 +32,7 @@ public:
     ChannelBase();
 
     /// Creates a valid channel.
-    ChannelBase(Module<T>* module, uint32 channel_number);
+    ChannelBase(Module<T>* module, ChanNum channel_number);
 
     /// Destructor
     virtual ~ChannelBase();
@@ -55,18 +53,16 @@ public:
     operator T() const;
 
     /// Gets the channel number
-    uint32 get_channel_number() const;
+    ChanNum get_channel_number() const;
 
     /// Returns true if the Channel is valid
     bool is_valid() const;
 
 protected:
-    Module<T>* module_;      ///< Pointer to the module this channel is on
-    uint32 channel_number_;  ///< The channel number of this channel
+    Module<T>* module_;       ///< Pointer to the module this channel is on
+    ChanNum channel_number_;  ///< The channel number of this channel
 };
 
 }  // namespace mel
 
 #include <MEL/Daq/Detail/ChannelBase.inl>
-
-#endif  // MEL_CHANNEL_HPP

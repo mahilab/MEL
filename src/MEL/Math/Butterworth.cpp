@@ -84,9 +84,14 @@ std::vector<double> compute_b(std::size_t n,
     return b;
 }
 
+Butterworth::Butterworth() : Filter({ 1,0 }, { 1,0 }) {
+
+}
+
 Butterworth::Butterworth(std::size_t n, double Wn, Type type, uint32 seeding) : Filter(n, seeding) {
-    a_ = compute_a(n_, Wn);
-    b_ = compute_b(n_, a_, type);
+    auto a = compute_a(n, Wn);
+    auto b = compute_b(n, a, type);
+    set_coefficients(b, a);
 }
 
 Butterworth::Butterworth(std::size_t n, Frequency cutoff, Frequency sample, Type type, uint32 seeding)
@@ -94,6 +99,20 @@ Butterworth::Butterworth(std::size_t n, Frequency cutoff, Frequency sample, Type
                   2.0 * static_cast<double>(cutoff.as_hertz()) /
                         static_cast<double>(sample.as_hertz()),
                   type,
-                  seeding) {}
+                  seeding) 
+{}
+
+void Butterworth::configure(std::size_t n, double Wn, Type type, uint32 seeding) {
+    set_seeding(seeding);
+    auto a = compute_a(n, Wn);
+    auto b = compute_b(n, a, type);
+    set_coefficients(b, a);
+}
+
+void Butterworth::configure(std::size_t n, Frequency cutoff, Frequency sample, Type type, uint32 seeding) {
+    configure(n, 2.0 * static_cast<double>(cutoff.as_hertz()) / static_cast<double>(sample.as_hertz()), type, seeding);
+}
+
+
 
 }  // namespace mel

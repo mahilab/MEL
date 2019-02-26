@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -87,6 +87,22 @@ public:
         add_joint(Joint("paddle_joint_0", &motor_, 0.713 / 6.250, &position_sensor_, 1.0,
                         &velocity_sensor_, 1.0, {-50 * DEG2RAD, 50 * DEG2RAD},
                         500 * DEG2RAD, 1.0));
+        // load calibration
+        std::ifstream file;
+        file.open("calibration.txt");
+        if (file.is_open()) {
+            // read in previous calibration
+            double gain, offset;
+            file >> gain >> offset;
+            position_sensor_.offset_ = offset * DEG2RAD;
+            position_sensor_.gain_ = gain * DEG2RAD;
+            LOG(Info) << "Imported Haptic Paddle hall effect sensor calibration";
+            file.close();
+        }
+        else {
+            file.close();
+            calibrate();
+        }
     }
 
     /// Interactively calibrates the hall effect sensor in the console
@@ -94,7 +110,7 @@ public:
         std::ofstream file;
         file.open("calibration.txt");
         std::vector<double> positions = { -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30 };
-        print("\nRotate to the indicated position when prompted and hold. Press ENTER to begin calibration.\n", Color::Yellow);
+        color_print("\nRotate to the indicated position when prompted and hold. Press ENTER to begin calibration.\n", Color::Yellow);
         std::vector<double> volts(positions.size());
         for (std::size_t i = 0; i < positions.size(); ++i) {
             beep();
@@ -112,29 +128,6 @@ public:
         file << mb[1] << "\n";
         LOG(Info) << "Calibrated Haptic Paddle hall effect sensor";
         file.close();
-    }
-
-private:
-
-    /// Overrides the default Robot::enable function with some custom logic
-    bool on_enable() override {
-        // load calibration
-        std::ifstream file;
-        file.open("calibration.txt");
-        if (file.is_open()) {
-            // read in previous calibration
-            double gain, offset;
-            file >> gain >> offset;
-            position_sensor_.offset_ = offset * DEG2RAD;
-            position_sensor_.gain_ = gain * DEG2RAD;
-            LOG(Info) << "Imported Haptic Paddle hall effect sensor calibration";
-            file.close();
-        }
-        else {
-            file.close();
-            calibrate();
-        }
-        return true;
     }
 
 private:
@@ -360,7 +353,7 @@ int main(int argc, char* argv[]) {
 
         // compute torque
         if (input.count("t") > 0)
-            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time_actual());
+            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time());
         else if (input.count("w") > 0)
             torque = wall(hp[0].get_position(), filtered_vel);
         else if (input.count("n") > 0)

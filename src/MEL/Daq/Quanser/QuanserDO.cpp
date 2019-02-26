@@ -9,15 +9,12 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDO::QuanserDO(QuanserDaq& daq) :
+    QuanserDO::QuanserDO(QuanserDaq& daq, const ChanNums& channel_numbers) :
+        DigitalOutput(channel_numbers),
         daq_(daq),
         quanser_values_(this)
     {
         set_name(daq.get_name() + "_DO");
-    }
-
-    QuanserDO::~QuanserDO() {
-
     }
 
     bool QuanserDO::update() {
@@ -35,11 +32,11 @@ namespace mel {
         }
     }
 
-    bool QuanserDO::update_channel(uint32 channel_number) {
+    bool QuanserDO::update_channel(ChanNum channel_number) {
         // convert MEL Logic to Quanser t_boolean (aka char)
         quanser_values_[channel_number] = static_cast<char>(values_[channel_number]);
         t_error result;
-        result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_number]);
+        result = hil_write_digital(daq_.handle_, &channel_number, 1, &quanser_values_[channel_number]);
         if (result == 0)
             return true;
         else {
@@ -78,7 +75,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDO::set_expire_value(uint32 channel_number, Logic expire_value) {
+    bool QuanserDO::set_expire_value(ChanNum channel_number, Logic expire_value) {
         if (!Output::set_expire_value(channel_number, expire_value))
             return false;
         // convert MEL logic to Quanser t_encoder_quadratue_mode
@@ -88,7 +85,7 @@ namespace mel {
         else
             converted_expire_value = DIGITAL_STATE_LOW;
         t_error result;
-        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_expire_value);
+        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, 1, &converted_expire_value);
         if (result == 0) {
             LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " expire value to " << expire_value;
             return true;

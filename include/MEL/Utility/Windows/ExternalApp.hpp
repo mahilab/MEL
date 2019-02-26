@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,16 +15,14 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_EXTERNALAPP_HPP
-#define MEL_EXTERNALAPP_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
 
 /// Class that allows for launching external applications
-class MEL_API ExternalApp {
+class ExternalApp {
 public:
     /// Constructor. #name is for MEL only. The path should be an
     /// absoulute path and include the filename and extension. For example
@@ -40,5 +38,3 @@ public:
 };
 
 }  // namespace mel
-
-#endif  // MEL_EXTERNALAPP_HPP

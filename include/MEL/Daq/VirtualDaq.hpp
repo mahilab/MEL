@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine and Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_VIRTUAL_DAQ_HPP
-#define MEL_VIRTUAL_DAQ_HPP
-
+#pragma once
 #include <MEL/Daq/DaqBase.hpp>
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Daq/Output.hpp>
@@ -34,12 +32,12 @@ class VirtualDaq;
 // VIRTUAL AI
 //==============================================================================
 
-class MEL_API VirtualAI : public AnalogInput {
+class VirtualAI : public AnalogInput {
 public:
-    VirtualAI(VirtualDaq& daq);
-    bool update_channel(uint32 channel_number) override;
+    VirtualAI(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 public:
-    Buffer<std::function<Voltage(Time)>> sources;
+    Registry<std::function<Voltage(Time)>> sources;
 private:
     VirtualDaq& daq_;
 };
@@ -48,10 +46,10 @@ private:
 // VIRTUAL AO
 //==============================================================================
 
-class MEL_API VirtualAO : public AnalogOutput {
+class VirtualAO : public AnalogOutput {
 public:
-    VirtualAO(VirtualDaq& daq);
-    bool update_channel(uint32 channel_number) override;
+    VirtualAO(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 private:
     VirtualDaq& daq_;
 };
@@ -60,12 +58,12 @@ private:
 // VIRTUAL DI
 //==============================================================================
 
-class MEL_API VirtualDI : public DigitalInput {
+class VirtualDI : public DigitalInput {
 public:
-    VirtualDI(VirtualDaq& daq);
-    bool update_channel(uint32 channel_number) override;
+    VirtualDI(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 public:
-    Buffer<std::function<Logic(Time)>> sources;
+    Registry<std::function<Logic(Time)>> sources;
 private:
     VirtualDaq& daq_;
 };
@@ -74,10 +72,10 @@ private:
 // VIRTUAL DO
 //==============================================================================
 
-class MEL_API VirtualDO : public DigitalOutput {
+class VirtualDO : public DigitalOutput {
 public:
-    VirtualDO(VirtualDaq& daq);
-    bool update_channel(uint32 channel_number) override;
+    VirtualDO(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
 private:
     VirtualDaq& daq_;
 };
@@ -86,12 +84,13 @@ private:
 // VIRTUAL ENCODER
 //==============================================================================
 
-class MEL_API VirtualEncoder : public Encoder {
+class VirtualEncoder : public Encoder {
 public:
-    VirtualEncoder(VirtualDaq& daq);
-    bool update_channel(uint32 channel_number) override;
+    VirtualEncoder(VirtualDaq& daq, const ChanNums& channel_numbers);
+    bool update_channel(ChanNum channel_number) override;
+    bool reset_count(ChanNum channel_number, int count);
 public:
-    Buffer<std::function<int32(Time)>> sources;
+    Registry<std::function<int32(Time)>> sources;
 private:
     VirtualDaq& daq_;
 };
@@ -101,7 +100,7 @@ private:
 //==============================================================================
 
 /// Virtual DAQ for testing/prototyping the absence of actual hardware
-class MEL_API VirtualDaq : public DaqBase {
+class VirtualDaq : public DaqBase {
 public:
     VirtualDaq(const std::string& name);
     ~VirtualDaq();
@@ -131,5 +130,3 @@ protected:
 };
 
 }
-
-#endif // MEL_VIRTUAL_DAQ_HPP

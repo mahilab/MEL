@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MELSHARE_HPP
-#define MEL_MELSHARE_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>
@@ -35,8 +33,9 @@ class Packet;
 //==============================================================================
 
 /// High-level communication class that simplifies shared memory communication
-class MEL_API MelShare : NonCopyable {
+class MelShare : NonCopyable {
 public:
+
     /// Default constructor.
     MelShare(const std::string& name, OpenMode mode = OpenOrCreate, std::size_t max_bytes = 256);
 
@@ -71,5 +70,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_MELSHARE_HPP

@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine and Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef COMMUNICATIONS_HPP
-#define COMMUNICATIONS_HPP
-
+#pragma once
 #include <MEL/Communications/Http.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/MelNet.hpp>
@@ -29,5 +27,3 @@
 #include <MEL/Communications/TcpListener.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Communications/UdpSocket.hpp>
-
-#endif // COMMUNICATIONS_HPP

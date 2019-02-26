@@ -9,14 +9,11 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDIO::QuanserDIO(QuanserDaq& daq) :
+    QuanserDIO::QuanserDIO(QuanserDaq& daq, const ChanNums& channel_numbers) :
+        DigitalInputOutput(channel_numbers),
         daq_(daq)
     {
         set_name(daq_.get_name() + "_DIO");
-    }
-
-    QuanserDIO::~QuanserDIO() {
-
     }
 
     bool QuanserDIO::on_enable() {
@@ -45,36 +42,60 @@ namespace mel {
 
     bool QuanserDIO::update() {
         // create intermediate buffers
-        std::vector<char> read_buffer(input_channel_numbers_.size());
-        std::vector<char> write_buffer(output_channel_numbers_.size());
-        for (std::size_t i = 0; i < output_channel_numbers_.size(); ++i)
+        std::vector<char> read_buffer(get_input_channel_count());
+        std::vector<char> write_buffer(get_output_channel_count());
+        for (std::size_t i = 0; i < get_output_channel_count(); ++i)
             write_buffer[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
-        t_error result;
-        result = hil_read_digital_write_digital(daq_.handle_,
-            &input_channel_numbers_[0], static_cast<uint32>(input_channel_numbers_.size()),
-            &output_channel_numbers_[0], static_cast<uint32>(output_channel_numbers_.size()),
+        t_error result = hil_read_digital_write_digital(daq_.handle_,
+            &input_channel_numbers_[0], static_cast<uint32>(get_input_channel_count()),
+            &output_channel_numbers_[0], static_cast<uint32>(get_output_channel_count()),
             &read_buffer[0], &write_buffer[0]);
-        for (std::size_t i = 0; i < input_channel_numbers_.size(); ++i)
+        for (std::size_t i = 0; i < get_input_channel_count(); ++i)
             values_[input_channel_numbers_[i]] = static_cast<Logic>(read_buffer[i]);
         if (result == 0)
             return true;
         else {
-            LOG(Error) << "Failed to update " << get_name() << " "
-                << QuanserDaq::get_quanser_error_message(result);
+            LOG(Error) << "Failed to update " << get_name() << " " << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
     }
 
-    bool QuanserDIO::update_channel(uint32 channel_number) {
+    bool QuanserDIO::update_input() {
+        std::vector<char> read_buffer(get_input_channel_count());
+        t_error result = hil_read_digital(daq_.handle_, &input_channel_numbers_[0],  static_cast<uint32>(get_input_channel_count()), &read_buffer[0]);
+        for (std::size_t i = 0; i < get_input_channel_count(); ++i)
+            values_[input_channel_numbers_[i]] = static_cast<Logic>(read_buffer[i]);
+        if (result == 0)
+            return true;
+        else {
+            LOG(Error) << "Failed to update inputs on " << get_name() << " " << QuanserDaq::get_quanser_error_message(result);
+            return false;
+        }
+    }
+
+    bool QuanserDIO::update_output() {
+        std::vector<char> write_buffer(get_output_channel_count());
+        for (std::size_t i = 0; i < get_output_channel_count(); ++i)
+            write_buffer[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
+        t_error result = hil_write_digital(daq_.handle_, &output_channel_numbers_[0], static_cast<uint32>(get_output_channel_count()), &write_buffer[0]);
+        if (result == 0)
+            return true;
+        else {
+            LOG(Error) << "Failed to update outputs on " << get_name() << " " << QuanserDaq::get_quanser_error_message(result);
+            return false;
+        }
+    }
+
+    bool QuanserDIO::update_channel(ChanNum channel_number) {
         char buffer;
         t_error result;
         if (directions_[channel_number] == In) {
-            result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
+            result = hil_read_digital(daq_.handle_, &channel_number, 1, &buffer);
             values_[channel_number] = static_cast<Logic>(buffer);
         }
         else {
             buffer = static_cast<char>(values_[channel_number]);
-            result = hil_write_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &buffer);
+            result = hil_write_digital(daq_.handle_, &channel_number, 1, &buffer);
         }
         if (result == 0)
             return true;
@@ -90,8 +111,8 @@ namespace mel {
             return false;
         t_error result;
         result = hil_set_digital_directions(daq_.handle_,
-            &input_channel_numbers_[0], static_cast<uint32>(input_channel_numbers_.size()),
-            &output_channel_numbers_[0], static_cast<uint32>(output_channel_numbers_.size()));
+            &input_channel_numbers_[0], static_cast<uint32>(get_input_channel_count()),
+            &output_channel_numbers_[0], static_cast<uint32>(get_output_channel_count()));
         if (result == 0) {
             LOG(Verbose) << "Set " << get_name() << " directions";
             return true;
@@ -103,7 +124,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDIO::set_direction(uint32 channel_number, Direction direction) {
+    bool QuanserDIO::set_direction(ChanNum channel_number, Direction direction) {
         if (!InputOutput::set_direction(channel_number, direction))
             return false;
         return set_directions(directions_.get());
@@ -133,7 +154,7 @@ namespace mel {
         }
     }
 
-    bool QuanserDIO::set_expire_value(uint32 channel_number, Logic expire_value) {
+    bool QuanserDIO::set_expire_value(ChanNum channel_number, Logic expire_value) {
         if (!InputOutput::set_expire_value(channel_number, expire_value))
             return false;
         // convert MEL logic to Quanser t_encoder_quadratue_mode
@@ -143,7 +164,7 @@ namespace mel {
         else
             converted_expire_value = DIGITAL_STATE_LOW;
         t_error result;
-        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_expire_value);
+        result = hil_watchdog_set_digital_expiration_state(daq_.handle_, &channel_number, 1, &converted_expire_value);
         if (result == 0) {
             LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " expire value to " << expire_value;
             return true;

@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_PROCESS_HPP
-#define MEL_PROCESS_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 
 namespace mel {
@@ -27,7 +25,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Process {
+class Process {
 public:
     /// Default constructor
     Process(){};
@@ -36,8 +34,7 @@ public:
     virtual ~Process(){};
 
     /// applies the process operation for one sample
-    virtual double update(const double x,
-                          const Time& current_time = Time::Zero) {
+    virtual double update(double x, const Time& current_time = Time::Zero) {
         Time unused = current_time;  // unused
         return x;
     }
@@ -49,5 +46,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_PROCESS_HPP

@@ -1,17 +1,32 @@
-#ifndef MEL_TIMESTAMP_HPP
-#define MEL_TIMESTAMP_HPP
+// MIT License
+//
+// MEL - Mechatronics Engine & Library
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// Author(s): Evan Pezent (epezent@rice.edu)
 
+#pragma once
 #include <string>
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 
 /// Encapsulates a timestamp
-class MEL_API Timestamp {
+class Timestamp {
 public:
     /// Default constructor
     Timestamp();
-
+    
     /// Returns timestamp string as "yyyy-mm-dd"
     std::string yyyy_mm_dd() const;
 
@@ -37,5 +52,3 @@ public:
 };
 
 }  // namespace mel
-
-#endif  // MEL_TIMESTAMP_HPP

@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,90 +15,92 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MODULE_HPP
-#define MEL_MODULE_HPP
-
+#pragma once
 #include <MEL/Core/Device.hpp>
-#include <MEL/Daq/Buffer.hpp>
+#include <MEL/Daq/Registry.hpp>
 #include <map>
-
-#ifdef _MSC_VER
-#pragma warning( disable : 4589 )
-#endif
 
 namespace mel {
 
-//==============================================================================
-// BASE DECLARATION
-//==============================================================================
-
 /// Defines non-templated Module functions/members
-class MEL_API ModuleBase : public Device {
-
+class ModuleBase : public Device {
 public:
 
-    /// Default Constructor
+    /// Default Constructor (creates an invlaid empty Module)
     ModuleBase();
 
+    /// Constructor with specified channel numbers
+    ModuleBase(const ChanNums& channel_numbers);
+
     /// Calls the Modules's API to update a single channel with the real-world.
-    virtual bool update_channel(uint32 channel_number) = 0;
+    virtual bool update_channel(ChanNum channel_number) = 0;
 
     /// Calls the Modules's API to update all channels with the real-world.
     /// By default, iteratively calls update_channel() on all channel numbers.
     virtual bool update();
 
-    /// Sets the vector of channel numbers this Module maintains
-    void set_channel_numbers(const std::vector<uint32>& channel_numbers);
-
     /// Gets the vector of channel numbers this Module maintains
-    const std::vector<uint32>& get_channel_numbers() const;
+    const ChanNums& get_channel_numbers() const;
 
     /// Returns the number of channels on this Module
     std::size_t get_channel_count() const;
 
-    /// Checks if a channel number is a number defined on this Module
-    bool validate_channel_number(uint32 channel_number) const;
+    /// Checks if a channel number is a number defined on this Module.
+    /// If quiet is false, an error log will be thrown.
+    bool validate_channel_number(ChanNum channel_number, bool quiet = false) const;
 
     /// Checks if the size of a vector equals the number of channels
-    bool validate_channel_count(std::size_t size) const;
+    /// If quiet is false, an error log will be thrown.
+    bool validate_channel_count(std::size_t size, bool quiet = false) const;
 
 protected:
 
-    /// Default implementation of on_enable (always returns true)
-    virtual bool on_enable();
+    /// Sets the channel numbers this Module maintains
+    virtual void set_channel_numbers(const ChanNums& channel_numbers);
 
-    /// Default implementation of on_disable (always returns true)
-    virtual bool on_disable();
+    /// Adds a channel number to current channel numbers
+    virtual void add_channel_number(ChanNum channel_number);
+
+    /// Removes a channel number from current channel numbers
+    virtual void remove_channel_number(ChanNum channel_number);
+
+    /// Called when the user enables the Module
+    virtual bool on_enable() override;
+
+    /// Called when the user disables the Module
+    virtual bool on_disable() override;
 
 private:
 
-    friend class BufferBase;
+    friend class RegistryBase;
 
-    /// Adds a value container to this Module
-    void add_buffer(BufferBase* container);
+    /// Adds a Registry to this Module
+    void add_registry(RegistryBase* registry);
+
+    /// Updates the channel Map and notifies Registries
+    void update_map();
 
     /// Returns vector index associated with channel number
     std::size_t index(uint32 channel_number) const;
 
 private:
 
-    std::vector<uint32> channel_numbers_;         ///< The channel numbers used by this ModuleBase
-    std::map<uint32, std::size_t> channel_map_;   ///< Maps a channel number with a vector index position
-    std::vector<BufferBase*> buffers_;            ///< Buffers needed by this Module
+    ChanNums channel_numbers_;              ///< The channel numbers used by this ModuleBase
+    ChanMap  channel_map_;                  ///< Maps a channel number with a vector index position
+    std::vector<RegistryBase*> registries_; ///< Registries needed by this Module
 
 };
-
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
 
 /// Defines templated Module functions/members
 template <typename T>
 class Module : public ModuleBase {
 public:
 
-    /// Default Constructorr
+    /// Default Constructor (creates an invlaid empty Module)
     Module();
+
+    /// Constructor with specified channel numbers
+    Module(const ChanNums& channel_numbers);
 
     /// Destructor
     virtual ~Module();
@@ -107,14 +109,14 @@ public:
     virtual bool set_ranges(const std::vector<T>& min_values, const std::vector<T>& max_values);
 
     /// Sets the min and max possible value of a single channel
-    virtual bool set_range(uint32 channel_number, T min_value, T max_value);
+    virtual bool set_range(ChanNum channel_number, T min_value, T max_value);
 
     /// Gets non-const reference to the current channel values of this Module
     std::vector<T>& get_values();
 
     /// Gets the current value of a a single channel. If an invalid channel number
     /// is passed, the default value of the underlying channel type is returned.
-    T get_value(uint32 channel_number) const;
+    T get_value(ChanNum channel_number) const;
 
     /// Sets the current channel values of this Module. If the incorrect number
     /// of values is pass, no values are set.
@@ -122,18 +124,16 @@ public:
 
     /// Sets the current value of a single channel. If an invalid channel number
     /// is passed, non value is set
-    void set_value(uint32 channel_number, T value);
+    void set_value(ChanNum channel_number, T value);
 
 protected:
 
-    Buffer<T> values_;      ///< The real-world values of the channels in this Module
-    Buffer<T> min_values_;  ///< The minimum possible values of each channel
-    Buffer<T> max_values_;  ///< The maximum possible values of each channel
+    Registry<T> values_;      ///< The real-world values of the channels in this Module
+    Registry<T> min_values_;  ///< The minimum possible values of each channel
+    Registry<T> max_values_;  ///< The maximum possible values of each channel
 
 };
 
 } // namespace mel
 
 #include <MEL/Daq/Detail/Module.inl>
-
-#endif // MEL_MODULE_HPP

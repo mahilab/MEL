@@ -2,7 +2,16 @@ namespace mel {
 
     template <typename T>
     InputOutput<T>::InputOutput() :
-        directions_(this)
+        Output<T>(),
+        directions_(this, Direction::In)
+    {
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    InputOutput<T>::InputOutput(const ChanNums& channel_numbers) :
+        Output<T>(channel_numbers),
+        directions_(this, Direction::In)
     {
         sort_input_output_channel_numbers();
     }
@@ -18,7 +27,7 @@ namespace mel {
     }
 
     template <typename T>
-    bool InputOutput<T>::set_direction(uint32 channel_number, Direction direction) {
+    bool InputOutput<T>::set_direction(ChanNum channel_number, Direction direction) {
         if (this->validate_channel_number(channel_number)) {
             directions_[channel_number] = direction;
             sort_input_output_channel_numbers();
@@ -28,7 +37,46 @@ namespace mel {
     }
 
     template <typename T>
-    typename InputOutput<T>::Channel InputOutput<T>::get_channel(uint32 channel_number) {
+    bool InputOutput<T>::update_input() {
+        auto chnums = get_input_channel_numbers();
+        bool success = true;
+        for (auto& c : chnums)
+            success = this->update_channel(c) ? success : false;
+        return success;
+    }
+
+    template <typename T>
+    bool InputOutput<T>::update_output() {
+        
+        auto chnums = get_output_channel_numbers();
+        bool success = true;
+        for (auto& c : chnums)
+            success = this->update_channel(c) ? success : false;
+        return success;
+    }
+
+    template <typename T>
+    std::size_t InputOutput<T>::get_input_channel_count() const {
+        return input_channel_numbers_.size();
+    }
+
+    template <typename T>
+    std::size_t InputOutput<T>::get_output_channel_count() const {
+        return output_channel_numbers_.size();
+    }
+
+    template <typename T>
+    const ChanNums& InputOutput<T>::get_input_channel_numbers() const {
+        return input_channel_numbers_;
+    }
+
+    template <typename T>
+    const ChanNums& InputOutput<T>::get_output_channel_numbers() const {
+        return output_channel_numbers_;
+    }
+
+    template <typename T>
+    typename InputOutput<T>::Channel InputOutput<T>::get_channel(ChanNum channel_number) {
         if (this->validate_channel_number(channel_number))
             return Channel(this, channel_number);
         else
@@ -37,7 +85,7 @@ namespace mel {
 
     template <typename T>
     std::vector<typename InputOutput<T>::Channel> InputOutput<T>::get_channels(
-        const std::vector<uint32>& channel_numbers) {
+        const ChanNums& channel_numbers) {
         std::vector<Channel> channels;
         for (std::size_t i = 0; i < channel_numbers.size(); ++i)
             channels.push_back(get_channel(channel_numbers[i]));
@@ -45,18 +93,36 @@ namespace mel {
     }
 
     template <typename T>
-    typename InputOutput<T>::Channel InputOutput<T>::operator[](uint32 channel_number) {
+    typename InputOutput<T>::Channel InputOutput<T>::operator[](ChanNum channel_number) {
         return get_channel(channel_number);
     }
 
     template <typename T>
     std::vector<typename InputOutput<T>::Channel> InputOutput<T>::operator[](
-        const std::vector<uint32>& channel_numbers) {
+        const ChanNums& channel_numbers) {
         return get_channels(channel_numbers);
     }
 
     template <typename T>
-    void InputOutput<T>::sort_input_output_channel_numbers() {
+    void InputOutput<T>::set_channel_numbers(const ChanNums& channel_numbers) {
+        Output<T>::set_channel_numbers(channel_numbers);
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    void InputOutput<T>::add_channel_number(ChanNum channel_number) {
+        Output<T>::add_channel_number(channel_number);
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    void InputOutput<T>::remove_channel_number(ChanNum channel_number) {
+        Output<T>::remove_channel_number(channel_number);
+        sort_input_output_channel_numbers();
+    }
+
+    template <typename T>
+    void InputOutput<T>::sort_input_output_channel_numbers() const {
         input_channel_numbers_.clear();
         output_channel_numbers_.clear();
         for (std::size_t i = 0; i < this->get_channel_count(); ++i) {
@@ -71,7 +137,7 @@ namespace mel {
     InputOutput<T>::Channel::Channel() : ChannelBase<T>() {}
 
     template <typename T>
-    InputOutput<T>::Channel::Channel(InputOutput* module, uint32 channel_number)
+    InputOutput<T>::Channel::Channel(InputOutput* module, ChanNum channel_number)
         : ChannelBase<T>(module, channel_number) {}
 
     template <typename T>

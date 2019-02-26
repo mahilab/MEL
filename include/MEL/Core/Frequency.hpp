@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_FREQUENCY_HPP
-#define MEL_FREQUENCY_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
 
 namespace mel {
@@ -30,7 +28,7 @@ class Time;
 //==============================================================================
 
 /// Represents a frequency value
-class MEL_API Frequency {
+class Frequency {
 public:
     /// Default constructor. Sets frequency value to zero. To construct valued
     /// frequency objects, use hertz(), kilohertz() or megahertz()
@@ -56,9 +54,9 @@ public:
     static const Frequency Inf;  ///< Predfined "infinite" frequency value
 
 private:
-    friend MEL_API Frequency hertz(int64);
-    friend MEL_API Frequency kilohertz(int32);
-    friend MEL_API Frequency megahertz(double);
+    friend Frequency hertz(int64);
+    friend Frequency kilohertz(int32);
+    friend Frequency megahertz(double);
 
     /// Internal constructor from a number of hertz
     explicit Frequency(int64 hertz);
@@ -72,14 +70,12 @@ private:
 //==============================================================================
 
 /// Construct a time value from a number of seconds
-MEL_API Frequency hertz(int64 amount);
+Frequency hertz(int64 amount);
 
 /// Construct a time value from a number of milliseconds
-MEL_API Frequency kilohertz(int32 amount);
+Frequency kilohertz(int32 amount);
 
 /// Construct a time value from a number of microseconds
-MEL_API Frequency megahertz(double amount);
+Frequency megahertz(double amount);
 
 }  // namespace mel
-
-#endif  // MEL_FREQUENCY_HPP

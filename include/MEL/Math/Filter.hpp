@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_FILTER_HPP
-#define MEL_FILTER_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
 #include <vector>
 
@@ -28,7 +26,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Filter : public Process {
+class Filter : public Process {
 public:
     /// Construct Filter from transfer function coefficients
     Filter(const std::vector<double>& b,
@@ -48,6 +46,9 @@ public:
     /// Returns the Filter denominator coefficients
     const std::vector<double>& get_a() const;
 
+    /// Set the Filter seeding
+    void set_seeding(uint32 seeding);
+
     /// Sets the Filter coefficients
     void set_coefficients(const std::vector<double>& b,
                           const std::vector<double>& a);
@@ -64,7 +65,7 @@ private:
     /// transients
     void seed(const double x, const uint32 iterations);
 
-protected:
+private:
     std::size_t n_;          ///< filter order
     std::vector<double> b_;  ///< numerator coefficients
     std::vector<double> a_;  ///< denominator coefficients
@@ -72,10 +73,7 @@ protected:
     bool has_seeding_;       ///< indicates whether or not to call seed on first
                              ///< update
     bool first_update_;      ///< indicates first update upon reset
-    uint32
-        seed_count_;  ///< number of iterations to call on update upon seeding
+    uint32 seed_count_;      ///< number of iterations to call on update upon seeding
 };
 
 }  // namespace mel
-
-#endif  // MEL_FILTER_HPP

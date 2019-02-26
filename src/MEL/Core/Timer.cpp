@@ -7,8 +7,8 @@ namespace mel {
 
 static void wait_busy(const Time& duration) {
     Clock temp_clock;
-    while (temp_clock.get_elapsed_time() < duration) {
-        // do nothing
+    while (temp_clock.get_elapsed_time() <= duration) {
+        // kill the CPU :)
     }
 }
 
@@ -26,24 +26,34 @@ Timer::Timer(Time period, WaitMode mode) :
     clock_(Clock()),
     period_(period),
     ticks_(0),
-    prev_time_(Clock::get_current_time())
+    misses_(0),
+    prev_time_(Clock::get_current_time()),
+    rate_(0.01)
 {
 }
 
 Timer::~Timer() { }
 
 Time Timer::restart() {
-    ticks_ = 0;
+    ticks_  = 0;
+    misses_ = 0;
     prev_time_ = Clock::get_current_time();
+    waited_ = Time::Zero;
     return clock_.restart();
 }
 
 Time Timer::wait() {
     Time remaining_time = period_ - (Clock::get_current_time() - prev_time_);
+
     if (remaining_time < Time::Zero) {
-        LOG_IF(Verbose, ticks_ > 0) << "Timer with period " << period_ << " missed deadline by " << -remaining_time << " on tick number " << ticks_;
+        misses_++;
+        double miss_rate = get_miss_rate();
+        if (miss_rate >= rate_ && ticks_ > 1000) {
+            LOG(Warning) << "Timer miss rate of " << miss_rate << " exceeded acceptable rate of " << rate_;
+        }
     }
-    else {
+    else if (remaining_time > Time::Zero) {
+        waited_ += remaining_time;
         if (mode_ == WaitMode::Busy)
             wait_busy(remaining_time);
         else if (mode_ == WaitMode::Sleep)
@@ -55,30 +65,44 @@ Time Timer::wait() {
         }
     }
     prev_time_ = Clock::get_current_time();
-    ticks_ += 1;
+    ticks_++;
     return get_elapsed_time();
 }
 
-Time Timer::get_elapsed_time_actual() {
+Time Timer::get_elapsed_time() const {
     return clock_.get_elapsed_time();
 }
 
-Time Timer::get_elapsed_time() {
+Time Timer::get_elapsed_time_ideal() const {
     return period_ * ticks_;
 }
 
-int64 Timer::get_elapsed_ticks() {
+int64 Timer::get_elapsed_ticks() const {
     return ticks_;
 }
 
-Frequency Timer::get_frequency() {
+int64 Timer::get_misses() const {
+    return misses_;
+}
+
+double Timer::get_miss_rate() const  {
+    return static_cast<double>(misses_) / static_cast<double>(ticks_);
+}
+
+Frequency Timer::get_frequency() const {
     return period_.to_frequency();
 }
 
-Time Timer::get_period() {
+Time Timer::get_period() const {
     return period_;
 }
 
+double Timer::get_wait_ratio() const {
+    return waited_.as_seconds() / get_elapsed_time().as_seconds();
+}
 
+void Timer::set_acceptable_miss_rate(double rate) {
+    rate_ = rate;
+}
 
 } // namespace mel

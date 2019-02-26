@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,36 +15,44 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MYRIODIO_HPP
-#define MEL_MYRIODIO_HPP
-
-#include <MEL/Daq/InputOutput.hpp>
+#pragma once
 #include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Daq/InputOutput.hpp>
 
 namespace mel {
 
-class MyRio;
-enum MyRioConnectorType : int;
+class MyRioConnector;
+class MyRioEncoder;
 
-class MEL_API MyRioDIO : public DigitalInputOutput, NonCopyable {
+/// myRIO Digital Input/Output Module
+class MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
-    MyRioDIO(MyRio& daq, MyRioConnectorType type,
-        const std::vector<uint32>& channel_numbers);
 
-    bool update_channel(uint32 channel_number) override;
+    /// Updates a single channel
+    bool update_channel(ChanNum channel_number) override;
 
-private:
-
-    bool on_enable() override;
-
-    bool on_disable() override;
+    /// Sets the direction of a single channel
+    bool set_direction(ChanNum channel_number, Direction direction) override;
 
 private:
 
-    MyRio& daq_;
-    MyRioConnectorType type_;
+    friend class MyRioConnector;
+    friend class MyRioEncoder;
+
+    void sync();
+
+    MyRioDIO(MyRioConnector& connector, const ChanNums& channel_numbers);
+
+private:
+
+    const MyRioConnector& connector_; ///< connector this module is on
+
+    // NI FPGA Registers
+    uint32_t sysselect_;
+    std::vector<uint32_t> dirs_;
+    std::vector<uint32_t> ins_;
+    std::vector<uint32_t> outs_;
+
 };
 
 }  // namespace mel
-
-#endif  // MEL_MYRIODIO_HPP

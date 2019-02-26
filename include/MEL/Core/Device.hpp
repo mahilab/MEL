@@ -1,7 +1,8 @@
+//==============================================================================
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,66 +16,74 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
+//==============================================================================
 
-#ifndef MEL_DEVICE_HPP
-#define MEL_DEVICE_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
 
 //==============================================================================
-// CLASS DECLARATION
+/// Abstract base class from which all physical devices derive.
 //==============================================================================
-
-/// Abstract base class from which all physical devices should derive.
-class MEL_API Device {
+class Device {
 public:
-    /// Default constructor (unnamed device)
+
+    //==========================================================================
+    /// Default constructor.
+    //==========================================================================
     Device();
 
-    /// Named device donstructor
+    //==========================================================================
+    /// Constructs a Device with a specific string name
+    //==========================================================================
     Device(const std::string& name);
 
+    //==========================================================================
     /// Default destructor.
+    //==========================================================================
     virtual ~Device();
 
-    /// Enables the Device
-    ///
-    /// \return TRUE if successful, FALSE otherwise
+    //==========================================================================
+    /// Enables the Device and returns TRUE if successful, FALSE otherwise
+    //==========================================================================
     bool enable();
 
-    /// Disables the Device
-    ///
-    /// \return TRUE if successful, FALSE otherwise
+    //==========================================================================
+    /// Disables the Device and returns TRUE if successful, FALSE otherwise
+    //==========================================================================
     bool disable();
 
-    /// Returns whether the Device is enabled or disabled
-    ///
-    /// \return TRUE if enabled, FALSE if disabled
+    //==========================================================================
+    /// Returns true if the Device is enabled or false if it is disabled
+    //==========================================================================
     bool is_enabled() const;
 
-    /// Gets the Device's name
-    ///
-    /// \return string name of device
+    //==========================================================================
+    /// Gets the Device's string name
+    //==========================================================================
     const std::string& get_name() const;
 
-    /// Sets the Device's name
-    ///
-    /// \param name desired string name of the device
+    //==========================================================================
+    /// Sets the Device's string name
+    //==========================================================================
     void set_name(const std::string& name);
 
 protected:
 
+    //==========================================================================
     /// Implement this function with code that should be called when enabled
     ///
     /// \return TRUE if successful, FALSE otherwise
+    //==========================================================================
     virtual bool on_enable() = 0;
 
+    //==========================================================================
     /// Implement this function with code that should be called when disabled
     ///
     /// \return TRUE if successful, FALSE otherwise
+    //==========================================================================
     virtual bool on_disable() = 0;
 
 private:
@@ -83,5 +92,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_DEVICE_HPP

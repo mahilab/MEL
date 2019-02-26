@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine and Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MECHATRONICS_HPP
-#define MEL_MECHATRONICS_HPP
-
+#pragma once
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Mechatronics/ForceSensor.hpp>
@@ -25,9 +23,8 @@
 #include <MEL/Mechatronics/Limiter.hpp>
 #include <MEL/Mechatronics/Motor.hpp>
 #include <MEL/Mechatronics/PdController.hpp>
+#include <MEL/Mechatronics/PidController.hpp>
 #include <MEL/Mechatronics/PositionSensor.hpp>
 #include <MEL/Mechatronics/Robot.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <MEL/Mechatronics/VirtualVelocitySensor.hpp>
-
-#endif // MEL_MECHATRONICS_HPP

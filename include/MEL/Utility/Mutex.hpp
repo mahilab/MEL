@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MUTEX_HPP
-#define MEL_MUTEX_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
 #include <memory>
 
@@ -29,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple threads
-class MEL_API Mutex : public Lockable, NonCopyable {
+class Mutex : public Lockable, NonCopyable {
 public:
     /// Default constructor
     Mutex();
@@ -49,8 +47,6 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_MUTEX_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

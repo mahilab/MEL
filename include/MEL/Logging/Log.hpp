@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,11 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_LOG_HPP
-#define MEL_LOG_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
-#include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
 #include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
 #include <MEL/Logging/Writers/RollingFileWriter.hpp>
@@ -28,7 +25,7 @@
 #include <cstring>
 #include <vector>
 
-#ifndef DEFAULT_MEL_LOGGER
+#ifndef DEFAULT_MEL_LOG
 #define DEFAULT_LOGGER 0
 #endif
 
@@ -70,13 +67,13 @@ public:
     }
 
     /// Writes a Record to the Logger
-    virtual void write(const Record& record) override {
+    virtual void write(const LogRecord& record) override {
         if (check_severity(record.get_severity())) {
             *this += record;
         }
     }
 
-    void operator+=(const Record& record) {
+    void operator+=(const LogRecord& record) {
         for (std::vector<Writer*>::iterator it = writers_.begin();
              it != writers_.end(); ++it) {
             if ((*it)->check_severity(record.get_severity()))
@@ -109,7 +106,7 @@ template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity, Writer* writer) {
     static Logger<instance> logger(max_severity);
     logger.add_writer(writer);
-    logger += Record(Info, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+    logger += LogRecord(Info, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
               << "Logger " << instance << " Initialized";
     return logger;
 }
@@ -126,31 +123,25 @@ inline Logger<instance>& init_logger(Severity max_severity,
     return init_logger<instance>(max_severity, &rollingFilewriter);
 }
 
-/// Initializes a logger with RollingFileWriter and Txt/CsvFormatter chosen by
-/// file extension (specific logger instance)
+/// Initializes a logger with RollingFileWriter and TxtFormatter
 template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity,
                          const char* filename,
                          size_t max_file_size = 0,
                          int max_files = 0) {
-    const char* dot = std::strrchr(filename, '.');
-    if (dot && 0 == std::strcmp(dot, ".csv"))
-        return init_logger<CsvFormatter, instance>(max_severity, filename,
-            max_file_size, max_files);
-    else
-        return init_logger<TxtFormatter, instance>(max_severity, filename,
-            max_file_size, max_files);
+    return init_logger<TxtFormatter, instance>(max_severity, filename,
+        max_file_size, max_files);
 }
 
 //==============================================================================
 // DEFAULT MEL LOGGER
 //==============================================================================
 
-/// Built in MEL Logger. Contains two writers: (0) a RollingFileWriter with a
+/// Built in MEL Log. Contains two writers: (0) a RollingFileWriter with a
 /// TxtFormatter and default severity Verbose, and (1) a ColorConsoleWriter with
-/// TxtFormatter and defaultl severity Info. Can be disabled by defining
+/// TxtFormatter and default severity Info. Can be disabled by defining
 /// MEL_DISABLE_LOG or enabling DISABLE_LOG option in CMakeLists.txt
-extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
+extern Logger<DEFAULT_LOGGER>* MEL_LOG;
 
 }  // namespace mel
 
@@ -168,7 +159,7 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 /// Main logging macro for specific logger instance
 #define LOG_(instance, severity) \
     IF_LOG_(instance, severity)  \
-    (*get_logger<instance>()) += Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+    (*get_logger<instance>()) += LogRecord(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
 
 /// Conditional logging macro for specific logger instance
 #define LOG_IF_(instance, severity, condition) \
@@ -179,14 +170,14 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 
 /// Log severity level checker for default MEL logger
 #define IF_LOG(severity)                                        \
-    if (!MEL_LOGGER || !MEL_LOGGER->check_severity(severity)) { \
+    if (!MEL_LOG || !MEL_LOG->check_severity(severity)) { \
         ;                                                       \
     } else
 
 /// Main logging macro for defaulter MEL logger
 #define LOG(severity) \
     IF_LOG(severity)  \
-        *MEL_LOGGER += Record(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+        *MEL_LOG += LogRecord(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
 
 /// Conditional logging macro for default MEL logger
 #define LOG_IF(severity, condition) \
@@ -195,4 +186,3 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
     } else                          \
         LOG(severity)
 
-#endif  // MEL_LOG_HPP

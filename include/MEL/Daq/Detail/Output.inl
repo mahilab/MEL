@@ -2,11 +2,19 @@ namespace mel {
 
     template <typename T>
     Output<T>::Output() :
+        Module<T>(),
         enable_values_(this),
         disable_values_(this),
         expire_values_(this)
-    {
-    }
+    { }
+
+    template <typename T>
+    Output<T>::Output(const ChanNums& channel_numbers) :
+        Module<T>(channel_numbers),
+        enable_values_(this),
+        disable_values_(this),
+        expire_values_(this)
+    { }
 
     template <typename T>
     Output<T>::~Output() {}
@@ -18,7 +26,7 @@ namespace mel {
     }
 
     template <typename T>
-    bool Output<T>::set_expire_value(uint32 channel_number, T expire_value) {
+    bool Output<T>::set_expire_value(ChanNum channel_number, T expire_value) {
         if (Module<T>::validate_channel_number(channel_number)) {
             expire_values_[channel_number] = expire_value;
             return true;
@@ -33,7 +41,7 @@ namespace mel {
     }
 
     template <typename T>
-    void Output<T>::set_enable_value(uint32 channel_number, T enable_value) {
+    void Output<T>::set_enable_value(ChanNum channel_number, T enable_value) {
         if (Module<T>::validate_channel_number(channel_number))
             enable_values_[channel_number] = enable_value;
     }
@@ -45,13 +53,13 @@ namespace mel {
     }
 
     template <typename T>
-    void Output<T>::set_disable_value(uint32 channel_number, T disable_value) {
+    void Output<T>::set_disable_value(ChanNum channel_number, T disable_value) {
         if (Module<T>::validate_channel_number(channel_number))
             disable_values_[channel_number] = disable_value;
     }
 
     template <typename T>
-    typename Output<T>::Channel Output<T>::get_channel(uint32 channel_number) {
+    typename Output<T>::Channel Output<T>::get_channel(ChanNum channel_number) {
         if (Module<T>::validate_channel_number(channel_number))
             return Channel(this, channel_number);
         else
@@ -60,7 +68,7 @@ namespace mel {
 
     template <typename T>
     std::vector<typename Output<T>::Channel> Output<T>::get_channels(
-        const std::vector<uint32>& channel_numbers) {
+        const ChanNums& channel_numbers) {
         std::vector<Channel> channels;
         for (std::size_t i = 0; i < channel_numbers.size(); ++i)
             channels.push_back(get_channel(channel_numbers[i]));
@@ -68,13 +76,13 @@ namespace mel {
     }
 
     template <typename T>
-    typename Output<T>::Channel Output<T>::operator[](uint32 channel_number) {
+    typename Output<T>::Channel Output<T>::operator[](ChanNum channel_number) {
         return get_channel(channel_number);
     }
 
     template <typename T>
     std::vector<typename Output<T>::Channel> Output<T>::operator[](
-        const std::vector<uint32>& channel_numbers) {
+        const ChanNums& channel_numbers) {
         return get_channels(channel_numbers);
     }
 
@@ -94,7 +102,7 @@ namespace mel {
     Output<T>::Channel::Channel() : ChannelBase<T>() {}
 
     template <typename T>
-    Output<T>::Channel::Channel(Output* module, uint32 channel_number)
+    Output<T>::Channel::Channel(Output* module, ChanNum channel_number)
         : ChannelBase<T>(module, channel_number) {}
 
     template <typename T>

@@ -9,7 +9,7 @@ namespace mel {
 
 Device::Device() :
     enabled_(false),
-    name_("UNNAMED")
+    name_("UNNAMED_DEVICE")
 { }
 
 Device::Device(const std::string& name) :

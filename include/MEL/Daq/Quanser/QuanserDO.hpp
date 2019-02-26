@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QUANSER_DO_HPP
-#define MEL_QUANSER_DO_HPP
-
+#pragma once
 #include <MEL/Daq/Output.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
@@ -33,27 +31,23 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API QuanserDO : public DigitalOutput, NonCopyable {
+class QuanserDO : public DigitalOutput, NonCopyable {
 public:
-    QuanserDO(QuanserDaq& daq);
-
-    ~QuanserDO();
+    QuanserDO(QuanserDaq& daq, const ChanNums& channel_numbers);
 
     bool update() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
     std::vector<char>& get_quanser_values();
 
     bool set_expire_values(const std::vector<Logic>& expire_values) override;
 
-    bool set_expire_value(uint32 channel_number, Logic expire_value) override;
+    bool set_expire_value(ChanNum channel_number, Logic expire_value) override;
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq
-    Buffer<char> quanser_values_;
+    Registry<char> quanser_values_;
 };
 
 }  // namespace mel
-
-#endif  // MEL_QUANSER_DO_HPP

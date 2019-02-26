@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_VOLTPAQX4_HPP
-#define MEL_VOLTPAQX4_HPP
-
+#pragma once
 #include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Input.hpp>
@@ -30,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a Quanser VoltPAQ-X4 Linear Voltage Amplifier
-class MEL_API VoltPaqX4 : public Device {
+class VoltPaqX4 : public Device {
 public:
     /// Constructor
     VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,
@@ -50,5 +48,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_VOLTPAQX4_HPP

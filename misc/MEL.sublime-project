@@ -1,0 +1,86 @@
+{
+	"build_systems":
+	[
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (myRIO)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake .. -G \"Ninja\" -DNI_ARM=ON -DEXAMPLES=ON",
+			"working_dir": "$project_path/../build-myrio"
+		},
+		{
+			"file_regex": "/([^/:]+):(\\d+):(\\d+): ",
+			"name": "CMake (Quanser)",
+			"selector":
+			[
+				"source.cmake"
+			],
+			"shell_cmd": "cmake .. -G \"Visual Studio 15 2017 Win64\" -DQUANSER=ON -DXINPUT=ON -DEXAMPLES=ON",
+			"working_dir": "$project_path/../build"
+		},
+		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "Build (myRIO)",
+			"selector":
+			[
+				"source.c++.11"
+			],
+			"shell_cmd": "ninja",
+			"working_dir": "$project_path/../build-myrio"
+		},
+		{
+			"file_regex": "^(..[^:]*)(?::|\\()([0-9]+)(?::|\\))(?:([0-9]+):)?\\s*(.*)",
+			"name": "Build (Quanser)",
+			"selector":
+			[
+				"source.c++.11"
+			],
+			"shell_cmd": "cmake --build . --config Release",
+			"working_dir": "$project_path/../build"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Clean",
+			"shell_cmd": "python clean.py",
+			"working_dir": "$project_path/../util"
+		},
+		{
+			"name": "Visual Studio",
+			"shell_cmd": "start MEL.sln",
+			"working_dir": "$project_path/../build"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "MELScope",
+			"shell_cmd": "python MelScope.pyw",
+			"working_dir": "$project_path/../src/MELScope"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python\" -u \"$file\""
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "../"
+		}
+	],
+	"settings":
+	{
+		"ecc_verbose":true,
+		"ecc_common_flags":
+		[
+			"-DMEL_EXPORTS",
+			"-I$project_base_path/include",
+		],
+		"ecc_flags_sources":
+		[
+		]
+	}
+}

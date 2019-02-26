@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,9 +42,12 @@ int main(int argc, char* argv[]) {
     enc0.update();                          // sync encoder channel 0
     int32 counts = enc0.get_value();        // get counts on encoder channel 0
 
+    PositionSensor* p = &enc0;
+    VelocitySensor* v = static_cast<QuanserEncoder::Channel*>(&enc0);
+
     Amplifier amp("amc_12a8", High, do0, 1.3, ao0);  // create High enabled PWM amplifier with gain 1.3 A/V
     Motor motor("maxon_re30", 0.0538, amp);          // create DC motor with  torque constant 0.0538 Nm/A
-    Joint joint0("axis0", &motor, &enc0, &enc0, 20); // create a robotic joint with transmission ratio 20
+    Joint joint0("axis0", &motor, p, v, 20);         // create a robotic joint with transmission ratio 20
     Robot robot("simple_robot");                     // create a robot
     robot.add_joint(joint0);                         // add joint to robot
 

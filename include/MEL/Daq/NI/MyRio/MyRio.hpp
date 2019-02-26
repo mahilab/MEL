@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,91 +15,50 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_MYRIO_HPP
-#define MEL_MYRIO_HPP
-
-#include <MEL/Daq/DaqBase.hpp>
-#include <MEL/Core/NonCopyable.hpp>
-
-#include <MEL/Daq/NI/MyRio/MyRioAI.hpp>
-#include <MEL/Daq/NI/MyRio/MyRioAO.hpp>
-#include <MEL/Daq/NI/MyRio/MyRioDIO.hpp>
+#pragma once
+#include <MEL/Daq/NI/MyRio/MyRioConnector.hpp>
 
 namespace mel {
 
-class MyRioAI;
-class MyRioAO;
-
-/// myRIO Expansion Port (MXP) and Mini System Port (MSP) connector types
-enum MyRioConnectorType : int {
-    MxpA  = 0,  ///< MXP connector A (rear)
-    MxpB  = 1,  ///< MXP connector B (rear)
-    MspC  = 2,  ///< MSP connector C (front)
-    Audio = 3   ///< Audio connector (front)
-};
-
 /// National Instruments myRIO embedded system
-class MEL_API MyRio : public DaqBase, NonCopyable {
+class MyRio : public DaqBase, NonCopyable {
 
 public:
 
     /// Constructor
-    MyRio(const std::string& name);
+    MyRio();
 
     /// Default Destructor
     ~MyRio();
 
-    /// Updates all Input Modules simultaneously. It is generally more
-    /// efficient to call this once per loop, than to call the update()
-    /// function on each module separately.
+    /// Resets the myRIO FPGA to default configuration
+    bool reset();
+
+    /// Updates all connector inputs simultaneously.
     bool update_input() override;
 
-    /// Updates all Output Modules simultaneously. It is generally more
-    /// efficient to call this once per loop, than to call the update()
-    /// function on each module separately.
+    /// Updates all connector outputs simultaneously.
     bool update_output() override;
+
+    /// Returns true if the myRIO button is currently pressed
+    bool is_button_pressed() const;
+
+    /// Set myRIO led in range 0 to 3 on/off
+    void set_led(int led, bool on);
 
 private:
 
     bool on_open() override;
     bool on_close() override;
-
-    /// Enables the myRIO by sequentially calling the enable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do.
     bool on_enable() override;
-
-    /// Disables the myRIO by sequentially calling the disable() function
-    /// on all I/O modules. Consult the documentation for each module for
-    /// details on what the enable functions do.
     bool on_disable() override;
-
-    /// Represents a myRIO connector
-    class Connector : public Device {
-    public:
-        Connector(MyRio& myrio, MyRioConnectorType type,
-            const std::vector<uint32>& ai_channels,
-            const std::vector<uint32>& ao_channels,
-            const std::vector<uint32>& dio_channels);
-        bool update_input();
-        bool update_output();
-    public:
-        MyRioAI AI;
-        MyRioAO AO;
-        MyRioDIO DIO;
-    private:
-        bool on_enable() override;
-        bool on_disable() override;
-    };
 
 public:
 
-     Connector A;  ///< MXP connector A
-     Connector B;  ///< MXP connector B
-     Connector C;  ///< MSP connector C
+     MyRioConnector mxpA;  ///< MXP connector A
+     MyRioConnector mxpB;  ///< MXP connector B
+     MyRioConnector mspC;  ///< MSP connector C
 
 };
 
 }  // namespace mel
-
-#endif  // MEL_MYRIO_HPP

@@ -4,7 +4,7 @@ template <typename T>
 ChannelBase<T>::ChannelBase() : module_(nullptr), channel_number_(0) {}
 
 template <typename T>
-ChannelBase<T>::ChannelBase(Module<T>* module, uint32 channel_number)
+ChannelBase<T>::ChannelBase(Module<T>* module, ChanNum channel_number)
     : module_(module), channel_number_(channel_number) {}
 
 template <typename T>
@@ -36,7 +36,7 @@ ChannelBase<T>::operator T() const {
 }
 
 template <typename T>
-uint32 ChannelBase<T>::get_channel_number() const {
+ChanNum ChannelBase<T>::get_channel_number() const {
     return channel_number_;
 }
 

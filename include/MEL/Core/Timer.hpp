@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TIMER_HPP
-#define MEL_TIMER_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -29,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// CPU based fixed rate waitable timer.
-class MEL_API Timer {
+class Timer {
 public:
     /// The waiting mode to be used when wait() is called.
     ///
@@ -58,39 +56,51 @@ public:
     ~Timer();
 
     /// Restarts the Timer and returns the elapsed time
-    virtual Time restart();
+    Time restart();
 
-    /// Waits the Timer and returns the ideal elapsed time after the wait completes
-    virtual Time wait();
+    /// Waits the Timer and returns the actual elapsed time after the wait completes
+    Time wait();
+
+    /// Gets the actual elapsed time since construction or last call to restart().
+    Time get_elapsed_time() const;
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period
-    Time get_elapsed_time();
+    Time get_elapsed_time_ideal() const;
 
-    /// Gets the actual elapsed time since construction or last call to restart().
-    Time get_elapsed_time_actual();
+    /// Gets the elapsed number of ticks since construction or the last call to restart().
+    int64 get_elapsed_ticks() const;
 
-    /// Gets the elapsed number of ticks since construction or the last call to
-    /// restart().
-    int64 get_elapsed_ticks();
+    /// Get the number of times the Timer has missed a tick deadline
+    int64 get_misses() const;
+
+    /// Gets the deadline miss rate of the Timer
+    double get_miss_rate() const;
 
     /// Gets the Timer frequency
-    Frequency get_frequency();
+    Frequency get_frequency() const;
 
     /// Gets the Timer period
-    Time get_period();
+    Time get_period() const;
+
+    /// Gets the ratio of time waited to time elapsed for benchmarking purposes
+    double get_wait_ratio() const;
+
+    /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.01 = 1%)
+    void set_acceptable_miss_rate(double rate);
 
 protected:
-    WaitMode mode_;   ///< The Timer's waiting mode
-    Clock clock_;     ///< The Timer's internal clock
-    Time period_;     ///< The Timer's waiting period
-    int64 ticks_;     ///< The running tick count
-    Time prev_time_;  ///< Time saved at previous call to wait or restart
+    WaitMode mode_;   ///< the Timer's waiting mode
+    Clock clock_;     ///< the Timer's internal clock
+    Time period_;     ///< the Timer's waiting period
+    int64 ticks_;     ///< the running tick count
+    int64 misses_;    ///< number of misses
+    Time prev_time_;  ///< time saved at previous call to wait or restart
+    Time waited_;     ///< accumulated wait time
+    double rate_;     ///< acceptable miss rate
 };
 
 }  // namespace mel
-
-#endif  // MEL_TIMER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

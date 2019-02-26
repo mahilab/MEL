@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TORQUESENSOR_HPP
-#define MEL_TORQUESENSOR_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
 #include <vector>
 
@@ -28,7 +26,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API TorqueSensor {
+class TorqueSensor {
 public:
 
     /// Constructor
@@ -50,5 +48,3 @@ protected:
 };
 
 }  // namespace mel
-
-#endif  // MEL_TORQUESENSOR_HPP

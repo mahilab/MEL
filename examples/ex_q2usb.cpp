@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 using namespace mel;
 
 ctrl_bool stop(false);
+
 bool handler(CtrlEvent event) {
     if (event == CtrlEvent::CtrlC)
         stop = true;
@@ -43,7 +44,8 @@ int main() {
 
     // create default Q28 USB object (all channels enabled)
     Q2Usb q2;
-    q2.open();
+    if (!q2.open())
+        return 1;
 
     //==============================================================================
     // ENABLE
@@ -52,7 +54,8 @@ int main() {
     // ask for user input
     prompt("Press ENTER to open and enable Q8 USB.");
     // enable Q8 USB
-    q2.enable();
+    if (!q2.enable())
+        return 1;
 
     //==============================================================================
     // ENCODER
@@ -63,7 +66,7 @@ int main() {
     // create 10 Hz Timer
     Timer timer(milliseconds(100));
     // start encoder loop
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q2.update_input();
         print(q2.encoder.get_value(0));
         timer.wait();
@@ -79,10 +82,10 @@ int main() {
     Waveform wave(Waveform::Sin, seconds(0.25), 5.0);
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q2.update_input();
         print(q2.AI.get_value(0));
-        double voltage = wave.evaluate(timer.get_elapsed_time_actual());
+        double voltage = wave.evaluate(timer.get_elapsed_time());
         q2.AO.set_value(0, voltage);
         q2.update_output();
         timer.wait();
@@ -99,7 +102,7 @@ int main() {
     Logic signal = High;
     // start analog loopback loop
     timer.restart();
-    while (timer.get_elapsed_time_actual() < seconds(5) && !stop) {
+    while (timer.get_elapsed_time() < seconds(5) && !stop) {
         q2.DIO.update();
         print((int)q2.DIO[0].get_value());
         signal = (Logic)(High - signal);
@@ -119,7 +122,7 @@ int main() {
     options.set_led_mode(QuanserOptions::LedMode::User);
     q2.set_options(options);
     timer.restart();
-    while (timer.get_elapsed_time_actual() < seconds(10) && !stop) {
+    while (timer.get_elapsed_time() < seconds(10) && !stop) {
         if (Keyboard::is_key_pressed(Key::L))
             q2.set_led(High);
         else

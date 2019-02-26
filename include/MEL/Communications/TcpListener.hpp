@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,10 +19,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TCPLISTENER_HPP
-#define MEL_TCPLISTENER_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/Socket.hpp>
 
@@ -39,7 +37,7 @@ class TcpSocket;
 //==============================================================================
 
 /// Socket that listens to new TCP connections
-class MEL_API TcpListener : public Socket {
+class TcpListener : public Socket {
 public:
     /// Default constructor
     TcpListener();
@@ -73,8 +71,6 @@ public:
 };
 
 }  // namespace mel
-
-#endif  // MEL_TCPLISTENER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATIOIN

@@ -13,6 +13,12 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# .vscode/*
+# # !.vscode/settings.json
+# # !.vscode/tasks.json
+# # !.vscode/launch.json
+# # !.vscode/extensions.json
+
 # MEL
 daq_logs/
 clock_logs/
@@ -41,6 +47,9 @@ bld/
 [Bb]uild/
 cmake-build-release/
 cmake-build-debug/
+[Bb]uild-*/
+[Bb]uild_*/
+
 
 # Unity Engine
 

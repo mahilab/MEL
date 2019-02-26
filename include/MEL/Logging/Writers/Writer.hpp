@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,11 +15,9 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_WRITER_HPP
-#define MEL_WRITER_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
-#include <MEL/Logging/Record.hpp>
+#include <MEL/Logging/Detail/LogUtil.hpp>
 
 namespace mel {
 
@@ -27,14 +25,14 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Writer {
+class Writer {
 public:
 
     Writer(Severity max_severity = Debug) : max_severity_(max_severity) {}
 
     virtual ~Writer() {}
 
-    virtual void write(const Record& record) = 0;
+    virtual void write(const LogRecord& record) = 0;
 
     Severity get_max_severity() const { return max_severity_; }
 
@@ -49,8 +47,6 @@ protected:
     Severity max_severity_;
 };
 }  // namespace mel
-
-#endif  // MEL_WRITER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

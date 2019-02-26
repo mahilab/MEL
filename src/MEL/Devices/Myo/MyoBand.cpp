@@ -117,7 +117,7 @@ namespace mel {
         return true;
     }
 
-    bool MyoBand::update_channel(uint32 channel_number) {
+    bool MyoBand::update_channel(ChanNum channel_number) {
         mel::Lock lock(impl_->mutex_);
         values_[channel_number] = static_cast<double>(impl_->emgSamples[channel_number]) * 0.001;
         return true;

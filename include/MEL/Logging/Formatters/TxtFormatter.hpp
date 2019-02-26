@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,11 +15,9 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_TXTFORMATTER_HPP
-#define MEL_TXTFORMATTER_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
-#include <MEL/Logging/Record.hpp>
+#include <MEL/Logging/Detail/LogUtil.hpp>
 #include <iomanip>
 
 namespace mel {
@@ -28,11 +26,11 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 //
-class MEL_API TxtFormatter {
+class TxtFormatter {
 public:
     static std::string header() { return std::string(); }
 
-    static std::string format(const Record& record) {
+    static std::string format(const LogRecord& record) {
         std::ostringstream ss;
         ss << record.get_timestamp().yyyy_mm_dd_hh_mm_ss_mmm() << " ";
         ss << std::setfill(' ') << std::setw(5) << std::left
@@ -43,8 +41,6 @@ public:
     }
 };
 }  // namespace mel
-
-#endif  // MEL_TXTFORMATTER_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

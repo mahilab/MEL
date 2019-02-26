@@ -9,15 +9,12 @@ namespace mel {
     // CLASS DEFINITIONS
     //==============================================================================
 
-    QuanserDI::QuanserDI(QuanserDaq& daq) :
+    QuanserDI::QuanserDI(QuanserDaq& daq, const ChanNums& channel_numbers) :
+        DigitalInput(channel_numbers),
         daq_(daq),
         quanser_values_(this)
     {
         set_name(daq_.get_name() + "_DI");
-    }
-
-    QuanserDI::~QuanserDI() {
-
     }
 
     bool QuanserDI::update() {
@@ -36,9 +33,9 @@ namespace mel {
         }
     }
 
-    bool QuanserDI::update_channel(uint32 channel_number) {
+    bool QuanserDI::update_channel(ChanNum channel_number) {
         t_error result;
-        result = hil_read_digital(daq_.handle_, &channel_number, static_cast<uint32>(1), &quanser_values_[channel_number]);
+        result = hil_read_digital(daq_.handle_, &channel_number, 1, &quanser_values_[channel_number]);
         if (result == 0) {
             values_[channel_number] = static_cast<Logic>(quanser_values_[channel_number]);
             return true;

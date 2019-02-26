@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,12 +15,10 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_KEYBOARD_HPP
-#define MEL_KEYBOARD_HPP
-
+#pragma once
 #include <string>
 #include <vector>
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 
@@ -136,7 +134,7 @@ enum class Key {
     KeyCount  ///< Keep last -- the total number of keyboard keys
 };
 
-class MEL_API Keyboard {
+class Keyboard {
 public:
     /// \brief Check if a key is pressed and console window has focus
     /// \param key Key to check
@@ -187,8 +185,6 @@ public:
 };
 
 }  // namespace mel
-
-#endif  // MEL_KEYBOARD_HPP
 
 //==============================================================================
 // APAPTED FROM: SFML (https://www.sfml-dev.org/)

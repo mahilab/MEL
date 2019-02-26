@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_QUANSER_DI_HPP
-#define MEL_QUANSER_DI_HPP
-
+#pragma once
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
@@ -33,23 +31,19 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API QuanserDI : public DigitalInput, NonCopyable {
+class QuanserDI : public DigitalInput, NonCopyable {
 public:
-    QuanserDI(QuanserDaq& daq);
-
-    ~QuanserDI();
+    QuanserDI(QuanserDaq& daq, const ChanNums& channel_numbers);
 
     bool update() override;
 
-    bool update_channel(uint32 channel_number) override;
+    bool update_channel(ChanNum channel_number) override;
 
     std::vector<char>& get_quanser_values();
 
 private:
     QuanserDaq& daq_;  ///< Reference to parent QDaq
-    Buffer<char> quanser_values_;
+    Registry<char> quanser_values_;
 };
 
 }  // namespace mel
-
-#endif  // MEL_QUANSER_DI_HPP

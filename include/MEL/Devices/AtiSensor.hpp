@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,9 +15,7 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_ATI_SENSOR_HPP
-#define MEL_ATI_SENSOR_HPP
-
+#pragma once
 #include <MEL/Mechatronics/ForceSensor.hpp>
 #include <MEL/Mechatronics/TorqueSensor.hpp>
 #include <MEL/Daq/Input.hpp>
@@ -30,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Implements an ATI force/torque transducer
-class MEL_API AtiSensor : public ForceSensor, public TorqueSensor {
+class AtiSensor : public ForceSensor, public TorqueSensor {
 
 public:
 
@@ -50,8 +48,8 @@ public:
     /// Constucts AtiSensor with unspecified channels and no calibration
     AtiSensor();
 
-    /// Constructs AtiSensor with specified channels and loads calibration from filename
-    AtiSensor(std::vector <Input<Voltage>::Channel> channels, const std::string& filename);
+    /// Constructs AtiSensor with specified channels and loads calibration from filepath
+    AtiSensor(std::vector <Input<Voltage>::Channel> channels, const std::string& filepath);
 
     /// Constructs AtiSensor from specified channels and manual calibration
     AtiSensor(std::vector<Input<Voltage>::Channel> channels, Calibration calibration);
@@ -60,7 +58,7 @@ public:
     void set_channels(std::vector<Input<Voltage>::Channel> channels);
 
     /// Loads calibration from ATI calibration file (e.g. "FTXXXXX.cal")
-    bool load_calibration(const std::string& filename);
+    bool load_calibration(const std::string& filepath);
 
     /// Allows for manually setting calibration
     void set_calibration(Calibration calibration);
@@ -87,12 +85,10 @@ private:
 
 private:
 
-    Calibration calibration_;                       ///< calibration matrix
     std::vector<Input<Voltage>::Channel> channels_; ///< raw voltage channels
+    Calibration calibration_;                       ///< calibration matrix
     std::array<double, 6> bias_;                    ///< bias vector
     std::array<double, 6> bSTG_;                    ///< biased strain gauge voltages
 };
 
 } // namespace mel
-
-#endif // MEL_ATI_SENSOR_HPP

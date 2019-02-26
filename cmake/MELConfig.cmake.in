@@ -1,0 +1,20 @@
+# if MEL::MEL target has yet to be defined
+if(NOT TARGET MEL::MEL)
+    # get directory MELConfig.cmake was found in
+    get_filename_component(MEL_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+    # include find dependecny macro
+    include(CMakeFindDependencyMacro)
+    # include find modules
+    list(APPEND CMAKE_MODULE_PATH "${MEL_CMAKE_DIR}/Modules")
+    # find dependencies and set targets filename
+    if (MSVC)
+        find_package(HIL     QUIET)
+        find_package(NIDAQmx QUIET)
+        find_package(Myo     QUIET)
+    endif()
+    # include the appropriate targets file
+    include("${MEL_CMAKE_DIR}/MELTargets.cmake")
+endif()
+
+# set MEL libaries
+set(MEL_LIBRARIES MEL::MEL)

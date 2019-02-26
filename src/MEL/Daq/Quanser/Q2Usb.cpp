@@ -17,19 +17,14 @@ namespace mel {
 
 Q2Usb::Q2Usb(QuanserOptions options, uint32 id) :
     QuanserDaq("q2_usb", id, options),
-    AI(*this),
-    AO(*this),
-    DIO(*this),
-    encoder(*this),
+    AI(*this,     {0,1}),
+    AO(*this,     {0,1}),
+    DIO(*this,    {0,1,2,3,4,5,6,7,8}),
+    encoder(*this,{0,1}, false),
     watchdog(*this, milliseconds(100))
 {
     // increment next_id_
     ++NEXT_Q2USB_ID;
-    // set channel numners
-    AI.set_channel_numbers({ 0,1 });
-    AO.set_channel_numbers({ 0,1 });
-    DIO.set_channel_numbers({ 0, 1, 2, 3, 4, 5, 6, 7, 8 });
-    DIO.set_directions({ In,In,In,In,In,In,In,In,Out });
 }
 
 
@@ -56,6 +51,8 @@ bool Q2Usb::on_open() {
     watchdog.stop();
     // clear the watchdog (precautionary, ok if fails)
     watchdog.clear();
+    // set DIO directions (all DIO In, LED Out)
+    DIO.set_directions({ In,In,In,In,In,In,In,In,Out });
     // set default expire values (digital = LOW, analog = 0.0V)
     if (!AO.set_expire_values(std::vector<Voltage>(2, 0.0))) {
         close();
@@ -131,7 +128,7 @@ bool Q2Usb::update_input() {
             << get_name() << " is not open";
         return false;
     }
-    if (AI.update() && encoder.update() && DIO.update())
+    if (AI.update() && encoder.update() && DIO.update_input())
         return true;
     else {
         return false;
@@ -144,13 +141,13 @@ bool Q2Usb::update_output() {
             << get_name() << " is not open";
         return false;
     }
-    if (AO.update() && DIO.update())
+    if (AO.update() && DIO.update_output())
         return true;
     else
         return false;
 }
 
-bool Q2Usb::identify(uint32 input_channel_number, uint32 outout_channel_number) {
+bool Q2Usb::identify(ChanNum input_channel_number, ChanNum outout_channel_number) {
     if (!is_open()) {
         LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
             << get_name() << " is not open";

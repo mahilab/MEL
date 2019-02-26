@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -16,14 +16,13 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
-#ifndef MEL_CONSOLE_HPP
-#define MEL_CONSOLE_HPP
-
+#pragma once
 #include <MEL/Core/Time.hpp>
 #include <MEL/Utility/StlStreams.hpp>
 #include <MEL/Core/Types.hpp>
 #include <atomic>
 #include <sstream>
+#include <utility>
 
 namespace mel {
 
@@ -46,7 +45,7 @@ enum class CtrlEvent {
 /// The input can be checked against the the control event values above for
 /// further processsing. If this function handles the event, it should return
 /// true, otherwise it should return false.
-bool MEL_API register_ctrl_handler(bool (*handler)(CtrlEvent));
+bool register_ctrl_handler(bool (*handler)(CtrlEvent));
 
 /// Special bool type that can safely be used by a Ctrl handler
 typedef volatile std::atomic<bool> ctrl_bool;
@@ -75,45 +74,44 @@ enum class Color {
     Gold
 };
 
-/// Sets the foreground and background text color in the console
-void MEL_API set_text_color(Color foreground, Color background = Color::None);
+/// Sets the foreground and background text color in the console (thread-safe)
+void set_text_color(Color foreground, Color background = Color::None);
 
-/// Resets the foreground and background text color to the default style
-void MEL_API reset_text_color();
+/// Resets the foreground and background text color to the default style (thread-safe)
+void reset_text_color();
 
 //==============================================================================
 // CONSOLE INPUT
 //==============================================================================
 
-/// Determines if keyboard has been hit
-int MEL_API kb_hit();
+/// Determines if keyboard has been hit (thread-safe)
+int kb_hit();
 
-/// Get character without waiting for Return to be pressed (blocking).
-int MEL_API get_ch();
+/// Get character without waiting for Return to be pressed (blocking) (thread-safe)
+int get_ch();
 
-/// Get character without waiting for Return to be pressed (non-blocking).
+/// Get character without waiting for Return to be pressed (non-blocking) (thread-safe)
 /// Returns 0 if no key was pressed.
-int MEL_API get_ch_nb();
+int get_ch_nb();
 
-/// Reads a key press and returns a key code (blocking).
-int MEL_API get_key();
+/// Reads a key press and returns a key code (blocking) (thread-safe)
+int get_key();
 
-/// Reads a key press and returns a key code (blocking).
+/// Reads a key press and returns a key code (blocking) (thread-safe)
 /// Returns 0 if no key was pressed.
-int MEL_API get_key_nb();
+int get_key_nb();
 
-/// Prompts the user with a message and waits for Enter to be pressed.
-void MEL_API prompt(const std::string& message);
+/// Prompts the user with a message and waits for Enter to be pressed (thread-safe)
+void prompt(const std::string& message);
 
 //==============================================================================
 // CONSOLE OUTPUT
 //==============================================================================
 
-/// Prints a string to the console using the fastest method the OS offers
-void MEL_API print_string(const std::string& str);
+/// Prints a string to the console using the fastest method the OS offers (thread-safe)
+void print_string(const std::string& str);
 
-/// Prints anything that works with stream operators (appends new line
-/// character)
+/// Prints anything that works with stream operators and then starts a new line (thread-safe)
 template <typename T>
 void print(const T& value) {
     std::stringstream ss;
@@ -121,9 +119,20 @@ void print(const T& value) {
     print_string(ss.str());
 }
 
-/// Print with color
+// Prints variadic number of arguments with separating spaces and then starts a new line (thread-safe)
+template <typename Arg, typename... Args>
+void print(Arg&& arg, Args&&... args) {
+    std::stringstream ss;
+    ss << std::forward<Arg>(arg);
+    using expander = int[];
+    (void)expander{0, (void(ss << ' ' << std::forward<Args>(args)), 0)...};
+    ss << "\n";
+    print_string(ss.str());
+}
+
+/// Print with color (thread-safe)
 template <typename T>
-void print(const T& value, Color foreground, Color background = Color::None) {
+void color_print(const T& value, Color foreground, Color background = Color::None) {
     set_text_color(foreground, background);
     print(value);
     reset_text_color();
@@ -138,20 +147,18 @@ template <typename T>
 std::string stringify(T value) {
     return std::to_string(value);
 }
-
 //==============================================================================
 // MISC
 //==============================================================================
 
-/// Returns true if stdout is a character device (a terminal, console, printer, or
-/// serial port)
-bool MEL_API is_tty();
+/// Returns true if stdout is a character device (thread-safe)
+bool is_tty();
 
-/// Causes the console to emit a beep sound
-void MEL_API beep();
+/// Causes the console to emit a beep sound (thread-safe)
+void beep();
 
-/// Clears screen, resets all attributes and moves cursor home.
-void MEL_API cls();
+/// Clears screen, resets all attributes and moves cursor home (thread-safe)
+void cls();
 
 /// Key Codes
 enum {
@@ -199,5 +206,3 @@ enum {
 };
 
 }  // namespace mel
-
-#endif  // MEL_CONSOLE_HPP

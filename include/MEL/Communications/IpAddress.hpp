@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,10 +19,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_IPADDRESS_HPP
-#define MEL_IPADDRESS_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Time.hpp>
 #include <MEL/Core/Types.hpp>
 #include <istream>
@@ -36,7 +34,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates an IPv4 network address
-class MEL_API IpAddress {
+class IpAddress {
 public:
     /// Default constructor. Creates an empty (invalid) address/
     IpAddress();
@@ -117,7 +115,7 @@ public:
     static const IpAddress Broadcast;  ///< The "broadcast" address (for sending UDP messages to everyone on a local network)
 
 private:
-    friend MEL_API bool operator<(const IpAddress& left, const IpAddress& right);
+    friend bool operator<(const IpAddress& left, const IpAddress& right);
 
     /// Resolves the given address string
     void resolve(const std::string& address);
@@ -131,32 +129,30 @@ private:
 //==============================================================================
 
 /// Overload of == operator to compare two IP addresses are equal
-MEL_API bool operator==(const IpAddress& left, const IpAddress& right);
+bool operator==(const IpAddress& left, const IpAddress& right);
 
 /// Overload of != operator to compare two IP addresses are not equal
-MEL_API bool operator!=(const IpAddress& left, const IpAddress& right);
+bool operator!=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of < operator to compare two IP addresses
-MEL_API bool operator<(const IpAddress& left, const IpAddress& right);
+bool operator<(const IpAddress& left, const IpAddress& right);
 
 /// Overload of > operator to compare two IP addresses
-MEL_API bool operator>(const IpAddress& left, const IpAddress& right);
+bool operator>(const IpAddress& left, const IpAddress& right);
 
 /// Overload of <= operator to compare two IP addresses
-MEL_API bool operator<=(const IpAddress& left, const IpAddress& right);
+bool operator<=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of >= operator to compare two IP addresses
-MEL_API bool operator>=(const IpAddress& left, const IpAddress& right);
+bool operator>=(const IpAddress& left, const IpAddress& right);
 
 /// Overload of >> operator to extract an IP address from an input stream
-MEL_API std::istream& operator>>(std::istream& stream, IpAddress& address);
+std::istream& operator>>(std::istream& stream, IpAddress& address);
 
 /// Overload of << operator to print an IP address to an output stream
-MEL_API std::ostream& operator<<(std::ostream& stream, const IpAddress& address);
+std::ostream& operator<<(std::ostream& stream, const IpAddress& address);
 
 }  // namespace mel
-
-#endif  // MEL_IPADDRESS_HPP
 
 //==============================================================================
 // CLASS DOCUMENTATION

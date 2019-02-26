@@ -10,15 +10,15 @@ namespace mel {
 // CLASS DEFINITIONS
 //==============================================================================
 
-QuanserEncoder::QuanserEncoder(QuanserDaq& daq) :
+QuanserEncoder::QuanserEncoder(QuanserDaq& daq, const ChanNums& channel_numbers, bool has_velocity) :
+    Encoder(channel_numbers),
     daq_(daq),
-    velocity_channel_numbes_(this)
+    velocity_channel_numbes_(this),
+    values_per_sec_(this),
+    velocities_(this),
+    has_velocity_(has_velocity)
 {
     set_name(daq.get_name() + "_encoder");
-}
-
-QuanserEncoder::~QuanserEncoder() {
-
 }
 
 bool QuanserEncoder::update() {
@@ -38,13 +38,13 @@ bool QuanserEncoder::update() {
     }
 }
 
-bool QuanserEncoder::update_channel(uint32 channel_number) {
+bool QuanserEncoder::update_channel(ChanNum channel_number) {
     t_error result;
-    result = hil_read_encoder(daq_.handle_, &channel_number, static_cast<uint32>(1), &values_[channel_number]);
+    result = hil_read_encoder(daq_.handle_, &channel_number, 1, &values_[channel_number]);
     if (has_velocity_)
     {
-        uint32 velocity_channel = channel_number + 14000;
-        result = hil_read_other(daq_.handle_, &velocity_channel, static_cast<uint32>(1), &values_per_sec_[channel_number]);
+        ChanNum velocity_channel = channel_number + 14000;
+        result = hil_read_other(daq_.handle_, &velocity_channel, 1, &values_per_sec_[channel_number]);
     }
     if (result == 0)
         return true;
@@ -55,7 +55,7 @@ bool QuanserEncoder::update_channel(uint32 channel_number) {
     }
 }
 
-bool QuanserEncoder::reset_counts(const std::vector<int32>& counts) {
+bool QuanserEncoder::reset_counts(const std::vector<int>& counts) {
     if (!Encoder::reset_counts(counts))
         return false;
     t_error result;
@@ -72,11 +72,11 @@ bool QuanserEncoder::reset_counts(const std::vector<int32>& counts) {
     }
 }
 
-bool QuanserEncoder::reset_count(uint32 channel_number, int32 count) {
+bool QuanserEncoder::reset_count(ChanNum channel_number, int count) {
     if (!Encoder::reset_count(channel_number, count))
         return false;
     t_error result;
-    result = hil_set_encoder_counts(daq_.handle_, &channel_number, static_cast<uint32>(1), &count);
+    result = hil_set_encoder_counts(daq_.handle_, &channel_number, 1, &count);
     sleep(milliseconds(10));
     if (result == 0) {
         LOG(Verbose) << "Reset " << get_name() << " channel number " << channel_number << " count to " << count;
@@ -123,7 +123,7 @@ bool QuanserEncoder::set_quadrature_factors(const std::vector<QuadFactor>& facto
     }
 }
 
-bool QuanserEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor factor) {
+bool QuanserEncoder::set_quadrature_factor(ChanNum channel_number, QuadFactor factor) {
     if (!Encoder::set_quadrature_factor(channel_number, factor))
         return false;
     // convert MEL QuadFactor to Quanser t_encoder_quadratue_mode
@@ -141,7 +141,7 @@ bool QuanserEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor fac
         return false;
     }
     t_error result;
-    result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, static_cast<uint32>(1), &converted_factor);
+    result = hil_set_encoder_quadrature_mode(daq_.handle_, &channel_number, 1, &converted_factor);
     sleep(milliseconds(10));
     if (result == 0) {
         LOG(Verbose) << "Set " << get_name() << " channel number " << channel_number << " quadrature factor";
@@ -154,11 +154,91 @@ bool QuanserEncoder::set_quadrature_factor(uint32 channel_number, QuadFactor fac
     }
 }
 
-const std::vector<uint32> QuanserEncoder::get_quanser_velocity_channels() {
-    std::vector<uint32> velocity_channels(get_channel_count());
+std::vector<double>& QuanserEncoder::get_values_per_sec() {
+    if (!has_velocity_) {
+        LOG(Warning) << "QuanserEncoder module " << get_name() << " has no velocity estimation";
+    }
+    return values_per_sec_.get();
+}
+
+double QuanserEncoder::get_value_per_sec(ChanNum channel_number) {
+    if (!has_velocity_) {
+        LOG(Warning) << "QuanserEncoder module " << get_name() << " has no velocity estimation";
+    }
+    if (validate_channel_number(channel_number))
+        return values_per_sec_[channel_number];
+    else
+        return double();
+}
+
+const std::vector<double>& QuanserEncoder::get_velocities() {
+    if (!has_velocity_) {
+        LOG(Warning) << "QuanserEncoder module " << get_name() << " has no velocity estimation";
+    }
+    for (auto const& ch : get_channel_numbers())
+        velocities_[ch] = values_per_sec_[ch] * conversions_[ch];
+    return velocities_.get();
+}
+
+double QuanserEncoder::get_velocity(ChanNum channel_number) {
+    if (!has_velocity_) {
+        LOG(Warning) << "QuanserEncoder module " << get_name() << " has no velocity estimation";
+    }
+    if (validate_channel_number(channel_number)) {
+        return values_per_sec_[channel_number] * conversions_[channel_number];
+    }
+    else
+        return double();
+}
+
+bool QuanserEncoder::has_velocity() const {
+    return has_velocity_;
+}
+
+const ChanNums QuanserEncoder::get_quanser_velocity_channels() {
+    ChanNums velocity_channels(get_channel_count());
     for (std::size_t i = 0; i < velocity_channels.size(); ++i)
         velocity_channels[i] = get_channel_numbers()[i] + 14000;
     return velocity_channels;
+}
+
+QuanserEncoder::Channel QuanserEncoder::get_channel(ChanNum channel_number) {
+    if (validate_channel_number(channel_number))
+        return Channel(this, channel_number);
+    else
+        return Channel();
+}
+
+std::vector<QuanserEncoder::Channel> QuanserEncoder::get_channels(const ChanNums& channel_numbers) {
+    std::vector<Channel> channels;
+    for (std::size_t i = 0; i < channel_numbers.size(); ++i)
+        channels.push_back(get_channel(channel_numbers[i]));
+    return channels;
+}
+
+QuanserEncoder::Channel QuanserEncoder::operator[](ChanNum channel_number) {
+    return get_channel(channel_number);
+}
+
+std::vector<QuanserEncoder::Channel> QuanserEncoder::operator[](const ChanNums& channel_numbers) {
+    return get_channels(channel_numbers);
+}
+
+QuanserEncoder::Channel::Channel() :
+    Encoder::Channel()
+{ }
+
+QuanserEncoder::Channel::Channel(QuanserEncoder* module, ChanNum channel_number) :
+    Encoder::Channel(module, channel_number)
+{ }
+
+double QuanserEncoder::Channel::get_value_per_sec() {
+    return static_cast<QuanserEncoder*>(module_)->get_value_per_sec(channel_number_);
+}
+
+double QuanserEncoder::Channel::get_velocity() {
+    velocity_ = static_cast<QuanserEncoder*>(module_)->get_velocity(channel_number_);
+    return velocity_;
 }
 
 } // namespace mel

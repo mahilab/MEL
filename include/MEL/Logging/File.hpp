@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,57 +15,70 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_FILE_HPP
-#define MEL_FILE_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
+#include <MEL/Core/Types.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <sstream>
 
 namespace mel {
 
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
-
-class MEL_API File : mel::NonCopyable {
+/// Representats a file resource
+class File : NonCopyable {
 public:
+    
     /// Default constructor
     File();
 
-    /// Cosntructor with file name provided
-    File(const char* fileName);
+    /// Constructor with filepath provided (opens file)
+    File(const std::string& filepath, WriteMode w_mode = Truncate, OpenMode o_mode = OpenOrCreate);
 
-    /// Default destructor
-    ~File();
+    /// Default destructor (closes file if open)
+    virtual ~File();
 
     /// Opens the file for input-output operations
-    off_t open(const char* fileName);
+    bool open(const std::string &filepath, WriteMode mode = Truncate, OpenMode o_mode = OpenOrCreate);
 
     /// Writes to the file if the file is open
-    int write(const void* buf, size_t count);
+    int write(const void* data, std::size_t count);
 
     /// Writes to the file if the file is open
     template <class CharType>
     int write(const std::basic_string<CharType>& str) {
         return write(str.data(), str.size() * sizeof(CharType));
     }
-
-    off_t seek(off_t offset, int whence);
+    
+    /// Returns true if file is open
+    bool is_open();
 
     /// Closes the file if the file is open
     void close();
 
-    /// Removes the file if it exists
-    static int unlink(const char* fileName);
+public:
 
-    /// Renames the file if it exists
-    static int rename(const char* oldFilename, const char* newFilename);
+    /// Removes a file if it exists
+    static int unlink(const std::string& filepath);
+
+    /// Renames a file if it exists
+    static int rename(const std::string& old_filepath, const std::string& new_filepath);
+
+protected:
+
+    /// Repositions file offset from beginning
+    off_t seek_set(off_t offset);
+
+    /// Repositions file offset from current
+    off_t seek_cur(off_t offset);
+
+    /// Repositions file offset from end
+    off_t seek_end(off_t offset);
+
+    /// Repositions file offset according to directive whence and returns resulting offset
+    off_t seek(off_t offset, int whence);
 
 private:
-    int m_file;  ///< Windows file type
+
+    int file_handle_;  ///< file handle
 };
 
 }  // namespace mel
-
-#endif  // MEL_FILE_HPP

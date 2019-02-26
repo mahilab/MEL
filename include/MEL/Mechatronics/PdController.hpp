@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -15,10 +15,8 @@
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
 
-#ifndef MEL_PDCONTROLLER_HPP
-#define MEL_PDCONTROLLER_HPP
+#pragma once
 
-#include <MEL/Config.hpp>
 
 namespace mel {
 
@@ -26,13 +24,10 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API PdController {
+class PdController {
 public:
     /// Constructor
     PdController(double kp = 0.0, double kd = 0.0);
-
-    /// Sets proportional and derivative control gains
-    void set_gains(double kp, double kd);
 
     /// Calculates the control effort given the current state and desired reference
     double operator()(double x_ref, double x, double xdot_ref, double xdot);
@@ -63,14 +58,16 @@ public:
     /// moving smoothly to it.
     void reset_move_to_hold();
 
+public:
+
+    double kp;  ///< the proportional control gain
+    double kd;  ///< the derivative control gain
+
 private:
-    double kp_;          ///< the proportional control gain
-    double kd_;          ///< the derivative control gain
+
     double last_x_;      ///< the last x used for move to hold
     bool holding_;       ///< true if holding
     bool move_started_;  ///< true if moving
 };
 
 }  // namespace mel
-
-#endif  // MEL_PDCONTROLLER_HPP
