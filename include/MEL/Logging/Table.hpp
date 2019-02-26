@@ -100,9 +100,29 @@ public:
 	/// Overload the << stream operator with a Table as the rhs argument
 	friend std::ostream& operator<<(std::ostream& os, const Table& table);
 
+public:
+
+	/// Write a Table to a file
+	static bool write(const std::string &filepath, const Table &data_in);
+
+	/// Write a vector of Tables to a file
+	static bool write(const std::string &filepath, const std::vector<Table> &data_in);
+
+	/// Read a Table from a file
+	static bool read(const std::string &filepath, Table &data_out);
+
+	/// Read a vector of Tables from a file
+	static bool read(const std::string &filepath, std::vector<Table> &data_out);
+
 private:
 
 	bool check_inner_dim(const std::vector<std::vector<double>> &values, std::size_t row_size) const;
+
+private:
+
+	static std::string make_header(const Table &table);
+
+	static bool parse_header(Table &table, const std::string &header);
 
 private:
 	std::string name_;

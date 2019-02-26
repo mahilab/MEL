@@ -3,9 +3,7 @@
 #include <thread>
 
 namespace mel
-{
-
-    
+{    
 
 Csv::Csv() : File() {}
 
