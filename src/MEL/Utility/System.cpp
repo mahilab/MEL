@@ -60,7 +60,7 @@ bool create_directory(const std::string &path)
         }
 #ifdef _WIN32
         auto result = CreateDirectory(sub_path.c_str(), NULL);
-        if (result == 0) {
+        if (result == 0 && result != ERROR_ALREADY_EXISTS) {
             LOG(Error) << "Failed to create directory " << sub_path << ". Ensure you have the correct permissions.";
             return false;
         }

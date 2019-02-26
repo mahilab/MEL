@@ -69,15 +69,17 @@ int main() {
     if (csv.is_open()) {
         // make a header
         csv.write_row("Time", "double", "string", "int", "vector[0]", "vector[1]", "vector[2]");
+        // set precision of floating poitn numbers
+        csv.set_precision(2);
         // simulate a loop
-        print("Starting 60 second loop ...");
+        print("Starting 10 second loop ...");
         Timer timer(hertz(1000));
         Time  t;
-        while (t < seconds(60)) {
+        while (t < seconds(10)) {
             // make some data
             double a_double         = random(0.0, 100.0);
             string a_string         = "string" + std::to_string(timer.get_elapsed_ticks());
-            int a_int               = random(0, 100);
+            int a_int               = random(0, 1000);
             vector<double> a_vector = {random(0.0,1.0), random(1.0,2.0), random(2.0,3.0)};
             // write a row (note a_vector will count as 3 fields)
             csv.write_row(t, a_double, a_string, a_int, a_vector);

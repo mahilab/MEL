@@ -24,6 +24,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <ios>
 
 namespace mel {
 
@@ -41,6 +42,9 @@ public:
     template <typename Arg, typename... Args>
     void write_row(Arg&& arg, Args&&... args);
 
+    /// Sets the precision of floating point values (default 6)
+    void set_precision(std::size_t precision);
+    
 private:
 
     // hide functions inherited from File
@@ -48,6 +52,9 @@ private:
     using File::rename;
     using File::write;
 
+private:
+
+    std::size_t precision_;  ///< precision of floating point values
 };
 
 // The following free functions are provided for convenience and are not

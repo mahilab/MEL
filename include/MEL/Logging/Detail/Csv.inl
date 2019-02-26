@@ -3,6 +3,7 @@ namespace mel {
  template <typename Arg, typename... Args>
 void Csv::write_row(Arg&& arg, Args&&... args) {
     std::ostringstream ss;
+    ss << std::setprecision(precision_);
     ss << std::forward<Arg>(arg);
     using expander = int[];
     (void)expander{0, (void(ss << ',' << std::forward<Args>(args)), 0)...};

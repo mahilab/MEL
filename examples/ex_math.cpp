@@ -21,7 +21,7 @@
 #include <MEL/Math/Integrator.hpp>
 #include <MEL/Core/Console.hpp>
 #include <MEL/Core/Timer.hpp>
-#include <MEL/Logging/DataLogger.hpp>
+#include <MEL/Logging/Csv.hpp>
 
 using namespace mel;
 
@@ -35,9 +35,8 @@ int main() {
     Integrator integrator = Integrator(5, Integrator::Technique::Simpsons);
 
     // create data logger
-    DataLogger data_logger(WriterType::Buffered, false);
-    std::vector<std::string> header = { "t", "x(t)", "dx/dt", "dx/dt", "integral(x)", "integral(x)" };
-    data_logger.set_header(header);
+    Csv csv("math.csv");
+    csv.write_row("t", "x(t)", "dx/dt", "dx/dt", "integral(x)", "integral(x)");
     std::vector<double> data(6);
 
     // loop
@@ -55,14 +54,11 @@ int main() {
         data[4] = mel::sin(4 * t) * mel::cos(3 * t) + 5;
         // integral(x) ~ integrate(dx/dt)
         data[5] = integrator.update(data[1], timer.get_elapsed_time());
-        // write to data log buffer
-        data_logger.buffer(data);
+        // write data to csv
+        csv.write_row(data);
         // wait timer
         timer.wait();
     }
-
-    // save data
-    data_logger.save_data("example_math_data");
 
     return 0;
 }
