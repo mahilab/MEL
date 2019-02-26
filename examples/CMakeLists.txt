@@ -20,7 +20,7 @@ mel_example(comms_server)
 mel_example(virtual_daq)
 mel_example(serial)
 mel_example(csv)
-# mel_example(time)
+mel_example(time)
 
 # windows only examples
 if(WIN32)
