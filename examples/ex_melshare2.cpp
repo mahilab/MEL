@@ -1,31 +1,34 @@
 #include <MEL/Communications/MelShare2.hpp>
 #include <MEL/Core/Console.hpp>
 #include <MEL/Utility/Options.hpp>
+#include <array>
 
 using namespace mel;
 
-struct Thing {
-    int x;
-};
+
 
 int main(int argc, char* argv[]) {
     Options options("melshare2.exe", "MelShare2");
     options.add_options()("a", "Runs A")("b", "Runs B");
     auto input = options.parse(argc, argv);
 
+    std::array<double, 5> data;
+
     if (input.count("a")) {
-        MelShare2<Thing> ms("ms2", OpenOrCreate);
-        Thing thing;
-        thing.x = 5;
-        std::vector<Thing> data = { thing };
+        MelShare2<double, 5> ms("ms2", OpenOrCreate);
+        data = {1,2,3,4,5};
         ms.write(data);
-        prompt("Press Enter to exit.");
+        while (data[0] == 1)
+            ms.read(data);
+        print(data);
     }
     else if (input.count("b")) {
-        MelShare2<Thing> ms("ms2", OpenOnly);
+        MelShare2<double, 5> ms("ms2", OpenOnly);
         if (ms.is_mapped()) {
-            auto data = ms.read();
-            print(data[0].x);
+            ms.read(data);
+            print(data);
+            data = {5,4,3,2,1};
+            ms.write(data);
         }
         else {
             print("You must run A first!");

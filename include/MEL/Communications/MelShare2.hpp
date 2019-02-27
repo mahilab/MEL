@@ -18,66 +18,40 @@
 #ifndef MEL_MELSHARE2_HPP
 #define MEL_MELSHARE2_HPP
 
-#include <MEL/Config.hpp>
 #include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>
 #include <MEL/Utility/NamedMutex.hpp>
 #include <string>
-#include <vector>
+#include <array>
 
 namespace mel {
 
-class Packet;
-
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
-
-/// High-level communication class that simplifies shared memory communication
-template <typename T>
-class MEL_API MelShare2 : NonCopyable {
+/// High-level shared memory for interprocess communication
+template <typename T, std::size_t Size>
+class MelShare2 : NonCopyable {
 public:
     /// Default constructor.
     MelShare2(const std::string& name, OpenMode mode = OpenOrCreate) :
-        shm_(name, mode, 256),
+        shm_(name, mode, Size * sizeof(T)),
         mutex_(name + "_mutex", mode)
-    {
+    { }
 
+    /// Writes data to the MelShare
+    void write(const std::array<T, Size>& data_in) {
+        Lock lock(mutex_);
+        shm_.write(&data_in[0], Size * sizeof(T), 0);
     }
 
-    /// Writes a Packet to the MelShare
-    void write(std::vector<T> data) {
+    /// Reads data from the MelShare
+    void read(std::array<T, Size>& data_out) {
         Lock lock(mutex_);
-        uint32 size = static_cast<uint32>(data.size() * sizeof(T));
-        shm_.write(&size, sizeof(uint32));
-        shm_.write(&data[0], size, sizeof(uint32));
-    }
-
-    /// Reads a Packet from the MelShare
-    std::vector<T> read() {
-        Lock lock(mutex_);
-        uint32 size = get_size();
-        if (size > 0) {
-            std::vector<T> data(size / sizeof(T));
-            shm_.read(&data[0], size, sizeof(uint32));
-            return data;
-        }
-        else
-            return std::vector<T>();
+        shm_.read(&data_out[0], Size * sizeof(T), 0);
     }
 
     /// Returns TRUE if the MelShare was successfully mapped on creation
     bool is_mapped() const {
         return shm_.is_mapped();
-    }
-
-private:
-    /// Gets the number of bytes currently stored in the MelShare
-    uint32 get_size() {
-        uint32 size;
-        shm_.read(&size, sizeof(uint32));
-        return size;
     }
 
 private:
