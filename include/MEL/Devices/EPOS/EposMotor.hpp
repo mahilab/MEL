@@ -22,6 +22,12 @@
 
 namespace mel {
 
+
+//==============================================================================
+// CLASS DECLARATION
+//==============================================================================
+
+// Implements a new noncopyable EposMotor derived from the MEL device class 
 class MEL_API EposMotor : public mel::Device, mel::NonCopyable {
 
 public:
@@ -30,11 +36,57 @@ public:
     ~EposMotor();
 
 private:
+    // device variable
+	char*		 portName;
+	DWORD		 errorCode;
+	byte		 nodeId;
+	void*		 keyHandle;
+
+	// control parameter variables
+	unsigned int desVelocity;
+	unsigned int desAcceleration;
+	unsigned int desDeceleration;
+
+	// data recorder variables
+	//WORD		 samplePeriod; 
+	//WORD		 samples;
+
+	// device connection functions
+	void		 enableControl();
+	void		 disableControl();
+
+	// device parameter functions
+	void		 setControlParam();
+	//void setRecorderParam();
+
+	// movement functions
+	void		 halt();
+
+
 
     bool on_enable() override;
     bool on_disable() override;
 
 private:
+
+    // constructor
+	MaxonMotor();
+	~MaxonMotor();
+
+	// device connection functions
+	void		 start();
+	void		 end();
+
+	// device parameter functions
+	void		 setPort(char* port);
+	void		 setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec);
+	//void setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples);
+
+	// movement functions
+	void		 move(long desPosition);
+	void		 getPosition(long& position);
+	BOOL		 targetReached();
+
 
 };
 
