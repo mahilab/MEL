@@ -15,13 +15,20 @@
 //
 // Author(s): Zane Zook (gadzooks@rice.edu)
 
+/*
+This is the header file for the Epos Motor class. This class holds all the 
+lower level commands sent to the Maxoncontrollers. This specific version is 
+customized to work with the EPOS4 controller but it can be modified to work 
+with other controllers
+*/
+
 #pragma once
 
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/NonCopyable.hpp>
+#include <windows.h>
 
 namespace mel {
-
 
 //==============================================================================
 // CLASS DECLARATION
@@ -32,8 +39,23 @@ class MEL_API EposMotor : public mel::Device, mel::NonCopyable {
 
 public:
 
+	// constructor/destructor for the epos motor class
     EposMotor(const std::string& name);
     ~EposMotor();
+
+	// device connection functions
+	void		 start();
+	void		 end();
+
+	// device parameter functions
+	void		 setPort(char* port);
+	void		 setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec);
+	//void setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples);
+
+	// movement functions
+	void		 move(long desPosition);
+	void		 getPosition(long& position);
+	BOOL		 targetReached();
 
 private:
     // device variable
@@ -62,32 +84,8 @@ private:
 	// movement functions
 	void		 halt();
 
-
-
-    bool on_enable() override;
-    bool on_disable() override;
-
-private:
-
-    // constructor
-	MaxonMotor();
-	~MaxonMotor();
-
-	// device connection functions
-	void		 start();
-	void		 end();
-
-	// device parameter functions
-	void		 setPort(char* port);
-	void		 setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec);
-	//void setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples);
-
-	// movement functions
-	void		 move(long desPosition);
-	void		 getPosition(long& position);
-	BOOL		 targetReached();
-
-
-};
+	// device enable/disable
+    bool on_enable() 	override;
+    bool on_disable() 	override;
 
 } // namespace mel
