@@ -12,10 +12,10 @@ int main(int argc, char* argv[]) {
     options.add_options()("a", "Runs A")("b", "Runs B");
     auto input = options.parse(argc, argv);
 
-    std::array<double, 5> data;
+    std::vector<double> data;
 
     if (input.count("a")) {
-        MelShare2<double, 5> ms("ms2", OpenOrCreate);
+        MelShare2<double, 10> ms("ms2", OpenOrCreate);
         data = {1,2,3,4,5};
         ms.write(data);
         while (data[0] == 1)
@@ -23,11 +23,11 @@ int main(int argc, char* argv[]) {
         print(data);
     }
     else if (input.count("b")) {
-        MelShare2<double, 5> ms("ms2", OpenOnly);
-        if (ms.is_mapped()) {
+        MelShare2<double, 10> ms("ms2", OpenOnly);
+        if (ms.mapped()) {
             ms.read(data);
             print(data);
-            data = {5,4,3,2,1};
+            data = {5,4,3,2,1,0};
             ms.write(data);
         }
         else {

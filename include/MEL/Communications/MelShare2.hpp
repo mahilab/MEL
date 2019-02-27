@@ -1,7 +1,7 @@
 // MIT License
 //
 // MEL - Mechatronics Engine & Library
-// Copyright (c) 2018 Mechatronics and Haptic Interfaces Lab - Rice University
+// Copyright (c) 2019 Mechatronics and Haptic Interfaces Lab - Rice University
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -14,9 +14,8 @@
 // all copies or substantial portions of the Software.
 //
 // Author(s): Evan Pezent (epezent@rice.edu)
-
-#ifndef MEL_MELSHARE2_HPP
-#define MEL_MELSHARE2_HPP
+ 
+ # pragma once
 
 #include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Core/NonCopyable.hpp>
@@ -24,6 +23,8 @@
 #include <MEL/Utility/NamedMutex.hpp>
 #include <string>
 #include <array>
+#include <vector>
+#include <cassert>
 
 namespace mel {
 
@@ -33,25 +34,41 @@ class MelShare2 : NonCopyable {
 public:
     /// Default constructor.
     MelShare2(const std::string& name, OpenMode mode = OpenOrCreate) :
-        shm_(name, mode, Size * sizeof(T)),
+        shm_(name, mode, sizeof(uint32) + Size * sizeof(T)),
         mutex_(name + "_mutex", mode)
     { }
 
     /// Writes data to the MelShare
-    void write(const std::array<T, Size>& data_in) {
+    void write(const std::vector<T>& data) {
+        uint32 size = static_cast<uint32>(data.size());
+        assert(size <= Size);
         Lock lock(mutex_);
-        shm_.write(&data_in[0], Size * sizeof(T), 0);
+        shm_.write(&size, sizeof(uint32));
+        if (size > 0)
+            shm_.write(&data[0], size * sizeof(T), sizeof(uint32));
     }
 
     /// Reads data from the MelShare
-    void read(std::array<T, Size>& data_out) {
+    void read(std::vector<T>& data) {
+        uint32 size;
         Lock lock(mutex_);
-        shm_.read(&data_out[0], Size * sizeof(T), 0);
+        shm_.read(&size, sizeof(uint32));
+        data.resize(size);
+        if (size > 0)
+            shm_.read(&data[0], size * sizeof(T), sizeof(uint32));
     }
 
     /// Returns TRUE if the MelShare was successfully mapped on creation
-    bool is_mapped() const {
+    bool mapped() const {
         return shm_.is_mapped();
+    }
+
+        /// Returns the current number of elements stored in memory
+    std::size_t size() {
+        uint32 size;
+        Lock lock(mutex_);
+        shm_.read(&size, sizeof(uint32));
+        return static_cast<std::size_t>(size);
     }
 
 private:
@@ -60,5 +77,3 @@ private:
 };
 
 }  // namespace mel
-
-#endif  // MEL_MELSHARE2_HPP
