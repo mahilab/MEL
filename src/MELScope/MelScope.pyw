@@ -29,19 +29,6 @@ import collections
 import qdarkstyle
 import ctypes
 
-# TO DO:
-# turn scopes on off
-# thread melshare
-# save window size
-# curve scaling (eg deg2rad)
-# scope modules to generic modules, add interactive gain modules with sliders
-# open from .scope
-# changing colros when paused deletes data
-# add MelNet
-# write only shouldn't plot
-# write curves do weird things on plot -- should be hidden or fixed
-# settigns tab on each scope
-
 #==============================================================================
 # DEFAULT SETTINGS
 #==============================================================================
@@ -96,7 +83,7 @@ time_mode = DEFAULT_TIME_MODE
 # GLOBAL CONSTANTS
 #==============================================================================
 
-VER = '0.2.2'
+VER = '0.3.0'
 
 SCREEN_RESOLUTION = application.desktop().screenGeometry()
 RESOLUTION_SCALE = SCREEN_RESOLUTION.width() / 1920.0
@@ -112,10 +99,10 @@ SCROLL_OPTIONS = ['Fixed', 'Rolling']
 NUM_SAMPLES = SAMPLE_DURATION * SAMPLE_TARGET
 
 THEME_OPTIONS = ['Classic', 'Dark']
-THEME_STYLESHEETS = {'Classic': '', 'Dark': qdarkstyle.load_stylesheet(pyside=False)}
-THEME_SCOPE_BG_COLORS = {"Classic": [240, 240, 240], "Dark": [49, 54, 59]}
+THEME_STYLESHEETS = {'Classic': '', 'Dark': qdarkstyle.load_stylesheet_pyqt5()}
+THEME_SCOPE_BG_COLORS = {"Classic": [240, 240, 240], "Dark": [25, 35, 45]}
 THEME_SCOPE_FB_COLORS = {"Classic": [0, 0, 0], "Dark": [240, 240, 240]}
-THEME_SCOPE_VB_COLORS  = {"Classic": [240, 240, 240], "Dark": [35, 38, 41]}
+THEME_SCOPE_VB_COLORS  = {"Classic": [240, 240, 240], "Dark": [19, 27, 35]}
 THEME_SCOPE_IO_CONFIRMED_COLORS = {"Classic": [204, 232, 255], "Dark": [24, 70, 93]}
 THEME_SCOPE_IO_CHANGING_COLORS  = {'Classic': [144, 200, 246], 'Dark': [191, 54, 12]}
 
@@ -650,12 +637,11 @@ def open_new_instance():
     subprocess.Popen([sys.executable, 'MelScope.pyw'],
                      creationflags=CREATE_NO_WINDOW)
 
-def open():
+def open_scope():
     global filepath
-    filepath = QtGui.QFileDialog.getOpenFileName(
-        main_widget, 'Open MELScope', "", 'Scope Files (*.scope *.yaml)')
+    filepath, _ = QtGui.QFileDialog.getOpenFileName(main_widget, 'Open MELScope', "", 'Scope Files (*.scope *.yaml)')
     if filepath:
-        stream = file(filepath, 'r')
+        stream = open(filepath, 'r')
         config = yaml.load(stream)
         remove_all_data_sources()
         remove_all_scope_modulels()
@@ -670,26 +656,26 @@ def open():
         main_window.setWindowTitle('MELScope (' + filename + ')')
 
 
-def save():
+def save_scope():
     global filepath
     if filepath:
         config = generate_config()
-        stream = file(filepath, 'w')
+        stream = open(filepath, 'w')
         yaml.dump(config, stream)
         filename = str(filepath[str(filepath).rfind('/') + 1:])
         filename = filename[0: filename.rfind('.')]
         status_bar.showMessage('Saved <' + filename + '>')
         main_window.setWindowTitle('MELScope (' + filename + ')')
     else:
-        save_as()
+        save_scope_as()
 
 
-def save_as():
+def save_scope_as():
     global filepath
-    new_filepath = QtGui.QFileDialog.getSaveFileName(main_widget, 'Save MELScope', "", 'Scope Files (*.scope *.yaml)')
+    new_filepath, _ = QtGui.QFileDialog.getSaveFileName(main_widget, 'Save MELScope', "", 'Scope Files (*.scope *.yaml)')
     if new_filepath:
         filepath = new_filepath
-        save()
+        save_scope()
 
 
 def deploy_config(config):
@@ -943,7 +929,7 @@ class ConfigureDataDialog(QtGui.QDialog):
                 new_line_combo_box = QtGui.QComboBox(self)
                 new_line_combo_box.addItems(CURVE_STYLE_OPTIONS.keys())
                 new_line_combo_box.setCurrentIndex(
-                    CURVE_STYLE_OPTIONS.keys().index(data_sources[name].curve_styles[i]))
+                    list(CURVE_STYLE_OPTIONS.keys()).index(data_sources[name].curve_styles[i]))
                 self.line_combo_boxes[name].append(new_line_combo_box)
                 layout.addWidget(new_line_combo_box, row, 5)
 
@@ -1271,7 +1257,7 @@ def about():
     AboutDialog.open_dialog()
 
 def open_github():
-    webbrowser.open('https://github.com/epezent/MEL')
+    webbrowser.open('https://github.com/mahilab/MEL')
 
 def prompt_scroll_mode():
     global time_mode
@@ -1324,15 +1310,15 @@ new_action = QtGui.QAction('&New', main_window,
 file_menu.addAction(new_action)
 
 open_action = QtGui.QAction('&Open...', main_window,
-                            shortcut='Ctrl+O', statusTip='Open an existing MELScope', triggered=open)
+                            shortcut='Ctrl+O', statusTip='Open an existing MELScope', triggered=open_scope)
 file_menu.addAction(open_action)
 
 save_action = QtGui.QAction('&Save', main_window,
-                            shortcut='Ctrl+S', statusTip='Save this MELScope', triggered=save)
+                            shortcut='Ctrl+S', statusTip='Save this MELScope', triggered=save_scope)
 file_menu.addAction(save_action)
 
 save_as_action = QtGui.QAction('Save &As...', main_window,
-                               shortcut='Ctrl+Shift+S', statusTip='Save this MELScope under a new name', triggered=save_as)
+                               shortcut='Ctrl+Shift+S', statusTip='Save this MELScope under a new name', triggered=save_scope_as)
 file_menu.addAction(save_as_action)
 
 reload_action = QtGui.QAction('&Reload', main_window,
@@ -1347,9 +1333,9 @@ add_melshare_action = QtGui.QAction('&Add MELShare...', main_window,
                                shortcut='Ctrl+A', statusTip='Add a MELShare data source', triggered=prompt_add_melshare)
 edit_menu.addAction(add_melshare_action)
 
-add_melnet_action = QtGui.QAction('Add &MELNet...', main_window,
-                               shortcut='Ctrl+Shift+A', statusTip='Add a MELNet data source', triggered=prompt_add_melnet)
-edit_menu.addAction(add_melnet_action)
+# add_melnet_action = QtGui.QAction('Add &MELNet...', main_window,
+#                                shortcut='Ctrl+Shift+A', statusTip='Add a MELNet data source', triggered=prompt_add_melnet)
+# edit_menu.addAction(add_melnet_action)
 
 remove_action = QtGui.QAction('&Remove Data Source...', main_window,
                                shortcut='Ctrl+X', statusTip='Remove an existing data source', triggered=prompt_remove_melshare)
@@ -1422,7 +1408,7 @@ status_bar.addPermanentWidget(rate_label)
 for i in range (QtGui.QColorDialog.customCount()):
     rgb = CURVE_COLOR_OPTIONS[i]
     color = QtGui.QColor(rgb[0], rgb[1], rgb[2])
-    QtGui.QColorDialog.setCustomColor(i, color.rgb())
+    QtGui.QColorDialog.setCustomColor(i, color)
 
 set_theme()
 reload_grid()
@@ -1461,7 +1447,7 @@ render_loop_timer.start(1000 / FPS_TARGET)
 
 # connect main window closeEvent to custom close to prevent crash
 def close(event):
-    print "Closing MELScope"
+    # print("Closing MELScope")
     sys.exit()
 main_window.closeEvent = close
 

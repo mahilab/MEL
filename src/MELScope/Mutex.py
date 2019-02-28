@@ -18,8 +18,9 @@ import ctypes
 from ctypes import wintypes
 
 # Create ctypes wrapper for Win32 functions we need, with correct argument/return types
-_CreateMutex = ctypes.windll.kernel32.CreateMutexA
-_CreateMutex.argtypes = [wintypes.LPCVOID, wintypes.BOOL, wintypes.LPCSTR]
+# python2 should use CreateMutexA w/ wintypes.LPCSTR
+_CreateMutex = ctypes.windll.kernel32.CreateMutexW
+_CreateMutex.argtypes = [wintypes.LPCVOID, wintypes.BOOL, wintypes.LPCWSTR]
 _CreateMutex.restype = wintypes.HANDLE
 
 _WaitForSingleObject = ctypes.windll.kernel32.WaitForSingleObject
@@ -120,5 +121,5 @@ class Mutex(object):
 # b = Mutex("my_mutex")
 
 # b.try_lock()
-# print "B can continue now"
+# print("B can continue now")
 # b.release()
