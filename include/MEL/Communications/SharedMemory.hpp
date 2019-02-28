@@ -43,7 +43,7 @@ class SharedMemory : NonCopyable {
 public:
 
     /// Default constructor. Creates or opens a memory map containing size bytes
-    SharedMemory(const std::string& name, OpenMode mode, std::size_t max_bytes = 256);
+    SharedMemory(const std::string& name, OpenMode mode, std::size_t size);
 
     /// Default destructor. Closes the named memory map.
     ~SharedMemory();
@@ -81,7 +81,7 @@ private:
 
 private:
     const std::string name_;       ///< The name of the memory map file
-    const std::size_t max_bytes_;  ///< The size of the mapped region in bytes
+    const std::size_t size_;  ///< The size of the mapped region in bytes
     MapHandle map_;                ///< OS specfic handle to the memory map
     void* buffer_;                 ///< The memory buffer of the map
     bool is_mapped_;               ///< true if the SharedMemory was successfully mapped

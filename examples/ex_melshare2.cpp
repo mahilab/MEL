@@ -5,8 +5,6 @@
 
 using namespace mel;
 
-
-
 int main(int argc, char* argv[]) {
     Options options("melshare2.exe", "MelShare2");
     options.add_options()("a", "Runs A")("b", "Runs B");

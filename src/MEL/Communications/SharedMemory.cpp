@@ -23,16 +23,16 @@ namespace mel {
 // COMMON IMPLEMENTATION
 //==============================================================================
 
-SharedMemory::SharedMemory(const std::string& name, OpenMode mode, std::size_t max_bytes)
+SharedMemory::SharedMemory(const std::string& name, OpenMode mode, std::size_t size)
     : name_(name),
-      max_bytes_(max_bytes),
+      size_(size),
       buffer_(nullptr),
       is_mapped_(false)
 {
     switch (mode) {
         case OpenOrCreate: {
-            if (open_or_create(map_, name_, max_bytes_)) {
-                buffer_ = map_buffer(map_, max_bytes_);
+            if (open_or_create(map_, name_, size_)) {
+                buffer_ = map_buffer(map_, size_);
                 if (buffer_)
                     is_mapped_ = true;
             }
@@ -40,7 +40,7 @@ SharedMemory::SharedMemory(const std::string& name, OpenMode mode, std::size_t m
         }
         case OpenOnly: {
             if (open_only(map_, name_)) {
-                buffer_ = map_buffer(map_, max_bytes_);
+                buffer_ = map_buffer(map_, size_);
                 if (buffer_)
                     is_mapped_ = true;
             }
@@ -50,14 +50,14 @@ SharedMemory::SharedMemory(const std::string& name, OpenMode mode, std::size_t m
 }
 
 SharedMemory::~SharedMemory() {
-    unmap_buffer(buffer_, max_bytes_);
+    unmap_buffer(buffer_, size_);
     close(name_, map_);
 }
 
 bool SharedMemory::write(const void* data,
                          std::size_t size,
                          std::size_t offset) {
-    if (size + offset > max_bytes_) {
+    if (size + offset > size_) {
         return false;
     }
     std::memcpy(((char*)buffer_) + offset, data, size);
@@ -65,7 +65,7 @@ bool SharedMemory::write(const void* data,
 }
 
 bool SharedMemory::read(void* data, std::size_t size, std::size_t offset) {
-    if (size + offset > max_bytes_) {
+    if (size + offset > size_) {
         return false;
     }
     std::memcpy(data, ((char*)buffer_) + offset, size);

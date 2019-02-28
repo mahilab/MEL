@@ -63,7 +63,7 @@ public:
         return shm_.is_mapped();
     }
 
-        /// Returns the current number of elements stored in memory
+    /// Returns the current number of elements stored in memory
     std::size_t size() {
         uint32 size;
         Lock lock(mutex_);

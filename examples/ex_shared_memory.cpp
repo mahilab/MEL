@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
         std::string id = argv[1];
         if (id == "1A") {
             // create shared memory map (same string name as B)
-            SharedMemory map("my_map", OpenOrCreate);
+            SharedMemory map("my_map", OpenOrCreate, 512);
             // write message
             char msg[4] = "abc"; // 3 char + 1 null terminator = 4 char (aka byte)
             map.write(msg, 4);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
             // need pointer to the first element of the vector hence &data[0]
         }
         else if (id == "2A") {
-            SharedMemory map("my_map", OpenOrCreate);
+            SharedMemory map("my_map", OpenOrCreate, 512);
             char msg[5] = "abcd";
             map.write(msg, 5);
             prompt("Press Enter after executing 2B");
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 
         }
         else if (id == "2B") {
-            SharedMemory map("my_map", OpenOnly);
+            SharedMemory map("my_map", OpenOnly, 512);
             if (!map.is_mapped()) {
                 print("You must run 2A first!");
                 return -1;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
             map.write(&x, 1, 1);
         }
         else if (id == "3A") {
-            SharedMemory map("my_map", OpenOrCreate);
+            SharedMemory map("my_map", OpenOrCreate, 512);
             std::vector<int> data = {1, 2, 3, 4, 5};
             map.write(&data[0], 20);
             prompt("Press Enter after executing 3B");
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 
         }
         else if (id == "3B") {
-            SharedMemory map("my_map", OpenOnly);
+            SharedMemory map("my_map", OpenOnly, 512);
             if (!map.is_mapped()) {
                 print("You must run 3A first!");
                 return -1;
