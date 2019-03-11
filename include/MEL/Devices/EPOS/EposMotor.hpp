@@ -17,7 +17,7 @@
 
 /*
 This is the header file for the Epos Motor class. This class holds all the 
-lower level commands sent to the Maxoncontrollers. This specific version is 
+lower level commands sent to the Maxon controllers. This specific version is 
 customized to work with the EPOS4 controller but it can be modified to work 
 with other controllers
 */
@@ -39,8 +39,8 @@ class MEL_API EposMotor : public mel::Device, mel::NonCopyable {
 
 public:
 
-	// constructor/destructor for the epos motor class
-    EposMotor(const std::string& name);
+	// constructor/destructor for the epos motor class. require device name
+    EposMotor(const std::string& name, const std::string& portName);
     ~EposMotor();
 
 	// device connection functions
@@ -59,19 +59,21 @@ public:
 
 private:
     // device variable
-	char*		 portName;
-	DWORD		 errorCode;
-	byte		 nodeId;
-	void*		 keyHandle;
+	char*		 portName_;
+	DWORD		 errorCode_;
+	byte		 nodeId_;
+	void*		 keyHandle_;
 
 	// control parameter variables
-	unsigned int desVelocity;
-	unsigned int desAcceleration;
-	unsigned int desDeceleration;
+	unsigned int desVelocity_;
+	unsigned int desAcceleration_;
+	unsigned int desDeceleration_;
 
 	// data recorder variables
 	//WORD		 samplePeriod; 
 	//WORD		 samples;
+
+private: 
 
 	// device connection functions
 	void		 enableControl();
