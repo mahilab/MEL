@@ -27,7 +27,12 @@ controllers
 //==============================================================================
 
 // libraries for Epos Motor Class
-#include <MEL/Devices/EPOS/EposMotor.hpp>
+#include <MEL/Core/Device/EPOS/EposMotor.hpp>
+
+// libraries for data logging and output
+#include <MEL/Logging/Log.hpp>
+#include <MEL/Core/Console.hpp>
+
 
 // other misc standard libraries
 #include <iostream>
@@ -38,32 +43,29 @@ controllers
 //==============================================================================
 
 /*
-Constructor for the EposMotor class
+Constructor for the maxonMotor class
  */
-EposMotor::EposMotor(const std::string& name, const std::string&)
-{
-	// sets the name for the device
-	name_(name);
-
-	// initializing controller information
-	portName_ = (char*)"USB0";
-	nodeId_ =	1;
-	errorCode_ = 0;
-	keyHandle_ = 0;
+EposMotor::EposMotor():
+    // initializing controller information
+	portName = (char*)"USB0";
+	nodeId =	1;
+	errorCode = 0;
+	keyHandle = 0;
 
 	//samplePeriod =	1; //n-times 0.1ms, 1 is 1000Hz
 	//samples =		100;
 
 	// initializing motor control parameters
-	desVelocity_ = 10000;
-	desAcceleration_ = 100000;
-	desDeceleration_ = 100000;
+	desVelocity = 10000;
+	desAcceleration = 100000;
+	desDeceleration = 100000;
+{	
 }
 
 /*
-Destructor for the EposMotor class
+Destructor for the maxonMotor class
  */
-EposMotor::~EposMotor()
+MaxonMotor::~MaxonMotor()
 {
 }
 
@@ -76,7 +78,7 @@ EposMotor::~EposMotor()
 Once the device has been opened, attempts to set the
 controller into position control mode.
  */
-void EposMotor::enableControl()
+void MaxonMotor::enableControl()
 {
 	BOOL inFault = FALSE;
 
@@ -124,7 +126,7 @@ void EposMotor::enableControl()
 Sets the position control parameters once the device
 has been enabled
  */
-void EposMotor::setControlParam()
+void MaxonMotor::setControlParam()
 {
 	// attempts to set the controllers' position control parameters
 	if (!VCS_SetPositionProfile(keyHandle, nodeId, desVelocity, desAcceleration, desDeceleration, &errorCode))
@@ -138,7 +140,7 @@ void EposMotor::setControlParam()
 Sets the data recorder parameters once the device
 has been enabled
 */
-//void EposMotor::setRecorderParam()
+//void maxonMotor::setRecorderParam()
 //{
 //	// define relevant parameters for data recorder
 //	WORD demPosIndex = 0x6062; // addresses found from EPOS studio software
@@ -171,7 +173,7 @@ has been enabled
 /*
 Turns off the position control on the controller
  */
-void EposMotor::disableControl()
+void MaxonMotor::disableControl()
 {
 	BOOL inFault = FALSE;
 
@@ -215,7 +217,7 @@ void EposMotor::disableControl()
 Opens communication from the computer to the specific 
 controller being referenced through USB comms.
  */
-void EposMotor::start()
+void MaxonMotor::start()
 {
 	// Configuring EPOS4 for motor control
 	char deviceName[] =		"EPOS4";
@@ -241,7 +243,7 @@ void EposMotor::start()
 Closes communication from the computer to the specific
 controller being referenced through USB comms.
  */
-void EposMotor::end()
+void MaxonMotor::end()
 {
 	// turns off position control
 	disableControl();
@@ -265,7 +267,7 @@ void EposMotor::end()
 Indicates what USB port the MAXON motor controller is 
 connected to.
  */
-void EposMotor::setPort(char* port)
+void MaxonMotor::setPort(char* port)
 {
 	portName = port;
 }
@@ -274,7 +276,7 @@ void EposMotor::setPort(char* port)
 Sets each one of the control parameters for position 
 control mode
  */
-void EposMotor::setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec)
+void MaxonMotor::setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec)
 {
 	desVelocity =		desVel;
 	desAcceleration =	desAcc;
@@ -287,7 +289,7 @@ void EposMotor::setControlParam(unsigned int desVel, unsigned int desAcc, unsign
 /*
 Sets the sampling freqeuncy and number of samples or the data recorder
 */
-//void EposMotor::setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples)
+//void maxonMotor::setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples)
 //{
 //	int HZ_TO_MS = 1/1000;
 //	samplePeriod = desSampleFreq * HZ_TO_MS;
@@ -302,7 +304,7 @@ Sets the sampling freqeuncy and number of samples or the data recorder
 /*
 Commands motor controller to move motor to specified position
  */
-void EposMotor::move(long desPosition)
+void MaxonMotor::move(long desPosition)
 {
 	BOOL Absolute =		TRUE; 
 	BOOL Immediately =	TRUE;
@@ -321,7 +323,7 @@ void EposMotor::move(long desPosition)
 /*
 Pings motor for its current position
  */
-void EposMotor::getPosition(long& position)
+void MaxonMotor::getPosition(long& position)
 {
 	// attempts to acquire current position of the motor
 	if (!VCS_GetPositionIs(keyHandle, nodeId, &position, &errorCode)) 
@@ -336,7 +338,7 @@ void EposMotor::getPosition(long& position)
 /*
 Pings motor to stop
  */
-void EposMotor::halt()
+void MaxonMotor::halt()
 {
 	// attempts to stop motor in its place
 	if (!VCS_HaltPositionMovement(keyHandle, nodeId, &errorCode))
@@ -349,7 +351,7 @@ void EposMotor::halt()
 Checks to see if the motor is still moving or if it has
 reached its final destination
 */
-BOOL EposMotor::targetReached()
+BOOL MaxonMotor::targetReached()
 {
 	BOOL targetReached = FALSE;
 
@@ -368,7 +370,7 @@ BOOL EposMotor::targetReached()
 ///*
 //Tells the controller to begin recording data
 //*/
-//void EposMotor::startRecord()
+//void MaxonMotor::startRecord()
 //{
 //	if (!VCS_StartRecorder(keyHandle, nodeId,  &errorCode))
 //	{
@@ -379,7 +381,7 @@ BOOL EposMotor::targetReached()
 ///*
 //Tells the controller to stop recording data
 //*/
-//void EposMotor::stopRecord()
+//void MaxonMotor::stopRecord()
 //{
 //	if (!VCS_StopRecorder(keyHandle, nodeId, &errorCode))
 //	{
@@ -387,7 +389,7 @@ BOOL EposMotor::targetReached()
 //	}
 //}
 //
-//void EposMotor::outputData()
+//void MaxonMotor::outputData()
 //{
 //	char* fileLocation = (char*)"test.csv";
 //	if (!VCS_ExportChannelDataToFile(keyHandle, nodeId, fileLocation, &errorCode))
