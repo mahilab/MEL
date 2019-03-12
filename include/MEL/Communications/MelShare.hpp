@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Communications/SharedMemory.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>
@@ -34,7 +33,7 @@ class Packet;
 //==============================================================================
 
 /// High-level communication class that simplifies shared memory communication
-class MEL_API MelShare : NonCopyable {
+class MelShare : NonCopyable {
 public:
 
     /// Default constructor.

@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
@@ -28,7 +27,7 @@ namespace mel {
 //==============================================================================
 /// Abstract base class from which all physical devices derive.
 //==============================================================================
-class MEL_API Device {
+class Device {
 public:
 
     //==========================================================================

@@ -17,13 +17,12 @@
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
 #pragma once
-
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
 namespace mel {
 
-class MEL_API MyoBand : public mel::Input<Voltage>, mel::NonCopyable {
+class MyoBand : public mel::Input<Voltage>, mel::NonCopyable {
 
 public:
 

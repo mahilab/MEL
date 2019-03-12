@@ -17,18 +17,57 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Logging/Detail/StreamMeta.hpp>
 #include <sys/stat.h>
-#include <MEL/Logging/Severity.hpp>
 #include <MEL/Core/Console.hpp>
 #include <MEL/Utility/System.hpp>
 #include <MEL/Core/Timestamp.hpp>
 
 namespace mel {
 
+/// Represents a logging severity level
+enum Severity {
+    None    = 0,  ///< always written
+    Fatal   = 1,  ///< error that forces application abort
+    Error   = 2,  ///< error that is fatal to operation, but not application
+    Warning = 3,  ///< error that may cause issues, but has been accounted for
+    Info    = 4,  ///< useful information needed during normal operation
+    Verbose = 5,  ///< useful information not needed during normal operation
+    Debug   = 6,  ///< useful information needed for diagnostics
+};
+
+inline const char* severity_to_string(Severity severity) {
+    switch (severity) {
+        case Fatal:
+            return "FATAL";
+        case Error:
+            return "ERROR";
+        case Warning:
+            return "WARN";
+        case Info:
+            return "INFO";
+        case Verbose:
+            return "VERB";
+        case Debug:
+            return "DEBUG";
+        default:
+            return "NONE";
+    }
+}
+
+inline Severity string_to_severity(const char* str) {
+    for (Severity severity = Fatal; severity <= Debug;
+         severity          = static_cast<Severity>(severity + 1)) {
+        if (severity_to_string(severity)[0] == str[0]) {
+            return severity;
+        }
+    }
+
+    return None;
+}
+
 /// Encapsulates a Log record
-class MEL_API LogRecord {
+class LogRecord {
 public:
     /// Constructor
     LogRecord(Severity severity,
@@ -85,6 +124,6 @@ private:
     mutable std::string message_str_;  ///< message string
 };
 
-inline MEL_API std::string process_function_name(const char* func);
+inline std::string process_function_name(const char* func);
 
 }  // namespace mel

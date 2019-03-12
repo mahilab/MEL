@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Mechatronics/Amplifier.hpp>
 
@@ -29,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a brushed or brushless DC Motor
-class MEL_API Motor : public Actuator {
+class Motor : public Actuator {
 public:
 
     /// Default Constructor

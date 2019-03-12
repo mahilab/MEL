@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Math/TimeFunction.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -28,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a cyclic waveform with amplitude and offset in the time domain
-class MEL_API Waveform : public TimeFunction {
+class Waveform : public TimeFunction {
 public:
     /// The Type of Waveform
     enum Type {

@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/InputOutput.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
@@ -32,7 +31,7 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API QuanserDIO : public DigitalInputOutput, NonCopyable {
+class QuanserDIO : public DigitalInputOutput, NonCopyable {
 public:
     QuanserDIO(QuanserDaq& daq, const ChanNums& channel_numbers);
 

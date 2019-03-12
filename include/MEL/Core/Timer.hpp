@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Clock.hpp>
 #include <MEL/Core/Frequency.hpp>
 
@@ -28,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// CPU based fixed rate waitable timer.
-class MEL_API Timer {
+class Timer {
 public:
     /// The waiting mode to be used when wait() is called.
     ///
@@ -59,15 +58,15 @@ public:
     /// Restarts the Timer and returns the elapsed time
     Time restart();
 
-    /// Waits the Timer and returns the ideal elapsed time after the wait completes
+    /// Waits the Timer and returns the actual elapsed time after the wait completes
     Time wait();
+
+    /// Gets the actual elapsed time since construction or last call to restart().
+    Time get_elapsed_time() const;
 
     /// Gets the ideal elapsed time since construction or last call to
     /// restart(). Equal to the tick count times the Timer period
-    Time get_elapsed_time() const;
-
-    /// Gets the actual elapsed time since construction or last call to restart().
-    Time get_elapsed_time_actual() const;
+    Time get_elapsed_time_ideal() const;
 
     /// Gets the elapsed number of ticks since construction or the last call to restart().
     int64 get_elapsed_ticks() const;
@@ -87,7 +86,7 @@ public:
     /// Gets the ratio of time waited to time elapsed for benchmarking purposes
     double get_wait_ratio() const;
 
-    /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.005 = 0.5%)
+    /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.01 = 1%)
     void set_acceptable_miss_rate(double rate);
 
 protected:

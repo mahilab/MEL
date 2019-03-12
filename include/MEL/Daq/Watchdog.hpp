@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Time.hpp>
 
@@ -27,7 +26,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a hardware watchdog timer
-class MEL_API Watchdog : NonCopyable {
+class Watchdog : NonCopyable {
 public:
     /// Default constructor
     Watchdog(Time timeout);

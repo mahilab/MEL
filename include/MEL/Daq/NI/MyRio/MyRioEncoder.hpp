@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Daq/Encoder.hpp>
 #include <utility>
@@ -26,7 +25,7 @@ namespace mel {
 class MyRioConnector;
 
 /// myRIO Encoder Module
-class MEL_API MyRioEncoder : public Encoder, NonCopyable {
+class MyRioEncoder : public Encoder, NonCopyable {
 public:
 
     /// Updates a single channel

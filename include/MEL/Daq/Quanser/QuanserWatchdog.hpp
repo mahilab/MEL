@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/Watchdog.hpp>
 
 namespace mel {
@@ -32,7 +31,7 @@ class QuanserDaq;
 //==============================================================================
 
 /// Encapsulates a hardware watchdog timer
-class MEL_API QuanserWatchdog : public Watchdog {
+class QuanserWatchdog : public Watchdog {
 public:
     /// Default constructor
     QuanserWatchdog(QuanserDaq& daq, Time timeout);

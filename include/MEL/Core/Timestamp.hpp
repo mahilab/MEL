@@ -16,14 +16,13 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <string>
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 
 /// Encapsulates a timestamp
-class MEL_API Timestamp {
+class Timestamp {
 public:
     /// Default constructor
     Timestamp();

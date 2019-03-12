@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/Quanser/QuanserDaq.hpp>
 #include <MEL/Daq/Quanser/QuanserAI.hpp>
 #include <MEL/Daq/Quanser/QuanserAO.hpp>
@@ -33,7 +32,7 @@ namespace mel {
 //==============================================================================
 
 /// Quanser Q8 USB class
-class MEL_API Q8Usb : public QuanserDaq {
+class Q8Usb : public QuanserDaq {
 public:
     /// Default constructor
     Q8Usb(QuanserOptions options                  = QuanserOptions(),

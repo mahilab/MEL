@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Daq/InputOutput.hpp>
 
@@ -26,7 +25,7 @@ class MyRioConnector;
 class MyRioEncoder;
 
 /// myRIO Digital Input/Output Module
-class MEL_API MyRioDIO : public DigitalInputOutput, NonCopyable {
+class MyRioDIO : public DigitalInputOutput, NonCopyable {
 public:
 
     /// Updates a single channel

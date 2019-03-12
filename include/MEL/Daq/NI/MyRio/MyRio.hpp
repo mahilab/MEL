@@ -16,13 +16,12 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/NI/MyRio/MyRioConnector.hpp>
 
 namespace mel {
 
 /// National Instruments myRIO embedded system
-class MEL_API MyRio : public DaqBase, NonCopyable {
+class MyRio : public DaqBase, NonCopyable {
 
 public:
 

@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Core/Types.hpp>
 #include <string>
@@ -40,7 +39,7 @@ typedef int MapHandle;
 //==============================================================================
 
 /// Encapsulates a unmanaged named memory map
-class MEL_API SharedMemory : NonCopyable {
+class SharedMemory : NonCopyable {
 public:
 
     /// Default constructor. Creates or opens a memory map containing size bytes

@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 
 namespace mel {
@@ -27,7 +26,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API VelocitySensor {
+class VelocitySensor {
 public:
     /// Constructor
     VelocitySensor();

@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/Quanser/QuanserDaq.hpp>
 #include <MEL/Daq/Quanser/QuanserAI.hpp>
 #include <MEL/Daq/Quanser/QuanserAO.hpp>
@@ -32,7 +31,7 @@ namespace mel {
 //==============================================================================
 
 /// Quanser Q2 USB class
-class MEL_API Q2Usb : public QuanserDaq {
+class Q2Usb : public QuanserDaq {
 public:
     /// Default constructor. Creates Q2 USB with all channels enabled and
     /// default QOptions

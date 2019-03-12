@@ -20,8 +20,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
-#include <MEL/Config.hpp>
 #include <MEL/Communications/IpAddress.hpp>
 #include <MEL/Communications/TcpSocket.hpp>
 #include <MEL/Core/Time.hpp>
@@ -31,10 +29,10 @@
 
 namespace mel {
 /// A HTTP client
-class MEL_API Http : NonCopyable {
+class Http : NonCopyable {
 public:
     /// Define a HTTP request
-    class MEL_API Request {
+    class Request {
     public:
         /// Enumerate the available HTTP methods for a request
         enum Method {
@@ -135,7 +133,7 @@ public:
     };
 
     /// Define a HTTP response
-    class MEL_API Response {
+    class Response {
     public:
         /// Enumerate all the valid status codes for a response
         enum Status {

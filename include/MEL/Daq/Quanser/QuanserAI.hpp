@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
@@ -32,7 +31,7 @@ class QuanserDaq;
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API QuanserAI : public AnalogInput, NonCopyable {
+class QuanserAI : public AnalogInput, NonCopyable {
 public:
     QuanserAI(QuanserDaq& daq, const ChanNums& channel_numbers);
 

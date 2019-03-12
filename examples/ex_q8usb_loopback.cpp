@@ -25,6 +25,7 @@
 using namespace mel;
 
 ctrl_bool stop(false);
+
 bool handler(CtrlEvent event) {
     if (event == CtrlEvent::CtrlC)
         stop = true;
@@ -47,7 +48,8 @@ int main(int argc, char* argv[]) {
     std::vector<double> q8_vel_data(8);
 
     Q8Usb q8;
-    q8.open();
+    if (!q8.open())
+        return 1;
 
     // create waveforms for looping
     Waveform sinwave(Waveform::Sin, seconds(1));
@@ -59,12 +61,12 @@ int main(int argc, char* argv[]) {
     Waveform sqrwave3(Waveform::Square, seconds(3), 0.5, 0.5);
     Waveform sqrwave4(Waveform::Square, seconds(4), 0.5, 0.5);
 
-
     Timer timer(hertz(1000));
     Time t;
 
     // enable Q8Usb
-    q8.enable();
+    if (!q8.enable())
+        return 1;
 
     while (!stop) {
         // update Q8Usb AI, DI, and encoder

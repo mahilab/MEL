@@ -1,35 +1,25 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.13)
 
-# enable C++11
-enable_language(C)
-enable_language(CXX)
-set(CMAKE_CXX_STANDARD 11)
+# create your C++ project
+project(MyProject VERSION 0.1.0 LANGUAGES CXX)
 
-# create project
-project(MyProject)
+# find MEL::MEL and all available MEL::xxx modules
+find_package(MEL REQUIRED)
 
-# set binary output location to conventional "bin" (
-# optional, but recommended for one-off projects)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+# add your include directories
+include_directories("include")
 
-# include directories
-include_directories(
-    "include"              # your include directory
-    "../../../MEL/include" # MEL's include directory
+# create an app from your source files
+add_executable(my_app
+    "include/MyClass.hpp"
+    "src/MyClass.cpp"
+    "src/my_app.cpp"
 )
 
-# indicate where MEL.lib is
-link_directories("../../../MEL/lib")
-
-# remove or uncomment if linking MEL statically
-# you must also manually link your app to MEL's dependencies
-# add_definitions(-DMEL_STATIC)
-
-# create your application
-add_executable(my_app
-               include/MyClass.hpp
-               src/MyClass.cpp
-               src/main.cpp)
-
-# link MEL to your application
-target_link_libraries(my_app MEL)
+# link your app to MEL libaries
+target_link_libraries(my_app 
+    MEL::MEL          # common MEL classes available on all systems
+    # MEL::quanser    # needed if using MEL Quanser classes
+    # MEL::myo        # needed if using MEL Myo classes
+    # MEL::myrio      # needed if using MEL NI myRIO classes
+)

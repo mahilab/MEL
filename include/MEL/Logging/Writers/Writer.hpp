@@ -17,8 +17,7 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
-#include <MEL/Logging/LogRecord.hpp>
+#include <MEL/Logging/Detail/LogUtil.hpp>
 
 namespace mel {
 
@@ -26,7 +25,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Writer {
+class Writer {
 public:
 
     Writer(Severity max_severity = Debug) : max_severity_(max_severity) {}

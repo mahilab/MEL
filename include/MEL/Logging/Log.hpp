@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
-#include <MEL/Logging/Formatters/CsvFormatter.hpp>
 #include <MEL/Logging/Formatters/TxtFormatter.hpp>
 #include <MEL/Logging/Writers/ColorConsoleWriter.hpp>
 #include <MEL/Logging/Writers/RollingFileWriter.hpp>
@@ -27,7 +25,7 @@
 #include <cstring>
 #include <vector>
 
-#ifndef DEFAULT_MEL_LOGGER
+#ifndef DEFAULT_MEL_LOG
 #define DEFAULT_LOGGER 0
 #endif
 
@@ -125,31 +123,25 @@ inline Logger<instance>& init_logger(Severity max_severity,
     return init_logger<instance>(max_severity, &rollingFilewriter);
 }
 
-/// Initializes a logger with RollingFileWriter and Txt/CsvFormatter chosen by
-/// file extension (specific logger instance)
+/// Initializes a logger with RollingFileWriter and TxtFormatter
 template <int instance>
 inline Logger<instance>& init_logger(Severity max_severity,
                          const char* filename,
                          size_t max_file_size = 0,
                          int max_files = 0) {
-    const char* dot = std::strrchr(filename, '.');
-    if (dot && 0 == std::strcmp(dot, ".csv"))
-        return init_logger<CsvFormatter, instance>(max_severity, filename,
-            max_file_size, max_files);
-    else
-        return init_logger<TxtFormatter, instance>(max_severity, filename,
-            max_file_size, max_files);
+    return init_logger<TxtFormatter, instance>(max_severity, filename,
+        max_file_size, max_files);
 }
 
 //==============================================================================
 // DEFAULT MEL LOGGER
 //==============================================================================
 
-/// Built in MEL Logger. Contains two writers: (0) a RollingFileWriter with a
+/// Built in MEL Log. Contains two writers: (0) a RollingFileWriter with a
 /// TxtFormatter and default severity Verbose, and (1) a ColorConsoleWriter with
 /// TxtFormatter and default severity Info. Can be disabled by defining
 /// MEL_DISABLE_LOG or enabling DISABLE_LOG option in CMakeLists.txt
-extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
+extern Logger<DEFAULT_LOGGER>* MEL_LOG;
 
 }  // namespace mel
 
@@ -178,14 +170,14 @@ extern MEL_API Logger<DEFAULT_LOGGER>* MEL_LOGGER;
 
 /// Log severity level checker for default MEL logger
 #define IF_LOG(severity)                                        \
-    if (!MEL_LOGGER || !MEL_LOGGER->check_severity(severity)) { \
+    if (!MEL_LOG || !MEL_LOG->check_severity(severity)) { \
         ;                                                       \
     } else
 
 /// Main logging macro for defaulter MEL logger
 #define LOG(severity) \
     IF_LOG(severity)  \
-        *MEL_LOGGER += LogRecord(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
+        *MEL_LOG += LogRecord(severity, LOG_GET_FUNC(), __LINE__, LOG_GET_FILE())
 
 /// Conditional logging macro for default MEL logger
 #define LOG_IF(severity, condition) \

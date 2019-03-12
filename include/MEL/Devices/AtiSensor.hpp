@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Mechatronics/ForceSensor.hpp>
 #include <MEL/Mechatronics/TorqueSensor.hpp>
 #include <MEL/Daq/Input.hpp>
@@ -29,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Implements an ATI force/torque transducer
-class MEL_API AtiSensor : public ForceSensor, public TorqueSensor {
+class AtiSensor : public ForceSensor, public TorqueSensor {
 
 public:
 

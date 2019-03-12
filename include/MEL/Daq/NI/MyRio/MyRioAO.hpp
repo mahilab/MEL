@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Daq/Output.hpp>
 
@@ -25,7 +24,7 @@ namespace mel {
 class MyRioConnector;
 
 /// myRIO Analog Output Module
-class MEL_API MyRioAO : public AnalogOutput, NonCopyable {
+class MyRioAO : public AnalogOutput, NonCopyable {
 public:
 
     /// Updates a single channel

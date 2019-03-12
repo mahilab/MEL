@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Daq/DaqBase.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 
@@ -30,7 +29,7 @@ namespace mel {
 class MyRio;
 
 /// myRIo Connector
-class MEL_API MyRioConnector : public DaqBase, NonCopyable {
+class MyRioConnector : public DaqBase, NonCopyable {
 public:
 
     /// Types of myRIO connector

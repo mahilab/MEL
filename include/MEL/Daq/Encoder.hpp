@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Mechatronics/PositionSensor.hpp>
 #include <MEL/Mechatronics/VelocitySensor.hpp>
 #include <MEL/Daq/ChannelBase.hpp>
@@ -26,7 +25,7 @@
 namespace mel {
 
 /// Encapsulates an incremental optical encoder module with 32-bit precision
-class MEL_API Encoder : public Module<int> {
+class Encoder : public Module<int> {
 public:
     class Channel;
 
@@ -98,7 +97,7 @@ protected:
 
 public:
     /// Encapsulates and Encoder channel (can be used as a PositionSensor)
-    class MEL_API Channel : public ChannelBase<int>, public PositionSensor {
+    class Channel : public ChannelBase<int>, public PositionSensor {
     public:
         /// Default constructor. Creates invalid channel
         Channel();

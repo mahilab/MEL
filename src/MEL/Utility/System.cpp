@@ -1,4 +1,5 @@
 #include <MEL/Utility/System.hpp>
+#include <MEL/Logging/Log.hpp>
 #include <cstring>
 #include <ctime>
 #include <iomanip>
@@ -46,10 +47,10 @@ std::vector<std::string> split_path(std::string path)
     return directories;
 }
 
-void create_directory(const std::string &path)
+bool create_directory(const std::string &path)
 {
     if (path == "" || path.empty())
-        return;
+        return true;
     std::vector<std::string> dirs = split_path(path);
     for (std::size_t i = 0; i < dirs.size(); ++i) {
         std::string sub_path;
@@ -57,12 +58,21 @@ void create_directory(const std::string &path)
             sub_path += dirs[j];
             sub_path += get_separator();
         }
-        #ifdef _WIN32
-            CreateDirectory(sub_path.c_str(), NULL);
-        #else
-            mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-        #endif
+#ifdef _WIN32
+        auto result = CreateDirectory(sub_path.c_str(), NULL);
+        if (result == 0 && result != ERROR_ALREADY_EXISTS) {
+            LOG(Error) << "Failed to create directory " << sub_path << ". Ensure you have the correct permissions.";
+            return false;
+        }
+#else
+        int result = mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        if (result != 0) {
+            LOG(Error) << "Failed to create directory " << sub_path << ". Ensure you have the correct permissions.";
+            return false;
+        }
+#endif
     }
+    return true;
 }
 
 bool directory_exits(std::string path) {

@@ -17,12 +17,11 @@
 //            Craig McDonald (craig.g.mcdonald@gmail.com)
 
 #pragma once
-
 #include <string>
 #include <typeinfo>
 #include <vector>
 #include <map>
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 

@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Logging/File.hpp>
 #include <MEL/Core/NonCopyable.hpp>
 #include <MEL/Utility/System.hpp>
@@ -25,11 +24,12 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <ios>
 
 namespace mel {
 
 /// Represents an instance of a Comma-Separated Value (CSV) file
-class MEL_API Csv : public File {
+class Csv : public File {
 public:
 
     /// Default constructor
@@ -42,6 +42,9 @@ public:
     template <typename Arg, typename... Args>
     void write_row(Arg&& arg, Args&&... args);
 
+    /// Sets the precision of floating point values (default 6)
+    void set_precision(std::size_t precision);
+    
 private:
 
     // hide functions inherited from File
@@ -49,6 +52,9 @@ private:
     using File::rename;
     using File::write;
 
+private:
+
+    std::size_t precision_;  ///< precision of floating point values
 };
 
 // The following free functions are provided for convenience and are not

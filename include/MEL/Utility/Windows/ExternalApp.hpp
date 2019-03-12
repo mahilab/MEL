@@ -17,13 +17,12 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <string>
 
 namespace mel {
 
 /// Class that allows for launching external applications
-class MEL_API ExternalApp {
+class ExternalApp {
 public:
     /// Constructor. #name is for MEL only. The path should be an
     /// absoulute path and include the filename and extension. For example

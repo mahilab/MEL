@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Utility/Lock.hpp>
 #include <atomic>
 
@@ -28,7 +27,7 @@ namespace mel {
 //==============================================================================
 
 /// Blocks concurrent access to shared resources from multiple threads
-class MEL_API Spinlock : public Lockable, NonCopyable {
+class Spinlock : public Lockable, NonCopyable {
 public:
     /// Lock the Spinlock
     void lock() override;

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <sstream>
 
 // Template meta-programming magic for stream operations in MEL

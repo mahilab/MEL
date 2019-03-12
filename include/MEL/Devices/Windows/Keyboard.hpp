@@ -16,10 +16,9 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <string>
 #include <vector>
-#include <MEL/Config.hpp>
+
 
 namespace mel {
 
@@ -135,7 +134,7 @@ enum class Key {
     KeyCount  ///< Keep last -- the total number of keyboard keys
 };
 
-class MEL_API Keyboard {
+class Keyboard {
 public:
     /// \brief Check if a key is pressed and console window has focus
     /// \param key Key to check

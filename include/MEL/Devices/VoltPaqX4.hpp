@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Mechatronics/Amplifier.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Input.hpp>
@@ -29,7 +28,7 @@ namespace mel {
 //==============================================================================
 
 /// Encapsulates a Quanser VoltPAQ-X4 Linear Voltage Amplifier
-class MEL_API VoltPaqX4 : public Device {
+class VoltPaqX4 : public Device {
 public:
     /// Constructor
     VoltPaqX4(const std::vector<DigitalOutput::Channel>& enable_channels,

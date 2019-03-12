@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 
 namespace mel {
 
@@ -25,7 +24,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API PdController {
+class PdController {
 public:
     /// Constructor
     PdController(double kp = 0.0, double kd = 0.0);

@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
 #include <MEL/Core/Time.hpp>
 
@@ -27,7 +26,7 @@ namespace mel {
 // CLASS DECLARATIONS
 //==============================================================================
 
-class MEL_API Differentiator : public Process {
+class Differentiator : public Process {
 public:
     enum Technique { BackwardDifference, CentralDifference };
 

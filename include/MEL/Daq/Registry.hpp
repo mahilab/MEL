@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Types.hpp>
 #include <iostream>
 #include <algorithm>
@@ -27,7 +26,7 @@ namespace mel {
 class ModuleBase;
 
 /// Base class for Registry
-class MEL_API RegistryBase {
+class RegistryBase {
 public:
     /// Constructor
     RegistryBase(ModuleBase* module);

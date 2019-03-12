@@ -20,7 +20,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Communications/Socket.hpp>
 #include <MEL/Core/Time.hpp>
 
@@ -39,7 +38,7 @@ class Packet;
 //==============================================================================
 
 /// Specialized socket using the TCP protocol
-class MEL_API TcpSocket : public Socket {
+class TcpSocket : public Socket {
 public:
     /// Default constructor
     TcpSocket();

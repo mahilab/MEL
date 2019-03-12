@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Math/Process.hpp>
 #include <vector>
 
@@ -27,7 +26,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Filter : public Process {
+class Filter : public Process {
 public:
     /// Construct Filter from transfer function coefficients
     Filter(const std::vector<double>& b,

@@ -353,7 +353,7 @@ int main(int argc, char* argv[]) {
 
         // compute torque
         if (input.count("t") > 0)
-            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time_actual());
+            torque = tunnel(hp[0].get_position(), filtered_vel, timer.get_elapsed_time());
         else if (input.count("w") > 0)
             torque = wall(hp[0].get_position(), filtered_vel);
         else if (input.count("n") > 0)

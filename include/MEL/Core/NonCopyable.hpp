@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 
 namespace mel {
 
@@ -26,7 +25,7 @@ namespace mel {
 //==============================================================================
 
 /// Utility class that makes any derived class non-copyable
-class MEL_API NonCopyable {
+class NonCopyable {
 protected:
     /// Default constructor
     ///

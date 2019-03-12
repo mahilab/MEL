@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Module.hpp>
 #include <typeindex>
@@ -29,7 +28,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API DaqBase : public Device {
+class DaqBase : public Device {
 public:
 
     /// Constructor

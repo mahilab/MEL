@@ -23,7 +23,7 @@
 namespace mel {
 
 /// Interface to RS-232 Serial Port
-class MEL_API SerialPort : NonCopyable {
+class SerialPort : NonCopyable {
 public:
 
     /// Constructor

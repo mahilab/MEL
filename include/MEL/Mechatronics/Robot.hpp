@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <MEL/Config.hpp>
 #include <MEL/Mechatronics/Actuator.hpp>
 #include <MEL/Core/Device.hpp>
 #include <MEL/Mechatronics/Joint.hpp>
@@ -32,7 +31,7 @@ namespace mel {
 // CLASS DECLARATION
 //==============================================================================
 
-class MEL_API Robot : public Device {
+class Robot : public Device {
 public:
     /// Constructor.
     Robot(const std::string& name);

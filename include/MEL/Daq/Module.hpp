@@ -16,7 +16,6 @@
 // Author(s): Evan Pezent (epezent@rice.edu)
 
 #pragma once
-
 #include <MEL/Core/Device.hpp>
 #include <MEL/Daq/Registry.hpp>
 #include <map>
@@ -24,7 +23,7 @@
 namespace mel {
 
 /// Defines non-templated Module functions/members
-class MEL_API ModuleBase : public Device {
+class ModuleBase : public Device {
 public:
 
     /// Default Constructor (creates an invlaid empty Module)

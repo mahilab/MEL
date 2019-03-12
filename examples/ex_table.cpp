@@ -14,38 +14,33 @@
 // all copies or substantial portions of the Software.
 //
 // Author(s): Craig McDonald (craig.g.mcdonald@gmail.com)
-//            Evan Pezent (epezent@rice.edu)
 
-#pragma once
+#include <MEL/Logging/Table.hpp>
+#include <MEL/Core/Console.hpp>
 
-#include <MEL/Core/Types.hpp>
-#include <vector>
+using namespace mel;
 
-namespace mel {
+int main() {
 
-//==============================================================================
-// CLASS DECLARATION
-//==============================================================================
+    std::string filename = "table_data.csv";
+    Table tab("my_table", { "col 0", "col 1", "col 2" });
+    tab.push_back_row({ 1.01, 2.02, 3.03 });
+    tab.push_back_row({ 4.04, 5.05, 6.06 });
 
-class ForceSensor {
-public:
+    std::vector<Table> tabs(3);
+    tabs[0] = tab;
+    tabs[1] = tab;
+    tabs[2].rename("my_table2");
+    tabs[2].set_col_names({ "COL A", "COL B" });
+    tabs[2].set_values({ {0.03256, -0.23535}, {8, 9}, {-1000, -5000} });
 
-    /// Default constructor
-    ForceSensor();
+    Table::write(filename, tabs);
 
-    /// Destructor
-    virtual ~ForceSensor();
-
-    /// Returns force along speficied axis
-    virtual double get_force(Axis axis) = 0;
-
-    /// Returns forces along X, Z, and Z axes
-    virtual std::vector<double> get_forces() = 0;
-
-protected:
-
-    std::vector<double> forces_; ///< measured forces
-
-};
-
-}  // namespace mel
+    Table new_tab;
+    std::vector<Table> new_tabs;
+    if (Table::read(filename, new_tabs)) {
+        for (std::size_t i = 0; i < new_tabs.size(); ++i) {
+            print(new_tabs[i]);
+        }
+    }
+}
