@@ -26,7 +26,7 @@ with other controllers
 
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/NonCopyable.hpp>
-#include <string.h>
+#include <string>
 #include <windows.h>
 
 namespace mel {
@@ -90,5 +90,6 @@ private:
 	// device enable/disable
     bool on_enable() 	override;
     bool on_disable() 	override;
+};
 
 } // namespace mel

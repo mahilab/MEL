@@ -33,7 +33,6 @@ controllers
 #include <MEL/Logging/Log.hpp>
 #include <MEL/Core/Console.hpp>
 
-
 // other misc standard libraries
 #include <iostream>
 
@@ -48,8 +47,8 @@ Constructor for the EposMotor class
  */
 EposMotor::EposMotor(const std::string& name, const std::string& portName):
     // initializing controller information
-	portName_ = (char*) portName;
-	nodeId_ =	1;
+	portName_ = (char*)portName;
+	nodeId_ =1;
 	errorCode_ = 0;
 	keyHandle_ = 0;
 
