@@ -26,6 +26,7 @@ with other controllers
 
 #include <MEL/Core/Device.hpp>
 #include <MEL/Core/NonCopyable.hpp>
+#include <string.h>
 #include <windows.h>
 
 namespace mel {
@@ -35,7 +36,7 @@ namespace mel {
 //==============================================================================
 
 // Implements a new noncopyable EposMotor derived from the MEL device class 
-class MEL_API EposMotor : public mel::Device, mel::NonCopyable {
+class EposMotor : public Device, NonCopyable {
 
 public:
 

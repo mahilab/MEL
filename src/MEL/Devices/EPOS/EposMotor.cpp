@@ -27,7 +27,7 @@ controllers
 //==============================================================================
 
 // libraries for Epos Motor Class
-#include <MEL/Core/Device/EPOS/EposMotor.hpp>
+#include <MEL/Devices/EPOS/EposMotor.hpp>
 
 // libraries for data logging and output
 #include <MEL/Logging/Log.hpp>
@@ -36,36 +36,38 @@ controllers
 
 // other misc standard libraries
 #include <iostream>
+#include <string>
 
+namespace mel {
 
 //==============================================================================
 // CONSTRUCTOR
 //==============================================================================
 
 /*
-Constructor for the maxonMotor class
+Constructor for the EposMotor class
  */
-EposMotor::EposMotor():
+EposMotor::EposMotor(const std::string& name, const std::string& portName):
     // initializing controller information
-	portName = (char*)"USB0";
-	nodeId =	1;
-	errorCode = 0;
-	keyHandle = 0;
+	portName_ = (char*) portName;
+	nodeId_ =	1;
+	errorCode_ = 0;
+	keyHandle_ = 0;
 
 	//samplePeriod =	1; //n-times 0.1ms, 1 is 1000Hz
 	//samples =		100;
 
 	// initializing motor control parameters
-	desVelocity = 10000;
-	desAcceleration = 100000;
-	desDeceleration = 100000;
+	desVelocity_ = 10000;
+	desAcceleration_ = 100000;
+	desDeceleration_ = 100000;
 {	
 }
 
 /*
-Destructor for the maxonMotor class
+Destructor for the EposMotor class
  */
-MaxonMotor::~MaxonMotor()
+EposMotor::~EposMotor()
 {
 }
 
@@ -78,7 +80,7 @@ MaxonMotor::~MaxonMotor()
 Once the device has been opened, attempts to set the
 controller into position control mode.
  */
-void MaxonMotor::enableControl()
+void EposMotor::enableControl()
 {
 	BOOL inFault = FALSE;
 
@@ -126,7 +128,7 @@ void MaxonMotor::enableControl()
 Sets the position control parameters once the device
 has been enabled
  */
-void MaxonMotor::setControlParam()
+void EposMotor::setControlParam()
 {
 	// attempts to set the controllers' position control parameters
 	if (!VCS_SetPositionProfile(keyHandle, nodeId, desVelocity, desAcceleration, desDeceleration, &errorCode))
@@ -140,7 +142,7 @@ void MaxonMotor::setControlParam()
 Sets the data recorder parameters once the device
 has been enabled
 */
-//void maxonMotor::setRecorderParam()
+//void EposMotor::setRecorderParam()
 //{
 //	// define relevant parameters for data recorder
 //	WORD demPosIndex = 0x6062; // addresses found from EPOS studio software
@@ -173,7 +175,7 @@ has been enabled
 /*
 Turns off the position control on the controller
  */
-void MaxonMotor::disableControl()
+void EposMotor::disableControl()
 {
 	BOOL inFault = FALSE;
 
@@ -217,7 +219,7 @@ void MaxonMotor::disableControl()
 Opens communication from the computer to the specific 
 controller being referenced through USB comms.
  */
-void MaxonMotor::start()
+void EposMotor::start()
 {
 	// Configuring EPOS4 for motor control
 	char deviceName[] =		"EPOS4";
@@ -243,7 +245,7 @@ void MaxonMotor::start()
 Closes communication from the computer to the specific
 controller being referenced through USB comms.
  */
-void MaxonMotor::end()
+void EposMotor::end()
 {
 	// turns off position control
 	disableControl();
@@ -267,7 +269,7 @@ void MaxonMotor::end()
 Indicates what USB port the MAXON motor controller is 
 connected to.
  */
-void MaxonMotor::setPort(char* port)
+void EposMotor::setPort(char* port)
 {
 	portName = port;
 }
@@ -276,7 +278,7 @@ void MaxonMotor::setPort(char* port)
 Sets each one of the control parameters for position 
 control mode
  */
-void MaxonMotor::setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec)
+void EposMotor::setControlParam(unsigned int desVel, unsigned int desAcc, unsigned int desDec)
 {
 	desVelocity =		desVel;
 	desAcceleration =	desAcc;
@@ -289,7 +291,7 @@ void MaxonMotor::setControlParam(unsigned int desVel, unsigned int desAcc, unsig
 /*
 Sets the sampling freqeuncy and number of samples or the data recorder
 */
-//void maxonMotor::setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples)
+//void EposMotor::setRecorderParam(unsigned int desSampleFreq, unsigned int desSamples)
 //{
 //	int HZ_TO_MS = 1/1000;
 //	samplePeriod = desSampleFreq * HZ_TO_MS;
@@ -304,7 +306,7 @@ Sets the sampling freqeuncy and number of samples or the data recorder
 /*
 Commands motor controller to move motor to specified position
  */
-void MaxonMotor::move(long desPosition)
+void EposMotor::move(long desPosition)
 {
 	BOOL Absolute =		TRUE; 
 	BOOL Immediately =	TRUE;
@@ -323,7 +325,7 @@ void MaxonMotor::move(long desPosition)
 /*
 Pings motor for its current position
  */
-void MaxonMotor::getPosition(long& position)
+void EposMotor::getPosition(long& position)
 {
 	// attempts to acquire current position of the motor
 	if (!VCS_GetPositionIs(keyHandle, nodeId, &position, &errorCode)) 
@@ -338,7 +340,7 @@ void MaxonMotor::getPosition(long& position)
 /*
 Pings motor to stop
  */
-void MaxonMotor::halt()
+void EposMotor::halt()
 {
 	// attempts to stop motor in its place
 	if (!VCS_HaltPositionMovement(keyHandle, nodeId, &errorCode))
@@ -351,7 +353,7 @@ void MaxonMotor::halt()
 Checks to see if the motor is still moving or if it has
 reached its final destination
 */
-BOOL MaxonMotor::targetReached()
+BOOL EposMotor::targetReached()
 {
 	BOOL targetReached = FALSE;
 
@@ -370,7 +372,7 @@ BOOL MaxonMotor::targetReached()
 ///*
 //Tells the controller to begin recording data
 //*/
-//void MaxonMotor::startRecord()
+//void EposMotor::startRecord()
 //{
 //	if (!VCS_StartRecorder(keyHandle, nodeId,  &errorCode))
 //	{
@@ -381,7 +383,7 @@ BOOL MaxonMotor::targetReached()
 ///*
 //Tells the controller to stop recording data
 //*/
-//void MaxonMotor::stopRecord()
+//void EposMotor::stopRecord()
 //{
 //	if (!VCS_StopRecorder(keyHandle, nodeId, &errorCode))
 //	{
@@ -389,7 +391,7 @@ BOOL MaxonMotor::targetReached()
 //	}
 //}
 //
-//void MaxonMotor::outputData()
+//void EposMotor::outputData()
 //{
 //	char* fileLocation = (char*)"test.csv";
 //	if (!VCS_ExportChannelDataToFile(keyHandle, nodeId, fileLocation, &errorCode))
@@ -423,3 +425,5 @@ BOOL MaxonMotor::targetReached()
 //	delete dataVector;
 //	delete vectorSize;
 //}
+
+} // namespace mel
