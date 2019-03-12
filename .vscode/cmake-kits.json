@@ -1,0 +1,27 @@
+[
+    {
+        "name": "msvc-x86",
+        "visualStudio": "VisualStudio.15.0",
+        "visualStudioArchitecture": "x86",
+        "preferredGenerator": {
+            "name": "Visual Studio 15 2017"
+        }
+    },
+    {
+        "name": "msvc-x64",
+        "visualStudio": "VisualStudio.15.0",
+        "visualStudioArchitecture": "amd64",
+        "preferredGenerator": {
+            "name": "Visual Studio 15 2017",
+            "platform": "x64"
+        }
+    },
+    {
+        "name": "nilrt-arm",
+        "toolchainFile": "${workspaceRoot}/cmake/nilrt-arm-toolchain.cmake"
+    },
+    {
+        "name": "nilrt-x64",
+        "toolchainFile": "${workspaceRoot}/cmake/nilrt-x64-toolchain.cmake"
+    }
+]
