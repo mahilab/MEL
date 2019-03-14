@@ -74,13 +74,13 @@ public:
     /// true if any exceeded, false otherwise
     bool any_limit_exceeded();
 
-private:
+protected:
 
     /// Virtual function to enable all robot joints.
-    bool on_enable() final;
+    bool on_enable();
 
     /// Virtual function to disable all robot joints.
-    bool on_disable() final;
+    bool on_disable();
 
 protected:
 
