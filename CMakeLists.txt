@@ -250,6 +250,7 @@ install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindHIL.cmake
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindMyo.cmake
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindNIDAQmx.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindEPOS.cmake
     DESTINATION ${INSTALL_CONFIGDIR}/Modules
 )
 
