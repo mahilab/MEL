@@ -48,7 +48,7 @@ Constructor for the EposMotor class
 EposMotor::EposMotor(const std::string& name, const std::string& portName):
     // initializing controller information
 	portName_ = (char*)portName;
-	nodeId_ =1;
+	nodeId_ = 1;
 	errorCode_ = 0;
 	keyHandle_ = 0;
 

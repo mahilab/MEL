@@ -117,6 +117,24 @@ if(WIN32)
         endif()
 
         #=======================================================================
+        # EPOS
+        #=======================================================================
+        find_package(EPOS)
+        if (EPOS_FOUND)
+            option(MEL_EPOS "Turn ON to build MEL EPOS support" ON)  
+        else()
+            option(MEL_EPOS "Turn ON to build MEL NI DAQmx support" OFF)
+        endif() 
+        if(MEL_EPOS)
+            target_link_libraries(epos
+                PUBLIC
+                    MEL
+                PRIVATE
+                    EPOS::EPOS     # EPOS
+            )
+        endif()
+
+        #=======================================================================
         # THALMIC LABS MYO
         #=======================================================================
         find_package(Myo)
