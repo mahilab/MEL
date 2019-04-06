@@ -19,7 +19,7 @@ option(MEL_BUILD_DOC   "Turn ON to build MEL documentation"                     
 #===============================================================================
 
 # create the MEL project
-project(MEL VERSION 1.2.0 LANGUAGES C CXX)
+project(MEL VERSION 1.2.3 LANGUAGES C CXX)
 
 # tell user they can't have shared version of MEL if they try
 if (BUILD_SHARED_LIBS)

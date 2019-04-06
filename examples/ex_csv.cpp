@@ -27,6 +27,8 @@ using namespace std;
 
 int main() {
 
+    create_directory("../../meow/");
+
     //=========================================================================
     // Basic CSV usage with free CSV functions
     //=========================================================================
@@ -43,8 +45,8 @@ int main() {
         }
     }
 
-    // path to csv file (my_files dir will be created)
-    string filepath = "my_files/data1.csv";
+    // path to csv file (absolute_folder will be created in system root)
+    string filepath = "/absolute_folder/data1.csv";
 
     // write the header
     csv_write_row(filepath, header);    
@@ -65,7 +67,7 @@ int main() {
     // Advanced CSV usage with Csv instance
     //=========================================================================
 
-    Csv csv("my_files/data2.csv");
+    Csv csv("relative_folder/data2.csv"); // relative_folder will be created in process directory
     if (csv.is_open()) {
         // make a header
         csv.write_row("Time", "double", "string", "int", "vector[0]", "vector[1]", "vector[2]");

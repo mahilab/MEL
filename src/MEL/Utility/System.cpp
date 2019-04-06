@@ -25,6 +25,8 @@ namespace mel {
 // DIRECTORY FUNCTIONS
 //==============================================================================
 
+
+
 std::string get_separator() {
     #ifdef _WIN32
         return "\\";
@@ -47,12 +49,22 @@ std::vector<std::string> split_path(std::string path)
     return directories;
 }
 
+bool is_root_dir(const std::string& dir) {
+    if (dir == "")
+        return true;
+    else if (dir.length() == 2 && dir[1] == ':')
+        return true;
+    return false;
+}
+
 bool create_directory(const std::string &path)
 {
     if (path == "" || path.empty())
         return true;
     std::vector<std::string> dirs = split_path(path);
     for (std::size_t i = 0; i < dirs.size(); ++i) {
+        if (is_root_dir(dirs[i]))
+            continue;
         std::string sub_path;
         for (std::size_t j = 0; j <= i; ++j) {
             sub_path += dirs[j];
@@ -60,9 +72,14 @@ bool create_directory(const std::string &path)
         }
 #ifdef _WIN32
         auto result = CreateDirectory(sub_path.c_str(), NULL);
-        if (result == 0 && result != ERROR_ALREADY_EXISTS) {
-            LOG(Error) << "Failed to create directory " << sub_path << ". Ensure you have the correct permissions.";
-            return false;
+        if (result == 0) {
+            auto error = GetLastError();
+            if (error == ERROR_ALREADY_EXISTS)
+                LOG(Verbose) << "Attempted to create directory " << sub_path << " which already exists";
+            else {
+                LOG(Error) << "Failed to create directory " << sub_path << " (Windows Error #" << (int)error << ": " << get_last_os_error() << ")";
+                return false;
+            }
         }
 #else
         int result = mkdir(sub_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
