@@ -24,6 +24,7 @@ daq_logs/
 clock_logs/
 MELScope_v0.2.1/
 MELScope_v0.2.2/
+MELScope_v0.3.0/
 
 #Python
 *.pyc
