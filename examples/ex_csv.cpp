@@ -28,15 +28,13 @@ using namespace std;
 
 int main() {
 
-    create_directory("../../meow/");
-
     //=========================================================================
-    // Basic CSV usage with free CSV functions
+    // Example 1: Basic writing with CSV free functions
     //=========================================================================
 
-    // container for header
+    // container for header strings (could also be array<string> )
     vector<string> header;
-    // container for data
+    // container for data (could also be vector<vector<T>>, vector<array<T>>, etc.)
     array<array<int ,10>, 10> data;
     // make some data
     for (std::size_t c = 0; c < 10; ++c) {
@@ -46,13 +44,17 @@ int main() {
         }
     }
 
-    // path to csv file (absolute_folder will be created in system root)
+    // path to csv file (absolute_folder will be created in system root e.g. C:/)
     string filepath = "/absolute_folder/data1.csv";
 
-    // write the header
+    // write the header (just a row of strings, after all)
     csv_write_row(filepath, header);    
     // append the data
     csv_append_rows(filepath, data);
+
+    //=========================================================================
+    // Example 2: Basic reading with CSV free functions
+    //=========================================================================
 
     // read back subset of header with offset
     array<string, 5> row;
@@ -64,6 +66,10 @@ int main() {
     for (auto& r : rows) 
         print(r);
 
+    //=========================================================================
+    // Example 3: Logging a Rolling Window of Data
+    //=========================================================================
+
     // write a RingBuffer of vectors (useful for logging a rolling window of data)
     RingBuffer<std::vector<double>> rolling_data(100); // only most recent 100 rows will be kept
     for (std::size_t i = 0; i < 150; ++i)
@@ -71,7 +77,7 @@ int main() {
     csv_write_rows("relative_folder/data2.csv", rolling_data); // relative_folder will be created in process directory
 
     //=========================================================================
-    // Advanced CSV usage with Csv instance
+    // Example 4: Advanced CSV usage with Csv instance
     //=========================================================================
 
     Csv csv("../sibling_folder/data3.csv");
@@ -94,7 +100,7 @@ int main() {
             csv.write_row(t, a_double, a_string, a_int, a_vector);
             t = timer.wait();
         }
-        // print timer info to see performance
+        // print timer info to gauge HDD write performance
         print("Miss Rate: ", timer.get_miss_rate());
         print("Wait Ratio:", timer.get_wait_ratio());        
     }
