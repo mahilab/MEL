@@ -64,7 +64,7 @@ private:
 // to continously access a file in a loop; prefer an instance of the Csv
 // class instead. Containers can be any type which overloads operator[]
 // for indexing, and provides a size() method for each dimensions
-// (e.g vector, array, vector<vector>, array<array>, vector<array>, etc.)
+// (e.g vector, array, vector<vector>, vector<array>, RingBuffer<vector>, etc.)
 
 /// Reads a single row into a 1D container. The container must be presized.
 template <typename Container1D>
