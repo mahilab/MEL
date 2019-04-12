@@ -62,8 +62,8 @@ private:
 // can be used to quickly read/write/append homogenous data to a CSV file.
 // Since they open and close the file on demand, you should not use these
 // to continously access a file in a loop; prefer an instance of the Csv
-// class instead. Containers can be any type which overloads operator[]()
-// for indexing, and provides a size() method for one or both dimensions.
+// class instead. Containers can be any type which overloads operator[]
+// for indexing, and provides a size() method for each dimensions
 // (e.g vector, array, vector<vector>, array<array>, vector<array>, etc.)
 
 /// Reads a single row into a 1D container. The container must be presized.
