@@ -31,6 +31,7 @@ set(CMAKE_FIND_ROOT_PATH
 set(CMAKE_C_FLAGS_INIT   "-pthread -march=armv7-a -mfpu=vfpv3 -mfloat-abi=softfp -mcpu=cortex-a9")
 set(CMAKE_CXX_FLAGS_INIT "-pthread -march=armv7-a -mfpu=vfpv3 -mfloat-abi=softfp -mcpu=cortex-a9")
 
+# includes for VS Code to work
 include_directories(
     ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include/c++/6.3.0
     ${NI_ARM_ROOT}/sysroots/cortexa9-vfpv3-nilrt-linux-gnueabi/usr/include

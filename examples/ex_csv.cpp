@@ -20,6 +20,7 @@
 #include <MEL/Math/Random.hpp>
 #include <MEL/Math/Functions.hpp>
 #include <MEL/Core/Timer.hpp>
+#include <MEL/Utility/RingBuffer.hpp>
 #include <array>
 
 using namespace mel;
@@ -63,11 +64,17 @@ int main() {
     for (auto& r : rows) 
         print(r);
 
+    // write a RingBuffer of vectors (useful for logging a rolling window of data)
+    RingBuffer<std::vector<double>> rolling_data(100); // only most recent 100 rows will be kept
+    for (std::size_t i = 0; i < 150; ++i)
+        rolling_data.push_back({(double)i,(double)i,(double)i});
+    csv_write_rows("relative_folder/data2.csv", rolling_data); // relative_folder will be created in process directory
+
     //=========================================================================
     // Advanced CSV usage with Csv instance
     //=========================================================================
 
-    Csv csv("relative_folder/data2.csv"); // relative_folder will be created in process directory
+    Csv csv("../sibling_folder/data3.csv");
     if (csv.is_open()) {
         // make a header
         csv.write_row("Time", "double", "string", "int", "vector[0]", "vector[1]", "vector[2]");
