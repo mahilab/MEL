@@ -1,20 +1,17 @@
 [
     {
-        "name": "msvc-x86",
-        "visualStudio": "VisualStudio.15.0",
-        "visualStudioArchitecture": "x86",
-        "preferredGenerator": {
-            "name": "Visual Studio 15 2017"
-        }
-    },
-    {
-        "name": "msvc-x64",
+        "name": "msvc2017",
         "visualStudio": "VisualStudio.15.0",
         "visualStudioArchitecture": "amd64",
         "preferredGenerator": {
             "name": "Visual Studio 15 2017",
             "platform": "x64"
         }
+    },
+    {
+        "name": "msvc2019",
+        "visualStudio": "VisualStudio.16.0",
+        "visualStudioArchitecture": "amd64"
     },
     {
         "name": "nilrt-arm",
