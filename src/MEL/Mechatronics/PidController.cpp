@@ -30,7 +30,6 @@ double PidController::operator()(double x_ref, double x, double xdot, Time t) {
 double PidController::calculate(double x_ref, double x, double xdot, Time t) {
     double e = x_ref - x;
     double ei = integrator.update(e, t);
-    differentiator.update(e, t); // still update in case user wants to switch
     double ed = 0 - xdot;
            ed = filter.update(ed, t);
     return kp * e + ki * ei + kd * ed;
