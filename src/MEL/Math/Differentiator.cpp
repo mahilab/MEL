@@ -39,6 +39,10 @@ double Differentiator::update(double x, const Time& t) {
     return derivative_;
 }
 
+double Differentiator::get_value() const {
+    return derivative_;
+}
+
 void Differentiator::reset() {
     last_last_x_ = 0.0;
     last_x_ = 0.0;

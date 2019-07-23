@@ -66,8 +66,11 @@ protected:
     /// writes zero to the associated analog output channel
     bool on_disable() override;
 
+public:
+
+    double kt;            ///< torque constant of the Motor [torque/current]
+
 protected:
-    double kt_;            ///< torque constant of the Motor [torque/current]
     Amplifier amplifier_;  ///< the current amplifier controlling the motor
     Limiter current_limiter_;  ///< the Motor current limiter
 };

@@ -40,6 +40,9 @@ public:
     /// Differentiates a signal
     double update(double x, const Time& t) override;
 
+    /// Gets the differentiated value since the last update
+    double get_value() const;
+
     /// Resets the differentiator
     void reset();
 

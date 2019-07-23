@@ -7,7 +7,7 @@ namespace mel {
 
 Motor::Motor() :
     Actuator("UNAMED_MOTOR"),
-    kt_(0.0),
+    kt(0.0),
     amplifier_(),
     current_limiter_()
 {
@@ -15,11 +15,11 @@ Motor::Motor() :
 }
 
 Motor::Motor(const std::string& name,
-             double kt,
+             double _kt,
              Amplifier amplifier,
              Limiter current_limiter) :
     Actuator(name),
-    kt_(kt),
+    kt(_kt),
     amplifier_(amplifier),
     current_limiter_(current_limiter)
 { }
@@ -40,7 +40,7 @@ bool Motor::on_disable() {
 
 void Motor::set_torque(double torque) {
     torque_command_ = torque;
-    amplifier_.set_current(current_limiter_.limit(torque_command_ / kt_));
+    amplifier_.set_current(current_limiter_.limit(torque_command_ / kt));
 }
 
 double Motor::get_torque_command() const {
@@ -48,11 +48,11 @@ double Motor::get_torque_command() const {
 }
 
 double Motor::get_torque_limited() const {
-    return kt_ * amplifier_.get_current_limited();
+    return kt * amplifier_.get_current_limited();
 }
 
 double Motor::get_torque_sense() const {
-    return kt_ * amplifier_.get_current_sense();
+    return kt * amplifier_.get_current_sense();
 }
 
 Amplifier& Motor::get_amplifier() {

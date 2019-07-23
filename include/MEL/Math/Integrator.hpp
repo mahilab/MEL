@@ -46,6 +46,9 @@ public:
     /// Set the initial value
     void set_init(double initial_value);
 
+    /// Gets the integrated value since the last update
+    double get_value() const;
+
 private:
     Technique technique_;  ///< Integration technique to be used
     int step_count_;       ///< Running conter of calls to integrate()

@@ -48,6 +48,10 @@ double Integrator::update(double x, const Time& t) {
     return integral_;
 }
 
+double Integrator::get_value() const {
+    return integral_;
+}
+
 void Integrator::reset() {
     integral_    = 0.0;
     step_count_  = 0;
