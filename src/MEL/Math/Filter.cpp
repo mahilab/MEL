@@ -28,7 +28,12 @@ double Filter::update(const double x, const Time& current_time) {
         }
         first_update_ = false;
     }  
-    return dir_form_ii_t(x);
+    value_ = dir_form_ii_t(x);
+    return value_;
+}
+
+double Filter::get_value() const {
+    return value_;
 }
 
 void Filter::set_seeding(uint32 seeding) {

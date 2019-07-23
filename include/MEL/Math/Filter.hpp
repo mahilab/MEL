@@ -37,6 +37,9 @@ public:
     double update(const double x,
                   const Time& current_time = Time::Zero) override;
 
+    /// Returns the filtered value since the last update
+    double get_value() const;
+
     /// Sets the internal states s_ to all be zero
     void reset() override;
 
@@ -66,6 +69,7 @@ private:
     void seed(const double x, const uint32 iterations);
 
 private:
+    double value_;           ///< the filtered value
     std::size_t n_;          ///< filter order
     std::vector<double> b_;  ///< numerator coefficients
     std::vector<double> a_;  ///< denominator coefficients
