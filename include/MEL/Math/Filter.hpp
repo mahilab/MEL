@@ -74,9 +74,9 @@ private:
     std::vector<double> b_;  ///< numerator coefficients
     std::vector<double> a_;  ///< denominator coefficients
     std::vector<double> s_;  ///< internal memory
-    bool has_seeding_;       ///< indicates whether or not to call seed on first
-                             ///< update
+    bool has_seeding_;       ///< indicates whether or not to call seed on first update
     bool first_update_;      ///< indicates first update upon reset
+    bool will_filter_;       ///< will the coefficients actually filter (i.e a and b are not both {1,0})?
     uint32 seed_count_;      ///< number of iterations to call on update upon seeding
 };
 

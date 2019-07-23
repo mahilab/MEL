@@ -7,6 +7,7 @@ namespace mel {
 Filter::Filter(const std::vector<double>& b, const std::vector<double>& a, uint32 seeding) : Process(),
     has_seeding_(seeding > 0),
     first_update_(true),
+    will_filter_(true),
     seed_count_(seeding)
 {
     set_coefficients(b, a);
@@ -58,17 +59,26 @@ void Filter::set_coefficients(const std::vector<double>& b,
                               const std::vector<double>& a) {
     if (a.size() != b.size()) {
         LOG(Error) << "Filter coefficient vector sizes do not match";
-    } else if (a.size() < 2) {
+    } 
+    else if (a.size() < 2) {
         LOG(Error) << "Coefficient vectors must be longer than length 1";
-    } else {
+    }
+    else {
         b_ = b;
         a_ = a;
         n_ = a_.size() - 1;
-        s_ = std::vector<double>(n_, 0.0);
+        reset();
+        if (a_ == std::vector<double>({1,0}) && b_ == std::vector<double>({1,0}))
+            will_filter_ = false;
+        else
+            will_filter_ = true;
     }
+
 }
 
 double Filter::dir_form_ii_t(const double x) {
+    if (!will_filter_)
+        return x;
     double y = (s_[0] + b_[0] * x) / a_[0];
     for (std::size_t i = 0; i < n_ - 1; ++i) {
         s_[i] = s_[i + 1] + b_[i + 1] * x - a_[i + 1] * y;
