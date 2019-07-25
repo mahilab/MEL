@@ -7,12 +7,14 @@ namespace mel {
 //==============================================================================
 
 QuanserOptions::QuanserOptions() :
-    update_rate_(UpdateRate::Fast),
+    update_rate_(UpdateRate::Normal),
     decimation_(1)
 { }
 
-void QuanserOptions::set_decimation(uint32 decimation) {
+void QuanserOptions::set_decimation(uint32 decimation) {    
     decimation_ = decimation;
+    if (decimation_ != 1)
+        options_ += "decimation=" + std::to_string(decimation_) + ";";
 }
 
 void QuanserOptions::set_update_rate(UpdateRate update_rate) {
@@ -103,9 +105,9 @@ std::string QuanserOptions::get_string() {
     std::string base_options = "";
     if (update_rate_ == UpdateRate::Fast)
         base_options += "update_rate=fast;";
-    else
-        base_options += "update_rate=normal;";
-    base_options += "decimation=" + std::to_string(decimation_) + ";";
+    // else
+    //     base_options += "update_rate=normal;";
+    // base_options += "decimation=" + std::to_string(decimation_) + ";";
     return base_options + options_;
 }
 

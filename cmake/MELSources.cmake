@@ -190,6 +190,7 @@ list(APPEND MEL_MYRIO_HEADERS
 list(APPEND MEL_QUANSER_HEADERS
     "${MEL_DAQ_HEADERS_DIR}/Quanser/Q2Usb.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/Q8Usb.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QPid.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserAI.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserAO.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDaq.hpp"
@@ -382,6 +383,7 @@ list(APPEND MEL_MYRIO_SRC
 list(APPEND MEL_QUANSER_SRC
     "${MEL_DAQ_SRC_DIR}/Quanser/Q2Usb.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/Q8Usb.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QPid.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserAI.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserAO.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDaq.cpp"
