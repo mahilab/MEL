@@ -29,10 +29,6 @@ QPid::QPid(QuanserOptions options,
     encoder(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }, true), // has velocity estimation
     watchdog(*this, milliseconds(100))
 {
-    // gotta do this until PWM class implemented so watchdog works
-    ChanNums pwm_channels = {0,1,2,3,4,5,6,7};
-    std::vector<double> pwm_exp_vals(8, 0.0);
-    hil_watchdog_set_pwm_expiration_state(handle_, &pwm_channels[0], 8, &pwm_exp_vals[0]);
     // increment NEXT_ID
     ++NEXT_QPID_ID;
 }
@@ -68,6 +64,14 @@ bool QPid::on_open() {
         close();
         return false;
     }
+
+    // gotta do this until PWM class implemented so watchdog works
+    ChanNums pwm_channels = {0,1,2,3,4,5,6,7};
+    std::vector<double> pwm_exp_vals(8, 0.0);
+    t_error result = hil_watchdog_set_pwm_expiration_state(handle_, &pwm_channels[0], 8, &pwm_exp_vals[0]);
+    if (result != 0)
+        LOG(Error) << "Failed to set PWM expiration states on QPID " << get_name() << " " << QuanserDaq::get_quanser_error_message(result);
+
     // allow changes to take effect
     sleep(milliseconds(10));
     return true;
