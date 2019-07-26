@@ -6,19 +6,17 @@ namespace mel {
 // CLASS DEFINTIONS
 //==============================================================================
 
-QuanserOptions::QuanserOptions() :
-    update_rate_(UpdateRate::Normal),
-    decimation_(1)
+QuanserOptions::QuanserOptions()
 { }
 
 void QuanserOptions::set_decimation(uint32 decimation) {    
-    decimation_ = decimation;
-    if (decimation_ != 1)
-        options_ += "decimation=" + std::to_string(decimation_) + ";";
+    if (decimation != 1)
+        options_ += "decimation=" + std::to_string(decimation) + ";";
 }
 
 void QuanserOptions::set_update_rate(UpdateRate update_rate) {
-    update_rate_ = update_rate;
+    if (update_rate == UpdateRate::Fast)
+        options_ += "update_rate=fast;";
 }
 
 void QuanserOptions::set_encoder_direction(uint32 channel_number, EncoderDirection direction) {
@@ -102,13 +100,11 @@ void QuanserOptions::set_special_option(std::string option) {
 }
 
 std::string QuanserOptions::get_string() {
-    std::string base_options = "";
-    if (update_rate_ == UpdateRate::Fast)
-        base_options += "update_rate=fast;";
-    // else
-    //     base_options += "update_rate=normal;";
-    // base_options += "decimation=" + std::to_string(decimation_) + ";";
-    return base_options + options_;
+    return options_;
+}
+
+void QuanserOptions::clear() {
+    options_.clear();
 }
 
 } // namespace mel

@@ -94,9 +94,9 @@ public:
 
     std::string get_string();
 
+    void clear();
+
 private:
-    UpdateRate update_rate_;  ///< update rate
-    uint32 decimation_;       ///< decimation rate
     std::string options_;     ///< the configuration options string
 };
 
