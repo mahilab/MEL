@@ -14,6 +14,7 @@ namespace mel {
         daq_(daq)
     {
         set_name(daq_.get_name() + "_DIO");
+        sort_input_output_channel_numbers();
     }
 
     bool QuanserDIO::on_enable() {
@@ -41,17 +42,14 @@ namespace mel {
     }
 
     bool QuanserDIO::update() {
-        // create intermediate buffers
-        std::vector<char> read_buffer(get_input_channel_count());
-        std::vector<char> write_buffer(get_output_channel_count());
         for (std::size_t i = 0; i < get_output_channel_count(); ++i)
-            write_buffer[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
+            quanser_output_buffer_[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
         t_error result = hil_read_digital_write_digital(daq_.handle_,
             &input_channel_numbers_[0], static_cast<uint32>(get_input_channel_count()),
             &output_channel_numbers_[0], static_cast<uint32>(get_output_channel_count()),
-            &read_buffer[0], &write_buffer[0]);
+            &quanser_input_buffer_[0], &quanser_output_buffer_[0]);
         for (std::size_t i = 0; i < get_input_channel_count(); ++i)
-            values_[input_channel_numbers_[i]] = static_cast<Logic>(read_buffer[i]);
+            values_[input_channel_numbers_[i]] = static_cast<Logic>(quanser_input_buffer_[i]);
         if (result == 0)
             return true;
         else {
@@ -61,10 +59,9 @@ namespace mel {
     }
 
     bool QuanserDIO::update_input() {
-        std::vector<char> read_buffer(get_input_channel_count());
-        t_error result = hil_read_digital(daq_.handle_, &input_channel_numbers_[0],  static_cast<uint32>(get_input_channel_count()), &read_buffer[0]);
+        t_error result = hil_read_digital(daq_.handle_, &input_channel_numbers_[0],  static_cast<uint32>(get_input_channel_count()), &quanser_input_buffer_[0]);
         for (std::size_t i = 0; i < get_input_channel_count(); ++i)
-            values_[input_channel_numbers_[i]] = static_cast<Logic>(read_buffer[i]);
+            values_[input_channel_numbers_[i]] = static_cast<Logic>(quanser_input_buffer_[i]);
         if (result == 0)
             return true;
         else {
@@ -74,10 +71,9 @@ namespace mel {
     }
 
     bool QuanserDIO::update_output() {
-        std::vector<char> write_buffer(get_output_channel_count());
         for (std::size_t i = 0; i < get_output_channel_count(); ++i)
-            write_buffer[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
-        t_error result = hil_write_digital(daq_.handle_, &output_channel_numbers_[0], static_cast<uint32>(get_output_channel_count()), &write_buffer[0]);
+            quanser_output_buffer_[i] = static_cast<char>(values_[output_channel_numbers_[i]]);
+        t_error result = hil_write_digital(daq_.handle_, &output_channel_numbers_[0], static_cast<uint32>(get_output_channel_count()), &quanser_output_buffer_[0]);
         if (result == 0)
             return true;
         else {
@@ -174,6 +170,22 @@ namespace mel {
                 << QuanserDaq::get_quanser_error_message(result);
             return false;
         }
+    }
+
+    void QuanserDIO::sort_input_output_channel_numbers() const {
+        DigitalInputOutput::sort_input_output_channel_numbers();
+        quanser_input_buffer_.resize(get_input_channel_count());
+        quanser_output_buffer_.resize(get_output_channel_count());
+    }
+
+    void QuanserDIO::buffer_to_input() {
+        for (std::size_t i = 0; i < get_input_channel_count(); ++i)
+           set_value(get_input_channel_numbers()[i], static_cast<Logic>(quanser_input_buffer_[i]));
+    }
+
+    void QuanserDIO::output_to_buffer() {
+        for (std::size_t i = 0; i < get_output_channel_count(); ++i)
+            quanser_input_buffer_[i] = static_cast<char>(get_value(get_output_channel_numbers()[i]));
     }
 
 } // namespace mel

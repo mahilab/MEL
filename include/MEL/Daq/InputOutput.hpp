@@ -91,7 +91,7 @@ protected:
     virtual void remove_channel_number(ChanNum channel_number) override;
 
     /// Sorts channel numbers associated with inputs and outputs
-    void sort_input_output_channel_numbers() const;
+    virtual void sort_input_output_channel_numbers() const;
 
 protected:
     Registry<Direction> directions_;           ///< The I/O directions of each channel

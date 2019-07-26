@@ -57,8 +57,18 @@ private:
 
     bool on_disable() override;
 
+    void sort_input_output_channel_numbers() const override;
+
+    void buffer_to_input();
+
+    void output_to_buffer();
+
 private:
+    friend class QPid;
+    friend class Q2Usb;
     QuanserDaq& daq_;  ///< Reference to parent QDaq
+    mutable std::vector<char> quanser_input_buffer_;
+    mutable std::vector<char> quanser_output_buffer_;
 };
 
 }  // namespace mel

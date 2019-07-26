@@ -29,6 +29,10 @@ QPid::QPid(QuanserOptions options,
     encoder(*this, { 0, 1, 2, 3, 4, 5, 6, 7 }, true), // has velocity estimation
     watchdog(*this, milliseconds(100))
 {
+    // gotta do this until PWM class implemented so watchdog works
+    ChanNums pwm_channels = {0,1,2,3,4,5,6,7};
+    std::vector<double> pwm_exp_vals(8, 0.0);
+    hil_watchdog_set_pwm_expiration_state(handle_, &pwm_channels[0], 8, &pwm_exp_vals[0]);
     // increment NEXT_ID
     ++NEXT_QPID_ID;
 }
@@ -121,30 +125,60 @@ bool QPid::on_disable() {
 }
 
 bool QPid::update_input() {
-    // TODO: Use hil_read like Q8 USB
-    if (!is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+    if (!is_enabled()) {
+        LOG(Error) << "Unable to update " << get_name() << " input because it is disabled";
         return false;
     }
-    if (AI.update() && encoder.update() && DIO.update_input())
+    t_error result;
+    result = hil_read(handle_,
+        AI.get_channel_count() > 0 ? &(AI.get_channel_numbers())[0] : NULL,
+        static_cast<uint32>(AI.get_channel_count()),
+        encoder.get_channel_count() > 0 ? &(encoder.get_channel_numbers())[0] : NULL,
+        static_cast<uint32>(encoder.get_channel_count()),
+        DIO.get_input_channel_count() > 0 ? &(DIO.get_input_channel_numbers())[0] : NULL,
+        static_cast<uint32>(DIO.get_input_channel_count()),
+        encoder.get_channel_count() > 0 ? &(encoder.get_quanser_velocity_channels())[0] : NULL,
+        static_cast<uint32>(encoder.get_channel_count()),
+        AI.get_channel_count() > 0 ? &(AI.get_values())[0] : NULL,
+        encoder.get_channel_count() > 0 ? &(encoder.get_values())[0] : NULL,
+        DIO.get_input_channel_count() > 0 ? &(DIO.quanser_input_buffer_)[0] : NULL,
+        encoder.get_channel_count() > 0 ? &(encoder.get_values_per_sec())[0] : NULL);   
+    DIO.buffer_to_input();
+    if (result == 0)
         return true;
     else {
+        LOG(Error) << "Failed to update " << get_name() << " input "
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
     }
 }
 
 bool QPid::update_output() {
-    // TODO: Use hil_write like Q8 USB
-    if (!is_open()) {
-        LOG(Error) << "Unable to call " << __FUNCTION__ << " because "
-            << get_name() << " is not open";
+    if (!is_enabled()) {
+        LOG(Error) << "Unable to update " << get_name() << " output because it is disabled";
         return false;
     }
-    if (AO.update() && DIO.update_output())
+    // convert digitals
+    DIO.output_to_buffer();
+    t_error result;
+    result = hil_write(handle_,
+        AO.get_channel_count() > 0 ? &(AO.get_channel_numbers())[0] : NULL,
+        static_cast<uint32>(AO.get_channel_count()),
+        NULL, 0,
+        DIO.get_output_channel_count() > 0 ? &(DIO.get_output_channel_numbers())[0] : NULL,
+        static_cast<uint32>(DIO.get_output_channel_count()),
+        NULL, 0,
+        AO.get_channel_count() > 0 ? &(AO.get_values())[0] : NULL,
+        NULL,
+        DIO.get_output_channel_count() > 0 ? &(DIO.quanser_output_buffer_)[0] : NULL,
+        NULL);
+    if (result == 0)
         return true;
-    else
+    else {
+        LOG(Error) << "Failed to update " << get_name() << " output "
+            << QuanserDaq::get_quanser_error_message(result);
         return false;
+    }
 }
 
 uint32 QPid::next_id() {
