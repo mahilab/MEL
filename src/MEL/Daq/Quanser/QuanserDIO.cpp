@@ -184,8 +184,9 @@ namespace mel {
     }
 
     void QuanserDIO::output_to_buffer() {
-        for (std::size_t i = 0; i < get_output_channel_count(); ++i)
-            quanser_input_buffer_[i] = static_cast<char>(get_value(get_output_channel_numbers()[i]));
+        print("Hey");
+        for (std::size_t i = 0; i < get_output_channel_count(); ++i) 
+            quanser_output_buffer_[i] = static_cast<char>(get_value(get_output_channel_numbers()[i]));
     }
 
 } // namespace mel

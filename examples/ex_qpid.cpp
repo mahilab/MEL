@@ -59,20 +59,52 @@ int main() {
     if (!qpid.enable())
         return 1;
 
-    qpid.AO[0].set_value(5.0);
+    // qpid.AO[0].set_value(5.0);
+    // qpid.update_output();
+    // qpid.update_input();
+    // double in = qpid.AI[0].get_value();
+    // print(in);
+
+    
+
+    qpid.DIO[0].set_direction(Direction::Out);
+    qpid.DIO[1].set_direction(Direction::Out);
+    qpid.DIO[8].set_direction(Direction::In);
+    qpid.DIO[9].set_direction(Direction::In);
+
+    print(qpid.DIO.get_output_channel_numbers());
+    print(qpid.DIO.get_input_channel_numbers());
+
+    qpid.DIO[0].set_value(Logic::High);
+    qpid.DIO[1].set_value(Logic::Low);
+
+    print(qpid.DIO.get_value(0));
+    print(qpid.DIO.get_value(1));
+
     qpid.update_output();
+
+    prompt("Press ENTER to Measure");
 
     sleep(seconds(1));
 
     qpid.update_input();
-    double in = qpid.AI[0].get_value();
-    print(in);
+    double input = qpid.DIO[8].get_value();
+    print(input);
+    input = qpid.DIO[9].get_value();
+    print(input);
 
-    for (int i = 0; i < 1000; ++i) {
-        qpid.update_input();
-        print(qpid.encoder[0].get_value());
-        sleep(milliseconds(1));
-    }
+    // qpid.watchdog.start();
+
+    // for (int i = 0; i < 1000; ++i) {
+    //     qpid.update_input();
+    //     print(qpid.encoder[0].get_value());
+    //     sleep(milliseconds(1));
+    // }
+
+    sleep(seconds(1));
+
+    // qpid.watchdog.stop();
+    
 
     // disable qpid USB
     qpid.disable();
