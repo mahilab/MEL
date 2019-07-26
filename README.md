@@ -9,7 +9,7 @@ MEL is actively maintained by the [Mechatronics and Haptic Interfaces Lab](http:
 
 ### DAQ Interfaces
 
-One of the primary benefits of using MEL is that it provide a common DAQ interface for interacting with commercially available hardware. At present, MEL supports DAQs from Quanser such as the **Q8-USB** and **Q2-USB**, and embedded systems form NI such as the **myRIO**, with future plans for integrating more devices from these and other manufactures.
+One of the primary benefits of using MEL is that it provide a common DAQ interface for interacting with commercially available hardware. At present, MEL supports DAQs from Quanser such as the **QPIDe**, **Q8-USB**, and **Q2-USB**, and embedded systems form NI such as the **myRIO**, with future plans for integrating more devices from these and other manufactures.
 
 ```cpp
 Q8Usb daq;                            // instantiate Quanser Q8-USB DAQ
