@@ -113,6 +113,7 @@ public:
 
 typedef Output<Voltage> AnalogOutput;
 typedef Output<Logic> DigitalOutput;
+typedef Output<DutyCycle> PwmOutput;
 
 }  // namespace mel
 

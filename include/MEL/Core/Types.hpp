@@ -82,6 +82,9 @@ enum Logic {
     High = 1   ///< High TTL level (typically 5V)
 };
 
+/// Represents a duty cycle (e.g 0.5 = 50%)
+typedef double DutyCycle;
+
 /// Represents a digital pin direction
 enum Direction {
     In,  ///< Digital input

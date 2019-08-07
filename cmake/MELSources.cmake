@@ -198,6 +198,7 @@ list(APPEND MEL_QUANSER_HEADERS
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDIO.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDO.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserEncoder.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserPwm.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserOptions.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserWatchdog.hpp"
 )
@@ -391,6 +392,7 @@ list(APPEND MEL_QUANSER_SRC
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDIO.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDO.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserEncoder.cpp"
+    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserPwm.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserOptions.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserWatchdog.cpp"
 )

@@ -62,6 +62,14 @@ void QuanserOptions::set_encoder_velocity(uint32 channel_number, double velocity
     }
 }
 
+void QuanserOptions::enable_pwm(uint32 channel_number, bool enable) {
+    if (enable)
+        options_ += "pwm" + std::to_string(channel_number) + "_en=1;";
+    else
+        options_ += "pwm" + std::to_string(channel_number) + "_en=0;";
+}
+
+
 void QuanserOptions::set_analog_output_mode(uint32 channel_number, AoMode mode, double kff,
     double a0, double a1, double a2, double b0, double b1, double post) {
 

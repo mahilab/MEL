@@ -36,7 +36,7 @@ class QuanserDI;
 class QuanserDO;
 class QuanserDIO;
 class QuanserEncoder;
-class QuanserVelocity;
+class QuanserPwm;
 
 //==============================================================================
 // TYPDEFS
@@ -86,7 +86,7 @@ protected:
     friend class QuanserDO;
     friend class QuanserDIO;
     friend class QuanserEncoder;
-    friend class QuanserVelocity;
+    friend class QuanserPwm;
 
     std::string card_type_;  ///< The card type string, per Quarc API
     uint32 id_;              ///< The ID# of this Q8 USB

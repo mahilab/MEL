@@ -78,6 +78,8 @@ public:
 
     void set_encoder_velocity(uint32 channel_number, double velocity);
 
+    void enable_pwm(uint32 channel_number, bool enable);
+    
     void set_analog_output_mode(uint32 channel_number,
                                 AoMode mode,
                                 double kff,
