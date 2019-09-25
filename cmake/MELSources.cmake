@@ -185,6 +185,7 @@ list(APPEND MEL_MYRIO_HEADERS
     "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioConnector.hpp"
     "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioDIO.hpp"
     "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioEncoder.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/NI/myRIO/MyRioI2C.hpp"
 )
 
 list(APPEND MEL_QUANSER_HEADERS
@@ -364,6 +365,7 @@ list(APPEND MEL_MYRIO_SRC
     "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioConnector.cpp"
     "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioDIO.cpp"
     "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioEncoder.cpp"
+    "${MEL_DAQ_SRC_DIR}/NI/myRIO/MyRioI2C.cpp"
     "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioUtil.cpp"
     "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioUtil.hpp"
     "${MEL_DAQ_SRC_DIR}/NI/myRIO/Detail/MyRioFpga60/IRQConfigure.c"

@@ -55,9 +55,9 @@ private:
 
 public:
 
-     MyRioConnector mxpA;  ///< MXP connector A
-     MyRioConnector mxpB;  ///< MXP connector B
-     MyRioConnector mspC;  ///< MSP connector C
+     MyRioMxp mxpA;  ///< MXP connector A
+     MyRioMxp mxpB;  ///< MXP connector B
+     MyRioMsp mspC;  ///< MSP connector C
 
 };
 

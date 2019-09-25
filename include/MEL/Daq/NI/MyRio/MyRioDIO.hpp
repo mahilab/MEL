@@ -23,6 +23,7 @@ namespace mel {
 
 class MyRioConnector;
 class MyRioEncoder;
+class MyRioI2C;
 
 /// myRIO Digital Input/Output Module
 class MyRioDIO : public DigitalInputOutput, NonCopyable {
@@ -38,6 +39,7 @@ private:
 
     friend class MyRioConnector;
     friend class MyRioEncoder;
+    friend class MyRioI2C;
 
     void sync();
 

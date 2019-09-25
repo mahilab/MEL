@@ -23,6 +23,7 @@
 #include <MEL/Daq/NI/MyRio/MyRioAO.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioDIO.hpp>
 #include <MEL/Daq/NI/MyRio/MyRioEncoder.hpp>
+#include <MEL/Daq/NI/MyRio/MyRioI2C.hpp>
 
 namespace mel {
 
@@ -46,7 +47,7 @@ public:
     bool update_output();
 
     /// Resets the connector digital pin configurations
-    void reset();
+    virtual void reset();
 
 public:
 
@@ -56,7 +57,7 @@ public:
     MyRioDIO DIO;         ///< connector digital input/output
     MyRioEncoder encoder; ///< connector encoder
 
-private:
+protected:
 
     friend class MyRio;
 
@@ -73,11 +74,25 @@ private:
     bool on_enable() override;
     bool on_disable() override;
 
-private:
+protected:
 
     MyRio& myrio_;  ///< reference to myRIO this connector is on
 
 };
+
+
+class MyRioMxp : public MyRioConnector {
+public:
+    virtual void reset() override;
+public:
+    MyRioI2C i2c;
+protected:
+    friend class MyRio;
+    MyRioMxp(MyRio& myrio, Type type);
+    bool on_open() override;
+};
+
+typedef MyRioConnector MyRioMsp;
 
 } // namespace mel
 

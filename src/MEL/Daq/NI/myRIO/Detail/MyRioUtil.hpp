@@ -14,6 +14,12 @@ void clr_register_bit(unsigned int reg, int i);
 /// Get a myRIO reigster bit
 bool get_register_bit(unsigned int reg, int i);
 
+/// Write a whole register from a bitset
+void write_register(unsigned int reg, std::bitset<8> bits);
+
+/// Write a whole register from a unsigned char
+void write_register(unsigned int reg, unsigned char bits);
+
 /// Read a whole register into a bitset
 std::bitset<8> read_register(unsigned int reg);
 

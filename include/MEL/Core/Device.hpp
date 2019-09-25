@@ -86,7 +86,7 @@ protected:
     //==========================================================================
     virtual bool on_disable() = 0;
 
-private:
+protected:
     bool enabled_;      ///< The Device enabled status
     std::string name_;  ///< The Device name
 };

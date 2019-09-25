@@ -99,6 +99,20 @@ bool get_register_bit(unsigned int reg, int i) {
     return ((bits >> i) & 1) != 0;
 }
 
+void write_register(unsigned int reg, std::bitset<8> bits) {
+    NiFpga_Status status = NiFpga_WriteU8(myrio_session, reg, static_cast<uint8_t>(bits.to_ulong()));
+    if (status < 0) {
+        LOG(Error) << "Could not write to regiser " << reg;
+    }
+}
+
+void write_register(unsigned int reg, unsigned char bits) {
+    NiFpga_Status status = NiFpga_WriteU8(myrio_session, reg, bits);
+    if (status < 0) {
+        LOG(Error) << "Could not write to regiser " << reg;
+    }   
+}
+
 std::bitset<8> read_register(unsigned int reg) {
     uint8_t bits;
     NiFpga_Status status = NiFpga_ReadU8(myrio_session, reg, &bits);

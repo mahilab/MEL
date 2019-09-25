@@ -31,7 +31,7 @@ MyRioEncoder::MyRioEncoder(MyRioConnector& connector, const ChanNums& channel_nu
         cnfg_      = {ENCBCNFG};
         allowed_   = {0};
     }
-    else if (connector_.type ==MyRioConnector:: MspC) {
+    else if (connector_.type == MyRioConnector:: MspC) {
         sysselect_ = SYSSELECTC;
         bits_      = {0,2};
         stat_      = {ENCC_0STAT, ENCC_1STAT};

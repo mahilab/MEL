@@ -89,4 +89,22 @@ bool MyRioConnector::on_disable() {
         return false;
 }
 
+MyRioMxp::MyRioMxp(MyRio& myrio, Type type) :
+    MyRioConnector(myrio, type),
+    i2c(*this)
+{
+
+}
+
+void MyRioMxp::reset() {
+    i2c.disable();
+    MyRioConnector::reset();
+}
+
+bool MyRioMxp::on_open() {
+    i2c.sync();
+    return MyRioConnector::on_open();
+}
+
+
 } // mel
