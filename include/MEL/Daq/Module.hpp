@@ -53,8 +53,6 @@ public:
     /// If quiet is false, an error log will be thrown.
     bool validate_channel_count(std::size_t size, bool quiet = false) const;
 
-protected:
-
     /// Sets the channel numbers this Module maintains
     virtual void set_channel_numbers(const ChanNums& channel_numbers);
 
@@ -63,6 +61,8 @@ protected:
 
     /// Removes a channel number from current channel numbers
     virtual void remove_channel_number(ChanNum channel_number);
+
+protected:
 
     /// Called when the user enables the Module
     virtual bool on_enable() override;
