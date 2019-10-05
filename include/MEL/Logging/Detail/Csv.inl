@@ -82,8 +82,8 @@ static bool csv_read_rows(const std::string& filepath, Container2D& data_out, st
     return true;
 }
 
-template <typename Array1D>
-bool csv_write_row(const std::string &filepath, const Array1D &data)
+template <typename Container1D>
+bool csv_write_row(const std::string &filepath, const Container1D &data)
 {
     File file(filepath, WriteMode::Truncate);
     std::ostringstream ss;
@@ -96,8 +96,8 @@ bool csv_write_row(const std::string &filepath, const Array1D &data)
     return true;
 }
 
-template <typename Array2D>
-bool csv_write_rows(const std::string &filepath, const Array2D &data)
+template <typename Container2D>
+bool csv_write_rows(const std::string &filepath, const Container2D &data)
 {
     File file(filepath, WriteMode::Truncate);
     for (std::size_t i = 0; i < data.size(); i++)
@@ -113,8 +113,8 @@ bool csv_write_rows(const std::string &filepath, const Array2D &data)
     return true;
 }
 
-template <typename Array1D>
-bool csv_append_row(const std::string &filepath, const Array1D &data)
+template <typename Container1D>
+bool csv_append_row(const std::string &filepath, const Container1D &data)
 {
     File file(filepath, WriteMode::Append);
     std::ostringstream ss;
@@ -127,8 +127,8 @@ bool csv_append_row(const std::string &filepath, const Array1D &data)
     return true;
 }
 
-template <typename Array2D>
-bool csv_append_rows(const std::string &filepath, const Array2D &data)
+template <typename Container2D>
+bool csv_append_rows(const std::string &filepath, const Container2D &data)
 {
     File file(filepath, WriteMode::Append);
     for (std::size_t i = 0; i < data.size(); i++)

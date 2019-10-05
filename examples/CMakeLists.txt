@@ -30,14 +30,14 @@ if(WIN32)
 
     # quanser only examples
     if(MEL_QUANSER)
-        mel_example(q2usb              DEPENDS MEL::quanser)
-        mel_example(q8usb              DEPENDS MEL::quanser)
-        mel_example(q8usb_loopback     DEPENDS MEL::quanser)
-        mel_example(qpid               DEPENDS MEL::quanser)
-        mel_example(haptic_paddle      DEPENDS MEL::quanser)
-        mel_example(overview           DEPENDS MEL::quanser)
-        mel_example(ati_sensor         DEPENDS MEL::quanser)
-        mel_example(quanser_bandwidth  DEPENDS MEL::quanser)
+        mel_example(q2usb               DEPENDS MEL::quanser)
+        mel_example(q8usb               DEPENDS MEL::quanser)
+        mel_example(q8usb_loopback      DEPENDS MEL::quanser)
+        mel_example(qpid                DEPENDS MEL::quanser)
+        mel_example(haptic_paddle       DEPENDS MEL::quanser)
+        mel_example(overview            DEPENDS MEL::quanser)
+        mel_example(ati_sensor          DEPENDS MEL::quanser)
+        mel_example(quanser_performance DEPENDS MEL::quanser)
     endif()
 
     # myro example

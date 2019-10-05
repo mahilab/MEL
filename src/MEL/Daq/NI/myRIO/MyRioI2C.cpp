@@ -50,7 +50,7 @@ void MyRioI2C::set_slave(const std::string& address) {
 void MyRioI2C::set_slave(std::bitset<7> address) {
     auto bits = read_register(addr_);
     for (std::size_t i = 0; i < 7; ++i)
-        bits[i+i] = address[i];
+        bits[i+1] = address[i];
     write_register(addr_, bits);    
 }
 

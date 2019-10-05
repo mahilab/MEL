@@ -16,19 +16,20 @@ static void wait_sleep(const Time& duration) {
     sleep(duration);
 }
 
-Timer::Timer(Frequency frequency, WaitMode mode) :
-    Timer(frequency.to_time(), mode)
+Timer::Timer(Frequency frequency, WaitMode mode, bool emit_warnings) :
+    Timer(frequency.to_time(), mode, emit_warnings)
 {
 }
 
-Timer::Timer(Time period, WaitMode mode) :
+Timer::Timer(Time period, WaitMode mode, bool emit_warnings) :
     mode_(mode),
     clock_(Clock()),
     period_(period),
     ticks_(0),
     misses_(0),
     prev_time_(Clock::get_current_time()),
-    rate_(0.01)
+    rate_(0.01),
+    warnings_(emit_warnings)
 {
 }
 
@@ -48,7 +49,7 @@ Time Timer::wait() {
     if (remaining_time < Time::Zero) {
         misses_++;
         double miss_rate = get_miss_rate();
-        if (miss_rate >= rate_ && ticks_ > 1000) {
+        if (miss_rate >= rate_ && ticks_ > 1000 && warnings_) {
             LOG(Warning) << "Timer miss rate of " << miss_rate << " exceeded acceptable rate of " << rate_;
         }
     }
@@ -103,6 +104,14 @@ double Timer::get_wait_ratio() const {
 
 void Timer::set_acceptable_miss_rate(double rate) {
     rate_ = rate;
+}
+
+void Timer::enable_warnings() {
+    warnings_ = true;
+}
+
+void Timer::disable_warnings() {
+    warnings_ = false;
 }
 
 } // namespace mel

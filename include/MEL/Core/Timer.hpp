@@ -47,10 +47,10 @@ public:
 
 public:
     /// Constructs Timer from frequency. Starts the Timer on construction.
-    Timer(Frequency frequency, WaitMode mode = WaitMode::Busy);
+    Timer(Frequency frequency, WaitMode mode = WaitMode::Busy, bool emit_warnings = true);
 
     /// Constructs Timer from wait period. Starts the Timer on construction.
-    Timer(Time period, WaitMode mode = WaitMode::Busy);
+    Timer(Time period, WaitMode mode = WaitMode::Busy, bool emit_warnings = true);
 
     /// Destructor
     ~Timer();
@@ -89,6 +89,12 @@ public:
     /// Sets the acceptable miss rate of the Timer before Warning are logged (default 0.01 = 1%)
     void set_acceptable_miss_rate(double rate);
 
+    /// Enable deadline miss warnings
+    void enable_warnings();
+
+    /// Disable deadline miss warnings
+    void disable_warnings();
+
 protected:
     WaitMode mode_;   ///< the Timer's waiting mode
     Clock clock_;     ///< the Timer's internal clock
@@ -98,6 +104,7 @@ protected:
     Time prev_time_;  ///< time saved at previous call to wait or restart
     Time waited_;     ///< accumulated wait time
     double rate_;     ///< acceptable miss rate
+    bool warnings_;   ///< emit warnings?
 };
 
 }  // namespace mel
