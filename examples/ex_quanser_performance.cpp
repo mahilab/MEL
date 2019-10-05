@@ -31,6 +31,25 @@
 
 using namespace mel;
 
+int cpu_test(int frequency, int time) {
+    int iterations = frequency * time;
+    Timer timer(hertz(frequency), Timer::Busy, false);
+    Time t = Time::Zero;
+    LOG(Info) << "---Starting Test---";
+    LOG(Info) << "Frequency:        " << frequency << " Hz";
+    LOG(Info) << "Duration:         " << time << " s";
+    LOG(Info) << "Iterations:       " << iterations;
+    for (int i = 0; i < iterations; ++i)
+        t = timer.wait();
+    LOG(Info) << "---Test Completed---";
+    LOG(Info) << "Elapsed Time:     " << t.as_seconds() << " s (" << t.as_microseconds() << " us)";
+    LOG(Info) << "Frequency:        " << iterations / t.as_seconds() << " Hz";
+    LOG(Info) << "Timer Misses:     " << timer.get_misses();
+    LOG(Info) << "Timer Miss Rate:  " << timer.get_miss_rate();
+    LOG(Info) << "Timer Wait Ratio: " << timer.get_wait_ratio();
+    return 0;
+}
+
 template <typename TDaq>
 int analog_test(TDaq& daq, int frequency, int time, int ai, int ao, bool save) {
 
@@ -59,7 +78,6 @@ int analog_test(TDaq& daq, int frequency, int time, int ai, int ao, bool save) {
         t = timer.wait();
     }
 
-    // sum repeated measures
     int repeats = 0;
     for (int i = 1; i < iterations; ++i) {
         if (data[i][1] == data[i-1][1])
@@ -88,18 +106,19 @@ int analog_test(TDaq& daq, int frequency, int time, int ai, int ao, bool save) {
 }
 
 int main(int argc, char* argv[]) {
+
     MEL_LOG->set_max_severity(Info);
+
     Options options("quanser_performance.exe", "Utility Program to Evaluate Quanser DAQ Performance");
     options.add_options()
-        ("q", "The type of Quanser DAQ connected to test (q2, q8, or qpid).", value<std::string>())
-        ("f", "The target frequency in Hz (default = 1000).",                 value<int>())
-        ("t", "The test duration in seconds (default = 10).",                 value<int>())
-        ("i", "Input channel for loopback (default = 0)",                     value<int>())
-        ("o", "Output channel for loopback (default = 0)",                    value<int>())
+        ("q", "The type of Quanser DAQ connected to test (q2, q8, qpid or cpu).", value<std::string>())
+        ("f", "The target frequency in Hz (default = 1000).",                     value<int>())
+        ("t", "The test duration in seconds (default = 10).",                     value<int>())
+        ("i", "Input channel for loopback (default = 0)",                         value<int>())
+        ("o", "Output channel for loopback (default = 0)",                        value<int>())
         ("r", "Enable Windows realtime thread priority.")
         ("s", "Save test data.")
         ("h", "Prints helpful information.");
-
     auto user_input = options.parse(argc, argv);    
     if (user_input.count("h") > 0) { 
         print(options.help());
@@ -126,8 +145,8 @@ int main(int argc, char* argv[]) {
 
     bool save = user_input.count("s") > 0;
 
-    if (user_input.count("d")) {
-        auto str = user_input["d"].as<std::string>();
+    if (user_input.count("q")) {
+        auto str = user_input["q"].as<std::string>();
         if (str == "q2") {
             Q2Usb q2;
             return analog_test(q2, frequency, time, ai, ao, save);
@@ -140,14 +159,17 @@ int main(int argc, char* argv[]) {
             QPid qpid;
             return analog_test(qpid, frequency, time, ai, ao, save);
         }
+        else if (str == "cpu") {
+            return cpu_test(frequency, time);
+        }
         else {
-            LOG(Error) << "DAQ string " << str << " is invalid. Use q2, q8, or qpid";
+            LOG(Error) << "-q " << str << " is not a valid option";
             print(options.help());
             return 1;
         }
     }
     else {
-        LOG(Error) << "No DAQ string provided. Enter -q q2 or -d q8 or -d qpid";
+        LOG(Error) << "No -q option specified";
         print(options.help());
         return 1;
     }

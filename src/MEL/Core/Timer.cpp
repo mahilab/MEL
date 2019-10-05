@@ -7,7 +7,7 @@ namespace mel {
 
 static void wait_busy(const Time& duration) {
     Clock temp_clock;
-    while (temp_clock.get_elapsed_time() <= duration) {
+    while (temp_clock.get_elapsed_time() < duration) {
         // kill the CPU :)
     }
 }
