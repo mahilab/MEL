@@ -36,14 +36,17 @@ int cpu_test(int frequency, int time) {
     Timer timer(hertz(frequency), Timer::Busy, false);
     Time t = Time::Zero;
     LOG(Info) << "---Starting Test---";
-    LOG(Info) << "Frequency:        " << frequency << " Hz";
-    LOG(Info) << "Duration:         " << time << " s";
+    LOG(Info) << "Target Frequency: " << frequency << " Hz";
+    LOG(Info) << "Target Period:    " << timer.get_period().as_microseconds() << " us";
+    LOG(Info) << "Target Time:      " << time << " s (" << time * 1000000 << " us)";
     LOG(Info) << "Iterations:       " << iterations;
+    timer.restart();
     for (int i = 0; i < iterations; ++i)
         t = timer.wait();
     LOG(Info) << "---Test Completed---";
-    LOG(Info) << "Elapsed Time:     " << t.as_seconds() << " s (" << t.as_microseconds() << " us)";
-    LOG(Info) << "Frequency:        " << iterations / t.as_seconds() << " Hz";
+    LOG(Info) << "Actual Frequency: " << iterations / t.as_seconds() << " Hz";
+    LOG(Info) << "Actual Period:    " << (double)t.as_microseconds() / (double)iterations << " us";
+    LOG(Info) << "Actual Time:      " << t.as_seconds() << " s (" << t.as_microseconds() << " us)";
     LOG(Info) << "Timer Misses:     " << timer.get_misses();
     LOG(Info) << "Timer Miss Rate:  " << timer.get_miss_rate();
     LOG(Info) << "Timer Wait Ratio: " << timer.get_wait_ratio();
@@ -63,11 +66,13 @@ int analog_test(TDaq& daq, int frequency, int time, int ai, int ao, bool save) {
     Time t = Time::Zero;
 
     LOG(Info) << "---Starting Test---";
-    LOG(Info) << "Frequency:        " << frequency << " Hz";
-    LOG(Info) << "Duration:         " << time << " s";
+    LOG(Info) << "Target Frequency: " << frequency << " Hz";
+    LOG(Info) << "Target Period:    " << timer.get_period().as_microseconds() << " us";
+    LOG(Info) << "Target Time:      " << time << " s (" << time * 1000000 << " us)";
     LOG(Info) << "Iterations:       " << iterations;
     LOG(Info) << "AI/AO Channels:   " << ai << "/" << ao;
 
+    timer.restart();
     for (int i = 0; i < iterations; ++i) {
         daq.AI.update();
         data[i][0] = t.as_seconds();
@@ -87,8 +92,9 @@ int analog_test(TDaq& daq, int frequency, int time, int ai, int ao, bool save) {
     LOG(Info) << "---Test Completed---";
     LOG(Info) << "Repeats:          " << repeats;
     LOG(Info) << "Repeat Rate:      " << (double)repeats / (double)(iterations - 1);
-    LOG(Info) << "Elapsed Time:     " << t.as_seconds() << " s (" << t.as_microseconds() << " us)";
-    LOG(Info) << "Frequency:        " << iterations / t.as_seconds() << " Hz";
+    LOG(Info) << "Actual Frequency: " << iterations / t.as_seconds() << " Hz";
+    LOG(Info) << "Actual Period:    " << (double)t.as_microseconds() / (double)iterations << " us";
+    LOG(Info) << "Actual Time:      " << t.as_seconds() << " s (" << t.as_microseconds() << " us)";
     LOG(Info) << "Timer Misses:     " << timer.get_misses();
     LOG(Info) << "Timer Miss Rate:  " << timer.get_miss_rate();
     LOG(Info) << "Timer Wait Ratio: " << timer.get_wait_ratio();
