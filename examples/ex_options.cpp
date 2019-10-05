@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
         ("c,craig", "Prints a message from Craig.")
         ("h,help", "Prints helpful information.")
         ("i,integer", "Gets an integer from user.", value<int>())
-        ("d,double", "Gets a double from user.", value<double>());
+        ("d,double", "Gets a double from user.", value<double>())
+        ("v,vector", "Gets a vector of integers from user.", value<std::vector<int>>());
 
     // parse options
     auto result = options.parse(argc, argv);
@@ -60,6 +61,12 @@ int main(int argc, char* argv[]) {
         double d = result["d"].as<double>();
         print("You entered " + stringify(d));
     } 
+
+    if (result.count("v")) {
+        auto v = result["v"].as<std::vector<int>>();
+        print(v.size());
+        print(v);
+    }
 
     return 0;
 }
