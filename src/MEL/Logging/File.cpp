@@ -42,7 +42,7 @@ bool File::open(const std::string& filepath, WriteMode w_mode, OpenMode o_mode) 
         if (!create_directory(directory)) {
             return false;
         }
-        LOG(Info) << "Created directory " << directory << " for file: " << full;
+        LOG(Verbose) << "Created directory " << directory << " for file: " << full;
     }
 
     // open file
