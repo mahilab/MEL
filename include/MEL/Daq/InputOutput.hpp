@@ -79,8 +79,6 @@ public:
     /// Gets a vector of handles to channels on this module
     std::vector<Channel> operator[](const ChanNums& channel_numbers);
 
-protected:
-
     /// Sets the channel numbers this Module maintains
     virtual void set_channel_numbers(const ChanNums& channel_numbers) override;
 
@@ -89,6 +87,8 @@ protected:
 
     /// Removes a channel number from current channel numbers
     virtual void remove_channel_number(ChanNum channel_number) override;
+
+protected:
 
     /// Sorts channel numbers associated with inputs and outputs
     virtual void sort_input_output_channel_numbers() const;
