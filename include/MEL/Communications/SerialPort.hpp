@@ -44,6 +44,15 @@ public:
     /// Receives data
     int receive_data(unsigned char* data, std::size_t size);
 
+    // Flush data received but not read
+    void flush_RX();
+
+    /// Flush data written but not transmitted
+    void flush_TX();
+
+    /// Flushes both data received but not read, and data written but not transmitted.
+    void flush_RXTX();
+
     /// Returns true if SerialPort is open
     bool is_open() const;
 

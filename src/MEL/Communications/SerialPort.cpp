@@ -39,6 +39,18 @@ int SerialPort::receive_data(unsigned char* data, std::size_t size) {
     return RS232_PollComport(static_cast<int>(port_), data, static_cast<int>(size));
 }
 
+void SerialPort::flush_RX() {
+    RS232_flushRX(static_cast<int>(port_));
+}
+
+void SerialPort::flush_TX() {
+    RS232_flushTX(static_cast<int>(port_));
+}
+
+void SerialPort::flush_RXTX() {
+    RS232_flushRXTX(static_cast<int>(port_));
+}
+
 bool SerialPort::close() {
     RS232_CloseComport(static_cast<int>(port_));
     return true;
@@ -47,5 +59,7 @@ bool SerialPort::close() {
 bool SerialPort::is_open() const {
     return is_open_;
 }
+
+
 
 } // namespace mel
