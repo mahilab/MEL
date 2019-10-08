@@ -110,10 +110,21 @@ if(WIN32)
             option(MEL_NIDAQMX "Turn ON to build MEL NI DAQmx support" OFF)
         endif() 
         if(MEL_NIDAQMX)
-            # target_link_libraries(MEL
-            #     PRIVATE
-            #         NIDAQmx::NIDAQmx      # NIDAQmx
-            # )
+            message("MEL does not yet support NI DAQmx. This option serves as placeholder.")
+        endif()
+
+        #=======================================================================
+        # SENSORAY 826
+        #=======================================================================
+
+        find_package(Sensoray826)
+        if (Sensoray826_FOUND)
+            option(MEL_SENSORAY826 "Turn ON to build MEL Sensory 826 support" ON)  
+        else()
+            option(MEL_SENSORAY826 "Turn ON to build MEL Sensory 826 support" OFF)
+        endif() 
+        if (MEL_SENSORAY826)
+            message("MEL does not yet support Sensoary 826. This option serves as placeholder.")
         endif()
 
         #=======================================================================
