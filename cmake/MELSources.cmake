@@ -22,6 +22,7 @@ set(MEL_UTILITY_HEADERS "")
 set(MEL_WINDOWS_HEADERS "")
 set(MEL_MYRIO_HEADERS "")
 set(MEL_QUANSER_HEADERS "")
+set(MEL_SENSORAY_HEADERS "")
 set(MEL_MYO_HEADERS "")
 
 # MEL Base
@@ -204,6 +205,15 @@ list(APPEND MEL_QUANSER_HEADERS
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserWatchdog.hpp"
 )
 
+list(APPEND MEL_SENSORAY_HEADERS
+    "${MEL_DAQ_HEADERS_DIR}/Sensoray/S826.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Sensoray/S826AI.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Sensoray/S826AO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Sensoray/S826DIO.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Sensoray/S826Encoder.hpp"
+    "${MEL_DAQ_HEADERS_DIR}/Sensoray/S826Watchdog.hpp"
+)
+
 list(APPEND MEL_MYO_HEADERS
     "${MEL_DEVICES_HEADERS_DIR}/Myo/MyoBand.hpp"
 )
@@ -229,6 +239,7 @@ set(MEL_UTILITY_SRC "")
 # collections of platform/hardware specific sources
 set(MEL_WINDOWS_SRC "")
 set(MEL_QUANSER_SRC "")
+set(MEL_SENSORAY_SRC "")
 set(MEL_MYRIO_SRC "")
 set(MEL_MYO_SRC "")
 
@@ -397,6 +408,15 @@ list(APPEND MEL_QUANSER_SRC
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserPwm.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserOptions.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserWatchdog.cpp"
+)
+
+list(APPEND MEL_SENSORAY_SRC
+    "${MEL_DAQ_SRC_DIR}/Sensoray/S826.cpp"
+    "${MEL_DAQ_SRC_DIR}/Sensoray/S826AI.cpp"
+    "${MEL_DAQ_SRC_DIR}/Sensoray/S826AO.cpp"
+    "${MEL_DAQ_SRC_DIR}/Sensoray/S826DIO.cpp"
+    "${MEL_DAQ_SRC_DIR}/Sensoray/S826Encoder.cpp"
+    "${MEL_DAQ_SRC_DIR}/Sensoray/S826Watchdog.cpp"
 )
 
 list(APPEND MEL_MYO_SRC

@@ -49,7 +49,7 @@ find_library(Sensoray826_LIBRARY
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Sensoray826 REQUIRED_VARS Sensoray826_LIBRARY Sensoray826_INCLUDE_DIR)
 
-if (Sensoray_FOUND AND NOT Sensoray::Sensoray826)
+if (Sensoray826_FOUND AND NOT Sensoray::Sensoray826)
     add_library(Sensoray::Sensoray826 STATIC IMPORTED)
     set_target_properties(Sensoray::Sensoray826 PROPERTIES
         IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"

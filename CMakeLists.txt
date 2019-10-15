@@ -124,7 +124,8 @@ if(WIN32)
             option(MEL_SENSORAY826 "Turn ON to build MEL Sensory 826 support" OFF)
         endif() 
         if (MEL_SENSORAY826)
-            message("MEL does not yet support Sensoary 826. This option serves as placeholder.")
+            mel_add_library(sensoray SOURCES ${MEL_SENSORAY_SRC} ${MEL_SENSORAY_HEADERS})
+            target_link_libraries(sensoray PUBLIC MEL PRVIATE Sensoray::Sensoray826)
         endif()
 
         #=======================================================================
