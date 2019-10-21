@@ -28,6 +28,27 @@
 namespace mel {
 
 class S826 : public DaqBase, NonCopyable {
+public:
+
+    S826(int board = 0);
+    ~S826();
+
+    virtual bool on_open() override;
+    virtual bool on_close() override;
+    virtual bool on_enable() override;
+    virtual bool on_disable() override;
+
+public:
+
+    S826AO AO;
+
+private:
+
+    friend class S826AO;
+
+    static std::string get_error_message(int error);
+
+    int board_;
 
 };
 

@@ -125,7 +125,7 @@ if(WIN32)
         endif() 
         if (MEL_SENSORAY826)
             mel_add_library(sensoray SOURCES ${MEL_SENSORAY_SRC} ${MEL_SENSORAY_HEADERS})
-            target_link_libraries(sensoray PUBLIC MEL PRVIATE Sensoray::Sensoray826)
+            target_link_libraries(sensoray PUBLIC MEL PRIVATE Sensoray::Sensoray826)
         endif()
 
         #=======================================================================

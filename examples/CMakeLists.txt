@@ -40,6 +40,11 @@ if(WIN32)
         mel_example(quanser_performance DEPENDS MEL::quanser)
     endif()
 
+    # sensoary 826 only examples
+    if (MEL_SENSORAY826)
+        mel_example(s826 DEPENDS MEL::sensoray)
+    endif()
+
     # myro example
     if (MEL_MYO)
         mel_example(myoband DEPENDS MEL::myo)
