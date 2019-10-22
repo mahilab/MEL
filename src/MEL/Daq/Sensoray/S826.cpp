@@ -12,6 +12,7 @@ S826::S826(int board) :
     board_(board),
     AI(*this),
     AO(*this),
+    DIO(*this),
     encoder(*this)
 {
 

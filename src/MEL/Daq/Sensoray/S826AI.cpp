@@ -42,13 +42,13 @@ bool S826AI::update() {
 bool S826AI::update_channel(ChanNum channel_number) {
     std::bitset<32> slotlist_bits;
     slotlist_bits[channel_number].flip();
-    uint32 slotlist = slotlist_bits.to_ulong();
     int result;
     do {
+        uint32 slotlist = slotlist_bits.to_ulong();
         result = S826_AdcRead(s826_.board_, adc_buffer_, NULL, &slotlist, 0); // note: tmax=0
     } while (result == S826_ERR_NOTREADY);
     if (result != S826_ERR_OK) {
-        LOG(Error) << "Failed to update " << get_name() << " (" << S826::get_error_message(result) << ")";
+        LOG(Error) << "Failed to update " << get_name() << " channel number " << channel_number << " (" << S826::get_error_message(result) << ")";
         return false;
     }
     int32 slot = adc_buffer_[channel_number];
@@ -65,7 +65,7 @@ bool S826AI::on_open() {
     for (auto& c : get_channel_numbers()) {
         result = S826_AdcSlotConfigWrite(s826_.board_, c, c, TSETTLE, S826_ADC_GAIN_1);
         if (result != S826_ERR_OK) {
-            LOG(Error) << "Failed to set " << get_name() << " channel number " << c << " output range (" << S826::get_error_message(result) << ")";
+            LOG(Error) << "Failed to set " << get_name() << " channel number " << c << " input range (" << S826::get_error_message(result) << ")";
             success = false;
         }
     }
