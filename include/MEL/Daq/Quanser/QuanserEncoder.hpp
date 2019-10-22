@@ -49,13 +49,13 @@ public:
 
     bool set_quadrature_factor(ChanNum channel_number, QuadFactor factor) override;
 
-        /// Set whether the Encoder enables velocity estimation
+    /// Set whether the Encoder enables velocity estimation
     bool has_velocity() const;
 
-    /// Performs conversion to positions using #factors_ and #counts_per_unit
+    /// Returns values per second for all channels
     std::vector<double>& get_values_per_sec();
 
-    /// Performs conversion to position using #factors_ and #counts_per_unit
+    /// Returns valus per second for a single channel
     double get_value_per_sec(ChanNum channel_number);
 
     /// Performs conversion to positions using #factors_ and #counts_per_unit

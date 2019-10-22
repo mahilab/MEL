@@ -201,6 +201,7 @@ const ChanNums QuanserEncoder::get_quanser_velocity_channels() {
         velocity_channels[i] = get_channel_numbers()[i] + 14000;
     return velocity_channels;
 }
+//=============================================================================
 
 QuanserEncoder::Channel QuanserEncoder::get_channel(ChanNum channel_number) {
     if (validate_channel_number(channel_number))

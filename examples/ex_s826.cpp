@@ -29,7 +29,6 @@ int main(int argc, char const *argv[])
      
      Timer timer(hertz(1000));
      Time t1;
-     Time t2;
 
      Waveform sinewave(Waveform::Sin, seconds(1));
 
@@ -44,10 +43,9 @@ int main(int argc, char const *argv[])
 
      while (!g_stop_flag) {
          s826.encoder[0].update();
-         t2 += s826.encoder.timestamps_[0];
          auto pos = s826.encoder[0].get_position();
          auto vel1 = diff1.update(pos, t1);
-         auto vel2 = diff2.update(pos, t2);
+         auto vel2 = s826.encoder[0].get_velocity();
          ms.write_data({ pos, vel1, vel2 });
          t1 = timer.wait();
      }
