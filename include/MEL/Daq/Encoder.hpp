@@ -56,7 +56,7 @@ public:
     /// Sets the units per count of all encoder channels.
     void set_units_per_count(const std::vector<double>& units_per_count);
 
-        /// Performs conversion to position using #factors_ and #counts_per_unit
+    /// Performs conversion to position using #factors_ and #counts_per_unit
     double get_position(ChanNum channel_number);
 
     /// Performs conversion to positions using factors_ and counts_per_unit

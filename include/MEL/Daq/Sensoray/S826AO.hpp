@@ -33,6 +33,10 @@ public:
 
 
 private:
+    friend class S826;
+    bool on_open();
+
+private:
     S826& s826_;
 };
 

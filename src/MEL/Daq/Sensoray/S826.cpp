@@ -2,6 +2,7 @@
 #include <MEL/Logging/Log.hpp>
 #include <windows.h>
 #include <826api.h> 
+#include <bitset>
 
 namespace mel
 {
@@ -9,7 +10,8 @@ namespace mel
 S826::S826(int board) :
     DaqBase("s826_" + std::to_string(board)),
     board_(board),
-    AO(*this)
+    AO(*this),
+    encoder(*this)
 {
 
 }
@@ -21,7 +23,6 @@ S826::~S826() {
 bool S826::on_open() {
     // open comms with all boards
     int detected_boards = S826_SystemOpen();
-    print(detected_boards);
     if (detected_boards == S826_ERR_DUPADDR) {
         LOG(Error) << "More than one S826 board with same board number detected.";
         return false;
@@ -30,7 +31,19 @@ bool S826::on_open() {
         LOG(Error) << "No S826 boards detected.";
         return false;
     }
-    return true;
+    std::bitset<32> board_bits(detected_boards);
+    if (board_bits[board_]) {
+        // call on_open for components
+        if (!AO.on_open())
+            return false;
+        if (!encoder.on_open())
+            return false;
+        return true;
+    }
+    else {
+        LOG(Error) << "The requested S826 board " << board_ << "was not detected";
+        return false;
+    }
 }
 
 bool S826::on_close() {
