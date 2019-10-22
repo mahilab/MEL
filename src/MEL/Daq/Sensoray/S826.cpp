@@ -10,6 +10,7 @@ namespace mel
 S826::S826(int board) :
     DaqBase("s826_" + std::to_string(board)),
     board_(board),
+    AI(*this),
     AO(*this),
     encoder(*this)
 {
@@ -22,28 +23,32 @@ S826::~S826() {
 
 bool S826::on_open() {
     // open comms with all boards
+    bool success = true;
     int detected_boards = S826_SystemOpen();
     if (detected_boards == S826_ERR_DUPADDR) {
         LOG(Error) << "More than one S826 board with same board number detected.";
-        return false;
+        success = false;
     }
     if (detected_boards == 0) {
         LOG(Error) << "No S826 boards detected.";
-        return false;
+        success = false;
     }
     std::bitset<32> board_bits(detected_boards);
     if (board_bits[board_]) {
-        // call on_open for components
+        // call on_open for modules
+        if (!AI.on_open())
+            success = false;
         if (!AO.on_open())
-            return false;
+            success = false;
         if (!encoder.on_open())
-            return false;
+            success = false;
         return true;
     }
     else {
-        LOG(Error) << "The requested S826 board " << board_ << "was not detected";
-        return false;
+        LOG(Error) << "The requested S826 board " << board_ << " was not detected";
+        success = false;
     }
+    return success;
 }
 
 bool S826::on_close() {

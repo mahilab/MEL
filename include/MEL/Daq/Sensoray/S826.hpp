@@ -40,11 +40,13 @@ public:
 
 public:
 
+    S826AI AI;
     S826AO AO;
     S826Encoder encoder;
 
 private:
 
+    friend class S826AI;
     friend class S826AO;
     friend class S826Encoder;
 

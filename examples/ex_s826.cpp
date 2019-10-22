@@ -5,6 +5,7 @@
 #include <MEL/Communications/MelShare.hpp>
 #include <bitset>
 #include <MEL/Math/Differentiator.hpp>
+#include <MEL/Math/Functions.hpp>
 
 using namespace mel;
 
@@ -20,37 +21,41 @@ int main(int argc, char const *argv[])
 {
      register_ctrl_handler(my_handler);
 
-     S826 s826;
-     s826.open();
-     s826.enable();
+    std::bitset<32> slotlist_bits;
+    slotlist_bits[2].flip();
+    print(slotlist_bits.to_string());
 
-     s826.AO[0].set_value(10);
-     s826.AO[0].update();
+    //  S826 s826;
+    //  s826.open();
+    //  s826.enable();
+
+    //  s826.AO[0].set_value(10);
+    //  s826.AO[0].update();
      
-     Timer timer(hertz(1000));
-     Time t1;
+    //  Timer timer(hertz(1000));
+    //  Time t1;
 
-     Waveform sinewave(Waveform::Sin, seconds(1));
+    //  Waveform sinewave(Waveform::Sin, seconds(1));
 
-     s826.encoder[0].reset_count(0);
-     s826.encoder[0].set_units_per_count(360.0 / 2048);
+    //  s826.encoder[0].reset_count(0);
+    //  s826.encoder[0].set_units_per_count(360.0 / 2048);
 
-     MelShare ms("s826");
-     std::vector<double> buffer(3);
+    //  MelShare ms("s826");
+    //  std::vector<double> buffer(3);
 
-     Differentiator diff1;
-     Differentiator diff2;
+    //  Differentiator diff1;
+    //  Differentiator diff2;
 
-     while (!g_stop_flag) {
-         s826.encoder[0].update();
-         auto pos = s826.encoder[0].get_position();
-         auto vel1 = diff1.update(pos, t1);
-         auto vel2 = s826.encoder[0].get_velocity();
-         ms.write_data({ pos, vel1, vel2 });
-         t1 = timer.wait();
-     }
+    //  while (!g_stop_flag) {
+    //      s826.encoder[0].update();
+    //      auto pos = s826.encoder[0].get_position();
+    //      auto vel1 = diff1.update(pos, t1);
+    //      auto vel2 = s826.encoder[0].get_velocity();
+    //      ms.write_data({ pos, vel1, vel2 });
+    //      t1 = timer.wait();
+    //  }
 
-     print(timer.get_misses());
+    //  print(timer.get_misses());
 
 
     return 0;
