@@ -50,7 +50,7 @@ cmake-build-release/
 cmake-build-debug/
 [Bb]uild-*/
 [Bb]uild_*/
-
+[Oo]ut/
 
 # Unity Engine
 
