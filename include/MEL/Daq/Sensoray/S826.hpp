@@ -38,12 +38,21 @@ public:
     virtual bool on_enable() override;
     virtual bool on_disable() override;
 
+    /// Returns the current board time
+    Time get_timestamp() const;
+
+public:
+
+    /// Returns string message for a givenn S826 API error code.
+    static std::string get_error_message(int error);
+
 public:
 
     S826AI  AI;
     S826AO  AO;
     S826DIO DIO;
     S826Encoder encoder;
+    S826Watchdog watchdog;
 
 private:
 
@@ -51,10 +60,9 @@ private:
     friend class S826AO;
     friend class S826DIO;
     friend class S826Encoder;
+    friend class S826Watchdog;
 
-    static std::string get_error_message(int error);
-
-    int board_;
+    int board_; ///< the S826 baord identification number
 
 };
 

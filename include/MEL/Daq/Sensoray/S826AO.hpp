@@ -27,13 +27,15 @@ class S826;
 class S826AO : public AnalogOutput, NonCopyable {
 public:
 
-    S826AO(S826& s826);
-
     bool update_channel(ChanNum channel_number) override;
-
 
 private:
     friend class S826;
+
+    /// Private constructor used by S826
+    S826AO(S826& s826);
+
+    /// Caled by S826 when it opens
     bool on_open();
 
 private:

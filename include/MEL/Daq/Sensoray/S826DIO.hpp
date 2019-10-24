@@ -27,14 +27,17 @@ class S826;
 class S826DIO : public DigitalInputOutput, NonCopyable {
 public:
 
-    S826DIO(S826& s826);
-
     bool update() override;
     bool update_channel(ChanNum channel_number) override;
     bool set_direction(ChanNum channel_number, Direction direction) override;
 
 private:
     friend class S826;
+
+    /// Private constructor used by S826
+    S826DIO(S826& s826);
+
+    /// Called by S826 when it opens
     bool on_open();
 
 private:

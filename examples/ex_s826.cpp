@@ -21,8 +21,7 @@ int main(int argc, char const *argv[])
 {
      register_ctrl_handler(my_handler);
 
-    std::bitset<32> slotlist_bits;
-    slotlist_bits[2].flip();
+    std::bitset<32> slotlist_bits(0x10);
     print(slotlist_bits.to_string());
 
     //  S826 s826;

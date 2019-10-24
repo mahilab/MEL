@@ -19,6 +19,7 @@
 
 #include <MEL/Daq/Input.hpp>
 #include <MEL/Core/NonCopyable.hpp>
+#include <MEL/Core/Time.hpp>
 
 namespace mel {
 
@@ -27,13 +28,20 @@ class S826;
 class S826AI : public AnalogInput, NonCopyable {
 public:
 
-    S826AI(S826& s826);
-
     bool update() override;
     bool update_channel(ChanNum channel_number) override;
 
+    /// Sets the amount of time to allow each analog input to settle before conversion (default = 5 us)
+    bool set_settling_time(Time t);
+
 private:
+
     friend class S826;
+
+    /// Private constructor used by S826
+    S826AI(S826& s826);
+
+    /// Called by S826 when it opens
     bool on_open();
 
 private:

@@ -56,9 +56,8 @@ public:
     /// previously entered an expired state.
     virtual bool clear() = 0;
 
-public:
     /// Sets the timeout period this Watchdog should operate on
-    void set_timeout(Time timeout);
+    virtual void set_timeout(Time timeout);
 
 protected:
     Time timeout_;   ///< The timeout period for this Watchdog

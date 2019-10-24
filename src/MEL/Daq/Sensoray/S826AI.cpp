@@ -5,9 +5,6 @@
 #include <826api.h> 
 #include <bitset>
 
-#define TSETTLE    7        // Microseonds to allow analog inputs to settle before conversion
-#define SLOTFLAGS  0xFFFF   // Timeslot flags: use all 16 timeslots.
-
 namespace mel {
 
 S826AI::S826AI(S826& s826) : 
@@ -19,7 +16,7 @@ S826AI::S826AI(S826& s826) :
 
 bool S826AI::update() {
     int result;
-    uint remaining = SLOTFLAGS;
+    uint remaining = 0xFFFF; // all 16 timeslots
     do {
         uint slotlist = remaining;     // Read all available remaining timeslots.
         result = S826_AdcRead(s826_.board_, adc_buffer_, NULL, &slotlist, 0); // note: tmax=0
@@ -58,19 +55,28 @@ bool S826AI::update_channel(ChanNum channel_number) {
     return true;
 }
 
-bool S826AI::on_open() {
-    int result;
-    bool success = true;
+bool S826AI::set_settling_time(Time t) {
+    uint32 tsettle = (uint32)t.as_microseconds();
     // cofigure all timeslots for -10 to +10 V
+    bool success = true;
     for (auto& c : get_channel_numbers()) {
-        result = S826_AdcSlotConfigWrite(s826_.board_, c, c, TSETTLE, S826_ADC_GAIN_1);
+        int result = S826_AdcSlotConfigWrite(s826_.board_, c, c, tsettle, S826_ADC_GAIN_1);
         if (result != S826_ERR_OK) {
             LOG(Error) << "Failed to set " << get_name() << " channel number " << c << " input range (" << S826::get_error_message(result) << ")";
             success = false;
         }
     }
+    return success;
+}
+
+
+bool S826AI::on_open() {
+    int result;
+    bool success = true;
+    if (!set_settling_time(microseconds(5)))
+        success = false;
     // configure ADC slotlist
-    result = S826_AdcSlotlistWrite(s826_.board_, SLOTFLAGS, S826_BITWRITE);
+    result = S826_AdcSlotlistWrite(s826_.board_, 0xFFFF, S826_BITWRITE);
     if (result != S826_ERR_OK) {
         LOG(Error) << "Failed to write slotlist of " << get_name() << " (" << S826::get_error_message(result) << ")";
         success = false;

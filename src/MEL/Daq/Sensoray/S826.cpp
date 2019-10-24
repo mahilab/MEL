@@ -13,7 +13,8 @@ S826::S826(int board) :
     AI(*this),
     AO(*this),
     DIO(*this),
-    encoder(*this)
+    encoder(*this),
+    watchdog(*this, milliseconds(10))
 {
 
 }
@@ -46,7 +47,7 @@ bool S826::on_open() {
         return true;
     }
     else {
-        LOG(Error) << "The requested S826 board " << board_ << " was not detected";
+        LOG(Error) << "The requested S826 board " << board_ << " was not detected.";
         success = false;
     }
     return success;
@@ -65,6 +66,17 @@ bool S826::on_enable() {
 bool S826::on_disable() {
     return true;
 }
+
+Time S826::get_timestamp() const {
+    uint32 timestamp;
+    int result = S826_TimestampRead(board_, &timestamp);
+    if (result != S826_ERR_OK) {
+        LOG(Error) << "Failed to read " << get_name() << " timestamp (" << get_error_message(result) << ").";
+        return Time::Zero;
+    }
+    return microseconds(timestamp);
+}
+
 
 std::string S826::get_error_message(int error) {
     switch(error) {

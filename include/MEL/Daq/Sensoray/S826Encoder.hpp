@@ -29,8 +29,6 @@ public:
 
     class Channel;
 
-    S826Encoder(S826& s826);
-
     bool update_channel(ChanNum channel_number) override;
     bool reset_count(ChanNum channel_number, int32 count) override;
     bool set_quadrature_factor(ChanNum channel_number, QuadFactor factor) override;
@@ -69,6 +67,10 @@ private:
 
     friend class S826;
 
+    /// Private constructor used by S826
+    S826Encoder(S826& s826);
+
+    /// Called by S826 when it opens
     bool on_open();
 
 private:
