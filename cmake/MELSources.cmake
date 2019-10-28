@@ -155,6 +155,7 @@ list(APPEND MEL_UTILITY_HEADERS
     "${MEL_UTILITY_HEADERS_DIR}/RingBuffer.hpp"
     "${MEL_UTILITY_HEADERS_DIR}/Singleton.hpp"
     "${MEL_UTILITY_HEADERS_DIR}/Spinlock.hpp"
+    "${MEL_UTILITY_HEADERS_DIR}/SPSCQueue.hpp"
     "${MEL_UTILITY_HEADERS_DIR}/StateMachine.hpp"
     "${MEL_UTILITY_HEADERS_DIR}/StlStreams.hpp"
     "${MEL_UTILITY_HEADERS_DIR}/System.hpp"
