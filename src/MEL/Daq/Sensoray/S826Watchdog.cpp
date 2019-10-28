@@ -9,6 +9,10 @@ namespace mel {
 
 S826Watchdog::S826Watchdog(S826& s826, Time timeout) : Watchdog(timeout), s826_(s826) {}
 
+S826Watchdog::~S826Watchdog() {
+    
+}
+
 bool S826Watchdog::start() {
     uint32 microseconds = (uint32)timeout_.as_microseconds();
     uint32 wdtiming[5] = {microseconds * 50, 1, 1, 0, 0};

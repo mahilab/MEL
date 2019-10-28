@@ -20,7 +20,10 @@ S826::S826(int board) :
 }
 
 S826::~S826() {
-
+    if (is_enabled())
+        disable();
+    if (is_open())
+        close();
 }
 
 bool S826::on_open() {

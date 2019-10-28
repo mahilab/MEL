@@ -42,7 +42,7 @@ if(WIN32)
 
     # sensoary 826 only examples
     if (MEL_SENSORAY826)
-        mel_example(s826 DEPENDS MEL::sensoray)
+        mel_example(s826 DEPENDS MEL::sensoray MEL::quanser)
     endif()
 
     # myro example
