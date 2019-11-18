@@ -32,6 +32,8 @@ public:
     /// Launches the external app *.exe at the specified path location
     void launch();
 
+    void launch(std::string params);
+
     std::string name_;  ///< name of the application (only used in MEL)
     std::string path_;  ///< the full path to the application including the app
                         ///< filename (eg  .../application.exe)
