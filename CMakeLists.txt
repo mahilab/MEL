@@ -27,7 +27,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 # add ./cmake to CMake module path so our .cmake files can be found
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(INSERT CMAKE_CURRENT_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(Macros)         # MEL macros
 include(MELSources)     # lists of MEL source and header files
@@ -187,13 +187,13 @@ elseif(NI_LRT AND CMAKE_SYSTEM_PROCESSOR MATCHES ARM)
     set(MEL_INSTALL_SUBDIR "nilrt-x64")
 endif()
 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}-${MEL_INSTALL_SUBDIR}")
+set(CMAKE_CURRENT_INSTALL_PREFIX "${CMAKE__CURRENT_INSTALL_PREFIX}-${MEL_INSTALL_SUBDIR}")
 
 # install headers
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY include/ DESTINATION ${CMAKE_CURRENT_INSTALL_INCLUDEDIR})
 
 # set where we want to install our config
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/MEL)
+set(INSTALL_CONFIGDIR ${CMAKE_CURRENT_INSTALL_LIBDIR}/cmake/MEL)
 
 # export the targets to a script
 install(EXPORT MEL-targets
