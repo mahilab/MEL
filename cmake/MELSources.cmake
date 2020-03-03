@@ -5,7 +5,7 @@
 #===============================================================================
 
 # headers directory
-set(MEL_HEADERS_DIR "${CMAKE_SOURCE_DIR}/include/MEL")
+set(MEL_HEADERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/MEL")
 
 # collections of common subdirectory headers
 set(MEL_BASE_HEADERS "")
@@ -198,7 +198,7 @@ list(APPEND MEL_QUANSER_HEADERS
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDIO.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserDO.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserEncoder.hpp"
-    "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserPwm.hpp"
+    # "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserPwm.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserOptions.hpp"
     "${MEL_DAQ_HEADERS_DIR}/Quanser/QuanserWatchdog.hpp"
 )
@@ -212,7 +212,7 @@ list(APPEND MEL_MYO_HEADERS
 #===============================================================================
 
 # source directory
-set(MEL_SRC_DIR "${CMAKE_SOURCE_DIR}/src/MEL")
+set(MEL_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/MEL")
 
 # collections of subdirectory sources
 set(MEL_BASE_SRC "")
@@ -392,7 +392,7 @@ list(APPEND MEL_QUANSER_SRC
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDIO.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserDO.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserEncoder.cpp"
-    "${MEL_DAQ_SRC_DIR}/Quanser/QuanserPwm.cpp"
+    # "${MEL_DAQ_SRC_DIR}/Quanser/QuanserPwm.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserOptions.cpp"
     "${MEL_DAQ_SRC_DIR}/Quanser/QuanserWatchdog.cpp"
 )
