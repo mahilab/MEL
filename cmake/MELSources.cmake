@@ -5,7 +5,7 @@
 #===============================================================================
 
 # headers directory
-set(MEL_HEADERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/MEL")
+set(MEL_HEADERS_DIR "${CMAKE_SOURCE_DIR}/include/MEL")
 
 # collections of common subdirectory headers
 set(MEL_BASE_HEADERS "")
