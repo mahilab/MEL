@@ -1,6 +1,10 @@
 
 ![MEL Logo](https://raw.githubusercontent.com/mahilab/MEL/master/misc/logo.png)
 
+# MEL IS DECPRECATED!
+
+Do not use MEL for new projects. It has been replaced by the `mahi-lib` infastructure: [mahi-daq](https://github.com/mahilab/mahi-daq), [mahi-com](https://github.com/mahilab/mahi-com), [mahi-gui](https://github.com/mahilab/mahi-gui), [mahi-robo](https://github.com/mahilab/mahi-robo), [mahi-fes](https://github.com/mahilab/mahi-fes), [mahi-util](https://github.com/mahilab/mahi-util)
+
 # MEL - Mechatronics Engine & Library
 
 MEL is an object-oriented mechatronics and robotics library built from the ground up to make developing and controlling real, custom hardware as simple as possible, without sacrificing user freedom. It is geared toward academics and small teams where speed of development is paramount and learning a large framework such as ROS may be infeasible, but the need for creating robust, safe, and sustainable systems is also required. MEL is also intended for developers who have found high-level or graphical languages such as Simulink and LabVIEW to be limiting, but don't want to dive straight into low-level C API's. MEL is not and will never be a library for robot motion planning, simulation, or artificial intelligence - it is strictly hardware focused.
